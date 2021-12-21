@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pathconfig [
+    <!ENTITY localPatientListUrl "MAGICPL_MAINZELLISTE_URL">
+    <!ENTITY localPatientlistApiKey "MAGICPL_MAINZELLISTE_API_KEY">
+    <!ENTITY magicplApiKey "MAGICPL_API_KEY">
+    <!ENTITY magicplApiKeyConnector "MAGICPL_API_KEY_CONNECTOR">
+    <!ENTITY centralPatientListUrl "MAGICPL_MAINZELLISTE_CENTRAL_URL">
+    <!ENTITY centralPatientListApiKey "MAGICPL_MAINZELLISTE_CENTRAL_API_KEY">
+    <!ENTITY centralKNEUrl "MAGICPL_CENTRAL_URL">
+    <!ENTITY centralKNEApiKey "MAGICPL_CENTRAL_API_KEY">
+    <!ENTITY site "MAGICPL_SITE">
+]>
+<pathconfig xmlns="http://www.example.org/Pfade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.example.org/Pfade magicpl.xsd ">
+    <paths>
+        <multipath>
+            <name>getId</name>
+            <input>
+                <iorecord ref="IDAT" name="IDAT"/>
+                <iosingle ref="extIDs" name="extIDs"/>
+                <iosingle ref="idTypes" name="idTypes"/>
+                <iosingle ref="consented" name="consented"/>
+                <iosingle ref="auditTrail" name="auditTrail"/>
+                <iosingle ref="sureness" name="sureness"/>
+            </input>
+            <output>
+                <iosingle ref="ids" name="ids"/>
+            </output>
+            <step>
+                <name>getRequestedId</name>
+                <parameters/>
+                <input>
+                    <iorecord ref="IDAT" name="IDAT"/>
+                    <iosingle ref="idTypes" name="idTypes"/>
+                    <iosingle ref="consented" name="consented"/>
+                    <iosingle ref="auditTrail" name="auditTrail"/>
+                    <iosingle ref="sureness" name="sureness"/>
+                </input>
+                <output>
+                    <iosingle ref="ids" name="ids"/>
+                </output>
+                <switch>
+                    <evaluator name="de.mainzelliste.paths.evaluator.IsConsentedEvaluator">
+                        <parameters>
+                            <parameter name="key">consented</parameter>
+                        </parameters>
+                    </evaluator>
+                    <!-- eventuell muss hier andere unterscheidung genommen werden -->
+                    <case value="true">
+                        <multipath>
+                            <name>getDktkIdWithIdat</name>
+                            <parameters/>
+                            <input>
+                                <iorecord ref="IDAT"/>
+                                <iosingle ref="idTypes" name="idTypes"/>
+                                <iosingle ref="extIDs" name="extIDs"/>
+                                <iosingle ref="consented"/>
+                                <iosingle ref="auditTrail" name="auditTrail"/>
+                                <iosingle ref="sureness" name="sureness"/>
+                            </input>
+                            <output>
+                                <iosingle ref="ids" name="ids"/>
+                            </output>
+                            <step>
+                                <name>getIdToken</name>
+                                <parameters>
+                                    <!-- Hier war lokale Pfade URL angegeben, es soll aber eigentlich zentraler KNE aufgerufen werden -->
+                                    <parameter name="url">&centralKNEUrl;/paths/getIdToken</parameter>
+                                    <parameter name="method">POST</parameter>
+                                    <parameter name="apiKey">&centralKNEApiKey;</parameter>
+                                    <parameter name="excludeIdTypes">BK_&site;_L-ID</parameter>
+                                    <parameter name="excludeIDAT">locallyUniqueId</parameter>
+                                </parameters>
+                                <input>
+                                    <iorecord ref="IDAT" name="IDAT"/>
+                                    <iosingle ref="idTypes" name="idTypes"/>
+                                    <iosingle ref="auditTrail" name="auditTrail"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="tokenId"/>
+                                </output>
+                                <implementation>de.mainzelliste.paths.processor.PathClient</implementation>
+                            </step>
+                            <step>
+                                <name>getDktkId</name>
+                                <parameters>
+                                    <parameter name="mainzellisteURL">&centralPatientListUrl;</parameter>
+                                    <parameter name="mainzellisteApiKey">&centralPatientListApiKey;</parameter>
+                                    <parameter name="mainzellisteApiVersion">3.2</parameter>
+                                </parameters>
+                                <input>
+                                    <iosingle ref="tokenId"/>
+                                    <iosingle ref="sureness" name="sureness"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="ids" name="ids"/>
+                                </output>
+                                <implementation>de.mainzelliste.paths.processor.MainzellisteClient</implementation>
+                            </step>
+                            <step>
+                                <name>mapIdStringToExternalId</name>
+                                <parameters>
+                                    <parameter name="map">ids->extIDs</parameter>
+                                </parameters>
+                                <input>
+                                    <iosingle ref="ids" name="ids"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="extIDs" name="extIDs"/>
+                                </output>
+                                <implementation>de.mainzelliste.paths.processor.InputMapperProcessor</implementation>
+                            </step>
+                            <step>
+                                <name>getLocalTKTExternalId</name>
+                                <parameters>
+                                    <parameter name="mainzellisteURL">&localPatientListUrl;</parameter>
+                                    <parameter name="mainzellisteApiKey">&localPatientlistApiKey;</parameter>
+                                    <parameter name="fieldType">plain</parameter>
+                                </parameters>
+                                <input>
+                                    <iorecord ref="IDAT" name="IDAT"/>
+                                    <iosingle ref="extIDs" name="extIDs"/>
+                                    <iosingle ref="idTypes" name="idTypes"/>
+                                    <iosingle ref="auditTrail" name="auditTrail"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="tokenId"/>
+                                </output>
+                                <!-- TODO: Implementation für Ticket Erzeugung ohne Kontrolnummer -->
+                                <!-- Wird hier eine neue Klasse benötigt oder kann diese hier entsprechend angepasst werden? -->
+                                <implementation>de.mainzelliste.paths.processor.MainzellisteKNTicketClient</implementation>
+                            </step>
+                            <step>
+                                <name>generateLocalIdExternalId</name>
+                                <parameters>
+                                    <parameter name="mainzellisteURL">&localPatientListUrl;</parameter>
+                                    <parameter name="mainzellisteApiKey">&localPatientlistApiKey;</parameter>
+                                    <parameter name="mainzellisteApiVersion">3.2</parameter>
+                                    <parameter name="idType">BK_&site;_L-ID</parameter>
+                                </parameters>
+                                <input>
+                                    <iosingle ref="tokenId"/>
+                                    <iosingle ref="extIDs" name="extIDs"/>
+                                    <iosingle ref="sureness" name="sureness"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="ids" name="ids"/>
+                                </output>
+                                <implementation>de.mainzelliste.paths.processor.MainzellisteClient</implementation>
+                            </step>
+                        </multipath>
+                    </case>
+                    <case value="false">
+                        <multipath>
+                            <name>getLocalIdWithIDAT</name>
+                            <input>
+                                <iorecord ref="IDAT" name="IDAT"/>
+                                <iosingle ref="idTypes" name="idTypes"/>
+                                <iosingle ref="auditTrail" name="auditTrail"/>
+                                <iosingle ref="sureness" name="sureness"/>
+                            </input>
+                            <output>
+                                <iosingle ref="ids" name="ids"/>
+                            </output>
+                            <step>
+                                <name>getTKT</name>
+                                <parameters>
+                                    <parameter name="mainzellisteURL">&localPatientListUrl;</parameter>
+                                    <parameter name="mainzellisteApiKey">&localPatientlistApiKey;</parameter>
+                                    <parameter name="fieldType">plain</parameter>
+                                </parameters>
+                                <input>
+                                    <iorecord ref="IDAT" name="IDAT"/>
+                                    <iosingle ref="idTypes" name="idTypes"/>
+                                    <iosingle ref="auditTrail" name="auditTrail"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="tokenId"/>
+                                </output>
+                                <!-- Wird hier eine neue Klasse benötigt oder kann diese hier entsprechend angepasst werden? -->
+                                <implementation>de.mainzelliste.paths.processor.MainzellisteKNTicketClient</implementation>
+                            </step>
+                            <step>
+                                <name>generateLocalId</name>
+                                <parameters>
+                                    <parameter name="mainzellisteURL">&localPatientListUrl;</parameter>
+                                    <parameter name="mainzellisteApiKey">&localPatientlistApiKey;</parameter>
+                                    <parameter name="mainzellisteApiVersion">3.2</parameter>
+                                    <parameter name="idType">BK_&site;_L-ID</parameter>
+                                </parameters>
+                                <input>
+                                    <iosingle ref="tokenId"/>
+                                    <iosingle ref="sureness" name="sureness"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="ids" name="ids"/>
+                                </output>
+                                <implementation>de.mainzelliste.paths.processor.MainzellisteClient</implementation>
+                            </step>
+                        </multipath>
+                    </case>
+                </switch>
+            </step>
+        </multipath>
+        <multipath>
+            <name>readPatients</name>
+            <input>
+                <iosingle ref="searchIds" name="searchIds"/>
+                <iosingle ref="resultIds" name="resultIds"/>
+                <iosingle ref="auditTrail" name="auditTrail"/>
+            </input>
+            <output>
+                <iosingle ref="patients" name="patients"/>
+            </output>
+            <step>
+                <name>DecideLocalOrCentralRequest</name>
+                <input>
+                    <iosingle ref="searchIds" name="searchIds"/>
+                    <iosingle ref="resultIds" name="resultIds"/>
+                    <iosingle ref="auditTrail" name="auditTrail"/>
+                </input>
+                <output>
+                    <iosingle ref="patients" name="patients"/>
+                </output>
+                <switch>
+                    <evaluator name="de.mainzelliste.paths.evaluator.RegexEvaluator">
+                        <parameters>
+                            <parameter name="regex">MDS_\*_G-ID</parameter>
+                            <parameter name="fieldName">resultIds</parameter>
+                        </parameters>
+                    </evaluator>
+                    <case value="true">
+                        <multipath>
+                            <name>readPatientsCentrally</name>
+                            <input>
+                                <iosingle ref="searchIds" name="searchIds"/>
+                                <iosingle ref="resultIds" name="resultIds"/>
+                                <iosingle ref="auditTrail" name="auditTrail"/>
+                            </input>
+                            <output>
+                                <iosingle ref="patients" name="patients"/>
+                            </output>
+                            <step>
+                                <name>createReadTokenCentral</name>
+                                <parameters>
+                                    <parameter name="mainzellisteURL">&centralPatientListUrl;</parameter>
+                                    <parameter name="mainzellisteApiKey">&centralPatientListApiKey;</parameter>
+                                    <parameter name="ignoredIdTypeCheck">true</parameter>
+                                </parameters>
+                                <input>
+                                    <iosingle ref="searchIds" name="searchIds"/>
+                                    <iosingle ref="resultIds" name="resultIds"/>
+                                    <iosingle ref="auditTrail" name="auditTrail"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="tokenId"/>
+                                </output>
+                                <implementation>de.mainzelliste.paths.processor.MainzellisteReadTokenClient</implementation>
+                            </step>
+                            <step>
+                                <name>resolveReadTokenCentral</name>
+                                <parameters>
+                                    <parameter name="mainzellisteURL">&centralPatientListUrl;</parameter>
+                                    <parameter name="mainzellisteApiKey">&centralPatientListApiKey;</parameter>
+                                </parameters>
+                                <input>
+                                    <iosingle ref="tokenId"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="patients"/>
+                                </output>
+                                <implementation>de.mainzelliste.paths.processor.MainzellisteReadClient</implementation>
+                            </step>
+                        </multipath>
+                    </case>
+                    <case value="false">
+                        <multipath>
+                            <name>readPatientsLocally</name>
+                            <input>
+                                <iosingle ref="searchIds" name="searchIds"/>
+                                <iosingle ref="resultIds" name="resultIds"/>
+                                <iosingle ref="auditTrail" name="auditTrail"/>
+                            </input>
+                            <output>
+                                <iosingle ref="patients" name="patients"/>
+                            </output>
+                            <step>
+                                <name>createReadToken</name>
+                                <parameters>
+                                    <parameter name="mainzellisteURL">&localPatientListUrl;</parameter>
+                                    <parameter name="mainzellisteApiKey">&localPatientlistApiKey;</parameter>
+                                    <parameter name="ignoredIdTypeCheck">true</parameter>
+                                </parameters>
+                                <input>
+                                    <iosingle ref="searchIds" name="searchIds"/>
+                                    <iosingle ref="resultIds" name="resultIds"/>
+                                    <iosingle ref="auditTrail" name="auditTrail"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="tokenId"/>
+                                </output>
+                                <implementation>de.mainzelliste.paths.processor.MainzellisteReadTokenClient</implementation>
+                            </step>
+                            <step>
+                                <name>resolveReadToken</name>
+                                <parameters>
+                                    <parameter name="mainzellisteURL">&localPatientListUrl;</parameter>
+                                    <parameter name="mainzellisteApiKey">&localPatientlistApiKey;</parameter>
+                                </parameters>
+                                <input>
+                                    <iosingle ref="tokenId"/>
+                                </input>
+                                <output>
+                                    <iosingle ref="patients"/>
+                                </output>
+                                <implementation>de.mainzelliste.paths.processor.MainzellisteReadClient</implementation>
+                            </step>
+                        </multipath>
+                    </case>
+                </switch>
+            </step>
+        </multipath>
+    </paths>
+
+    <iodefinitions>
+        <iorecord name="IDAT">
+            <iosingle name="Vorname"/>
+            <iosingle name="Nachname"/>
+            <iosingle name="Fruehere_Namen"/>
+            <iosingle name="Geburtstag"/>
+            <iosingle name="Geburtsmonat"/>
+            <iosingle name="Geburtsjahr"/>
+            <iosingle name="Staatsangehoerigkeit"/>
+            <iosingle name="Geschlecht"/>
+            <!-- external id which will be inputed into paths -->
+            <iosingle name="locallyUniqueId"/>
+        </iorecord>
+        <iosingle name="idTypes" type="ArrayList"/>
+        <iosingle name="ids"/>
+        <!-- iosingle for external Ids which will be transferred between two steps -->
+        <iosingle name="extIDs"/>
+        <iosingle name="consented"/>
+        <iosingle name="tokenId"/>
+        <iosingle name="auditTrail"/>
+        <iosingle name="searchIds"/>
+        <iosingle name="resultIds"/>
+        <iosingle name="patients"/>
+        <iosingle name="sureness"/>
+    </iodefinitions>
+    <authentication>
+      <client>
+        <permissions>getId</permissions>
+        <restrictions>
+          <restriction path="getId">
+            <inputRestriction input="idTypes">
+              <permissibleValues>
+                <value>DKTK000001950_&site;_L-ID</value>
+                <value>DKTK000001950_&site;_G-ID</value>
+              </permissibleValues>
+            </inputRestriction>
+          </restriction>
+        </restrictions>
+        <roles>DKTK000001950_USER</roles>
+      </client>
+      <client>
+        <permissions>getId</permissions>
+        <restrictions>
+          <restriction path="getId">
+            <inputRestriction input="idTypes">
+              <permissibleValues>
+                <value>DKTK000001951_&site;_L-ID</value>
+                <value>DKTK000001951_&site;_G-ID</value>
+              </permissibleValues>
+            </inputRestriction>
+          </restriction>
+        </restrictions>
+        <roles>DKTK000001951_USER</roles>
+      </client>
+      <client>
+        <permissions>getId</permissions>
+        <restrictions>
+          <restriction path="getId">
+            <inputRestriction input="idTypes">
+              <permissibleValues>
+                <value>DKTK000001985_&site;_L-ID</value>
+                <value>DKTK000001985_&site;_G-ID</value>
+              </permissibleValues>
+            </inputRestriction>
+          </restriction>
+        </restrictions>
+        <roles>DKTK000001985_USER</roles>
+      </client>
+      <client>
+        <permissions>getId</permissions>
+        <restrictions>
+          <restriction path="getId">
+            <inputRestriction input="idTypes">
+              <permissibleValues>
+                <value>DKTK000001986_&site;_L-ID</value>
+                <value>DKTK000001986_&site;_G-ID</value>
+              </permissibleValues>
+            </inputRestriction>
+          </restriction>
+        </restrictions>
+        <roles>DKTK000001986_USER</roles>
+      </client>
+      <client>
+        <permissions>getId</permissions>
+        <restrictions>
+          <restriction path="getId">
+            <inputRestriction input="idTypes">
+              <permissibleValues>
+                <value>DKTK999999999_&site;_L-ID</value>
+                <value>DKTK999999999_&site;_G-ID</value>
+              </permissibleValues>
+            </inputRestriction>
+          </restriction>
+        </restrictions>
+        <roles>DKTK999999999_USER</roles>
+      </client>
+      <client>
+        <permissions>getId</permissions>
+        <restrictions>
+          <restriction path="getId">
+            <inputRestriction input="idTypes">
+              <permissibleValues>
+                <value>DKTK000002089_&site;_L-ID</value>
+                <value>DKTK000002089_&site;_G-ID</value>
+              </permissibleValues>
+            </inputRestriction>
+          </restriction>
+        </restrictions>
+        <roles>DKTK000002089_USER</roles>
+      </client>
+      <client>
+        <permissions>getId</permissions>
+        <apiKey>&magicplApiKey;</apiKey>
+      </client>
+      <client>
+        <permissions>readPatients</permissions>
+        <apiKey>&magicplApiKeyConnector;</apiKey>
+      </client>
+    </authentication>
+</pathconfig>

@@ -1,0 +1,144 @@
+version: "3.7"
+volumes:
+  connector_db_data: 
+  connector_logs: 
+  patientlist_db_data: 
+  patientlist_logs: 
+  idmanager_logs: 
+secrets:
+  mainzelliste.docker.conf:
+    file: ../internal-configuration/mainzelliste.conf
+  magicpl.docker.xml:
+    file: ../internal-configuration/magicpl.xml
+  dktk_bridgehead_info.docker.xml:
+    file: ../internal-configuration/bridgehead-common.xml
+  centralSearchPublicKey:
+    file: ../internal-configuration/centralSearchPublicKey.der
+  proxy.docker.xml:
+    file: ../internal-configuration/proxy.xml
+
+services:
+  connector:
+    container_name: dktk_connector
+    image: samply/share-client:dktk-develop
+    environment:
+      SITE: ${SITE}
+      SITEID: ${SITEID}
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/${COMPOSE_PROJECT_NAME}-connector
+      CENTRAL_SEARCH: ${CCP_CENTRALSEARCH_URL}
+      DECENTRAL_SEARCH: ${CCP_DECENTRALSEARCH_URL}
+      MDR_URL: ${CCP_MDR_URL}
+      MONITOR_URL: ${CCP_MONITOR_URL}
+      SHARE_URL: "${PROTOCOL}://${HOST}:${PORT}"
+      ID_MANAGER_URL: ${ID_MANAGER_URL}
+      PROJECTPSEUDONYMISATION_URL: ${PROJECTPSEUDONYMISATION_URL}
+      PATIENTLIST_URL: ${PATIENTLIST_URL}
+      STORE_URL: ${LDM_URL}
+      POSTGRES_HOST: ${CONNECTOR_DB_HOST}
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
+      POSTGRES_USER: ${CONNECTOR_POSTGRES_USER}
+      POSTGRES_PASS: ${DKTK_CONNECTOR_POSTGRES_PASSWORD}
+      DEPLOYMENT_CONTEXT: ${COMPOSE_PROJECT_NAME}-connector
+      HTTP_PROXY_URL: ${HTTP_PROXY_URL}
+      HTTP_PROXY_USERNAME: ${HTTP_PROXY_USERNAME}
+      HTTP_PROXY_PASSWORD: ${HTTP_PROXY_PASSWORD}
+      HTTPS_PROXY_URL: ${HTTPS_PROXY_URL}
+      HTTPS_PROXY_USERNAME: ${HTTPS_PROXY_USERNAME}
+      HTTPS_PROXY_PASSWORD: ${HTTPS_PROXY_PASSWORD}
+      TZ: Europe/Berlin
+    volumes:
+      - "connector_logs:/usr/local/tomcat/logs"
+    depends_on:
+      - connector_db
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "${HOST}:${HOSTIP}"
+
+  connector_db:
+    image: postgres:10.17
+    environment:
+      POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
+      POSTGRES_USER: ${CONNECTOR_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DKTK_CONNECTOR_POSTGRES_PASSWORD}
+      TZ: Europe/Berlin
+    volumes:
+      - "connector_db_data:/var/lib/postgresql/data"
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "${HOST}:${HOSTIP}"
+
+  ## ID-Management
+  idmanager:
+    container_name: idmanager
+    image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
+    environment:
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/ID-Manager
+      TOMCAT_REVERSEPROXY_SCHEME: ${PROTOCOL}
+      TOMCAT_REVERSEPROXY_PORT: ${PORT}
+      MAGICPL_MAINZELLISTE_URL: http://patientlist:8080/Patientlist
+      MAGICPL_MAINZELLISTE_API_KEY: ${LOCAL_IDMANAGER_MAINZELLISTE_APIKEY}
+      MAGICPL_API_KEY: ${LOCAL_IDMANAGER_LDM_APIKEY}
+      MAGICPL_API_KEY_CONNECTOR: ${LOCAL_IDMANAGER_CONNECTOR_APIKEY}
+      MAGICPL_PASSPHRASE: notUsedInThisConfigurationButMandatory
+      ### Configuration for communication with central identity management
+      MAGICPL_MAINZELLISTE_CENTRAL_URL: ${CCP_PATIENTLIST_URL}
+      MAGICPL_MAINZELLISTE_CENTRAL_API_KEY: ${CCP_PATIENTLISTE_APIKEY}
+      MAGICPL_CENTRAL_URL: ${CCP_CONTROLLNUMBERGENERATOR_URL}
+      MAGICPL_CENTRAL_API_KEY: ${CCP_CONTROLLNUMBERGENERATOR_APIKEY}
+      MAGICPL_OIDC_PROVIDER: ${CCP_OIDC_PROVIDER_URL}/oauth2
+      MAGICPL_OIDC_CLIENT_ID: ${CCP_OIDC_CLIENT_ID}
+      MAGICPL_OIDC_CLIENT_SECRET: ${CCP_OIDC_CLIENT_SECRET}
+      MAGICPL_SITE: ${SITEID}
+      MAGICPL_LOG_LEVEL: info
+      TZ: Europe/Berlin
+    volumes:
+      - "idmanager_logs:/usr/local/tomcat/logs"
+    secrets:
+      - magicpl.docker.xml
+      - dktk_bridgehead_info.docker.xml
+      - proxy.docker.xml
+    depends_on:
+      - patientlist
+
+  patientlist:
+    container_name: patientlist
+    image: medicalinformatics/mainzelliste:develop
+    environment:
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/Patientlist
+      TOMCAT_REVERSEPROXY_SCHEME: ${PROTOCOL}
+      TOMCAT_REVERSEPROXY_PORT: ${PORT}
+      ML_DB_DRIVER: org.postgresql.Driver
+      ML_DB_TYPE: postgresql
+      ML_DB_HOST: patientlist_db
+      ML_DB_PORT: 5432
+      ML_DB_NAME: ${ML_DB_NAME}
+      ML_DB_USER: ${ML_DB_USER}
+      ML_DB_PASS: ${DKTK_PATIENTLIST_DBPASS}
+      ML_API_KEY: ${DKTK_IDMANAGER_MAINZELLISTE_APIKEY}
+      ML_LOG_LEVEL: warning
+      ML_SITE: ${SITEID}
+      TZ: Europe/Berlin
+    env_file:
+      - ./site-config/patientlist.env
+    volumes:
+      - "patientlist_logs:/usr/local/tomcat/logs"
+    secrets:
+      - mainzelliste.docker.conf
+      - centralSearchPublicKey
+    depends_on:
+      - patientlist_db
+
+  patientlist_db:
+    container_name: patientlist_db
+    image: postgres:13.1-alpine
+    environment:
+      POSTGRES_DB: ${ML_DB_NAME}
+      POSTGRES_USER: ${ML_DB_USER}
+      POSTGRES_PASSWORD: ${DKTK_PATIENTLIST_DBPASS}
+      TZ: Europe/Berlin
+    volumes:
+      - "patientlist_db_data:/var/lib/postgresql/data"
+

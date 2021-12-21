@@ -1,0 +1,61 @@
+version: '3.4'
+services:
+
+  store:
+    container_name: "store"
+    image: "samply/blaze:0.15"
+    environment:
+      BASE_URL: "http://store:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx4g"
+    networks:
+      - "samply"
+    volumes:
+      - "store-db-data:/app/data"
+    ports:
+      - "8080:8080"
+    restart: "always"
+
+  connector:
+    container_name: "connector"
+    image: "samply/share-client:gbn-7"
+    environment:
+      POSTGRES_HOST: "connector-db"
+      POSTGRES_DB: "samply.connector"
+      POSTGRES_USER: "samply"
+      POSTGRES_PASS: "samply"
+      STORE_URL: "http://store:8080/fhir"
+      QUERY_LANGUAGE: "CQL"
+      MDR_URL: "https://mdr.germanbiobanknode.de/v3/api/mdr"
+    networks:
+      - "samply"
+      - "connector-db"
+    ports:
+      - "8082:8080"
+    depends_on:
+      - "connector-db"
+    restart: "always"
+
+  connector-db:
+    container_name: "connector-db"
+    image: "postgres:9.6"
+    environment:
+      POSTGRES_USER: "samply"
+      POSTGRES_PASSWORD: "samply"
+      POSTGRES_DB: "samply.connector"
+    networks:
+      - "connector-db"
+    volumes:
+      - "connector-db-data:/var/lib/postgresql/data"
+    restart: "always"
+
+networks:
+  samply:
+    driver: "bridge"
+  connector-db:
+    driver: "bridge"
+
+volumes:
+  store-db-data:
+    name: "store-db-data"
+  connector-db-data:
+    name: "connector-db-data"

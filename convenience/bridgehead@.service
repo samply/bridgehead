@@ -1,23 +1,16 @@
 [Unit]
 Description=Bridgehead (%i) Service
-Requires=traefik.service
-After=traefik.service
 
 [Service]
 Restart=always
 RestartSec=30
 
-WorkingDirectory=/srv/docker/bridgehead
+WorkingDirectory=/srv/docker/bridgehead/%i
 
-ExecStartPre=/usr/local/bin/docker-compose --env-file site-config/%i.env down
-ExecStartPre=/usr/local/bin/docker-compose --env-file site-config/%i.env rm
-ExecStartPre=CONNECTOR_POSTGRES_PASSWORD=%i_CONNECTOR_POSTGRES_PASSWORD
-ExecStartPre=export CONNECTOR_POSTGRES_PASSWORD
-ExecStart=/usr/local/bin/docker-compose --env-file site-config/%i.env up
-ExecStart=CONNECTOR_POSTGRES_PASSWORD=
-ExecStart=export CONNECTOR_POSTGRES_PASSWORD
+ExecStartPre=/usr/local/bin/docker-compose --env-file ../site-config/%i.env down
+ExecStart=/usr/local/bin/docker-compose --env-file ../site-config/%i.env up
 
-ExecStop=/usr/local/bin/docker-compose --env-file site-config/%i.env down
+ExecStop=/usr/local/bin/docker-compose --env-file ../site-config/%i.env down
 
 [Install]
 WantedBy=multi-user.target

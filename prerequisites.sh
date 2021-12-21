@@ -14,7 +14,8 @@ for prerequisite in $prerequisites; do
   fi
   # TODO: Check for specific version
 done
-echo "All prerequisites are installed. Now we can download the bridgehead from https://code.mitro.dkfz.de/scm/docker/c4.bk.docker.git."
+
+echo "Checking site.conf"
 
 #check if site.conf is created
 if [ ! -f site.conf ]; then
@@ -26,10 +27,10 @@ fi
 source site.conf
 
 if [ -z "$site_name" ]; then
-  echo "Site name is empty,please enter site name:"
-  read -r site_name
-  site_name_lowercase=$(echo "$site_name" | tr '[:upper:]' '[:lower:]')
+  echo "Please set site_name"
 fi
+
+echo "Checking site-config module"
 
 ## Download submodule
 if [ ! -d "site-config" ]; then
@@ -45,5 +46,9 @@ if [ -z "$project"  ]; then
   exit
 fi
 
-# Check for each project
+#check if project env is present
+if [ -d "site-config/${project}.env" ]; then
+   echo "Please copy the tempalte from ${project} and put it in the site-config folder"
+fi
+
 echo "All prerequisites meet! All systems are ready to go!"

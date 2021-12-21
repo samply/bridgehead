@@ -22,7 +22,7 @@ services:
       POSTGRES_HOST: "connector-db"
       POSTGRES_DB: "samply.connector"
       POSTGRES_USER: "samply"
-      POSTGRES_PASS: "samply"
+      POSTGRES_PASS: ${GBN_CONNECTOR_POSTGRES_PASS}
       STORE_URL: "http://store:8080/fhir"
       QUERY_LANGUAGE: "CQL"
       MDR_URL: "https://mdr.germanbiobanknode.de/v3/api/mdr"
@@ -37,7 +37,7 @@ services:
 
   connector-db:
     container_name: "connector-db"
-    image: "postgres:9.6"
+    image: "postgres:10.17"
     environment:
       POSTGRES_USER: "samply"
       POSTGRES_PASSWORD: "samply"

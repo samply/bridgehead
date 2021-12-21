@@ -33,7 +33,6 @@ echo "Starting Project ${project} "
     echo "Enabling nightly updates for bridgehead@${project}.service ..."
     sudo systemctl enable --now bridgehead-update@"${project}".timer
   fi
-done
 
 # Switch back to execution directory;
 cd -

@@ -1,0 +1,10 @@
+##Ignore site configuration
+.gitsubmodules
+site-config
+
+## Ignore site configuration
+config/**/*
+!config/**/*.default
+docker-compose.override.yml
+site-specific.conf
+

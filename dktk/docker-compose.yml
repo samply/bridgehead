@@ -19,7 +19,7 @@ secrets:
 
 services:
   connector:
-    container_name: dktk_connector
+    container_name: bridgehead_dktk_connector
     image: samply/share-client:dktk-develop
     environment:
       SITE: ${SITE}
@@ -57,6 +57,7 @@ services:
       - "${HOST}:${HOSTIP}"
 
   connector_db:
+    container_name: bridgead_connector_db
     image: postgres:10.17
     environment:
       POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
@@ -72,7 +73,7 @@ services:
 
   ## ID-Management
   idmanager:
-    container_name: idmanager
+    container_name: bridgehead_idmanager
     image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
     environment:
       TOMCAT_REVERSEPROXY_FQDN: ${HOST}/ID-Manager
@@ -104,7 +105,7 @@ services:
       - patientlist
 
   patientlist:
-    container_name: patientlist
+    container_name: bridgehead_patientlist
     image: medicalinformatics/mainzelliste:develop
     environment:
       TOMCAT_REVERSEPROXY_FQDN: ${HOST}/Patientlist
@@ -132,7 +133,7 @@ services:
       - patientlist_db
 
   patientlist_db:
-    container_name: patientlist_db
+    container_name: bridgehead_patientlist_db
     image: postgres:13.1-alpine
     environment:
       POSTGRES_DB: ${ML_DB_NAME}

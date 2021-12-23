@@ -21,8 +21,8 @@ secrets:
 
 services:
  connector:
-    container_name: c4_connector
-    image: samply/share-client:${PROJECT}-develop
+    container_name: bridgehead_c4_connector
+    image: "samply/share-client:c4-7"
     environment:
       SITE: ${SITE}
       SITEID: ${SITEID}
@@ -58,6 +58,7 @@ services:
       - "${HOST}:${HOSTIP}"
       
   connector_db:
+    container_name: bridgehead_connector_db
     image: postgres:10.17
     environment:
       POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
@@ -73,7 +74,7 @@ services:
 
   ## ID-Management
   idmanager:
-    container_name: idmanager
+    container_name: bridehead_idmanager
     image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
     environment:
       TOMCAT_REVERSEPROXY_FQDN: ${HOST}/ID-Manager
@@ -104,47 +105,8 @@ services:
     depends_on:
       - patientlist
 
-  patientlist:
-    container_name: patientlist
-    image: medicalinformatics/mainzelliste:develop
-    environment:
-      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/Patientlist
-      TOMCAT_REVERSEPROXY_SCHEME: ${PROTOCOL}
-      TOMCAT_REVERSEPROXY_PORT: ${PORT}
-      ML_DB_DRIVER: org.postgresql.Driver
-      ML_DB_TYPE: postgresql
-      ML_DB_HOST: patientlist_db
-      ML_DB_PORT: 5432
-      ML_DB_NAME: ${ML_DB_NAME}
-      ML_DB_USER: ${ML_DB_USER}
-      ML_DB_PASS: ${LOCAL_PATIENTLIST_DBPASS}
-      ML_API_KEY: ${LOCAL_IDMANAGER_MAINZELLISTE_APIKEY}
-      ML_LOG_LEVEL: warning
-      ML_SITE: ${SITEID}
-      TZ: Europe/Berlin
-    env_file:
-      - ./site-config/patientlist.env
-    volumes:
-      - "patientlist_logs:/usr/local/tomcat/logs"
-    secrets:
-      - mainzelliste.docker.conf
-      - centralSearchPublicKey
-    depends_on:
-      - patientlist_db
-
-  patientlist_db:
-    container_name: patientlist_db
-    image: postgres:13.1-alpine
-    environment:
-      POSTGRES_DB: ${ML_DB_NAME}
-      POSTGRES_USER: ${ML_DB_USER}
-      POSTGRES_PASSWORD: ${C4_LOCAL_PATIENTLIST_DBPASS}
-      TZ: Europe/Berlin
-    volumes:
-      - "patientlist_db_data:/var/lib/postgresql/data"
-    networks:
-      - idmanagement
 store:
+    container_name: bridgehead_store
     image: docker.verbis.dkfz.de/ccp/samply.store:release-5.1.2
     environment:
       MDR_URL: ${CCP_MDR_URL}
@@ -163,6 +125,7 @@ store:
     restart: always
 
   store_db:
+    container_name: bridgehead_store_db
     image: postgres:10.17
     command: postgres -c datestyle='iso, dmy'
     environment:

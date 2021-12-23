@@ -14,14 +14,14 @@ echo "Installing bridgehead\@.update.service in systemd ..."
 sudo cp /srv/docker/bridgehead/convenience/bridgehead-update\@.service ./
 sudo cp /srv/docker/bridgehead/convenience/bridgehead-update\@.timer ./
 
-echo "Loading the bridgehead and traefik service definitions in systemd"
+echo "Loading the bridgehead definitions in systemd"
 sudo systemctl daemon-reload
 
 
 echo "Starting Project ${project} "
   if [ ! -f "/etc/systemd/system/bridgehead@${project}.service.d/bridgehead.conf" ]; then
     echo "Can't find local configuration file for bridgehead@${project} service. Please ensure that the file /etc/systemd/system/bridgehead@${project}.service.d/bridgehead.conf exists"
-    continue
+    exit
   fi
 
   sudo systemctl is-active --quiet bridgehead@"${project}"

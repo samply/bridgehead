@@ -1,12 +1,12 @@
 version: "3.7"
 volumes:
-  connector_db_data: 
-  connector_logs: 
-  patientlist_db_data: 
-  patientlist_logs: 
-  idmanager_logs: 
-  store_db_data: 
-  store_logs: 
+  connector_db_data: null
+  connector_logs: null
+  patientlist_db_data: null
+  patientlist_logs: null
+  idmanager_logs: null
+  store_db_data: null
+  store_logs: null
 secrets:
   mainzelliste.docker.conf:
     file: ./internal-configuration/mainzelliste.conf
@@ -20,7 +20,7 @@ secrets:
     file: ./internal-configuration/proxy.xml
 
 services:
- connector:
+  connector:
     container_name: bridgehead_c4_connector
     image: "samply/share-client:c4-7"
     environment:
@@ -56,7 +56,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "${HOST}:${HOSTIP}"
-      
+
   connector_db:
     container_name: bridgehead_connector_db
     image: postgres:10.17
@@ -105,7 +105,7 @@ services:
     depends_on:
       - patientlist
 
-store:
+  store:
     container_name: bridgehead_store
     image: docker.verbis.dkfz.de/ccp/samply.store:release-5.1.2
     environment:

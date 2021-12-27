@@ -74,27 +74,15 @@ services:
 
   ## ID-Management
   idmanager:
-    container_name: bridehead_idmanager
+    container_name: bridgehead_idmanager
     image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
     environment:
-      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/ID-Manager
-      TOMCAT_REVERSEPROXY_SCHEME: ${PROTOCOL}
-      TOMCAT_REVERSEPROXY_PORT: ${PORT}
-      MAGICPL_MAINZELLISTE_URL: http://patientlist:8080/Patientlist
-      MAGICPL_MAINZELLISTE_API_KEY: ${LOCAL_IDMANAGER_MAINZELLISTE_APIKEY}
-      MAGICPL_API_KEY: ${LOCAL_IDMANAGER_LDM_APIKEY}
-      MAGICPL_API_KEY_CONNECTOR: ${LOCAL_IDMANAGER_CONNECTOR_APIKEY}
-      MAGICPL_PASSPHRASE: notUsedInThisConfigurationButMandatory
-      ### Configuration for communication with central identity management
       MAGICPL_MAINZELLISTE_CENTRAL_URL: ${CCP_PATIENTLIST_URL}
-      MAGICPL_MAINZELLISTE_CENTRAL_API_KEY: ${CCP_PATIENTLISTE_APIKEY}
       MAGICPL_CENTRAL_URL: ${CCP_CONTROLLNUMBERGENERATOR_URL}
-      MAGICPL_CENTRAL_API_KEY: ${CCP_CONTROLLNUMBERGENERATOR_APIKEY}
-      MAGICPL_OIDC_PROVIDER: ${CCP_OIDC_PROVIDER_URL}/oauth2
-      MAGICPL_OIDC_CLIENT_ID: ${CCP_OIDC_CLIENT_ID}
-      MAGICPL_OIDC_CLIENT_SECRET: ${CCP_OIDC_CLIENT_SECRET}
       MAGICPL_SITE: ${SITEID}
       MAGICPL_LOG_LEVEL: info
+      GLOBAL_ID: DKTK
+
       TZ: Europe/Berlin
     volumes:
       - "idmanager_logs:/usr/local/tomcat/logs"
@@ -102,8 +90,6 @@ services:
       - magicpl.docker.xml
       - dktk_bridgehead_info.docker.xml
       - proxy.docker.xml
-    depends_on:
-      - patientlist
 
   store:
     container_name: bridgehead_store

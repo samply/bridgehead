@@ -9,15 +9,15 @@ volumes:
   store_logs: null
 secrets:
   mainzelliste.docker.conf:
-    file: ./internal-configuration/mainzelliste.conf
+    file: ../internal-configuration/mainzelliste.conf
   magicpl.docker.xml:
-    file: ./internal-configuration/magicpl.xml
+    file: ../internal-configuration/magicpl.xml
   dktk_bridgehead_info.docker.xml:
-    file: ./internal-configuration/bridgehead-common.xml
+    file: ../internal-configuration/bridgehead-common.xml
   centralSearchPublicKey:
-    file: ./internal-configuration/centralSearchPublicKey.der
+    file: ../internal-configuration/centralSearchPublicKey.der
   proxy.docker.xml:
-    file: ./internal-configuration/proxy.xml
+    file: ../internal-configuration/proxy.xml
 
 services:
   connector:
@@ -28,7 +28,7 @@ services:
       SITEID: ${SITEID}
       CENTRAL_SEARCH: ${CCP_CENTRALSEARCH_URL}
       DECENTRAL_SEARCH: ${CCP_DECENTRALSEARCH_URL}
-      MDR_URL: ${CCP_MDR_URL}
+      MDR_URL: ${MDR_URL}
       MONITOR_URL: ${CCP_MONITOR_URL}
       SHARE_URL: "${PROTOCOL}://${HOST}:${PORT}"
       ID_MANAGER_URL: ${ID_MANAGER_URL}
@@ -36,7 +36,7 @@ services:
       PATIENTLIST_URL: ${PATIENTLIST_URL}
       STORE_URL: ${LDM_URL}
       POSTGRES_HOST: ${CONNECTOR_DB_HOST}
-      POSTGRES_PORT: 5432
+      POSTGRES_PORT: ${CONNECTOR_DB_PORT}
       POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
       POSTGRES_USER: ${CONNECTOR_POSTGRES_USER}
       POSTGRES_PASS: ${C4_CONNECTOR_POSTGRES_PASSWORD}
@@ -52,11 +52,11 @@ services:
       - "connector_logs:/usr/local/tomcat/logs"
     depends_on:
       - connector_db
+    ports:
+      - "8082:8080"
+      - "65496:65395"
     restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "${HOST}:${HOSTIP}"
-
+ 
   connector_db:
     container_name: bridgehead_connector_db
     image: postgres:10.17
@@ -68,24 +68,22 @@ services:
     volumes:
       - "connector_db_data:/var/lib/postgresql/data"
     restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "${HOST}:${HOSTIP}"
 
   ## ID-Management
   idmanager:
     container_name: bridgehead_idmanager
-    image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
+    image: docker.verbis.dkfz.de/ccp/idmanager:deploy-c4
     environment:
       MAGICPL_MAINZELLISTE_CENTRAL_URL: ${CCP_PATIENTLIST_URL}
       MAGICPL_CENTRAL_URL: ${CCP_CONTROLLNUMBERGENERATOR_URL}
       MAGICPL_SITE: ${SITEID}
       MAGICPL_LOG_LEVEL: info
       GLOBAL_ID: DKTK
-
       TZ: Europe/Berlin
     volumes:
       - "idmanager_logs:/usr/local/tomcat/logs"
+    ports:
+      - "8084:8080"
     secrets:
       - magicpl.docker.xml
       - dktk_bridgehead_info.docker.xml
@@ -98,7 +96,7 @@ services:
       MDR_URL: ${CCP_MDR_URL}
       MDR_NAMESPACE: adt,dktk,marker
       MDR_VALIDATION: "false"
-      POSTGRES_HOST: store_db
+      POSTGRES_HOST: bridgehead_store_db
       POSTGRES_PORT: 5432
       POSTGRES_DB: samplystore
       POSTGRES_USER: samplystore
@@ -108,6 +106,9 @@ services:
       - "store_logs:/usr/local/tomcat/logs"
     depends_on:
       - store_db
+    ports:
+      - "8083:8080"
+      - "65495:65395"
     restart: always
 
   store_db:

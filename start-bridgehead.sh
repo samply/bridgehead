@@ -8,7 +8,7 @@ echo "Starting bridgehead"
 
 cd ${project}
 
-docker-compose --env-file ../site-config/${project}.env up
+docker-compose --env-file ../site-config/${project}.env up -d
 
 cd ..
 

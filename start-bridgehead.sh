@@ -1,7 +1,10 @@
 #!/bin/bash
 ### Note: Currently not complete, needs some features before useable for production
 
-./prerequisites.sh
+if ! ./prerequisites.sh; then
+    echo "Prerequisites failed, exiting"
+    exiting
+fi
 source site.conf
 
 echo "Starting bridgehead"

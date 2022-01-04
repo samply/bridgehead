@@ -5,7 +5,7 @@ services:
     container_name: "bridgehead_blaze_store"
     image: "samply/blaze:0.15"
     environment:
-      BASE_URL: "http://store:8080"
+      BASE_URL: "http://bridgehead_blzae_store:8080"
       JAVA_TOOL_OPTIONS: "-Xmx4g"
     networks:
       - "samply"
@@ -16,14 +16,14 @@ services:
     restart: "always"
 
   connector:
-    container_name: "bridgehead_connector"
+    container_name: "bridgehead_gbn_connector"
     image: "samply/share-client:gbn-7"
     environment:
-      POSTGRES_HOST: "connector-db"
+      POSTGRES_HOST: "bridgehead_connector_db"
       POSTGRES_DB: "samply.connector"
       POSTGRES_USER: "samply"
-      POSTGRES_PASS: ${GBN_CONNECTOR_POSTGRES_PASS}
-      STORE_URL: "http://store:8080/fhir"
+      POSTGRES_PASS: ${CONNECTOR_POSTGRES_PASS}
+      STORE_URL: "http://bridgehead_store:8080/fhir"
       QUERY_LANGUAGE: "CQL"
       MDR_URL: "https://mdr.germanbiobanknode.de/v3/api/mdr"
     networks:
@@ -36,11 +36,11 @@ services:
     restart: "always"
 
   connector-db:
-    container_name: "bridgehead_connector-db"
+    container_name: "bridgehead_connector_db"
     image: "postgres:10.17"
     environment:
       POSTGRES_USER: "samply"
-      POSTGRES_PASSWORD: "samply"
+      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
       POSTGRES_DB: "samply.connector"
     networks:
       - "connector-db"

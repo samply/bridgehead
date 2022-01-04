@@ -1,18 +1,29 @@
 #!/bin/bash
 ### Note: Currently not complete, needs some features before useable for production
 
-./prerequisites.sh
+if ! ./prerequisites.sh; then
+    echo "Prerequisites failed, exiting"
+    exiting
+fi
 source site.conf
 
 echo "Installing bridgehead"
 
+if ! grep -E 'BRIDGEHEAD_PATH=' /etc/environment; then  
+  echo "BRIDGEHEAD_PATH=${PWD}" >> /etc/environment
+  echo "Please reboot the system to properly set the enviroment"
+  exit
+fi
+
+sed -i -e "s|\BRIDGEHEAD_PATH=.*|\BRIDGEHEAD_PATH=${PWD}|" environment
+
 cd /etc/systemd/system/
 
 echo "Installing bridgehead\@.service in systemd ..."
-sudo cp /srv/docker/bridgehead/convenience/bridgehead\@.service ./
+sudo cp ${BRIDGEHEAD_PATH}/convenience/bridgehead\@.service ./
 echo "Installing bridgehead\@.update.service in systemd ..."
-sudo cp /srv/docker/bridgehead/convenience/bridgehead-update\@.service ./
-sudo cp /srv/docker/bridgehead/convenience/bridgehead-update\@.timer ./
+sudo cp ${BRIDGEHEAD_PATH}/convenience/bridgehead-update\@.service ./
+sudo cp ${BRIDGEHEAD_PATH}/convenience/bridgehead-update\@.timer ./
 
 echo "Loading the bridgehead definitions in systemd"
 sudo systemctl daemon-reload

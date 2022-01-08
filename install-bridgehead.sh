@@ -9,13 +9,11 @@ source site.conf
 
 echo "Installing bridgehead"
 
-if ! grep -E 'BRIDGEHEAD_PATH=' /etc/environment; then  
+if [ -z "$BRIDGEHEAD_PATH" ] ; then  
   echo "BRIDGEHEAD_PATH=${PWD}" >> /etc/environment
   echo "Please reboot the system to properly set the enviroment"
   exit
 fi
-
-sed -i -e "s|\BRIDGEHEAD_PATH=.*|\BRIDGEHEAD_PATH=${PWD}|" environment
 
 cd /etc/systemd/system/
 

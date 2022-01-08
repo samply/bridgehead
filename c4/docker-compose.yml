@@ -1,12 +1,12 @@
 version: "3.7"
 volumes:
-  connector_db_data: null
-  connector_logs: null
-  patientlist_db_data: null
-  patientlist_logs: null
-  idmanager_logs: null
-  store_db_data: null
-  store_logs: null
+  connector_db_data:
+  connector_logs:
+  patientlist_db_data:
+  patientlist_logs:
+  idmanager_logs:
+  store_db_data:
+  store_logs:
 secrets:
   mainzelliste.docker.conf:
     file: ../internal-configuration/mainzelliste.conf
@@ -36,16 +36,18 @@ services:
       PATIENTLIST_URL: ${PATIENTLIST_URL}
       STORE_URL: ${LDM_URL}
       POSTGRES_HOST: ${CONNECTOR_DB_HOST}
-      POSTGRES_PORT: ${CONNECTOR_DB_PORT}
+      POSTGRES_PORT: ${CONNECTOR_POSTGRES_PORT}
       POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
       POSTGRES_USER: ${CONNECTOR_POSTGRES_USER}
       POSTGRES_PASS: ${CONNECTOR_POSTGRES_PASS}
-      HTTP_PROXY_URL: ${HTTP_PROXY_URL}
-      HTTP_PROXY_USERNAME: ${HTTP_PROXY_USERNAME}
+      HTTP_PROXY: ${HTTP_PROXY_URL}
+      HTTPS_PROXY: ${HTTP_PROXY_URL}
+      HTTP_PROXY_USERNAME: ${HTTP_PROXY_USER}
       HTTP_PROXY_PASSWORD: ${HTTP_PROXY_PASSWORD}
       HTTPS_PROXY_URL: ${HTTPS_PROXY_URL}
-      HTTPS_PROXY_USERNAME: ${HTTPS_PROXY_USERNAME}
+      HTTPS_PROXY_USERNAME: ${HTTPS_PROXY_USER}
       HTTPS_PROXY_PASSWORD: ${HTTPS_PROXY_PASSWORD}
+      NO_PROXY: ${NO_PROXY}
       TZ: Europe/Berlin
     volumes:
       - "connector_logs:/usr/local/tomcat/logs"
@@ -54,12 +56,15 @@ services:
     ports:
       - "8080:8080"
     restart: always
- 
+    networks:
+      - "samply"
+      - "connector-db"
+
   connector_db:
     container_name: bridgehead_connector_db
     image: postgres:10.17
     environment:
-      POSTGRES_HOST: ${CONNECTOR_POSTGRES_HOST}
+      POSTGRES_HOST: ${CONNECTOR_DB_HOST}
       POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
       POSTGRES_USER: ${CONNECTOR_POSTGRES_USER}
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
@@ -67,10 +72,14 @@ services:
     volumes:
       - "connector_db_data:/var/lib/postgresql/data"
     restart: always
+    networks:
+      - "connector-db"
+    ports:
+      - "8088:5432"
 
 
   idmanager:
-    container_name: bridgehead_idmanager
+    container_name: bridgehead-idmanager
     image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:0.2.0-RC23
     environment:
       MAGICPL_MAINZELLISTE_URL: ${MAGICPL_MAINZELLISTE_URL}
@@ -98,9 +107,11 @@ services:
       - patientlist
     ports:
       - "8085:8080"
-  
+    networks:
+      - "samply"
+
   patientlist:
-    container_name: bridgehead_patientlist
+    container_name: bridgehead-patientlist
     image: medicalinformatics/mainzelliste:develop
     environment:
       ML_DB_DRIVER: org.postgresql.Driver
@@ -115,7 +126,7 @@ services:
       ML_SITE: adt
       TZ: Europe/Berlin
     env_file:
-      - ./site-config/patientlist.env
+      - ../site-config/patientlist.env
     volumes:
       - "patientlist_logs:/usr/local/tomcat/logs"
     secrets:
@@ -125,21 +136,24 @@ services:
       - patientlist_db
     ports:
       - "8086:8080"
+    networks:
+      - "samply"
 
   patientlist_db:
     container_name: bridgehead_patientlist_db
     image: postgres:13.1-alpine
     environment:
-      POSTGRES_HOST: ${ML_DB_HOST}
       POSTGRES_DB: ${ML_DB_NAME}
       POSTGRES_USER: ${ML_DB_USER}
       POSTGRES_PASSWORD: ${ML_DB_PASS}
       TZ: Europe/Berlin
     volumes:
       - "patientlist_db_data:/var/lib/postgresql/data"
+    networks:
+      - "samply"
 
   store:
-    container_name: bridgehead_store
+    container_name: bridgeheadstore
     image: docker.verbis.dkfz.de/ccp/samply.store:release-5.1.2
     environment:
       MDR_URL: ${CCP_MDR_URL}
@@ -158,13 +172,14 @@ services:
     ports:
       - "8083:8080"
     restart: always
+    networks:
+      - "samply"
 
   store_db:
     container_name: bridgehead_store_db
-    image: postgres:10.17
+    image: postgres:9.5-alpine
     command: postgres -c datestyle='iso, dmy'
     environment:
-      POSTGRES_HOST: ${STORE_POSTGRES_HOST}
       POSTGRES_PORT: ${STORE_POSTGRES_PORT}
       POSTGRES_DB: ${STORE_POSTGRES_DB}
       POSTGRES_USER: ${STORE_POSTGRES_USER}
@@ -173,3 +188,13 @@ services:
     volumes:
       - "store_db_data:/var/lib/postgresql/data"
     restart: always
+    networks:
+      - "samply"
+    ports:
+      - "8084:5432"
+
+networks:
+  samply:
+    driver: "bridge"
+  connector-db:
+    driver: "bridge"

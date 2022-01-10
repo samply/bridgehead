@@ -16,9 +16,9 @@ _systemd_path=/etc/systemd/system/
 
 echo -e "\nInstalling systemd units ..."
 cp -v \
-    convenience/bridgehead\@.service \
-    convenience/bridgehead-update\@.service \
-    convenience/bridgehead-update\@.timer \
+    lib/systemd/bridgehead\@.service \
+    lib/systemd/bridgehead-update\@.service \
+    lib/systemd/bridgehead-update\@.timer \
     $_systemd_path
 
 systemctl daemon-reload

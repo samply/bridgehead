@@ -1,6 +1,10 @@
 #!/bin/bash
 ### Note: Currently not complete, needs some features before useable for production
 
+source lib/functions.sh
+
+exitIfNotRoot
+
 if ! ./lib/prerequisites.sh; then
     echo "Prerequisites failed, exiting"
     exit 1
@@ -12,14 +16,15 @@ echo "Installing bridgehead"
 _systemd_path=/etc/systemd/system/
 
 
-echo "Installing bridgehead\@.service in systemd ..."
-sudo cp convenience/bridgehead\@.service $_systemd_path
-echo "Installing bridgehead\@.update.service in systemd ..."
-sudo cp convenience/bridgehead-update\@.service $_systemd_path
-sudo cp convenience/bridgehead-update\@.timer $_systemd_path
+echo "Installing systemd units ..."
+cp -v \
+	convenience/bridgehead\@.service \
+	convenience/bridgehead-update\@.service \
+	convenience/bridgehead-update\@.timer \
+	$_systemd_path
 
 echo "Loading the bridgehead definitions in systemd"
-sudo systemctl daemon-reload
+systemctl daemon-reload
 
 
 echo "Starting Project ${project} "
@@ -28,14 +33,14 @@ echo "Starting Project ${project} "
     exit
   fi
 
-  sudo systemctl is-active --quiet bridgehead@"${project}"
+  systemctl is-active --quiet bridgehead@"${project}"
   if [ ! $? -eq 0 ]; then
     echo "Starting bridgehead@${project} service ..."
-    sudo systemctl start bridgehead@"${project}"
+    systemctl start bridgehead@"${project}"
     echo "Enabling autostart of bridgehead@${project}.service"
-    sudo systemctl enable bridgehead@"${project}"
+    systemctl enable bridgehead@"${project}"
     echo "Enabling nightly updates for bridgehead@${project}.service ..."
-    sudo systemctl enable --now bridgehead-update@"${project}".timer
+    systemctl enable --now bridgehead-update@"${project}".timer
   fi
 
 # Switch back to execution directory;

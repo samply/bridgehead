@@ -15,13 +15,14 @@ if [ -z "$BRIDGEHEAD_PATH" ] ; then
   exit
 fi
 
-cd /etc/systemd/system/
+_systemd_path=/etc/systemd/system/
+
 
 echo "Installing bridgehead\@.service in systemd ..."
-sudo cp ${BRIDGEHEAD_PATH}/convenience/bridgehead\@.service ./
+sudo cp convenience/bridgehead\@.service $_systemd_path
 echo "Installing bridgehead\@.update.service in systemd ..."
-sudo cp ${BRIDGEHEAD_PATH}/convenience/bridgehead-update\@.service ./
-sudo cp ${BRIDGEHEAD_PATH}/convenience/bridgehead-update\@.timer ./
+sudo cp convenience/bridgehead-update\@.service $_systemd_path
+sudo cp convenience/bridgehead-update\@.timer $_systemd_path
 
 echo "Loading the bridgehead definitions in systemd"
 sudo systemctl daemon-reload

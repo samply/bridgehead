@@ -94,7 +94,7 @@ services:
       MAGICPL_OIDC_PROVIDER: ${MAGICPL_OIDC_PROVIDER}
       MAGICPL_OIDC_CLIENT_ID: ${MAGICPL_OIDC_CLIENT_ID}
       MAGICPL_OIDC_CLIENT_SECRET: ${MAGICPL_OIDC_CLIENT_SECRET}
-      MAGICPL_SITE: adt
+      MAGICPL_SITE: ${SITEID}
       MAGICPL_LOG_LEVEL: info
       TZ: Europe/Berlin
     volumes:
@@ -123,7 +123,7 @@ services:
       ML_DB_PASS: ${ML_DB_PASS}
       ML_API_KEY: ${ML_API_KEY}
       ML_LOG_LEVEL: warning
-      ML_SITE: adt
+      ML_SITE: ${SITEID}
       TZ: Europe/Berlin
     env_file:
       - ../site-config/patientlist.env

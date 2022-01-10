@@ -1,6 +1,9 @@
-echo "Stoping bridgehead"
+#!/bin/bash -e
 
+source lib/functions.sh
 source site.conf
+
+log "Stopping bridgehead"
 
 cd ${project}
 

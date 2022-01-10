@@ -1,9 +1,7 @@
 #!/bin/bash
 service="bridgehead"
-# Creates logs
-log() {
-  echo "$(date +'%Y-%m-%d %T')" "$1:" "$2"
-}
+
+source lib/functions.sh
 
 log "INFO" "Checking for updates of $service"
 # check prerequisites

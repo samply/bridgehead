@@ -1,14 +1,11 @@
-echo "Stoping systemd services and removing bridgehead"
+#!/bin/bash -e
 
 source site.conf
+source lib/functions.sh
 
-systemctl stop bridgehead@"${project}".service
-systemctl stop bridgehead-update@"${project}".timer
-systemctl stop bridgehead-update@"${project}".service
+echo "Stopping systemd services and removing bridgehead ..."
 
-cd /etc/systemd/system/
-rm bridgehead\@.service
-rm bridgehead-update\@.timer
-rm bridgehead-update\@.service
-
-cd - 
+for i in bridgehead\@.service bridgehead-update\@.timer bridgehead-update\@.service; do
+  systemctl disable $i --now
+  rm -v /etc/systemd/system/$i
+done

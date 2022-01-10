@@ -9,12 +9,6 @@ source site.conf
 
 echo "Installing bridgehead"
 
-if [ -z "$BRIDGEHEAD_PATH" ] ; then  
-  echo "BRIDGEHEAD_PATH=${PWD}" >> /etc/environment
-  echo "Please reboot the system to properly set the enviroment"
-  exit
-fi
-
 _systemd_path=/etc/systemd/system/
 
 

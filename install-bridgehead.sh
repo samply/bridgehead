@@ -1,7 +1,7 @@
 #!/bin/bash
 ### Note: Currently not complete, needs some features before useable for production
 
-if ! ./prerequisites.sh; then
+if ! ./lib/prerequisites.sh; then
     echo "Prerequisites failed, exiting"
     exiting
 fi

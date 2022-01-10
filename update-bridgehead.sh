@@ -7,6 +7,7 @@ log() {
 
 log "INFO" "Checking for updates of $service"
 # check prerequisites
+##TODO: Move to lib/prereq.sh
 prerequisites="git docker docker-compose"
 for prerequisite in $prerequisites; do
   $prerequisite --version 2>&1

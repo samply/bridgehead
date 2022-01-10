@@ -1,5 +1,5 @@
 ##Ignore site configuration
-.gitsubmodules
+.gitmodules
 site-config
 
 ## Ignore site configuration

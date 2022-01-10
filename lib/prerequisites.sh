@@ -51,4 +51,4 @@ if [ -d "site-config/${project}.env" ]; then
    echo "Please copy the tempalte from ${project} and put it in the site-config folder"
 fi
 
-echo "All prerequisites meet! All systems are ready to go!"
+echo "All prerequisites are met!"

@@ -7,10 +7,9 @@ RestartSec=30
 
 WorkingDirectory=/srv/docker/bridgehead/%i
 
-ExecStartPre=/usr/local/bin/docker-compose --env-file ../site-config/%i.env down
-ExecStart=/usr/local/bin/docker-compose --env-file ../site-config/%i.env up
-
-ExecStop=/usr/local/bin/docker-compose --env-file ../site-config/%i.env down
+ExecStartPre=docker-compose --env-file ../site-config/%i.env down
+ExecStart=docker-compose --env-file ../site-config/%i.env up
+ExecStop=docker-compose --env-file ../site-config/%i.env down
 
 [Install]
 WantedBy=multi-user.target

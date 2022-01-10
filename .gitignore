@@ -6,5 +6,5 @@ site-config
 config/**/*
 !config/**/*.default
 docker-compose.override.yml
-site-specific.conf
+site.conf
 

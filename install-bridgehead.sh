@@ -3,7 +3,7 @@
 
 if ! ./lib/prerequisites.sh; then
     echo "Prerequisites failed, exiting"
-    exiting
+    exit 1
 fi
 source site.conf
 

@@ -5,11 +5,11 @@ Description=Bridgehead (%i) Service
 Restart=always
 RestartSec=30
 
-WorkingDirectory=/srv/docker/bridgehead/%i
+WorkingDirectory=/srv/docker/bridgehead/
 
-ExecStartPre=docker-compose --env-file ../site-config/%i.env down
-ExecStart=docker-compose --env-file ../site-config/%i.env up
-ExecStop=docker-compose --env-file ../site-config/%i.env down
+ExecStartPre=/bin/bash -c '`which docker-compose` -f %i/docker-compose.yml --env-file site-config/%i.env down'
+ExecStart=/bin/bash -c '`which docker-compose` -f %i/docker-compose.yml --env-file site-config/%i.env up'
+ExecStop=/bin/bash -c '`which docker-compose` -f %i/docker-compose.yml --env-file site-config/%i.env down'
 
 [Install]
 WantedBy=multi-user.target

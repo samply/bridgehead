@@ -60,7 +60,7 @@ services:
       - "connector-db"
 
   connector_db:
-    container_name: bridgehead_connector_db
+    container_name: bridgehead_dktk_connector_db
     image: postgres:10.17
     environment:
       POSTGRES_HOST: ${CONNECTOR_DB_HOST}
@@ -76,7 +76,7 @@ services:
 
 
   idmanager:
-    container_name: bridgehead-idmanager
+    container_name: bridgehead_dktk_idmanager
     image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:0.2.0-RC23
     environment:
       MAGICPL_MAINZELLISTE_URL: ${MAGICPL_MAINZELLISTE_URL}
@@ -108,7 +108,7 @@ services:
       - "samply"
 
   patientlist:
-    container_name: bridgehead-patientlist
+    container_name: bridgehead_dktk_patientlist
     image: medicalinformatics/mainzelliste:develop
     environment:
       ML_DB_DRIVER: org.postgresql.Driver
@@ -137,7 +137,7 @@ services:
       - "samply"
 
   patientlist_db:
-    container_name: bridgehead_patientlist_db
+    container_name: bridgehead_dktk_patientlist_db
     image: postgres:13.1-alpine
     environment:
       POSTGRES_DB: ${ML_DB_NAME}

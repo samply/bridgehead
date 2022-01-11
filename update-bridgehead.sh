@@ -3,18 +3,14 @@ service="bridgehead"
 
 source lib/functions.sh
 
+if ! ./prerequisites.sh; then
+    log "Prerequisites failed, exiting"
+    exit
+fi
+
 log "INFO" "Checking for updates of $service"
 # check prerequisites
-##TODO: Move to lib/prereq.sh
-prerequisites="git docker docker-compose"
-for prerequisite in $prerequisites; do
-  $prerequisite --version 2>&1
-  is_available=$?
-  if [ $is_available -gt 0 ]; then
-    log "ERROR" "Prerequisite not fulfilled - $prerequisite is not available!"
-    exit 79
-  fi
-done
+
 # check if updates are available
 old_git_hash="$(git rev-parse --verify HEAD)"
 git fetch 2>&1

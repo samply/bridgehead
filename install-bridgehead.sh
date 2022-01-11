@@ -6,32 +6,29 @@ source lib/functions.sh
 exitIfNotRoot
 
 if ! ./lib/prerequisites.sh; then
-    echo "Prerequisites failed, exiting"
+    log "Prerequisites failed, exiting"
     exit 1
 fi
 source site.conf
 
-_systemd_path=/etc/systemd/system/
-
-
-echo -e "\nInstalling systemd units ..."
+log -e "\nInstalling systemd units ..."
 cp -v \
     lib/systemd/bridgehead\@.service \
     lib/systemd/bridgehead-update\@.service \
     lib/systemd/bridgehead-update\@.timer \
-    $_systemd_path
+    /etc/systemd/system/
 
 systemctl daemon-reload
 
 echo
 
 if ! systemctl is-active --quiet bridgehead@"${project}"; then
-    echo "Enabling autostart of bridgehead@${project}.service"
+    log "Enabling autostart of bridgehead@${project}.service"
     systemctl enable bridgehead@"${project}"
-    echo "Enabling nightly updates for bridgehead@${project}.service ..."
+    log "Enabling nightly updates for bridgehead@${project}.service ..."
     systemctl enable --now bridgehead-update@"${project}".timer
 fi
 
-echo -e "\nDone - now start your bridgehead by running\n\tsystemctl start bridgehead@${project}.service\nor by rebooting your machine."
+log -e "\nDone - now start your bridgehead by running\n\tsystemctl start bridgehead@${project}.service\nor by rebooting your machine."
 
 # TODO: Configuration of the different modules

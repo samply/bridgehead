@@ -1,6 +1,17 @@
 version: '3.4'
-services:
+networks:
+  samply:
+    driver: "bridge"
+  connector-db:
+    driver: "bridge"
 
+volumes:
+  store-db-data:
+    name: "store-db-data"
+  connector-db-data:
+    name: "connector-db-data"
+
+services:
   store:
     container_name: "bridgehead_gbn_blaze_store"
     image: "samply/blaze:0.15"
@@ -20,12 +31,12 @@ services:
     image: "samply/share-client:gbn-7"
     environment:
       POSTGRES_HOST: "bridgehead_gbn_connector_db"
-      POSTGRES_DB: "samply.connector"
-      POSTGRES_USER: "samply"
       POSTGRES_PASS: ${CONNECTOR_POSTGRES_PASS}
-      STORE_URL: "http://bridgehead_store:8080/fhir"
-      QUERY_LANGUAGE: "CQL"
-      MDR_URL: "https://mdr.germanbiobanknode.de/v3/api/mdr"
+      POSTGRES_PORT: 5432
+      STORE_URL: "http://bridgehead_gbn_blaze_store:8080/fhir"
+    env_file:
+    ###TODO: Move into Image
+      - internal.env
     networks:
       - "samply"
       - "connector-db"
@@ -39,23 +50,13 @@ services:
     container_name: "bridgehead_gbn_connector_db"
     image: "postgres:10.17"
     environment:
-      POSTGRES_USER: "samply"
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
-      POSTGRES_DB: "samply.connector"
+      POSTGRES_PORT: 5432
     networks:
       - "connector-db"
     volumes:
       - "connector-db-data:/var/lib/postgresql/data"
     restart: "always"
-
-networks:
-  samply:
-    driver: "bridge"
-  connector-db:
-    driver: "bridge"
-
-volumes:
-  store-db-data:
-    name: "store-db-data"
-  connector-db-data:
-    name: "connector-db-data"
+    env_file:
+    ###TODO: Move into Image
+      - internal.env

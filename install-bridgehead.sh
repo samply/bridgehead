@@ -11,7 +11,7 @@ if ! ./lib/prerequisites.sh; then
 fi
 source site.conf
 
-log -e "\nInstalling systemd units ..."
+echo -e "\nInstalling systemd units ..."
 cp -v \
     lib/systemd/bridgehead\@.service \
     lib/systemd/bridgehead-update\@.service \
@@ -23,12 +23,12 @@ systemctl daemon-reload
 echo
 
 if ! systemctl is-active --quiet bridgehead@"${project}"; then
-    log "Enabling autostart of bridgehead@${project}.service"
+    echo "Enabling autostart of bridgehead@${project}.service"
     systemctl enable bridgehead@"${project}"
-    log "Enabling nightly updates for bridgehead@${project}.service ..."
+    echo "Enabling nightly updates for bridgehead@${project}.service ..."
     systemctl enable --now bridgehead-update@"${project}".timer
 fi
 
-log -e "\nDone - now start your bridgehead by running\n\tsystemctl start bridgehead@${project}.service\nor by rebooting your machine."
+echo -e "\nDone - now start your bridgehead by running\n\tsystemctl start bridgehead@${project}.service\nor by rebooting your machine."
 
 # TODO: Configuration of the different modules

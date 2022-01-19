@@ -24,30 +24,9 @@ services:
     container_name: bridgehead_dktk_connector
     image: "samply/share-client:dktk-7"
     environment:
-      SITE: ${SITE}
-      SITEID: ${SITEID}
-      CENTRAL_SEARCH: ${CCP_CENTRALSEARCH_URL}
-      DECENTRAL_SEARCH: ${CCP_DECENTRALSEARCH_URL}
-      MDR_URL: ${CCP_MDR_URL}
-      MONITOR_URL: ${CCP_MONITOR_URL}
-      SHARE_URL: "${PROTOCOL}://${HOST}:${PORT}"
-      ID_MANAGER_URL: ${ID_MANAGER_URL}
-      PROJECTPSEUDONYMISATION_URL: ${PROJECTPSEUDONYMISATION_URL}
-      PATIENTLIST_URL: ${PATIENTLIST_URL}
-      STORE_URL: ${LDM_URL}
+      STORE_URL: ${STORE_URL}
       POSTGRES_HOST: ${CONNECTOR_DB_HOST}
-      POSTGRES_PORT: ${CONNECTOR_POSTGRES_PORT}
-      POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
-      POSTGRES_USER: ${CONNECTOR_POSTGRES_USER}
       POSTGRES_PASS: ${CONNECTOR_POSTGRES_PASS}
-      HTTP_PROXY_URL: ${HTTP_PROXY_URL}
-      HTTP_PROXY_USERNAME: ${HTTP_PROXY_USER}
-      HTTP_PROXY_PASSWORD: ${HTTP_PROXY_PASSWORD}
-      HTTPS_PROXY_URL: ${HTTPS_PROXY_URL}
-      HTTPS_PROXY_USERNAME: ${HTTPS_PROXY_USER}
-      HTTPS_PROXY_PASSWORD: ${HTTPS_PROXY_PASSWORD}
-      NO_PROXY: ${NO_PROXY}
-      TZ: Europe/Berlin
     volumes:
       - "connector_logs:/usr/local/tomcat/logs"
     depends_on:
@@ -55,6 +34,9 @@ services:
     ports:
       - "8080:8080"
     restart: always
+    env_file:
+    ###TODO: Move into Image
+      - internal.env
     networks:
       - "samply"
       - "connector-db"
@@ -64,20 +46,20 @@ services:
     image: postgres:10.17
     environment:
       POSTGRES_HOST: ${CONNECTOR_DB_HOST}
-      POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
-      POSTGRES_USER: ${CONNECTOR_POSTGRES_USER}
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
-      TZ: Europe/Berlin
     volumes:
       - "connector_db_data:/var/lib/postgresql/data"
     restart: always
+    env_file:
+    ###TODO: Move into Image
+      - internal.env
     networks:
       - "connector-db"
 
 
   idmanager:
     container_name: bridgehead_dktk_idmanager
-    image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:0.2.0-RC23
+    image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
     environment:
       MAGICPL_MAINZELLISTE_URL: ${MAGICPL_MAINZELLISTE_URL}
       MAGICPL_MAINZELLISTE_API_KEY: ${MAGICPL_MAINZELLISTE_API_KEY}
@@ -91,8 +73,7 @@ services:
       MAGICPL_OIDC_PROVIDER: ${MAGICPL_OIDC_PROVIDER}
       MAGICPL_OIDC_CLIENT_ID: ${MAGICPL_OIDC_CLIENT_ID}
       MAGICPL_OIDC_CLIENT_SECRET: ${MAGICPL_OIDC_CLIENT_SECRET}
-      MAGICPL_SITE: adt
-      MAGICPL_LOG_LEVEL: info
+
       TZ: Europe/Berlin
     volumes:
       - "idmanager_logs:/usr/local/tomcat/logs"
@@ -102,6 +83,9 @@ services:
       - proxy.docker.xml
     depends_on:
       - patientlist
+    env_file:
+    ###TODO: Move into Image
+      - internal.env
     ports:
       - "8085:8080"
     networks:
@@ -111,19 +95,12 @@ services:
     container_name: bridgehead_dktk_patientlist
     image: medicalinformatics/mainzelliste:develop
     environment:
-      ML_DB_DRIVER: org.postgresql.Driver
-      ML_DB_TYPE: postgresql
-      ML_DB_HOST: ${ML_DB_HOST}
-      ML_DB_PORT: ${ML_DB_PORT}
-      ML_DB_NAME: ${ML_DB_NAME}
-      ML_DB_USER: ${ML_DB_USER}
+      ML_DB_HOST: bridgehead_dktk_patientlist_db
       ML_DB_PASS: ${ML_DB_PASS}
       ML_API_KEY: ${ML_API_KEY}
-      ML_LOG_LEVEL: warning
-      ML_SITE: adt
-      TZ: Europe/Berlin
     env_file:
       - ../site-config/patientlist.env
+      - internal.env
     volumes:
       - "patientlist_logs:/usr/local/tomcat/logs"
     secrets:
@@ -140,12 +117,12 @@ services:
     container_name: bridgehead_dktk_patientlist_db
     image: postgres:13.1-alpine
     environment:
-      POSTGRES_DB: ${ML_DB_NAME}
-      POSTGRES_USER: ${ML_DB_USER}
       POSTGRES_PASSWORD: ${ML_DB_PASS}
-      TZ: Europe/Berlin
     volumes:
       - "patientlist_db_data:/var/lib/postgresql/data"
+    env_file:
+    ###TODO: Move into Image
+      - internal.env
     networks:
       - "samply"
       

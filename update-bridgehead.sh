@@ -3,7 +3,7 @@ service="bridgehead"
 
 source lib/functions.sh
 
-if ! ./prerequisites.sh; then
+if ! lib/prerequisites.sh; then
     log "Prerequisites failed, exiting"
     exit
 fi

@@ -1,9 +1,4 @@
 version: '3.4'
-networks:
-  samply:
-    driver: "bridge"
-  connector-db:
-    driver: "bridge"
 
 volumes:
   store-db-data:
@@ -12,18 +7,52 @@ volumes:
     name: "connector-db-data"
 
 services:
+  traefik:
+    container_name: bridgehead_traefik
+    image: traefik:2.4
+    command:
+      - --api.insecure=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.web-secure.address=:443
+      - --providers.docker=true
+    environment:
+      http_proxy: ""
+      HTTP_PROXY: ""
+      https_proxy: ""
+      HTTPS_PROXY: ""      
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  landing:
+    container_name: bridgehead_landingpage
+    image: nginx:stable
+    volumes:
+      - ../landing/:/usr/share/nginx/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
+      - "traefik.http.services.landing.loadbalancer.server.port=80"
+
   store:
     container_name: "bridgehead_gbn_blaze_store"
     image: "samply/blaze:0.15"
     environment:
       BASE_URL: "http://bridgehead_gbn_blaze_store:8080"
       JAVA_TOOL_OPTIONS: "-Xmx4g"
-    networks:
-      - "samply"
     volumes:
       - "store-db-data:/app/data"
-    ports:
-      - "8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-auth.basicauth.users=user:$$apr1$$RjhTX8\
+        ji$$3ToBWBch1K4RBnvp86TuH/"
+      - "traefik.http.routers.blaze_gbn.rule=PathPrefix(`/gbn-localdatamanagement`)"
+      - "traefik.http.middlewares.gbn_b_strip.stripprefix.prefixes=/gbn-localdatamanagement"
+      - "traefik.http.services.blaze_gbn.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_gbn.middlewares=gbn_b_strip,test-auth"
     restart: "always"
 
   connector:
@@ -37,11 +66,10 @@ services:
     env_file:
     ###TODO: Move into Image
       - internal.env
-    networks:
-      - "samply"
-      - "connector-db"
-    ports:
-      - "8082:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gbn_connector.rule=PathPrefix(`/gbn-connector`)"
+      - "traefik.http.services.gbn_connector.loadbalancer.server.port=8080"
     depends_on:
       - "connector-db"
     restart: "always"
@@ -52,8 +80,6 @@ services:
     environment:
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
       POSTGRES_PORT: 5432
-    networks:
-      - "connector-db"
     volumes:
       - "connector-db-data:/var/lib/postgresql/data"
     restart: "always"

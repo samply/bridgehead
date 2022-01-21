@@ -20,6 +20,36 @@ secrets:
     file: ../internal-configuration/proxy.xml
 
 services:
+  traefik:
+    container_name: bridgehead_traefik
+    image: traefik:2.4
+    command:
+      - --api.insecure=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.web-secure.address=:443
+      - --providers.docker=true
+    environment:
+      http_proxy: ""
+      HTTP_PROXY: ""
+      https_proxy: ""
+      HTTPS_PROXY: ""      
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  landing:
+    container_name: bridgehead_landingpage
+    image: nginx:stable
+    volumes:
+      - ../landing/:/usr/share/nginx/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
+      - "traefik.http.services.landing.loadbalancer.server.port=80"
+
   connector:
     container_name: bridgehead_dktk_connector
     image: "samply/share-client:dktk-7"
@@ -31,15 +61,14 @@ services:
       - "connector_logs:/usr/local/tomcat/logs"
     depends_on:
       - connector_db
-    ports:
-      - "8080:8080"
     restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dktk_connector.rule=PathPrefix(`/dktk-connector`)"
+      - "traefik.http.services.dktk_connector.loadbalancer.server.port=8080"
     env_file:
     ###TODO: Move into Image
       - internal.env
-    networks:
-      - "samply"
-      - "connector-db"
 
   connector_db:
     container_name: bridgehead_dktk_connector_db
@@ -53,27 +82,20 @@ services:
     env_file:
     ###TODO: Move into Image
       - internal.env
-    networks:
-      - "connector-db"
-
 
   idmanager:
-    container_name: bridgehead_dktk_idmanager
+    container_name: bridgehead_id-manager
     image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
     environment:
-      MAGICPL_MAINZELLISTE_URL: ${MAGICPL_MAINZELLISTE_URL}
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/id-manager
       MAGICPL_MAINZELLISTE_API_KEY: ${MAGICPL_MAINZELLISTE_API_KEY}
       MAGICPL_API_KEY: ${MAGICPL_API_KEY}
       MAGICPL_API_KEY_CONNECTOR: ${MAGICPL_API_KEY_CONNECTOR}
       MAGICPL_PASSPHRASE: ${MAGICPL_PASSPHRASE}
-      MAGICPL_MAINZELLISTE_CENTRAL_URL: ${MAGICPL_MAINZELLISTE_CENTRAL_URL}
       MAGICPL_MAINZELLISTE_CENTRAL_API_KEY: ${MAGICPL_MAINZELLISTE_CENTRAL_API_KEY}
-      MAGICPL_CENTRAL_URL: ${MAGICPL_CENTRAL_URL}
       MAGICPL_CENTRAL_API_KEY: ${MAGICPL_CENTRAL_API_KEY}
-      MAGICPL_OIDC_PROVIDER: ${MAGICPL_OIDC_PROVIDER}
       MAGICPL_OIDC_CLIENT_ID: ${MAGICPL_OIDC_CLIENT_ID}
       MAGICPL_OIDC_CLIENT_SECRET: ${MAGICPL_OIDC_CLIENT_SECRET}
-
       TZ: Europe/Berlin
     volumes:
       - "idmanager_logs:/usr/local/tomcat/logs"
@@ -83,21 +105,23 @@ services:
       - proxy.docker.xml
     depends_on:
       - patientlist
+    labels:
+      - "traefik.http.routers.idmanager.rule=PathPrefix(`/id-manager`)"
+      - "traefik.http.middlewares.idmanager_strip.stripprefix.prefixes=/id-mana\
+        ger"
+      - "traefik.http.routers.idmanager.middlewares=idmanager_strip"
+      - "traefik.http.services.idmanager.loadbalancer.server.port=8080"
     env_file:
     ###TODO: Move into Image
       - internal.env
-    ports:
-      - "8085:8080"
-    networks:
-      - "samply"
 
   patientlist:
-    container_name: bridgehead_dktk_patientlist
+    container_name: bridgehead_patientlist
     image: medicalinformatics/mainzelliste:develop
     environment:
-      ML_DB_HOST: bridgehead_dktk_patientlist_db
       ML_DB_PASS: ${ML_DB_PASS}
       ML_API_KEY: ${ML_API_KEY}
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/patientlist
     env_file:
       - ../site-config/patientlist.env
       - internal.env
@@ -106,12 +130,14 @@ services:
     secrets:
       - mainzelliste.docker.conf
       - centralSearchPublicKey
+    labels:
+      - "traefik.http.routers.patientlist.rule=PathPrefix(`/patientlist`)"
+      - "traefik.http.middlewares.patientlist_strip.stripprefix.prefixes=/patie\
+        ntlist"
+      - "traefik.http.routers.patientlist.middlewares=patientlist_strip"
+      - "traefik.http.services.patientlist.loadbalancer.server.port=8080"
     depends_on:
       - patientlist_db
-    ports:
-      - "8086:8080"
-    networks:
-      - "samply"
 
   patientlist_db:
     container_name: bridgehead_dktk_patientlist_db
@@ -123,11 +149,3 @@ services:
     env_file:
     ###TODO: Move into Image
       - internal.env
-    networks:
-      - "samply"
-      
-networks:
-  samply:
-    driver: "bridge"
-  connector-db:
-    driver: "bridge"

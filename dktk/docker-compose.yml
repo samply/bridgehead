@@ -54,6 +54,8 @@ services:
     container_name: bridgehead_dktk_connector
     image: "samply/share-client:dktk-7"
     environment:
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/dktk-connector
+      DEPLOYMENT_CONTEXT: dktk-connector
       STORE_URL: ${STORE_URL}
       POSTGRES_HOST: ${CONNECTOR_DB_HOST}
       POSTGRES_PASS: ${CONNECTOR_POSTGRES_PASS}
@@ -87,7 +89,9 @@ services:
     container_name: bridgehead_id-manager
     image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
     environment:
-      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/id-manager
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}
+      DEPLOYMENT_CONTEXT: id-manager
+      MAGICPL_SITE: ${SITEID}
       MAGICPL_MAINZELLISTE_API_KEY: ${MAGICPL_MAINZELLISTE_API_KEY}
       MAGICPL_API_KEY: ${MAGICPL_API_KEY}
       MAGICPL_API_KEY_CONNECTOR: ${MAGICPL_API_KEY_CONNECTOR}
@@ -107,9 +111,6 @@ services:
       - patientlist
     labels:
       - "traefik.http.routers.idmanager.rule=PathPrefix(`/id-manager`)"
-      - "traefik.http.middlewares.idmanager_strip.stripprefix.prefixes=/id-mana\
-        ger"
-      - "traefik.http.routers.idmanager.middlewares=idmanager_strip"
       - "traefik.http.services.idmanager.loadbalancer.server.port=8080"
     env_file:
     ###TODO: Move into Image
@@ -121,7 +122,9 @@ services:
     environment:
       ML_DB_PASS: ${ML_DB_PASS}
       ML_API_KEY: ${ML_API_KEY}
-      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/patientlist
+      ML_SITE: ${SITEID}
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}
+      DEPLOYMENT_CONTEXT: patientlist
     env_file:
       - ../site-config/patientlist.env
       - internal.env
@@ -132,9 +135,6 @@ services:
       - centralSearchPublicKey
     labels:
       - "traefik.http.routers.patientlist.rule=PathPrefix(`/patientlist`)"
-      - "traefik.http.middlewares.patientlist_strip.stripprefix.prefixes=/patie\
-        ntlist"
-      - "traefik.http.routers.patientlist.middlewares=patientlist_strip"
       - "traefik.http.services.patientlist.loadbalancer.server.port=8080"
     depends_on:
       - patientlist_db

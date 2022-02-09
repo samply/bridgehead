@@ -52,11 +52,10 @@ services:
 
   connector:
     container_name: bridgehead_dktk_connector
-    image: "samply/share-client:dktk-7"
+    image: "samply/share-client:dktk-pr-148"
     environment:
       STORE_URL: ${STORE_URL}
-      POSTGRES_HOST: ${CONNECTOR_DB_HOST}
-      POSTGRES_PASS: ${CONNECTOR_POSTGRES_PASS}
+      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
     volumes:
       - "connector_logs:/usr/local/tomcat/logs"
     depends_on:
@@ -66,9 +65,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.dktk_connector.rule=PathPrefix(`/dktk-connector`)"
       - "traefik.http.services.dktk_connector.loadbalancer.server.port=8080"
-    env_file:
-    ###TODO: Move into Image
-      - internal.env
+    ports:
+      - 65395:65395
 
   connector_db:
     container_name: bridgehead_dktk_connector_db
@@ -88,14 +86,14 @@ services:
     image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
     environment:
       TOMCAT_REVERSEPROXY_FQDN: ${HOST}/id-manager
-      MAGICPL_MAINZELLISTE_API_KEY: ${MAGICPL_MAINZELLISTE_API_KEY}
-      MAGICPL_API_KEY: ${MAGICPL_API_KEY}
-      MAGICPL_API_KEY_CONNECTOR: ${MAGICPL_API_KEY_CONNECTOR}
-      MAGICPL_PASSPHRASE: ${MAGICPL_PASSPHRASE}
-      MAGICPL_MAINZELLISTE_CENTRAL_API_KEY: ${MAGICPL_MAINZELLISTE_CENTRAL_API_KEY}
-      MAGICPL_CENTRAL_API_KEY: ${MAGICPL_CENTRAL_API_KEY}
-      MAGICPL_OIDC_CLIENT_ID: ${MAGICPL_OIDC_CLIENT_ID}
-      MAGICPL_OIDC_CLIENT_SECRET: ${MAGICPL_OIDC_CLIENT_SECRET}
+      MAGICPL_MAINZELLISTE_API_KEY: "123"
+      MAGICPL_API_KEY: "123"
+      MAGICPL_API_KEY_CONNECTOR: "123"
+      MAGICPL_PASSPHRASE: "123"
+      MAGICPL_MAINZELLISTE_CENTRAL_API_KEY: "123"
+      MAGICPL_CENTRAL_API_KEY: "123"
+      MAGICPL_OIDC_CLIENT_ID: "123"
+      MAGICPL_OIDC_CLIENT_SECRET: "123"
       TZ: Europe/Berlin
     volumes:
       - "idmanager_logs:/usr/local/tomcat/logs"
@@ -143,9 +141,9 @@ services:
     container_name: bridgehead_dktk_patientlist_db
     image: postgres:13.1-alpine
     environment:
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: mainzelliste
+      POSTGRES_USER: mainzelliste      
       POSTGRES_PASSWORD: ${ML_DB_PASS}
     volumes:
       - "patientlist_db_data:/var/lib/postgresql/data"
-    env_file:
-    ###TODO: Move into Image
-      - internal.env

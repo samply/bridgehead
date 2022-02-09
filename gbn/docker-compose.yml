@@ -15,11 +15,6 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.web-secure.address=:443
       - --providers.docker=true
-    environment:
-      http_proxy: ""
-      HTTP_PROXY: ""
-      https_proxy: ""
-      HTTPS_PROXY: ""      
     ports:
       - 80:80
       - 443:443
@@ -58,31 +53,44 @@ services:
   connector:
     container_name: "bridgehead_gbn_connector"
     image: "samply/share-client:gbn-7"
-    environment:
-      POSTGRES_HOST: "bridgehead_gbn_connector_db"
-      POSTGRES_PASS: ${CONNECTOR_POSTGRES_PASS}
-      POSTGRES_PORT: 5432
-      STORE_URL: "http://bridgehead_gbn_blaze_store:8080/fhir"
-    env_file:
-    ###TODO: Move into Image
-      - internal.env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gbn_connector.rule=PathPrefix(`/gbn-connector`)"
       - "traefik.http.services.gbn_connector.loadbalancer.server.port=8080"
     depends_on:
       - "connector-db"
+    environment:
+      POSTGRES_PASS: ${CONNECTOR_POSTGRES_PASS}
+      POSTGRES_HOST: "bridgehead_gbn_connector_db"
+      MDR_URL: "https://mdr.germanbiobanknode.de/v3/api/mdr"
+      https_proxy: "http://www-int2.inet.dkfz-heidelberg.de:3128"
+      HTTP_PROXY_HOST: "http://www-int2.inet.dkfz-heidelberg.de:3128"
+      HTTPS_PROXY_HOST: "http://www-int2.inet.dkfz-heidelberg.de:3128"
+      HTTPS_PROXY_USER: ""
+      HTTP_PROXY_USER: ""
+      HTTPS_PROXY_PASSWORD: ""
+      HTTP_PROXY_PASSWORD: ""      
+      HTTP_PROXY: "http://www-int2.inet.dkfz-heidelberg.de:3128"
+      HTTPS_PROXY: "http://www-int2.inet.dkfz-heidelberg.de:3128"
+      http_proxy: "http://www-int2.inet.dkfz-heidelberg.de:3128"
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=65395,server=y,suspend=n"
+    ports:
+    - 65395:65395
     restart: "always"
+    env_file:
+    ###TODO: Move into Image
+      - internal.env
 
   connector-db:
     container_name: "bridgehead_gbn_connector_db"
     image: "postgres:10.17"
     environment:
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
+      POSTGRES_USER: "samply"
+      POSTGRES_DB: "samply.connector"
       POSTGRES_PORT: 5432
     volumes:
       - "connector-db-data:/var/lib/postgresql/data"
+    ports:
+    - 5432:5432
     restart: "always"
-    env_file:
-    ###TODO: Move into Image
-      - internal.env

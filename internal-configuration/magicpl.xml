@@ -40,7 +40,7 @@
                     <iosingle ref="ids" name="ids"/>
                 </output>
                 <switch>
-                    <evaluator name="de.mainzelliste.paths.evaluator.IsConsentedEvaluator">
+                    <evaluator name="de.pseudonymisierung.magicpl.evaluator.IsConsentedEvaluator">
                         <parameters>
                             <parameter name="key">consented</parameter>
                         </parameters>
@@ -79,7 +79,7 @@
                                 <output>
                                     <iosingle ref="tokenId"/>
                                 </output>
-                                <implementation>de.mainzelliste.paths.processor.PathClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.PathClient</implementation>
                             </step>
                             <step>
                                 <name>getDktkId</name>
@@ -95,7 +95,7 @@
                                 <output>
                                     <iosingle ref="ids" name="ids"/>
                                 </output>
-                                <implementation>de.mainzelliste.paths.processor.MainzellisteClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.MainzellisteClient</implementation>
                             </step>
                             <step>
                                 <name>mapIdStringToExternalId</name>
@@ -108,7 +108,7 @@
                                 <output>
                                     <iosingle ref="extIDs" name="extIDs"/>
                                 </output>
-                                <implementation>de.mainzelliste.paths.processor.InputMapperProcessor</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.InputMapperProcessor</implementation>
                             </step>
                             <step>
                                 <name>getLocalTKTExternalId</name>
@@ -128,7 +128,7 @@
                                 </output>
                                 <!-- TODO: Implementation für Ticket Erzeugung ohne Kontrolnummer -->
                                 <!-- Wird hier eine neue Klasse benötigt oder kann diese hier entsprechend angepasst werden? -->
-                                <implementation>de.mainzelliste.paths.processor.MainzellisteKNTicketClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.MainzellisteKNTicketClient</implementation>
                             </step>
                             <step>
                                 <name>generateLocalIdExternalId</name>
@@ -146,7 +146,7 @@
                                 <output>
                                     <iosingle ref="ids" name="ids"/>
                                 </output>
-                                <implementation>de.mainzelliste.paths.processor.MainzellisteClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.MainzellisteClient</implementation>
                             </step>
                         </multipath>
                     </case>
@@ -178,7 +178,7 @@
                                     <iosingle ref="tokenId"/>
                                 </output>
                                 <!-- Wird hier eine neue Klasse benötigt oder kann diese hier entsprechend angepasst werden? -->
-                                <implementation>de.mainzelliste.paths.processor.MainzellisteKNTicketClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.MainzellisteKNTicketClient</implementation>
                             </step>
                             <step>
                                 <name>generateLocalId</name>
@@ -195,7 +195,7 @@
                                 <output>
                                     <iosingle ref="ids" name="ids"/>
                                 </output>
-                                <implementation>de.mainzelliste.paths.processor.MainzellisteClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.MainzellisteClient</implementation>
                             </step>
                         </multipath>
                     </case>
@@ -223,7 +223,7 @@
                     <iosingle ref="patients" name="patients"/>
                 </output>
                 <switch>
-                    <evaluator name="de.mainzelliste.paths.evaluator.RegexEvaluator">
+                    <evaluator name="de.pseudonymisierung.magicpl.evaluator.RegexEvaluator">
                         <parameters>
                             <parameter name="regex">MDS_\*_G-ID</parameter>
                             <parameter name="fieldName">resultIds</parameter>
@@ -255,7 +255,7 @@
                                 <output>
                                     <iosingle ref="tokenId"/>
                                 </output>
-                                <implementation>de.mainzelliste.paths.processor.MainzellisteReadTokenClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.MainzellisteReadTokenClient</implementation>
                             </step>
                             <step>
                                 <name>resolveReadTokenCentral</name>
@@ -269,7 +269,7 @@
                                 <output>
                                     <iosingle ref="patients"/>
                                 </output>
-                                <implementation>de.mainzelliste.paths.processor.MainzellisteReadClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.MainzellisteReadClient</implementation>
                             </step>
                         </multipath>
                     </case>
@@ -299,7 +299,7 @@
                                 <output>
                                     <iosingle ref="tokenId"/>
                                 </output>
-                                <implementation>de.mainzelliste.paths.processor.MainzellisteReadTokenClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.MainzellisteReadTokenClient</implementation>
                             </step>
                             <step>
                                 <name>resolveReadToken</name>
@@ -313,7 +313,7 @@
                                 <output>
                                     <iosingle ref="patients"/>
                                 </output>
-                                <implementation>de.mainzelliste.paths.processor.MainzellisteReadClient</implementation>
+                                <implementation>de.pseudonymisierung.magicpl.processor.MainzellisteReadClient</implementation>
                             </step>
                         </multipath>
                     </case>

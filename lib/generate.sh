@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cat > ../landing/index.html <<EOL
+cat > ./landing/index.html <<EOL
 <html lang="en">
 
 <head>

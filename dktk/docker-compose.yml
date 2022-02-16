@@ -56,6 +56,8 @@ services:
     environment:
       STORE_URL: ${STORE_URL}
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
+      PATIENTLIST_URL: "http://bridgehead_patientlist:8080"
+      PROJECTPSEUDONYMISATION_URL: "http://bridgehead_dktk_idmanager:8080/ID-Manager/html/projectSelection.html"
     volumes:
       - "connector_logs:/usr/local/tomcat/logs"
     depends_on:

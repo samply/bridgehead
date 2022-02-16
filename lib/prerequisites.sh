@@ -4,7 +4,7 @@
 ## Check if user is a su
 echo "Welcome to the starting a bridgehead. We will get your instance up and running in no time"
 echo "First we will check if all prerequisites are met ..."
-prerequisites="git docker docker-compose"
+prerequisites="git docker docker-compose cat"
 for prerequisite in $prerequisites; do
   $prerequisite --version 2>&1
   is_available=$?

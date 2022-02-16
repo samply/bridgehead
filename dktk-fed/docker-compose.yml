@@ -41,11 +41,10 @@ services:
     - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.test-auth.basicauth.usersfile=/auth/dktk"
       - "traefik.http.routers.blaze_dktk.rule=PathPrefix(`/dktk-localdatamanagement`)"
       - "traefik.http.middlewares.dktk_b_strip.stripprefix.prefixes=/dktk-localdatamanagement"
       - "traefik.http.services.blaze_dktk.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_dktk.middlewares=dktk_b_strip,test-auth"
+      - "traefik.http.routers.blaze_dktk.middlewares=dktk_b_strip"
   
 
 volumes:

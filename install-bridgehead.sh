@@ -11,6 +11,9 @@ if ! ./lib/prerequisites.sh; then
 fi
 source site.conf
 
+./lib/generate.sh
+
+
 echo -e "\nInstalling systemd units ..."
 cp -v \
     lib/systemd/bridgehead\@.service \

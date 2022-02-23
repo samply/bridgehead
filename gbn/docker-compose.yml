@@ -8,7 +8,7 @@ volumes:
 
 services:
   traefik:
-    container_name: bridgehead_traefik
+    container_name: traefik
     image: traefik:2.4
     command:
       - --api.insecure=true
@@ -28,7 +28,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   landing:
-    container_name: bridgehead_landingpage
+    container_name: landingpage
     image: nginx:stable
     volumes:
       - ../landing/:/usr/share/nginx/html
@@ -56,8 +56,8 @@ services:
     restart: "always"
 
   connector:
-    container_name: "bridgehead_gbn_connector"
-    image: "samply/share-client:gbn-7"
+    container_name: connector
+    image: "samply/share-client:gbn-feature-environmentPreconfigurationTorben"
     environment:
       POSTGRES_HOST: "bridgehead_gbn_connector_db"
       POSTGRES_PASS: ${CONNECTOR_POSTGRES_PASS}

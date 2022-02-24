@@ -19,6 +19,11 @@ export HTTPS_PROXY_PASSWORD=""
 # the password of database connector-db
 export CONNECTOR_POSTGRES_PASS=pleaseChangeThis1
 
+
+### Configuration for Samply Store Secrets
+# the password of database connector-db
+export STORE_POSTGRES_PASS=pleaseChangeThis6
+
 ### Configuration for ID-Management Secrets
 # the password of database patientlist-db
 export ML_DB_PASS=pleaseChangeThis2

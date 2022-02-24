@@ -1,12 +1,10 @@
 version: "3.7"
 volumes:
-  connector_db_data:
-  connector_logs:
-  patientlist_db_data:
-  patientlist_logs:
-  idmanager_logs:
-  store_db_data:
-  store_logs:
+  dktk-connector-db-data:
+  dktk-connector-logs:
+  patientlist-db-data:
+  patientlist-logs:
+  id-manager-logs:
 
 services:
   traefik:
@@ -34,9 +32,10 @@ services:
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
       - "traefik.http.services.landing.loadbalancer.server.port=80"
 
-  connector:
+  dktk-connector:
     image: "samply/share-client:dktk-feature-environmentPreconfigurationTorben"
     environment:
+      POSTGRES_HOST: "dktk-connector-db"
       ID_MANAGER_APIKEY: ${MAGICPL_API_KEY_CONNECTOR}
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
       HTTP_PROXY_USER: ${HTTP_PROXY_USER}
@@ -50,7 +49,7 @@ services:
       - "host.docker.internal:host-gateway"
       - "${HOST}:${HOSTIP}"
     volumes:
-      - "connector_logs:/usr/local/tomcat/logs"
+      - "dktk-connector-logs:/usr/local/tomcat/logs"
     depends_on:
       - connector-db
     restart: always
@@ -59,14 +58,14 @@ services:
       - "traefik.http.routers.dktk_connector.rule=PathPrefix(`/dktk-connector`)"
       - "traefik.http.services.dktk_connector.loadbalancer.server.port=8080"
 
-  connector-db:
+  dktk-connector-db:
     image: postgres:10.17
     environment:
       POSTGRES_DB: "share_v2"
       POSTGRES_USER: "samplyweb"
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
     volumes:
-      - "connector_db_data:/var/lib/postgresql/data"
+      - "dktk-connector-db-data:/var/lib/postgresql/data"
     restart: always
 
   id-manager:
@@ -81,7 +80,7 @@ services:
       MAGICPL_CENTRAL_API_KEY: ${MAGICPL_CENTRAL_API_KEY}
       MAGICPL_OIDC_CLIENT_ID: ${MAGICPL_OIDC_CLIENT_ID}
       MAGICPL_OIDC_CLIENT_SECRET: ${MAGICPL_OIDC_CLIENT_SECRET}
-      TOMCAT_REVERSEPROXY_FQDN: "${PROTOCOL}://${HOST}:${PORT}"
+      TOMCAT_REVERSEPROXY_FQDN: "${HOST}"
       HTTP_PROXY_USER: ${HTTP_PROXY_USER}
       HTTP_PROXY_PASSWORD: ${HTTP_PROXY_PASSWORD}
       HTTPS_PROXY_USER: ${HTTPS_PROXY_USER}
@@ -89,7 +88,7 @@ services:
     env_file:
       - ../site-config/dktk.env
     volumes:
-      - "idmanager_logs:/usr/local/tomcat/logs"
+      - "id-manager-logs:/usr/local/tomcat/logs"
     depends_on:
       - patientlist
     labels:
@@ -103,13 +102,13 @@ services:
       ML_SITE: ${SITE}
       ML_API_KEY: ${MAGICPL_MAINZELLISTE_API_KEY}
       ML_DB_PASS: ${ML_DB_PASS}
-      TOMCAT_REVERSEPROXY_FQDN: "${PROTOCOL}://${HOST}:${PORT}"
+      TOMCAT_REVERSEPROXY_FQDN: "${HOST}"
     env_file:
       - ../site-config/dktk.env
       # TODO: Implement automatic seed generation in mainzelliste
       - ../site-config/patientlist.env
     volumes:
-      - "patientlist_logs:/usr/local/tomcat/logs"
+      - "patientlist-logs:/usr/local/tomcat/logs"
     labels:
       - "traefik.http.routers.patientlist.rule=PathPrefix(`/Patientlist`)"
       - "traefik.http.services.patientlist.loadbalancer.server.port=8080"
@@ -125,4 +124,4 @@ services:
       POSTGRES_PASSWORD: ${ML_DB_PASS}
       TZ: "Europe/Berlin"
     volumes:
-      - "patientlist_db_data:/var/lib/postgresql/data"
+      - "patientlist-db-data:/var/lib/postgresql/data"

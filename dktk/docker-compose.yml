@@ -1,3 +1,4 @@
+# TODO: Is there a reason why the docker-compose files are not at root level? e.g. docker-compose.(dktk|gbn|c4).yml
 version: "3.7"
 volumes:
   dktk-connector-db-data:
@@ -8,7 +9,6 @@ volumes:
 
 services:
   traefik:
-    container_name: traefik
     image: traefik:2.4
     command:
       - --api.insecure=true
@@ -23,7 +23,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   landing:
-    container_name: landingpage
     image: nginx:stable
     volumes:
       - ../landing/:/usr/share/nginx/html
@@ -69,7 +68,6 @@ services:
     restart: always
 
   id-manager:
-    container_name: id-manager
     image: docker.verbis.dkfz.de/ccp/idmanager:bridgehead-develop
     environment:
       MAGICPL_SITE: ${SITE}
@@ -96,7 +94,6 @@ services:
       - "traefik.http.services.id-manager.loadbalancer.server.port=8080"
 
   patientlist:
-    container_name: patientlist
     image: docker.verbis.dkfz.de/ccp/patientlist:bridgehead-develop
     environment:
       ML_SITE: ${SITE}
@@ -116,7 +113,6 @@ services:
       - patientlist-db
 
   patientlist-db:
-    container_name: patientlist-db
     image: postgres:13.1-alpine
     environment:
       POSTGRES_DB: mainzelliste

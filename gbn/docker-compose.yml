@@ -7,7 +7,6 @@ volumes:
 
 services:
   traefik:
-    container_name: traefik
     image: traefik:2.4
     command:
       - --api.insecure=true
@@ -22,7 +21,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   landing:
-    container_name: landingpage
     image: nginx:stable
     volumes:
       - ../landing/:/usr/share/nginx/html
@@ -35,7 +33,6 @@ services:
     image: "samply/share-client:gbn-feature-environmentPreconfigurationTorben"
     environment:
       POSTGRES_HOST: "gbn-connector-db"
-      ID_MANAGER_APIKEY: ${MAGICPL_API_KEY_CONNECTOR}
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
       HTTP_PROXY_USER: ${HTTP_PROXY_USER}
       HTTP_PROXY_PASSWORD: ${HTTP_PROXY_PASSWORD}

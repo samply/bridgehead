@@ -18,15 +18,19 @@ Each Project needs it own .env file where all the settings are located. Each Pro
 
 ### DKTK
 
-For DKTK set in the site.conf the project to "dkkt". Also you need to set many settings in the env file. For the API keys for the psuenomisation you need to contact the Mainzelliste Team. 
+For DKTK set in the site.conf the project to "dktk". Also you need to set many settings in the env file. For the API keys for the psuenomisation you need to contact the Mainzelliste Team. 
 
 ### GBA/BBMRI-ERIC
 
-For an GBN/BBMRI-ERIC deployment set the project to gbn. When you already deployed a bridgehead you can reuse the env file for it.
+For an GBN/BBMRI-ERIC deployment set the project to "gbn". When you already deployed a bridgehead you can reuse the env file for it.
 
 ### C4
 
-For C4 project it is similar to DKTK. Set the ldm_base_url in the configuration table to null.
+For C4 project it is similar to DKTK. Set the "LDM_URL_BASE" setting in the configuration table to null:
+
+``` shell
+docker exec bridgehead-c4-connector-db-1 bash -c 'psql -U $POSTGRES_USER $POSTGRES_DB -c "UPDATE samply.configuration SET setting=\'\' WHERE name=\'LDM_URL_BASE\'"';
+```
 
 ### Git repository
 

@@ -7,10 +7,10 @@ if ! lib/prerequisites.sh; then
     log "Prerequisites failed, exiting"
     exit
 fi
-source site.conf
 
 log "Starting bridgehead"
 
-docker-compose -f ${project}/docker-compose.yml --env-file site-config/${project}.env up -d
+# TODO: Check $1 for proper values
+docker-compose -f $1/docker-compose.yml --env-file bridgehead-config/$1.env up -d
 
 log "The bridgehead should be in online in a few seconds"

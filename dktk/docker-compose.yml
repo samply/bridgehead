@@ -1,4 +1,3 @@
-# TODO: Is there a reason why the docker-compose files are not at root level? e.g. docker-compose.(dktk|gbn|c4).yml
 version: "3.7"
 volumes:
   dktk-connector-db-data:

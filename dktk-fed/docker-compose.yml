@@ -9,14 +9,15 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.web-secure.address=:443
       - --providers.docker=true
-      - --providers.file.directory=/etc/traefik/dynamic_conf
+      - --providers.file.directory=/configuration/
+      - --providers.file.watch=true
     ports:
       - 80:80
       - 443:443
       - 8080:8080
     volumes:
       - ../certs:/tools/certs
-      - ./traefik.yml:/etc/traefik/dynamic_conf/traefik.yml:ro
+      - ../tools/traefik/:/configuration/
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ../auth/:/auth
     extra_hosts:
@@ -31,6 +32,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
       - "traefik.http.services.landing.loadbalancer.server.port=80"
+      - "traefik.http.routers.landing.tls=true"
 
   blaze:
     image: "samply/blaze:0.15"

@@ -13,7 +13,6 @@ source site.conf
 
 ./lib/generate.sh
 
-
 echo -e "\nInstalling systemd units ..."
 cp -v \
     lib/systemd/bridgehead\@.service \
@@ -22,8 +21,6 @@ cp -v \
     /etc/systemd/system/
 
 systemctl daemon-reload
-
-echo
 
 if ! systemctl is-active --quiet bridgehead@"${project}"; then
     echo "Enabling autostart of bridgehead@${project}.service"

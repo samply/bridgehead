@@ -32,6 +32,7 @@ done
 if [ $git_updated = "true" ] || [ $docker_updated = "true" ]; then
   log "INFO" "Due to previous updates now restarting $service@$1"
   systemctl restart "$service@$1.service"
+  ./lib/generate.sh
 fi
 log "INFO" "checking updates finished"
 exit 0

@@ -35,7 +35,7 @@ services:
       - "traefik.http.routers.landing.tls=true"
 
   blaze:
-    image: "samply/blaze:0.15"
+    image: "samply/blaze:0.16"
     container_name: bridgehead_dktk_blaze
     environment:
       BASE_URL: "http://blaze:8080"
@@ -46,11 +46,11 @@ services:
     - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
+      - "traefik.http.middlewares.test-auth.basicauth.usersfile=/auth/dktk"
       - "traefik.http.routers.blaze_dktk.rule=PathPrefix(`/dktk-localdatamanagement`)"
       - "traefik.http.middlewares.dktk_b_strip.stripprefix.prefixes=/dktk-localdatamanagement"
       - "traefik.http.services.blaze_dktk.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_dktk.middlewares=dktk_b_strip"
-  
+      - "traefik.http.routers.blaze_dktk.middlewares=dktk_b_strip,test-auth" 
 
 volumes:
   blaze-data:

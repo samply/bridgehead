@@ -49,7 +49,7 @@ if [ "$project" = "dktk-fed" ]
 then 
     LOCAL_SERVICES+="         <tr>
             <td>DKTK</td>
-            <td><a href=\"http://${HOST}/dktk-localdatamanagement/fhir/\">Blaze</a></td>
+            <td><a href=\"https://${HOST}/dktk-localdatamanagement/fhir/\">Blaze</a></td>
           </tr>
           "
 fi

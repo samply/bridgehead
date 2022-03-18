@@ -1,6 +1,6 @@
 ##Ignore site configuration
 .gitmodules
-site-config
+site-config/*
 
 ## Ignore site configuration
 config/**/*
@@ -8,3 +8,5 @@ config/**/*
 landing/*
 docker-compose.override.yml
 site.conf
+auth/*
+certs/*

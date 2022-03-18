@@ -1,0 +1,3 @@
+[submodule "site-config"]
+	path = site-config
+	url = https://code.mitro.dkfz.de/scm/bd/st.-patricks-town.git

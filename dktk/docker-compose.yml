@@ -1,38 +1,19 @@
 version: "3.7"
 volumes:
-  connector_db_data:
-  connector_logs:
-  patientlist_db_data:
-  patientlist_logs:
-  idmanager_logs:
-  store_db_data:
-  store_logs:
-secrets:
-  mainzelliste.docker.conf:
-    file: ../internal-configuration/mainzelliste.conf
-  magicpl.docker.xml:
-    file: ../internal-configuration/magicpl.xml
-  dktk_bridgehead_info.docker.xml:
-    file: ../internal-configuration/bridgehead-common.xml
-  centralSearchPublicKey:
-    file: ../internal-configuration/centralSearchPublicKey.der
-  proxy.docker.xml:
-    file: ../internal-configuration/proxy.xml
+  dktk-connector-db-data:
+  dktk-connector-logs:
+  patientlist-db-data:
+  patientlist-logs:
+  id-manager-logs:
 
 services:
   traefik:
-    container_name: bridgehead_traefik
     image: traefik:2.4
     command:
       - --api.insecure=true
       - --entrypoints.web.address=:80
       - --entrypoints.web-secure.address=:443
       - --providers.docker=true
-    environment:
-      http_proxy: ""
-      HTTP_PROXY: ""
-      https_proxy: ""
-      HTTPS_PROXY: ""      
     ports:
       - 80:80
       - 443:443
@@ -41,7 +22,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   landing:
-    container_name: bridgehead_landingpage
     image: nginx:stable
     volumes:
       - ../landing/:/usr/share/nginx/html
@@ -50,102 +30,93 @@ services:
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
       - "traefik.http.services.landing.loadbalancer.server.port=80"
 
-  connector:
-    container_name: bridgehead_dktk_connector
-    image: "samply/share-client:dktk-pr-148"
+  dktk-connector:
+    image: "samply/share-client:dktk-feature-environmentPreconfigurationTorben"
     environment:
-      STORE_URL: ${STORE_URL}
+      POSTGRES_HOST: "dktk-connector-db"
+      ID_MANAGER_APIKEY: ${MAGICPL_API_KEY_CONNECTOR}
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
-      PATIENTLIST_URL: "http://bridgehead_patientlist:8080"
-      PROJECTPSEUDONYMISATION_URL: "http://bridgehead_dktk_idmanager:8080/ID-Manager/html/projectSelection.html"
+      HTTP_PROXY_USER: ${HTTP_PROXY_USER}
+      HTTP_PROXY_PASSWORD: ${HTTP_PROXY_PASSWORD}
+      HTTPS_PROXY_USER: ${HTTPS_PROXY_USER}
+      HTTPS_PROXY_PASSWORD: ${HTTPS_PROXY_PASSWORD}
+    env_file:
+      - ../site-config/dktk.env
+    # Necessary for the connector to successful check the status of other components on the same host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "${HOST}:${HOSTIP}"
     volumes:
-      - "connector_logs:/usr/local/tomcat/logs"
+      - "dktk-connector-logs:/usr/local/tomcat/logs"
     depends_on:
-      - connector_db
+      - connector-db
     restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dktk_connector.rule=PathPrefix(`/dktk-connector`)"
       - "traefik.http.services.dktk_connector.loadbalancer.server.port=8080"
-    ports:
-      - 65395:65395
 
-  connector_db:
-    container_name: bridgehead_dktk_connector_db
+  dktk-connector-db:
     image: postgres:10.17
     environment:
-      POSTGRES_HOST: ${CONNECTOR_DB_HOST}
+      POSTGRES_DB: "share_v2"
+      POSTGRES_USER: "samplyweb"
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
     volumes:
-      - "connector_db_data:/var/lib/postgresql/data"
+      - "dktk-connector-db-data:/var/lib/postgresql/data"
     restart: always
-    env_file:
-    ###TODO: Move into Image
-      - internal.env
 
-  idmanager:
-    container_name: bridgehead_id-manager
-    image: docker.verbis.dkfz.de/pseudonymisierung/magicpl:release-0.2.0
+  id-manager:
+    image: docker.verbis.dkfz.de/ccp/idmanager:bridgehead-develop
     environment:
-      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/id-manager
-      MAGICPL_MAINZELLISTE_API_KEY: "123"
-      MAGICPL_API_KEY: "123"
-      MAGICPL_API_KEY_CONNECTOR: "123"
-      MAGICPL_PASSPHRASE: "123"
-      MAGICPL_MAINZELLISTE_CENTRAL_API_KEY: "123"
-      MAGICPL_CENTRAL_API_KEY: "123"
-      MAGICPL_OIDC_CLIENT_ID: "123"
-      MAGICPL_OIDC_CLIENT_SECRET: "123"
-      TZ: Europe/Berlin
+      MAGICPL_SITE: ${SITE}
+      MAGICPL_MAINZELLISTE_API_KEY: ${MAGICPL_MAINZELLISTE_API_KEY}
+      MAGICPL_API_KEY: ${MAGICPL_API_KEY}
+      MAGICPL_API_KEY_CONNECTOR: ${MAGICPL_API_KEY_CONNECTOR}
+      MAGICPL_MAINZELLISTE_CENTRAL_API_KEY: ${MAGICPL_MAINZELLISTE_CENTRAL_API_KEY}
+      MAGICPL_CENTRAL_API_KEY: ${MAGICPL_CENTRAL_API_KEY}
+      MAGICPL_OIDC_CLIENT_ID: ${MAGICPL_OIDC_CLIENT_ID}
+      MAGICPL_OIDC_CLIENT_SECRET: ${MAGICPL_OIDC_CLIENT_SECRET}
+      TOMCAT_REVERSEPROXY_FQDN: "${HOST}"
+      HTTP_PROXY_USER: ${HTTP_PROXY_USER}
+      HTTP_PROXY_PASSWORD: ${HTTP_PROXY_PASSWORD}
+      HTTPS_PROXY_USER: ${HTTPS_PROXY_USER}
+      HTTPS_PROXY_PASSWORD: ${HTTPS_PROXY_PASSWORD}
+    env_file:
+      - ../site-config/dktk.env
     volumes:
-      - "idmanager_logs:/usr/local/tomcat/logs"
-    secrets:
-      - magicpl.docker.xml
-      - dktk_bridgehead_info.docker.xml
-      - proxy.docker.xml
+      - "id-manager-logs:/usr/local/tomcat/logs"
     depends_on:
       - patientlist
     labels:
-      - "traefik.http.routers.idmanager.rule=PathPrefix(`/id-manager`)"
-      - "traefik.http.middlewares.idmanager_strip.stripprefix.prefixes=/id-mana\
-        ger"
-      - "traefik.http.routers.idmanager.middlewares=idmanager_strip"
-      - "traefik.http.services.idmanager.loadbalancer.server.port=8080"
-    env_file:
-    ###TODO: Move into Image
-      - internal.env
+      - "traefik.http.routers.id-manager.rule=PathPrefix(`/ID-Manager`)"
+      - "traefik.http.services.id-manager.loadbalancer.server.port=8080"
 
   patientlist:
-    container_name: bridgehead_patientlist
-    image: medicalinformatics/mainzelliste:develop
+    image: docker.verbis.dkfz.de/ccp/patientlist:bridgehead-develop
     environment:
+      ML_SITE: ${SITE}
+      ML_API_KEY: ${MAGICPL_MAINZELLISTE_API_KEY}
       ML_DB_PASS: ${ML_DB_PASS}
-      ML_API_KEY: ${ML_API_KEY}
-      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/patientlist
+      TOMCAT_REVERSEPROXY_FQDN: "${HOST}"
     env_file:
+      - ../site-config/dktk.env
+      # TODO: Implement automatic seed generation in mainzelliste
       - ../site-config/patientlist.env
-      - internal.env
     volumes:
-      - "patientlist_logs:/usr/local/tomcat/logs"
-    secrets:
-      - mainzelliste.docker.conf
-      - centralSearchPublicKey
+      - "patientlist-logs:/usr/local/tomcat/logs"
     labels:
-      - "traefik.http.routers.patientlist.rule=PathPrefix(`/patientlist`)"
-      - "traefik.http.middlewares.patientlist_strip.stripprefix.prefixes=/patie\
-        ntlist"
-      - "traefik.http.routers.patientlist.middlewares=patientlist_strip"
+      - "traefik.http.routers.patientlist.rule=PathPrefix(`/Patientlist`)"
       - "traefik.http.services.patientlist.loadbalancer.server.port=8080"
     depends_on:
-      - patientlist_db
+      - patientlist-db
 
-  patientlist_db:
-    container_name: bridgehead_dktk_patientlist_db
+  patientlist-db:
     image: postgres:13.1-alpine
     environment:
-      POSTGRES_PORT: 5432
       POSTGRES_DB: mainzelliste
-      POSTGRES_USER: mainzelliste      
+      POSTGRES_USER: mainzelliste
       POSTGRES_PASSWORD: ${ML_DB_PASS}
+      TZ: "Europe/Berlin"
     volumes:
-      - "patientlist_db_data:/var/lib/postgresql/data"
+      - "patientlist-db-data:/var/lib/postgresql/data"

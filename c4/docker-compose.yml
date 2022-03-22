@@ -1,38 +1,21 @@
 version: "3.7"
 volumes:
-  connector_db_data:
-  connector_logs:
-  patientlist_db_data:
-  patientlist_logs:
-  idmanager_logs:
-  store_db_data:
-  store_logs:
-secrets:
-  mainzelliste.docker.conf:
-    file: ../internal-configuration/mainzelliste.conf
-  magicpl.docker.xml:
-    file: ../internal-configuration/magicpl.xml
-  dktk_bridgehead_info.docker.xml:
-    file: ../internal-configuration/bridgehead-common.xml
-  centralSearchPublicKey:
-    file: ../internal-configuration/centralSearchPublicKey.der
-  proxy.docker.xml:
-    file: ../internal-configuration/proxy.xml
+  c4-connector-db-data:
+  c4-connector-logs:
+  patientlist-db-data:
+  patientlist-logs:
+  id-manager-logs:
+  c4-store-db-data:
+  c4-store-logs:
 
 services:
   traefik:
-    container_name: bridgehead_traefik
     image: traefik:2.4
     command:
       - --api.insecure=true
       - --entrypoints.web.address=:80
       - --entrypoints.web-secure.address=:443
       - --providers.docker=true
-    environment:
-      http_proxy: ""
-      HTTP_PROXY: ""
-      https_proxy: ""
-      HTTPS_PROXY: ""      
     ports:
       - 80:80
       - 443:443
@@ -41,7 +24,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   landing:
-    container_name: bridgehead_landingpage
     image: nginx:stable
     volumes:
       - ../landing/:/usr/share/nginx/html
@@ -50,106 +32,128 @@ services:
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
       - "traefik.http.services.landing.loadbalancer.server.port=80"
 
-  connector:
-    container_name: bridgehead_c4_connector
-    image: docker.verbis.dkfz.de/ccp/connector:3
+  c4-connector:
+    image: "samply/share-client:c4-feature-environmentPreconfigurationTorben"
     environment:
-      STORE_URL: http://bridgehead_c4_store:8080
-      LDM_URL: http://bridgehead_c4_store:8080
-      POSTGRES_HOST: ${CONNECTOR_DB_HOST}
+      POSTGRES_HOST: "c4-connector-db"
+      ID_MANAGER_APIKEY: ${MAGICPL_API_KEY_CONNECTOR}
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
-      NNGM_PASSWORD: ${NNGM_PASSWORD}
-      NNGM_MAINZELLISTE_APIKEY: ${NNGM_MAINZELLISTE_APIKEY}
+      HTTP_PROXY_USER: ${HTTP_PROXY_USER}
+      HTTP_PROXY_PASSWORD: ${HTTP_PROXY_PASSWORD}
+      HTTPS_PROXY_USER: ${HTTPS_PROXY_USER}
+      HTTPS_PROXY_PASSWORD: ${HTTPS_PROXY_PASSWORD}
+      LDM_URL: "${PROTOCOL}://${HOST}/c4-localdatamanagement"
+      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
+    env_file:
+      - ../site-config/c4.env
+    # Necessary for the connector to successful check the status of other components on the same host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "${HOST}:${HOSTIP}"
     volumes:
-      - "connector_logs:/usr/local/tomcat/logs"
+      - "c4-connector-logs:/usr/local/tomcat/logs"
+    depends_on:
+      - connector-db
+    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.c4_connector.rule=PathPrefix(`/c4-connector`)"
       - "traefik.http.services.c4_connector.loadbalancer.server.port=8080"
-    depends_on:
-      - connector_db
-    restart: always
-    env_file:
-    ###TODO: Move into Image
-      - internal.env
 
-  connector_db:
-    container_name: bridgehead_c4_connector_db
+  c4-connector-db:
     image: postgres:10.17
     environment:
-      POSTGRES_HOST: ${CONNECTOR_DB_HOST}
+      POSTGRES_DB: "share_v2"
+      POSTGRES_USER: "samplyweb"
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
     volumes:
-      - "connector_db_data:/var/lib/postgresql/data"
+      - "c4-connector-db-data:/var/lib/postgresql/data"
     restart: always
-    env_file:
-    ###TODO: Move into Image
-      - internal.env
 
-  idmanager:
-    container_name: bridgehead_idmanager
-    image: docker.verbis.dkfz.de/ccp/idmanager:deploy-c4
+  id-manager:
+    image: docker.verbis.dkfz.de/ccp/idmanager:bridgehead-develop
     environment:
-      TOMCAT_REVERSEPROXY_FQDN: ${HOST}/id-manager
+      MAGICPL_SITE: ${SITE}
       MAGICPL_MAINZELLISTE_API_KEY: ${MAGICPL_MAINZELLISTE_API_KEY}
       MAGICPL_API_KEY: ${MAGICPL_API_KEY}
       MAGICPL_API_KEY_CONNECTOR: ${MAGICPL_API_KEY_CONNECTOR}
-      MAGICPL_PASSPHRASE: ${MAGICPL_PASSPHRASE}
       MAGICPL_MAINZELLISTE_CENTRAL_API_KEY: ${MAGICPL_MAINZELLISTE_CENTRAL_API_KEY}
       MAGICPL_CENTRAL_API_KEY: ${MAGICPL_CENTRAL_API_KEY}
       MAGICPL_OIDC_CLIENT_ID: ${MAGICPL_OIDC_CLIENT_ID}
       MAGICPL_OIDC_CLIENT_SECRET: ${MAGICPL_OIDC_CLIENT_SECRET}
-    volumes:
-      - "idmanager_logs:/usr/local/tomcat/logs"
-    secrets:
-      - magicpl.docker.xml
-      - dktk_bridgehead_info.docker.xml
-      - proxy.docker.xml
-    labels:
-      - "traefik.http.routers.idmanager.rule=PathPrefix(`/id-manager`)"
-      - "traefik.http.middlewares.idmanager_strip.stripprefix.prefixes=/id-mana\
-        ger"
-      - "traefik.http.routers.idmanager.middlewares=idmanager_strip"
-      - "traefik.http.services.idmanager.loadbalancer.server.port=8080"
+      TOMCAT_REVERSEPROXY_FQDN: "${HOST}"
+      HTTP_PROXY_USER: ${HTTP_PROXY_USER}
+      HTTP_PROXY_PASSWORD: ${HTTP_PROXY_PASSWORD}
+      HTTPS_PROXY_USER: ${HTTPS_PROXY_USER}
+      HTTPS_PROXY_PASSWORD: ${HTTPS_PROXY_PASSWORD}
     env_file:
-    ###TODO: Move into Image
-      - internal.env
+      - ../site-config/dktk.env
+    volumes:
+      - "id-manager-logs:/usr/local/tomcat/logs"
+    depends_on:
+      - patientlist
+    labels:
+      - "traefik.http.routers.idmanager.rule=PathPrefix(`/ID-Manager`)"
+      - "traefik.http.services.idmanager.loadbalancer.server.port=8080"
 
-  store:
-    container_name: bridgehead_c4_store
+  patientlist:
+    image: docker.verbis.dkfz.de/ccp/patientlist:bridgehead-develop
+    environment:
+      ML_SITE: ${SITE}
+      ML_API_KEY: ${MAGICPL_MAINZELLISTE_API_KEY}
+      ML_DB_PASS: ${ML_DB_PASS}
+      TOMCAT_REVERSEPROXY_FQDN: "${HOST}"
+    env_file:
+      - ../site-config/dktk.env
+      # TODO: Implement automatic seed generation in mainzelliste
+      - ../site-config/patientlist.env
+    volumes:
+      - "patientlist-logs:/usr/local/tomcat/logs"
+    labels:
+      - "traefik.http.routers.patientlist.rule=PathPrefix(`/Patientlist`)"
+      - "traefik.http.services.patientlist.loadbalancer.server.port=8080"
+    depends_on:
+      - patientlist-db
+
+  patientlist-db:
+    image: postgres:13.1-alpine
+    environment:
+      POSTGRES_DB: mainzelliste
+      POSTGRES_USER: mainzelliste
+      POSTGRES_PASSWORD: ${ML_DB_PASS}
+      TZ: "Europe/Berlin"
+    volumes:
+      - "patientlist-db-data:/var/lib/postgresql/data"
+
+  c4-store:
     image: docker.verbis.dkfz.de/ccp/samply.store:release-5.1.2
     environment:
-      POSTGRES_HOST: bridgehead_c4_store_db
+      MDR_NAMESPACE: "adt,dktk,marker"
+      MDR_VALIDATION: false
+      DEPLOYMENT_CONTEXT: "c4-localdatamanagement"
+      POSTGRES_HOST: c4-store-db
       POSTGRES_PORT: 5432
       POSTGRES_DB: samplystore
       POSTGRES_USER: samplystore
-      POSTGRES_PASSWORD: samplystore
-      TZ: Europe/Berlin
+      POSTGRES_PASSWORD: ${STORE_POSTGRES_PASS}
+      TZ: "Europe/Berlin"
     volumes:
-      - "store_logs:/usr/local/tomcat/logs"
+      - "c4-store-logs:/usr/local/tomcat/logs"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.store_c4.rule=PathPrefix(`/c4-loc\
-        aldatamanagement`)"
+      - "traefik.http.routers.store_c4.rule=PathPrefix(`/c4-localdatamanagement`)"
     depends_on:
-      - store_db
+      - store-db
     restart: always
-    env_file:
-    ###TODO: Move into Image
-      - internal.env
 
-  store_db:
-    container_name: bridgehead_c4_store_db
+  c4-store-db:
     image: postgres:9.5-alpine
     command: postgres -c datestyle='iso, dmy'
     environment:
-      POSTGRES_PORT: 5432
+      TZ: "Europe/Berlin"
       POSTGRES_DB: samplystore
       POSTGRES_USER: samplystore
-      POSTGRES_PASSWORD: samplystore
+      POSTGRES_PASSWORD: ${STORE_POSTGRES_PASS}
     volumes:
-      - "store_db_data:/var/lib/postgresql/data"
+      - "c4-store-db-data:/var/lib/postgresql/data"
     restart: always
-    env_file:
-    ###TODO: Move into Image
-      - internal.env

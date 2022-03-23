@@ -1,14 +1,86 @@
 # Bridgehead
+
 This repository contains all information and tools to deploy a bridgehead. If you have any questions about deploying a bridgehead, please [contact us](mailto:verbis-support@dkfz-heidelberg.de).
+
+
+TOC
+
+1. [About](#about)
+    - [Projects](#projects)
+        - [GBA/BBMRI-ERIC](#gbabbmri-eric)
+        - [DKTK/C4](#dktkc4)
+        - [NNGM](#nngm)
+    - [Bridgehead Components](#bridgehead-components)
+        - [Blaze Server](#blaze-serverhttpsgithubcomsamplyblaze)   
+1. [Requirements](#requirements)
+    - [Hardware](#hardware)
+    - [System](#system-requirements)
+2. [Getting Started](#getting-started)
+    - [DKTK](#dktkc4)
+    - [C4](#c4)
+    - [GBA/BBMRI-ERIC](#gbabbmri-eric)
+3. [Configuration](#configuration)
+4. [Managing your Bridgehead](#managing-your-bridgehead)
+    - [Systemd](#on-a-server)
+    - [Without Systemd](#on-developers-machine)
+4. [Pitfalls](#pitfalls)
+5. [Migration-guide](#migration-guide)
+7. [License](#license)
+
+
+## About
 
 TODO: Insert comprehensive feature list of the bridgehead? Why would anyone install it?
 
-TODO: TOC
+### Projects
+
+#### GBA/BBMRI-ERIC
+
+The **Sample Locator** is a tool that allows researchers to make searches for samples over a large number of geographically distributed biobanks. Each biobank runs a so-called **Bridgehead** at its site, which makes it visible to the Sample Locator.  The Bridgehead is designed to give a high degree of protection to patient data. Additionally, a tool called the [Negotiator][negotiator] puts you in complete control over which samples and which data are delivered to which researcher.
+
+You will most likely want to make your biobanks visible via the [publicly accessible Sample Locator][sl], but the possibility also exists to install your own Sample Locator for your site or organization, see the GitHub pages for [the server][sl-server-src] and [the GUI][sl-ui-src].
+
+The Bridgehead has two primary components:
+* The **Blaze Store**. This is a highly responsive FHIR data store, which you will need to fill with your data via an ETL chain.
+* The **Connector**. This is the communication portal to the Sample Locator, with specially designed features that make it possible to run it behind a corporate firewall without making any compromises on security.
+
+#### DKTK/C4
+
+TODO:
+
+#### NNGM
+
+TODO:
+
+### Bridgehead Components
+
+#### [Blaze Server](https://github.com/samply/blaze)
+
+This holds the actual data being searched. This store must be filled by you, generally by running an ETL on your locally stored data to turn it into the standardized FHIR format that we require.
+
+#### [Connector]
+
+TODO:
+
+
 
 ## Requirements
+
+### Hardware
+
+For running your bridgehead we recommend the follwing Hardware:
+
+- 4 CPU cores
+- At least 8 GB Ram
+- 10GB Hard Drive + how many data GB you need to store in the bridgehead
+
+
+### System Requirements
+
 Before starting the installation process, please ensure that following software is available on your system:
 
-### [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+#### [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+
 To check that you have a working git installation, please run
 ``` shell
 cd ~/;
@@ -18,7 +90,8 @@ rm -rf Hello-World;
 ```
 If you see the output "Hello World!" your installation should be working.
 
-### [Docker](https://docs.docker.com/get-docker/)
+#### [Docker](https://docs.docker.com/get-docker/)
+
 To check your docker installation, you can try to execute dockers "Hello World" Image. The command is:
 ``` shell
 docker run --rm --name hello-world hello-world;
@@ -33,7 +106,8 @@ You should also check, that the version of docker installed by you is newer than
 docker --version
 ```
 
-### [Docker Compose](https://docs.docker.com/compose/cli-command/#installing-compose-v2)
+#### [Docker Compose](https://docs.docker.com/compose/cli-command/#installing-compose-v2)
+
 To check your docker-compose installation, please run the following command. It uses the "hello-world" image from the previous section:
 ``` shell
 docker-compose -f - up <<EOF
@@ -51,7 +125,8 @@ You should also ensure, that the version of docker-compose installed by you is n
 docker-compose --version
 ```
 
-### [systemd](https://systemd.io/)
+#### [systemd](https://systemd.io/)
+
 You shouldn't need to install it yourself. If systemd is not available on your system you should get another system.
 To check if systemd is available on your system, please execute
 
@@ -59,14 +134,18 @@ To check if systemd is available on your system, please execute
 systemctl --version
 ```
 
+---
+
 ## Getting Started
 
 If your system passed all checks from ["Requirements" section], you are now ready to download the bridgehead.
 
 First, clone the repository to the directory "/srv/docker/bridgehead":
 
+u
+
 ``` shell
-sudo mkdir /srv/docker/;
+sudo mkdir -p /srv/docker/;
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 ```
 
@@ -99,6 +178,7 @@ sudo ./lib/setup-bridgehead-units.sh
 Finally, you need to configure your sites secrets. These are places as configuration for each bridgeheads system unit. Refer to the section for your specific project:
 
 ### DKTK/C4
+
 You can create the site specific configuration with: 
 
 ``` shell
@@ -134,6 +214,7 @@ sudo systemctl bridgehead@dktk.service;
 ```
 
 ### C4
+
 You can create the site specific configuration with: 
 
 ``` shell
@@ -197,12 +278,31 @@ sudo systemctl bridgehead@gbn.service;
 ```
 
 ### Developers
+
 Because some developers machines doesn't support system units (e.g Windows Subsystem for Linux), we provide a dev environment [configuration script](./lib/init-test-environment.sh).
 It is not recommended to use this script in production!
 
 ## Configuration
 
+### Basic Auth
+
+Some services we use authfication to protect the data. For example for local data managemnt like the blaze.
+
+The /auth direcotry contians for each project a file with user and password combination. If it is not present please create a file with just the project name. To add a combination use [htpasswdgenerator](https://htpasswdgenerator.de/) or use htpasswd on your maschine.
+
+### HTTPS Access
+
+We advise to use https for all service of your bridgehead. HTTPS is enabled on default. For starting the bridghead you need a ssl certificate. You can either create it yourself or get a signed one. You need to drop the certificates in /certs.
+
+If you want to create it yourself, you can generate the necessary certs with:
+
+``` shell
+openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/traefik.key -out certs/traefik.crt -days 365
+```
+
+
 ### Locally Managed Secrets
+
 This section describes the secrets you need to configure locally through the configuration
 
 | Name                                 | Recommended Value                                                                                 | Description |  
@@ -225,55 +325,77 @@ This section describes the secrets you need to configure locally through the con
 | MAGICPL_OIDC_CLIENT_SECRET           || The client secret used for your machine, to connect with the central authentication service       |
 
 ### Cooperatively Managed Secrets
+
 > TODO: Describe secrets from site-config 
 
 ## Managing your Bridgehead
+
 > TODO: Rewrite this section (restart, stop, uninstall, manual updates)
+
 ### On a Server
+
 #### Start
+
 This will start a not running bridgehead system unit:
 ``` shell
 sudo systemctl start bridgehead@<dktk/c4/gbn>
 ```
+
 #### Stop
+
 This will stop a running bridgehead system unit:
 ``` shell
 sudo systemctl stop bridgehead@<dktk/c4/gbn>
 ```
+
 #### Update
+
 This will update bridgehead system unit:
 ``` shell
 sudo systemctl start bridgehead-update@<dktk/c4/gbn>
 ```
+
 #### Remove the Bridgehead System Units
+
 If, for some reason you want to remove the installed bridgehead units, we added a [script](./lib/remove-bridgehead-units.sh) you can execute:
 ``` shell
 sudo ./lib/remove-bridgehead-units.sh
 ```
 
 ### On Developers Machine
+
 For developers, we provide additional scripts for starting and stopping the specif bridgehead:
+
 #### Start
+
 This shell script start a specified bridgehead. Choose between "dktk", "c4" and "gbn".
 ``` shell
 ./start-bridgehead <dktk/c4/gbn>
 ```
+
 #### Stop
+
 This shell script stops a specified bridgehead. Choose between "dktk", "c4" and "gbn".
 ``` shell
 ./stop-bridgehead <dktk/c4/gbn>
 ```
+
 #### Update
+
 This shell script updates the configuration for all bridgeheads installed on your system.
 ``` shell
 ./update-bridgehead
 ```
 > NOTE: If you want to regularly update your developing instance, you can create a CRON job that executes this script.
+
 ## Migration Guide
+
 > TODO: How to transfer from windows/gbn
 
 ## Pitfalls
+
 ### [Git Proxy Configuration](https://gist.github.com/evantoli/f8c23a37eb3558ab8765)
+
 Unlike most other tools, git doesn't use the default proxy variables "http_proxy" and "https_proxy". To make git use a proxy, you will need to adjust the global git configuration:
 
 ``` shell
@@ -290,6 +412,7 @@ sudo git config --global --list;
 ```
 
 ### Docker Daemon Proxy Configuration
+
 Docker has a background daemon, responsible for downloading images and starting them. To configure the proxy for this daemon, use the systemctl command:
 
 ``` shell
@@ -317,3 +440,67 @@ To make the configuration effective, you need to tell systemd to reload the conf
 sudo systemctl daemon-reload;
 sudo systemctl restart docker;
 ```
+
+## After the Installtion
+
+After starting your bridgehead, visit the landing page under the hostname. If you singed your own ssl certificate, there is probable an error message. However, you can accept it as exception. 
+
+On this page, there are all important links to each component, central and local. 
+
+### Connector Administration
+
+The Connector administration panel allows you to set many of the parameters regulating your Bridgehead. Most especially, it is the place where you can register your site with the Sample Locator. To access this page, proceed as follows:
+
+* Open the Connector page: https://<hostname>/<project>-connector/
+* In the "Local components" box, click the "Samply Share" button.
+* A new page will be opened, where you will need to log in using the administrator credentials (admin/adminpass by default).
+* After log in, you will be taken to the administration dashboard, allowing you to configure the Connector.
+* If this is the first time you have logged in as an administrator, you are strongly recommended to set a more secure password! You can use the "Users" button on the dashboard to do this.
+
+### GBA/BBMRI-ERIC
+
+#### Register with a Directory
+
+The [Directory][directory] is a BBMRI project that aims to catalog all biobanks in Europe and beyond. Each biobank is given its own unique ID and the Directory maintains counts of the number of donors and the number of samples held at each biobank. You are strongly encouraged to register with the Directory, because this opens the door to further services, such as the [Negotiator][negotiator].
+
+Generally, you should register with the BBMRI national node for the country where your biobank is based. You can find a list of contacts for the national nodes [here](http://www.bbmri-eric.eu/national-nodes/). If your country is not in this list, or you have any questions, please contact the [BBMRI helpdesk](mailto:directory@helpdesk.bbmri-eric.eu). If your biobank is for COVID samples, you can also take advantage of an accelerated registration process [here](https://docs.google.com/forms/d/e/1FAIpQLSdIFfxADikGUf1GA0M16J0HQfc2NHJ55M_E47TXahju5BlFIQ).
+
+Your national node will give you detailed instructions for registering, but for your information, here are the basic steps:
+
+* Log in to the Directory for your country.
+* Add your biobank and enter its details, including contact information for a person involved in running the biobank.
+* You will need to create at least one collection.
+* Note the biobank ID and the collection ID that you have created - these will be needed when you register with the Locator (see below).
+
+#### Register with a Locator
+
+* Go to the registration page http://localhost:8082/admin/broker_list.xhtml.
+* To register with a Locator, enter the following values in the three fields under "Join new Searchbroker":
+  * "Address": Depends on which Locator you want to register with:
+    * `https://locator.bbmri-eric.eu/broker/`: BBMRI Locator production service (European).
+    * `http://147.251.124.125:8088/broker/`: BBMRI Locator test service (European).
+    * `https://samplelocator.bbmri.de/broker/`: GBA Sample Locator production service (German).
+    * `https://samplelocator.test.bbmri.de/broker/`: GBA Sample Locator test service (German).
+  * "Your email address": this is the email to which the registration token will be returned.
+  * "Automatic reply": Set this to be `Total Size`
+* Click "Join" to start the registration process.
+* You should now have a list containing exactly one broker. You will notice that the "Status" box is empty.
+* Send an email to `feedback@germanbiobanknode.de` and let us know which of our Sample Locators you would like to register to. Please include the biobank ID and the collection ID from your Directory registration, if you have these available.
+* We will send you a registration token per email.
+* You will then re-open the Connector and enter the token into the "Status" box.
+* You should send us an email to let us know that you have done this.
+* We will then complete the registration process
+* We will email you to let you know that your biobank is now visible in the Sample Locator.
+
+If you are a Sample Locator administrator, you will need to understand the [registration process](./SampleLocatorRegistration.md). Normal bridgehead admins do not need to worry about this.
+
+
+## License
+
+Copyright 2019 - 2022 The Samply Community
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

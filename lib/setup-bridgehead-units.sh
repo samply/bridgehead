@@ -3,9 +3,7 @@
 
 source lib/functions.sh
 
-exitIfNotRoot
-
-if ! ./lib/prerequisites.sh; then
+if ! su bridgehead ./lib/prerequisites.sh; then
     log "Prerequisites failed, exiting"
     exit 1
 fi
@@ -19,6 +17,8 @@ cp -v \
     /etc/systemd/system/
 
 systemctl daemon-reload
+
+su bridgehead source ./lib/generate.sh
 
 echo
 

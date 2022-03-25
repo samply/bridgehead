@@ -7,4 +7,10 @@ config/**/*
 !config/**/*.default
 docker-compose.override.yml
 site.conf
-
+.bash_logout
+.bash_profile
+.bashrc
+.bash_history
+.rnd
+.pki/*
+.viminfo

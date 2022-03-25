@@ -1,5 +1,4 @@
 version: "3.7"
-
 services:
   traefik:
     container_name: bridgehead_traefik
@@ -7,13 +6,19 @@ services:
     command:
       - --api.insecure=true
       - --entrypoints.web.address=:80
-      - --entrypoints.web-secure.address=:443
+      - --entrypoints.websecure.address=:443
       - --providers.docker=true
+      - --providers.file.directory=/configuration/
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --providers.file.watch=true
     ports:
       - 80:80
       - 443:443
       - 8080:8080
     volumes:
+      - ../certs:/tools/certs
+      - ../tools/traefik/:/configuration/
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ../auth/:/auth
     extra_hosts:
@@ -28,9 +33,10 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
       - "traefik.http.services.landing.loadbalancer.server.port=80"
+      - "traefik.http.routers.landing.tls=true"
 
   blaze:
-    image: "samply/blaze:0.15"
+    image: "samply/blaze:0.16"
     container_name: bridgehead_dktk_blaze
     environment:
       BASE_URL: "http://blaze:8080"
@@ -46,7 +52,8 @@ services:
       - "traefik.http.middlewares.dktk_b_strip.stripprefix.prefixes=/dktk-localdatamanagement"
       - "traefik.http.services.blaze_dktk.loadbalancer.server.port=8080"
       - "traefik.http.routers.blaze_dktk.middlewares=dktk_b_strip,test-auth"
-  
+      - "traefik.http.routers.blaze_dktk.tls=true"
+   
   # dktk-fed-search-share:
   #   image: "ghcr.io/samply/dktk-fed-search-share:pr-1"
   #   container_name: bridgehead_dktk_share

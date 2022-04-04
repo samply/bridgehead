@@ -9,10 +9,7 @@ echo
 bc=$(docker run --rm -ti xmartlabs/htpasswd $bc_user $bc_password)
 
 if [ -z $bc_auth_users ]; then
-    export bc_auth_users=$bc
-    echo $bc_auth_users
+    printf "Please run: export bc_auth_users=\"%q\"" $bc
 else
-    export bc_auth_users="$bc_auth_users,$bc"
-    echo $bc_auth_users
+    echo "Please run: export bc_auth_users=\"${bc},$bc_auth_users\""
 fi
-

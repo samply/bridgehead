@@ -9,10 +9,9 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --providers.docker=true
-      - --providers.file.directory=/configuration/
+      - --providers.file.watch=true
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      - --providers.file.watch=true
     ports:
       - 80:80
       - 443:443
@@ -48,12 +47,13 @@ services:
     - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.test-auth.basicauth.usersfile=/auth/dktk"
+      - "traefik.http.middlewares.test-auth.basicauth.users=${bc_auth_users}"
       - "traefik.http.routers.blaze_dktk.rule=PathPrefix(`/dktk-localdatamanagement`)"
       - "traefik.http.middlewares.dktk_b_strip.stripprefix.prefixes=/dktk-localdatamanagement"
       - "traefik.http.services.blaze_dktk.loadbalancer.server.port=8080"
       - "traefik.http.routers.blaze_dktk.middlewares=dktk_b_strip,test-auth"
       - "traefik.http.routers.blaze_dktk.tls=true"
+
  
   # dktk-fed-search-share:
   #   image: "ghcr.io/samply/dktk-fed-search-share:pr-1"

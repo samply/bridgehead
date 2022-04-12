@@ -3,7 +3,7 @@
 echo "This script add's a user with password to the bridghead"
 
 if [ $# -eq 0 ]; then
-    echo "No arguments provided, please provide the prject name"
+    echo "No arguments provided, please provide the project name"
     exit 1
 fi
 

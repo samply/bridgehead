@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cat > ../landing/index.html <<EOL
+cat > ./landing/index.html <<EOL
 <html lang="en">
 
 <head>
@@ -70,11 +70,11 @@ cat > ../landing/index.html <<EOL
         <tbody>
           <tr>
             <td>Bridgehead</td>
-            <td>Reverse Proxy <a href="http://e260-serv-05:8080/">Traefik</a></td>
+            <td>Reverse Proxy <a href="https://e260-serv-05/dashboard/">Traefik</a></td>
           </tr>
           <tr>
             <td>DKTK</td>
-            <td><a href="http://e260-serv-05/dktk-localdatamanagement/fhir/">Blaze</a></td>
+            <td><a href="https://e260-serv-05/dktk-localdatamanagement/fhir/">Blaze</a></td>
           </tr>
         </tbody>
       </table>

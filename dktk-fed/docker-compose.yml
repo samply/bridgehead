@@ -1,8 +1,9 @@
 version: "3.7"
 
 services:
+  ### Does not need proxy settings
   traefik:
-    container_name: bridgehead_traefik
+    container_name: bridgehead-traefik
     image: traefik:2.4
     command:
       - --api.insecure=true
@@ -24,9 +25,21 @@ services:
       - ../auth/:/auth
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
   
+  ### Does need to know the outside proxy to connect central components
+  forward_proxy:
+    container_name: bridgehead-squid
+    image: ubuntu/squid
+    environment:
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+    volumes:
+      - "bridgehead-proxy:/var/log/squid"
+    
+## Needs internal proxy config
   landing:
-    container_name: bridgehead_landingpage
+    container_name: bridgehead-landingpage
     image: nginx:stable
     volumes:
       - ../landing/:/usr/share/nginx/html
@@ -36,9 +49,10 @@ services:
       - "traefik.http.services.landing.loadbalancer.server.port=80"
       - "traefik.http.routers.landing.tls=true"
 
+## Needs internal proxy config
   blaze:
     image: "samply/blaze:0.16"
-    container_name: bridgehead_dktk_blaze
+    container_name: bridgehead-dktk-blaze
     environment:
       BASE_URL: "http://blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx4g"
@@ -55,7 +69,39 @@ services:
       - "traefik.http.routers.blaze_dktk.middlewares=dktk_b_strip,test-auth"
       - "traefik.http.routers.blaze_dktk.tls=true"
  
-  # dktk-fed-search-share:
+  dktk-connector:
+      image: "samply/share-client:gbn-feature-environmentPreconfiguration"
+      environment:
+        POSTGRES_HOST: "dktk-connector-db"
+        POSTGRES_PASSWORD: "123"
+        STORE_URL: "http://bridgehead-blaze:8080/fhir"
+        MDR_URL: "https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
+        DEPLOYMENT_CONTEXT: "dktk-connector"
+      volumes:
+        - "dktk-connector-logs:/usr/local/tomcat/logs"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.dktk_connector.rule=PathPrefix(`/dktk-connector`)"
+        - "traefik.http.services.dktk_connector.loadbalancer.server.port=8080"
+        - "traefik.http.routers.landing.tls=true"
+
+      depends_on:
+        - "dktk-connector-db"
+        - "forward_proxy"
+      restart: "always"
+
+  dktk-connector-db:
+      image: "postgres:10.17"
+      environment:
+        POSTGRES_DB: "samply.connector"
+        POSTGRES_USER: "samply"
+        POSTGRES_PASSWORD: "123"
+      volumes:
+        - "dktk-connector-db-data:/var/lib/postgresql/data"
+      restart: "always"
+
+  
+    # dktk-fed-search-share:
   #   image: "ghcr.io/samply/dktk-fed-search-share:pr-1"
   #   container_name: bridgehead_dktk_share
   #   environment:
@@ -89,4 +135,6 @@ services:
 
 volumes:
   blaze-data:
+  dktk-connector-logs:
+  dktk-connector-db-data:
   # dktk-fed-search-share-db-data:

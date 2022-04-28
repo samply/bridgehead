@@ -286,9 +286,8 @@ It is not recommended to use this script in production!
 
 ### Basic Auth
 
-Some services we use authfication to protect the data. For example for local data managemnt like the blaze.
+use add_user.sh
 
-The /auth direcotry contians for each project a file with user and password combination. If it is not present please create a file with just the project name. To add a combination use [htpasswdgenerator](https://htpasswdgenerator.de/) or use htpasswd on your maschine.
 
 ### HTTPS Access
 

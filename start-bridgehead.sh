@@ -1,6 +1,11 @@
 #!/bin/bash
 ### Note: Currently not complete, needs some features before useable for production
 
+if [ $# -eq 0 ]; then
+    echo "No arguments provided"
+    exit 1
+fi
+
 source lib/functions.sh
 
 if ! lib/prerequisites.sh; then

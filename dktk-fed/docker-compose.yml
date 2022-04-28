@@ -32,8 +32,10 @@ services:
     container_name: bridgehead-squid
     image: ubuntu/squid
     environment:
-      http_proxy: ""
-      https_proxy: ""
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+    volumes:
+      - "bridgehead-proxy:/var/log/squid"
     
 ## Needs internal proxy config
   landing:

@@ -1,10 +1,7 @@
-##Ignore site configuration
-.gitmodules
-site-config
-
 ## Ignore site configuration
 config/**/*
 !config/**/*.default
 docker-compose.override.yml
 site.conf
-
+lading/*
+certs/*

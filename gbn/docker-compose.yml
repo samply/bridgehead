@@ -53,9 +53,6 @@ services:
     depends_on:
       - "gbn-connector-db"
     restart: "always"
-    env_file:
-    ###TODO: Move into Image
-      - internal.env
 
   gbn-connector-db:
     image: "postgres:10.17"

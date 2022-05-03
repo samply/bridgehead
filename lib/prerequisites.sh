@@ -15,40 +15,42 @@ for prerequisite in $prerequisites; do
   # TODO: Check for specific version
 done
 
-echo "Checking site.conf"
+echo "Checking /etc/bridgehead-config/"
+
+## Download submodule
+if [ ! -d "/etc/bridgehead-config/" ]; then
+  echo "Please set up the site-config folder. Instruction are in the readme."
+  exit 1
+else
+  echo "Done"
+fi
+
+echo "Checking /etc/bridgehead-config/site.conf"
 
 #check if site.conf is created
-if [ ! -f site.conf ]; then
+if [ ! -f /etc/bridgehead-config/site.conf ]; then
   echo "Please create your specific site.conf file from the site.dev.conf"
-  exit
+  exit 1
+else
+  echo "Done"
 fi
 
 #Load site specific variables
-source site.conf
+source /etc/bridgehead-config/site.conf
 
 if [ -z "$site_name" ]; then
   echo "Please set site_name"
+  exit 1
 fi
 
 echo "Checking site-config module"
 
-## Download submodule
-if [ ! -d "site-config" ]; then
-  echo "Please set up the site-config folder. Instruction are in the readme."
-  exit
-else
-  echo "Site configuration is already loaded"
-fi
-
-#Check if a project is selected
-if [ -z "$project"  ]; then
-  echo "No project selected! Please add a Project in your local site.conf."
-  exit
-fi
-
 #check if project env is present
-if [ -d "site-config/${project}.env" ]; then
-   echo "Please copy the tempalte from ${project} and put it in the site-config folder"
+if [ -d "/etc/bridgehead-config/${project}.env" ]; then
+   echo "Please copy the tempalte from ${project} and put it in the /etc/bridgehead-config/ folder"
+   exit 1
+else 
+  echo "Done"
 fi
 
 echo "All prerequisites are met!"

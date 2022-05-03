@@ -77,15 +77,15 @@ services:
     container_name: bridgehead-ccp-share
     environment:
       APP_BASE_URL: "http://dktk-fed-search-share:8080"
-      APP_BROKER_BASEURL: "http://dktk-fed-search.verbis.dkfz.de/broker/rest/searchbroker"
+      APP_BROKER_BASEURL: "https://dktk-fed-search.verbis.dkfz.de/broker/rest/searchbroker"
       APP_BROKER_MAIL: "foo@bar.de"
       APP_STORE_BASEURL: "http://bridgehead-ccp-blaze:8080/fhir"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://bridgehead-ccp-share-db:5432/dktk-fed-search-share"
       JAVA_TOOL_OPTIONS: "-Xmx1g"
-      # http_proxy: "http://bridgehead-squid:3128"
-      # https_proxy: "http://bridgehead-squid:3128"
-      # HTTP_PROXY: "http://bridgehead-squid:3128"
-      # HTTPS_PROXY: "http://bridgehead-squid:3128"
+      http_proxy: "http://bridgehead-squid:3128"
+      https_proxy: "http://bridgehead-squid:3128"
+      HTTP_PROXY: "http://bridgehead-squid:3128"
+      HTTPS_PROXY: "http://bridgehead-squid:3128"
     depends_on:
     - ccp-search-share-db
     - blaze
@@ -93,8 +93,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.dktk-fed-search.rule=PathPrefix(`/cpp-connector`)"
       - "traefik.http.services.dktk-fed-search.loadbalancer.server.port=8080"
-    extra_hosts:
-      - "dktk-fed-search.verbis.dkfz.de:10.133.193.8"
 
   ccp-search-share-db:
     image: "postgres:14"

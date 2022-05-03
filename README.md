@@ -142,11 +142,23 @@ If your system passed all checks from ["Requirements" section], you are now read
 
 First, clone the repository to the directory "/srv/docker/bridgehead":
 
-u
-
 ``` shell
 sudo mkdir -p /srv/docker/;
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
+```
+
+The next step is to create a user for the bridgehead service
+
+``` shell
+#!/bin/bash
+
+mkdir /srv/docker && cd /srv/docker
+
+adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
+useradd -M -g docker -N -s /sbin/nologin bridgehead
+ 
+chown 777 /srv/docker/bridgehead bridgehead
+sudo chown bridgehead /srv/docker/bridgehead/
 ```
 
 Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can visit the configuration template at [GitHub](https://github.com/samply/bridgehead-config). You can download the repositories contents and add them to the "bridgehead-config" directory.

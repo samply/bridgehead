@@ -1,0 +1,110 @@
+version: "3.7"
+
+services:
+  ### Does not need proxy settings
+  traefik:
+    container_name: bridgehead-traefik
+    image: traefik:2.4
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker=true
+      - --api.dashboard=true
+      - --accesslog=true # print access-logs
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+    labels:
+      - "traefik.http.routers.dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=${bc_auth_users}"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ../certs:/tools/certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  
+  ### Does need to know the outside proxy to connect central components
+  forward_proxy:
+    container_name: bridgehead-squid
+    image: ubuntu/squid
+    environment:
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+    volumes:
+      - "bridgehead-proxy:/var/log/squid"
+    
+## Needs internal proxy config
+  landing:
+    container_name: bridgehead-landingpage
+    image: nginx:stable
+    volumes:
+      - ../landing/:/usr/share/nginx/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
+      - "traefik.http.services.landing.loadbalancer.server.port=80"
+      - "traefik.http.routers.landing.tls=true"
+
+## Needs internal proxy config
+  blaze:
+    image: "samply/blaze:0.17"
+    container_name: bridgehead-ccp-blaze
+    environment:
+      BASE_URL: "http://blaze:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx4g"
+      LOG_LEVEL: "debug"
+      ENFORCE_REFERENTIAL_INTEGRITY: "false"
+    volumes:
+    - "blaze-data:/app/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-auth.basicauth.users=${bc_auth_users}"
+      - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/ccp-localdatamanagement`)"
+      - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/ccp-localdatamanagement"
+      - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,test-auth"
+      - "traefik.http.routers.blaze_ccp.tls=true"
+  
+  ccp-search-share:
+    image: "ghcr.io/samply/dktk-fed-search-share:main"
+    container_name: bridgehead-ccp-share
+    environment:
+      APP_BASE_URL: "http://dktk-fed-search-share:8080"
+      APP_BROKER_BASEURL: "https://dktk-fed-search.verbis.dkfz.de/broker/rest/searchbroker"
+      APP_BROKER_MAIL: "foo@bar.de"
+      APP_STORE_BASEURL: "http://bridgehead-ccp-blaze:8080/fhir"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://bridgehead-ccp-share-db:5432/dktk-fed-search-share"
+      JAVA_TOOL_OPTIONS: "-Xmx1g"
+      http_proxy: "http://bridgehead-squid:3128"
+      https_proxy: "http://bridgehead-squid:3128"
+      HTTP_PROXY: "http://bridgehead-squid:3128"
+      HTTPS_PROXY: "http://bridgehead-squid:3128"
+    depends_on:
+    - ccp-search-share-db
+    - blaze
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dktk-fed-search.rule=PathPrefix(`/cpp-connector`)"
+      - "traefik.http.services.dktk-fed-search.loadbalancer.server.port=8080"
+
+  ccp-search-share-db:
+    image: "postgres:14"
+    container_name: bridgehead-ccp-share-db
+    environment:
+      POSTGRES_USER: "dktk-fed-search-share"
+      POSTGRES_PASSWORD: "dktk-fed-search-share"
+      POSTGRES_DB: "dktk-fed-search-share"
+    volumes:
+    - "ccp-search-share-db-data:/var/lib/postgresql/data"
+
+volumes:
+  blaze-data:
+  bridgehead-proxy:
+  ccp-search-share-db-data:

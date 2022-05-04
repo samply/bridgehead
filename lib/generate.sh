@@ -1,5 +1,6 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 if [ ! -d ./landing ]
 then 
   mkdir landing
@@ -49,6 +50,8 @@ then
           "
 fi
 
+=======
+>>>>>>> version-1
 cat > ./landing/index.html <<EOL
 <html lang="en">
 
@@ -98,7 +101,18 @@ cat > ./landing/index.html <<EOL
           </tr>
         </thead>
         <tbody>
+<<<<<<< HEAD
           ${LOCAL_SERVICES}
+=======
+          <tr>
+            <td>Bridgehead</td>
+            <td>Reverse Proxy <a href="https://e260-serv-05/dashboard/">Traefik</a></td>
+          </tr>
+          <tr>
+            <td>DKTK</td>
+            <td><a href="https://e260-serv-05/dktk-localdatamanagement/fhir/">Blaze</a></td>
+          </tr>
+>>>>>>> version-1
         </tbody>
       </table>
     </div>

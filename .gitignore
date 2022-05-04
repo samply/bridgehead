@@ -1,16 +1,7 @@
-##Ignore site configuration
-.gitmodules
-site-config
-
 ## Ignore site configuration
 config/**/*
 !config/**/*.default
 docker-compose.override.yml
 site.conf
-.bash_logout
-.bash_profile
-.bashrc
-.bash_history
-.rnd
-.pki/*
-.viminfo
+lading/*
+certs/*

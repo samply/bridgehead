@@ -8,7 +8,6 @@ RestartSec=30
 
 WorkingDirectory=/srv/docker/bridgehead/
 
-ExecStartPre=/srv/docker/bridgehead/stop-bridgehead.sh %i
 ExecStart=/srv/docker/bridgehead/start-bridgehead.sh %i
 RemainAfterExit=true
 ExecStop=/srv/docker/bridgehead/stop-bridgehead.sh %i

@@ -5,11 +5,6 @@ then
   mkdir landing
 fi
 
-if [ ! -f ./landing/index.html ]
-then
-  touch index.html
-fi
-
 CENTRAL_SERVICES="          <tr>
             <td>CCP-IT</td>
             <td><a href=\"https://monitor.vmitro.de/icingaweb2/dashboard\">Monitoring Service</td>

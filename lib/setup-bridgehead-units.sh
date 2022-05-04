@@ -5,11 +5,22 @@ source lib/functions.sh
 
 exitIfNotRoot
 
+if [ $# -eq 0 ]; then
+    echo "Please provide a Project as argument"
+    exit 1
+fi
+
+if [ $1 != "ccp" ] && [ $1 != "nngm" ] && [ $1 != "gbn" ]; then
+    echo "Please provide a supported project like ccp, gbn or nngm"
+    exit 1
+fi
+
+export project=$1
+
 if ! ./lib/prerequisites.sh; then
     log "Prerequisites failed, exiting"
     exit 1
 fi
-source site.conf
 
 echo -e "\nInstalling systemd units ..."
 cp -v \
@@ -30,5 +41,3 @@ if ! systemctl is-active --quiet bridgehead@"${project}"; then
 fi
 
 echo -e "\nDone - now start your bridgehead by running\n\tsystemctl start bridgehead@${project}.service\nor by rebooting your machine."
-
-# TODO: Configuration of the different modules

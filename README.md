@@ -201,6 +201,10 @@ This will open your default editor allowing you to edit the docker system units 
 
 ``` conf
 [Service]
+
+Environment=http_proxy=
+Environment=https_proxy=
+
 Environment=HOSTIP=
 Environment=HOST=
 Environment=HTTP_PROXY_USER=

@@ -23,7 +23,6 @@ bc=`docker run --rm -it httpd:latest htpasswd -nb $bc_user $bc_password`
 if grep -q -E "Environment=bc_auth_users=" /etc/systemd/system/bridgehead@$1.service.d/override.conf ; then
     x=`grep -E "Environment=bc_auth_users=" /etc/systemd/system/bridgehead@$1.service.d/override.conf`
     sed -i "/Environment=bc_auth_users=/c\\$x,$bc" /etc/systemd/system/bridgehead@$1.service.d/override.conf       
-
 else 
     echo "Environment=bc_auth_users=${bc}" >> /etc/systemd/system/bridgehead@$1.service.d/override.conf
 fi

@@ -15,20 +15,20 @@ for prerequisite in $prerequisites; do
   # TODO: Check for specific version
 done
 
-echo "Checking /etc/bridgehead-config/"
+echo "Checking /etc/bridgehead/"
 
 ## Download submodule
-if [ ! -d "/etc/bridgehead-config/" ]; then
-  echo "Please set up the site-config folder. Instruction are in the readme."
+if [ ! -d "/etc/bridgehead/" ]; then
+  echo "Please set up the config folder. Instruction are in the readme."
   exit 1
 else
   echo "Done"
 fi
 
-echo "Checking /etc/bridgehead-config/site.conf"
+echo "Checking /etc/bridgehead/site.conf"
 
 #check if site.conf is created
-if [ ! -f /etc/bridgehead-config/site.conf ]; then
+if [ ! -f /etc/bridgehead/site.conf ]; then
   echo "Please create your specific site.conf file from the site.dev.conf"
   exit 1
 else
@@ -36,17 +36,17 @@ else
 fi
 
 #Load site specific variables
-source /etc/bridgehead-config/site.conf
+source /etc/bridgehead/site.conf
 
 if [ -z "$site_name" ]; then
   echo "Please set site_name"
   exit 1
 fi
 
-echo "Checking site-config module"
+echo "Checking project config"
 
 #check if project env is present
-if [ -d "/etc/bridgehead-config/${project}.env" ]; then
+if [ -d "/etc/bridgehead/${project}.env" ]; then
    echo "Please copy the tempalte from ${project} and put it in the /etc/bridgehead-config/ folder"
    exit 1
 else 

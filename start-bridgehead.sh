@@ -24,6 +24,6 @@ fi
 
 log "Starting bridgehead"
 
-docker-compose -f $1/docker-compose.yml --env-file /etc/bridgehead-config/$1.env up -d
+docker-compose -f $1/docker-compose.yml --env-file /etc/bridgehead/$1.env up -d
 
 log "The bridgehead should be in online in a few seconds"

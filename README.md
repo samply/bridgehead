@@ -147,6 +147,12 @@ sudo mkdir -p /srv/docker/;
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 ```
 
+<<<<<<< HEAD
+adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
+ useradd -M -g docker -N -s /sbin/nologin bridgehead
+chown bridghead /srv/docker/bridgehead/ -R
+
+=======
 The next step is to create a user for the bridgehead service
 
 ``` shell
@@ -160,6 +166,7 @@ useradd -M -g docker -N -s /sbin/nologin bridgehead
 chown 777 /srv/docker/bridgehead bridgehead
 sudo chown bridgehead /srv/docker/bridgehead/
 ```
+>>>>>>> version-1
 
 Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can visit the configuration template at [GitHub](https://github.com/samply/bridgehead-config). You can download the repositories contents and add them to the "bridgehead-config" directory.
 
@@ -188,6 +195,16 @@ sudo ./lib/setup-bridgehead-units.sh
 ```
 
 Finally, you need to configure your sites secrets. These are places as configuration for each bridgeheads system unit. Refer to the section for your specific project:
+
+### For Any Project you need to set the proxy in Update too
+
+``` conf
+[Service]
+Environment=http_proxy=
+Environment=https_proxy=
+```
+
+
 
 ### DKTK/C4
 

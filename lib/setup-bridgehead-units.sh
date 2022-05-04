@@ -3,8 +3,6 @@
 
 source lib/functions.sh
 
-exitIfNotRoot
-
 if ! ./lib/prerequisites.sh; then
     log "Prerequisites failed, exiting"
     exit 1

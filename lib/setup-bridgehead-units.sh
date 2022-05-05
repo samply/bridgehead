@@ -1,9 +1,7 @@
 #!/bin/bash
-### Note: Currently not complete, needs some features before useable for production
 
 source lib/functions.sh
 
-<<<<<<< HEAD
 exitIfNotRoot
 
 if [ $# -eq 0 ]; then
@@ -18,8 +16,6 @@ fi
 
 export project=$1
 
-=======
->>>>>>> 290fe5459d7399ff23a2a8db067c1728858350d5
 if ! ./lib/prerequisites.sh; then
     log "Prerequisites failed, exiting"
     exit 1

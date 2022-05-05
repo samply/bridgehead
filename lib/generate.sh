@@ -12,10 +12,10 @@ CENTRAL_SERVICES="          <tr>
 
 LOCAL_SERVICES="          <tr>
             <td>Bridgehead</td>
-            <td>Reverse Proxy <a href=\"http://${HOST}:8080/\">Traefik</a></td>
+            <td>Reverse Proxy <a href=\"https://${HOST}:8080/\">Traefik</a></td>
           </tr>"
 
-if [ "$project" = "dktk" ] || [ "$project" = "c4" ] || [ "$project" = "dktk-fed" ]
+if [ "$project" = "ccp" ]
 then
     CENTRAL_SERVICES+="          <tr>
             <td>CCP-IT</td>
@@ -40,11 +40,11 @@ then
           "
 fi
 
-if [ "$project" = "dktk-fed" ]
+if [ "$project" = "ccp" ]
 then 
     LOCAL_SERVICES+="         <tr>
             <td>DKTK</td>
-            <td><a href=\"https://${HOST}/dktk-localdatamanagement/fhir/\">Blaze</a></td>
+            <td><a href=\"https://${HOST}/cpp-localdatamanagement/fhir/\">Blaze</a></td>
           </tr>
           "
 fi
@@ -99,14 +99,6 @@ cat > ./landing/index.html <<EOL
         </thead>
         <tbody>
           ${LOCAL_SERVICES}
-          <tr>
-            <td>Bridgehead</td>
-            <td>Reverse Proxy <a href="https://e260-serv-05/dashboard/">Traefik</a></td>
-          </tr>
-          <tr>
-            <td>DKTK</td>
-            <td><a href="https://e260-serv-05/dktk-localdatamanagement/fhir/">Blaze</a></td>
-          </tr>
         </tbody>
       </table>
     </div>

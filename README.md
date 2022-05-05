@@ -44,7 +44,7 @@ The Bridgehead has two primary components:
 * The **Blaze Store**. This is a highly responsive FHIR data store, which you will need to fill with your data via an ETL chain.
 * The **Connector**. This is the communication portal to the Sample Locator, with specially designed features that make it possible to run it behind a corporate firewall without making any compromises on security.
 
-#### DKTK/C4
+#### CPP(DKTK/C4)
 
 TODO:
 
@@ -72,7 +72,7 @@ For running your bridgehead we recommend the follwing Hardware:
 
 - 4 CPU cores
 - At least 8 GB Ram
-- 10GB Hard Drive + how many data GB you need to store in the bridgehead
+- 100GB Hard Drive, recomended is a SSD
 
 
 ### System Requirements
@@ -147,40 +147,46 @@ sudo mkdir -p /srv/docker/;
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 ```
 
+When using the systemd services we you need to create a bridgehead user for security reasons. This should be done after clone the repository. Since not all linux distros support ```adduser```, we provide a action for the systemcall ```useradd```.
+
+``` shell
 adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
- useradd -M -g docker -N -s /sbin/nologin bridgehead
+useradd -M -g docker -N -s /sbin/nologin bridgehead
 chown bridghead /srv/docker/bridgehead/ -R
+```
 
 
 Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can visit the configuration template at [GitHub](https://github.com/samply/bridgehead-config). You can download the repositories contents and add them to the "bridgehead-config" directory.
 
 ``` shell
-sudo git submodule add -f https://github.com/samply/bridgehead-config.git ./site-config;
+sudo git clone https://github.com/samply/bridgehead-config.git /etc/bridgehead;
 ```
 > NOTE: If you are part of the CCP-IT we will provide you another link for the configuration.
 
 You should now be able to run a bridgehead instance. To check if everything works, execute the following:
 ``` shell
-sudo ./lib/init-test-environment.sh;
-sudo ./start-bridgehead.sh <dktk/gbn/c4>;
+sudo ./start-bridgehead.sh <project>;
 ```
 
-You should now be able to access the landing page on your system, e.g "http://<your-host>/" 
+You should now be able to access the landing page on your system, e.g "https://<your-host>/" 
 
-To remove the test-environment, run (make sure you don't have other docker services installed on this system, docker volume prune is destructive!)
+To shutdown the bridgehead just run.
 ``` shell
-sudo ./stop-bridgehead.sh <dktk/gbn/c4>;
-sudo docker volume prune;
+sudo ./stop-bridgehead.sh <project>;
 ```
 
-For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. . You can do this by executing the [setup-bridgehead-units.sh](./lib/setup-bridgehead-units.sh) script:
+We recomend to run firstly with the start and stop script and if aviable run the systemd service, which also enables automatic updates and more.
+
+### Systemd service
+
+For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. You can do this by executing the [setup-bridgehead-units.sh](./lib/setup-bridgehead-units.sh) script:
 ``` shell
-sudo ./lib/setup-bridgehead-units.sh
+sudo ./lib/setup-bridgehead-units.sh <project>
 ```
 
 Finally, you need to configure your sites secrets. These are places as configuration for each bridgeheads system unit. Refer to the section for your specific project:
 
-### For Any Project you need to set the proxy in Update too
+For Every Project you need to set the proxy this way, if you have a proxy.
 
 ``` conf
 [Service]
@@ -188,49 +194,32 @@ Environment=http_proxy=
 Environment=https_proxy=
 ```
 
-
-
-### DKTK/C4
+### CCP(DKTK/C4)
 
 You can create the site specific configuration with: 
 
 ``` shell
-sudo systemctl edit bridgehead@dktk.service;
+sudo systemctl edit bridgehead@ccp.service;
+sudo systemctl edit bridgehead-update@ccp.service;
+
 ```
 
 This will open your default editor allowing you to edit the docker system units configuration. Insert the following lines in the editor and define your machines secrets. You share some of the ID-Management secrets with the central patientlist (Mainz) and controlnumbergenerator (Frankfurt). Refer to the ["Configuration" section](#configuration) for this.
 
 ``` conf
 [Service]
-
 Environment=http_proxy=
 Environment=https_proxy=
-
-Environment=HOSTIP=
-Environment=HOST=
-Environment=HTTP_PROXY_USER=
-Environment=HTTP_PROXY_PASSWORD=
-Environment=HTTPS_PROXY_USER=
-Environment=HTTPS_PROXY_PASSWORD=
-Environment=CONNECTOR_POSTGRES_PASS=
-Environment=ML_DB_PASS=
-Environment=MAGICPL_API_KEY=
-Environment=MAGICPL_MAINZELLISTE_API_KEY=
-Environment=MAGICPL_API_KEY_CONNECTOR=
-Environment=MAGICPL_MAINZELLISTE_CENTRAL_API_KEY=
-Environment=MAGICPL_CENTRAL_API_KEY=
-Environment=MAGICPL_OIDC_CLIENT_ID=
-Environment=MAGICPL_OIDC_CLIENT_SECRET=
 ```
 
 To make the configuration effective, you need to tell systemd to reload the configuration and restart the docker service:
 
 ``` shell
 sudo systemctl daemon-reload;
-sudo systemctl bridgehead@dktk.service;
+sudo systemctl bridgehead@cpp.service;
 ```
 
-### C4
+### DKTK/C4
 
 You can create the site specific configuration with: 
 
@@ -242,6 +231,8 @@ This will open your default editor allowing you to edit the docker system units 
 
 ``` conf
 [Service]
+Environment=http_proxy=
+Environment=https_proxy=
 Environment=HOSTIP=
 Environment=HOST=
 Environment=HTTP_PROXY_USER=
@@ -249,7 +240,6 @@ Environment=HTTP_PROXY_PASSWORD=
 Environment=HTTPS_PROXY_USER=
 Environment=HTTPS_PROXY_PASSWORD=
 Environment=CONNECTOR_POSTGRES_PASS=
-Environment=STORE_POSTGRES_PASS=
 Environment=ML_DB_PASS=
 Environment=MAGICPL_API_KEY=
 Environment=MAGICPL_MAINZELLISTE_API_KEY=
@@ -303,18 +293,31 @@ It is not recommended to use this script in production!
 
 ### Basic Auth
 
-use add_user.sh
+For Data protection we use basic authenfication for some services. To access those services you need a username and password combination. If you start the bridgehead with them, those services are not accesbile. We provide a script which set the needed config for you, just run the script and follow the instructions.
 
+``` shell
+add_user.sh <project>
+```
+
+If you are not using the systemd service, you need to export it yourself with 
+
+``` shell
+docker run --rm -it httpd:latest htpasswd -nb <username> <password>
+```
+
+The result needs to be set in your current console with:
+
+``` shell
+export bc_auth_user=<output>
+```
+
+Cation: you need to escape occrring dollar signs.
 
 ### HTTPS Access
 
 We advise to use https for all service of your bridgehead. HTTPS is enabled on default. For starting the bridghead you need a ssl certificate. You can either create it yourself or get a signed one. You need to drop the certificates in /certs.
 
-If you want to create it yourself, you can generate the necessary certs with:
-
-``` shell
-openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/traefik.key -out certs/traefik.crt -days 365
-```
+The bridgehead create one autotmatic on the first start. However it will be unsigned and we recomend to get a signed one.
 
 
 ### Locally Managed Secrets

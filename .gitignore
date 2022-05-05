@@ -3,5 +3,5 @@ config/**/*
 !config/**/*.default
 docker-compose.override.yml
 site.conf
-lading/*
+landing/*
 certs/*

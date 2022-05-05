@@ -20,6 +20,8 @@ if ! lib/prerequisites.sh; then
     exit 1
 fi
 
+source /etc/bridgehead/site.conf
+
 ./lib/generate.sh
 
 log "Starting bridgehead"

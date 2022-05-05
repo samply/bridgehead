@@ -53,4 +53,16 @@ else
   echo "Done"
 fi
 
+echo "Checking ssl cert"
+
+## Create SSL Cert
+if [ ! -d "/certs" ]; then
+  echo "SSL cert missing, now we create one. Please consider getting a signed one"
+  mkdir certs
+fi
+
+if [ -d "/etc/bridgehead/traefik.crt" ]; then
+  openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/traefik.key -out certs/traefik.crt -days 365
+fi
+
 echo "All prerequisites are met!"

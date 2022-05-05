@@ -147,26 +147,10 @@ sudo mkdir -p /srv/docker/;
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 ```
 
-<<<<<<< HEAD
 adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
  useradd -M -g docker -N -s /sbin/nologin bridgehead
 chown bridghead /srv/docker/bridgehead/ -R
 
-=======
-The next step is to create a user for the bridgehead service
-
-``` shell
-#!/bin/bash
-
-mkdir /srv/docker && cd /srv/docker
-
-adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
-useradd -M -g docker -N -s /sbin/nologin bridgehead
- 
-chown 777 /srv/docker/bridgehead bridgehead
-sudo chown bridgehead /srv/docker/bridgehead/
-```
->>>>>>> version-1
 
 Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can visit the configuration template at [GitHub](https://github.com/samply/bridgehead-config). You can download the repositories contents and add them to the "bridgehead-config" directory.
 

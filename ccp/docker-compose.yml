@@ -3,7 +3,7 @@ version: "3.7"
 services:
   traefik:
     container_name: bridgehead-traefik
-    image: traefik:2.4
+    image: traefik:2
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -60,11 +60,11 @@ services:
     - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.cpp-auth.basicauth.users=${bc_auth_users}"
+      - "traefik.http.middlewares.ccp-auth.basicauth.users=${bc_auth_users}"
       - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/ccp-localdatamanagement`)"
       - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/ccp-localdatamanagement"
       - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,cpp-auth"
+      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,ccp-auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
   
   ccp-search-share:
@@ -73,7 +73,7 @@ services:
     environment:
       APP_BASE_URL: "http://dktk-fed-search-share:8080"
       APP_BROKER_BASEURL: "https://dktk-fed-search.verbis.dkfz.de/broker/rest/searchbroker"
-      APP_BROKER_MAIL: ${CCP_MAIL}
+      APP_BROKER_MAIL: ${CCP_SEARCHBROKER_USERNAME}
       APP_STORE_BASEURL: "http://bridgehead-ccp-blaze:8080/fhir"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://bridgehead-ccp-share-db:5432/dktk-fed-search-share"
       JAVA_TOOL_OPTIONS: "-Xmx1g"
@@ -86,7 +86,7 @@ services:
     - blaze
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dktk-fed-search.rule=PathPrefix(`/cpp-connector`)"
+      - "traefik.http.routers.dktk-fed-search.rule=PathPrefix(`/ccp-connector`)"
       - "traefik.http.services.dktk-fed-search.loadbalancer.server.port=8080"
 
   ccp-search-share-db:

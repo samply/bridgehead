@@ -44,7 +44,7 @@ The Bridgehead has two primary components:
 * The **Blaze Store**. This is a highly responsive FHIR data store, which you will need to fill with your data via an ETL chain.
 * The **Connector**. This is the communication portal to the Sample Locator, with specially designed features that make it possible to run it behind a corporate firewall without making any compromises on security.
 
-#### CPP(DKTK/C4)
+#### CCP(DKTK/C4)
 
 TODO:
 
@@ -79,6 +79,7 @@ For running your bridgehead we recommend the follwing Hardware:
 
 Before starting the installation process, please ensure that following software is available on your system:
 
+//Remove
 #### [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 To check that you have a working git installation, please run
@@ -90,6 +91,8 @@ rm -rf Hello-World;
 ```
 If you see the output "Hello World!" your installation should be working.
 
+
+//Just install docker-compose und docker with version
 #### [Docker](https://docs.docker.com/get-docker/)
 
 To check your docker installation, you can try to execute dockers "Hello World" Image. The command is:
@@ -149,10 +152,15 @@ sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 
 When using the systemd services we you need to create a bridgehead user for security reasons. This should be done after clone the repository. Since not all linux distros support ```adduser```, we provide a action for the systemcall ```useradd```.
 
+//
+
 ``` shell
 adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
+```
+
+``` shell
 useradd -M -g docker -N -s /sbin/nologin bridgehead
-chown bridghead /srv/docker/bridgehead/ -R
+chown bridgehead /srv/docker/bridgehead/ -R
 ```
 
 
@@ -216,7 +224,7 @@ To make the configuration effective, you need to tell systemd to reload the conf
 
 ``` shell
 sudo systemctl daemon-reload;
-sudo systemctl bridgehead@cpp.service;
+sudo systemctl bridgehead@ccp.service;
 ```
 
 ### DKTK/C4

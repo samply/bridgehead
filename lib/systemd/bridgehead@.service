@@ -8,9 +8,9 @@ RestartSec=30
 
 WorkingDirectory=/srv/docker/bridgehead/
 
-ExecStart=/srv/docker/bridgehead/start-bridgehead.sh %i
-RemainAfterExit=true
-ExecStop=/srv/docker/bridgehead/stop-bridgehead.sh %i
+ExecStartPre=exec /srv/docker/bridgehead/stop-bridgehead.sh %i
+ExecStart=exec /srv/docker/bridgehead/start-bridgehead.sh %i
+ExecStop=exec /srv/docker/bridgehead/stop-bridgehead.sh %i
 
 [Install]
 WantedBy=multi-user.target

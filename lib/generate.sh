@@ -38,13 +38,27 @@ then
             <td><a href=\"https://dktk-kne.kgu.de\">Zentraler Kontrollnummernerzeuger</td>
           </tr>
           "
-fi
-
-if [ "$project" = "ccp" ]
-then 
     LOCAL_SERVICES+="         <tr>
             <td>CCP</td>
             <td><a href=\"https://${HOST}/cpp-localdatamanagement/fhir/\">Blaze</a></td>
+          </tr>
+          "
+fi
+
+if [ "$project" = "gbn" ]
+then 
+  CENTRAL_SERVICES+="          <tr>
+            <td>GBN</td>
+            <td><a href=\"https://samplelocator.bbmri.de/search\">Sample Locator</td>
+          </tr>
+         <tr>
+            <td>GBN</td>
+            <td><a href=\"https://negotiator.bbmri-eric.eu/login.xhtml\">Negotiator</td>
+          </tr>
+          "
+  LOCAL_SERVICES+="         <tr>
+            <td>CCP</td>
+            <td><a href=\"https://${HOST}/gbn-localdatamanagement/fhir/\">Blaze</a></td>
           </tr>
           "
 fi

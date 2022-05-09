@@ -1,7 +1,6 @@
 version: "3.7"
 
 services:
-  ### Does not need proxy settings
   traefik:
     container_name: bridgehead-traefik
     image: traefik:2.4
@@ -29,8 +28,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  
-  ### Does need to know the outside proxy to connect central components
   forward_proxy:
     container_name: bridgehead-forward-proxy
     image: ubuntu/squid
@@ -40,7 +37,6 @@ services:
     volumes:
       - "bridgehead-proxy:/var/log/squid"
     
-## Needs internal proxy config
   landing:
     container_name: bridgehead-landingpage
     image: nginx:stable
@@ -52,7 +48,6 @@ services:
       - "traefik.http.services.landing.loadbalancer.server.port=80"
       - "traefik.http.routers.landing.tls=true"
 
-## Needs internal proxy config
   blaze:
     image: "samply/blaze:0.17"
     container_name: bridgehead-ccp-blaze

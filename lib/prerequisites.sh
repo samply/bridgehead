@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source lib/functions.sh
 
 ## Check if user is a su
 log "Welcome to the starting a bridgehead. We will get your instance up and running in no time"

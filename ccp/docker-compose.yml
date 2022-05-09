@@ -3,7 +3,7 @@ version: "3.7"
 services:
   traefik:
     container_name: bridgehead-traefik
-    image: traefik:2
+    image: traefik:latest
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443

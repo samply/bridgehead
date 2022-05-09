@@ -72,7 +72,7 @@ For running your bridgehead we recommend the follwing Hardware:
 
 - 4 CPU cores
 - At least 8 GB Ram
-- 100GB Hard Drive, recomended is a SSD
+- 100GB Hard Drive, SSD recommended
 
 
 ### System Requirements
@@ -173,23 +173,23 @@ sudo git clone https://github.com/samply/bridgehead-config.git /etc/bridgehead;
 
 You should now be able to run a bridgehead instance. To check if everything works, execute the following:
 ``` shell
-sudo ./start-bridgehead.sh <project>;
+/srv/docker/bridgehead/bridgehead start <project>
 ```
 
 You should now be able to access the landing page on your system, e.g "https://<your-host>/" 
 
 To shutdown the bridgehead just run.
 ``` shell
-sudo ./stop-bridgehead.sh <project>;
+/srv/docker/bridgehead/bridgehead stop <project>
 ```
 
-We recomend to run firstly with the start and stop script and if aviable run the systemd service, which also enables automatic updates and more.
+We recommend to run first with the start and stop script and if aviable run the systemd service, which also enables automatic updates and more.
 
 ### Systemd service
 
-For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. You can do this by executing the [setup-bridgehead-units.sh](./lib/setup-bridgehead-units.sh) script:
+For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. You can do this by executing the [bridgehead](./bridgehead) script:
 ``` shell
-sudo ./lib/setup-bridgehead-units.sh <project>
+sudo /srv/docker/bridgehead/bridgehead install <project>
 ```
 
 Finally, you need to configure your sites secrets. These are places as configuration for each bridgeheads system unit. Refer to the section for your specific project:
@@ -384,34 +384,34 @@ sudo systemctl start bridgehead-update@<dktk/c4/gbn>
 
 #### Remove the Bridgehead System Units
 
-If, for some reason you want to remove the installed bridgehead units, we added a [script](./lib/remove-bridgehead-units.sh) you can execute:
+If, for some reason you want to remove the installed bridgehead units, we added a command to [bridgehead](./bridgehead):
 ``` shell
-sudo ./lib/remove-bridgehead-units.sh
+sudo /srv/docker/bridgehead/bridgehead uninstall <project>
 ```
 
 ### On Developers Machine
 
 For developers, we provide additional scripts for starting and stopping the specif bridgehead:
 
-#### Start
+#### Start or stop
 
-This shell script start a specified bridgehead. Choose between "dktk", "c4" and "gbn".
+This command starts a specified bridgehead. Choose between "dktk", "c4" and "gbn".
 ``` shell
-./start-bridgehead <dktk/c4/gbn>
+/srv/docker/bridgehead/bridgehead start <dktk/c4/gbn>
 ```
 
 #### Stop
 
-This shell script stops a specified bridgehead. Choose between "dktk", "c4" and "gbn".
+This command stops a specified bridgehead. Choose between "dktk", "c4" and "gbn".
 ``` shell
-./stop-bridgehead <dktk/c4/gbn>
+/srv/docker/bridgehead/bridgehead stop <dktk/c4/gbn>
 ```
 
 #### Update
 
 This shell script updates the configuration for all bridgeheads installed on your system.
 ``` shell
-./update-bridgehead
+/srv/docker/bridgehead/bridgehead update
 ```
 > NOTE: If you want to regularly update your developing instance, you can create a CRON job that executes this script.
 

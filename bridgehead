@@ -18,7 +18,7 @@ cd $BASE
 source ./lib/functions.sh
 
 action=$1
-project=$2
+export project=$2
 
 if [[ -z $1 || -z $2 ]]; then
 	printUsage

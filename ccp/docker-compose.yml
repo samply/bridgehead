@@ -68,7 +68,7 @@ services:
       - "traefik.http.routers.blaze_ccp.tls=true"
   
   ccp-search-share:
-    image: "ghcr.io/samply/dktk-fed-search-share:main"
+    image: "samply/dktk-fed-search-share"
     container_name: bridgehead-ccp-share
     environment:
       APP_BASE_URL: "http://dktk-fed-search-share:8080"

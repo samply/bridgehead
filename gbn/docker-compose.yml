@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.7'
 
 volumes:
   gbn-connector-logs:
@@ -8,7 +8,7 @@ volumes:
 services:
   traefik:
     container_name: bridgehead-traefik
-    image: traefik:2.4
+    image: traefik:2
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -67,11 +67,11 @@ services:
     - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.cpp-auth.basicauth.users=${bc_auth_users}"
+      - "traefik.http.middlewares.ccp-auth.basicauth.users=${bc_auth_users}"
       - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/ccp-localdatamanagement`)"
       - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/ccp-localdatamanagement"
       - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,cpp-auth"
+      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,ccp-auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
 
   gbn-connector:

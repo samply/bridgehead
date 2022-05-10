@@ -5,12 +5,12 @@ source lib/functions.sh
 exitIfNotRoot
 
 if [ $# -eq 0 ]; then
-    echo "Please provide a Project as argument"
+    log "Please provide a Project as argument"
     exit 1
 fi
 
 if [ $1 != "ccp" ] && [ $1 != "nngm" ] && [ $1 != "gbn" ]; then
-    echo "Please provide a supported project like ccp, gbn or nngm"
+    log "Please provide a supported project like ccp, gbn or nngm"
     exit 1
 fi
 
@@ -30,9 +30,9 @@ systemctl daemon-reload
 echo
 
 if ! systemctl is-active --quiet bridgehead@"${project}"; then
-    echo "Enabling autostart of bridgehead@${project}.service"
+    log "Enabling autostart of bridgehead@${project}.service"
     systemctl enable bridgehead@"${project}"
-    echo "Enabling nightly updates for bridgehead@${project}.service ..."
+    log "Enabling nightly updates for bridgehead@${project}.service ..."
     systemctl enable --now bridgehead-update@"${project}".timer
 fi
 

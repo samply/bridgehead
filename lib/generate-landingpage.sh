@@ -40,7 +40,7 @@ then
           "
     LOCAL_SERVICES+="         <tr>
             <td>CCP</td>
-            <td><a href=\"https://${HOST}/cpp-localdatamanagement/fhir/\">Blaze</a></td>
+            <td><a href=\"https://${HOST}/ccp-localdatamanagement/fhir/\">Blaze</a></td>
           </tr>
           "
 fi

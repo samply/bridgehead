@@ -1,14 +1,15 @@
 #!/bin/bash -e
+source lib/functions.sh
 
-echo "This script add's a user with password to the bridghead"
+log "This script add's a user with password to the bridghead"
 
 if [ $# -eq 0 ]; then
-    echo "No arguments provided, please provide the project name"
+    log "No arguments provided, please provide the project name"
     exit 1
 fi
 
 if [ ! -f /etc/systemd/system/bridgehead@$1.service.d/override.conf ]; then
-    echo "Please create a Service first, with setup-bridgehead-units.sh"
+    log "Please create a Service first, with setup-bridgehead-units.sh"
     exit
 fi
 

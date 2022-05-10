@@ -46,7 +46,6 @@ source /etc/bridgehead/site.conf
 case "$action" in
 	start)
 		checkRequirements
-		./lib/generate-landingpage.sh
 		exec docker-compose -f ./$project/docker-compose.yml --env-file /etc/bridgehead/$project.env up
 		;;
 	stop)

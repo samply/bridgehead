@@ -41,7 +41,7 @@ services:
     container_name: bridgehead-landingpage
     image: nginx:stable
     volumes:
-      - ../landing/:/usr/share/nginx/html
+      - ../landing/:/usr/share/nginx/html:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
@@ -68,7 +68,7 @@ services:
       - "traefik.http.routers.blaze_ccp.tls=true"
   
   ccp-search-share:
-    image: "ghcr.io/samply/dktk-fed-search-share:main"
+    image: "samply/dktk-fed-search-share"
     container_name: bridgehead-ccp-share
     environment:
       APP_BASE_URL: "http://dktk-fed-search-share:8080"

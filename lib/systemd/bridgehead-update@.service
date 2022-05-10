@@ -4,9 +4,7 @@ Description=Bridgehead (%i) Update Service
 [Service]
 Type=oneshot
 User=bridgehead
-WorkingDirectory=/srv/docker/bridgehead/
-
-ExecStart=/srv/docker/bridgehead/update-bridgehead.sh %i
+ExecStart=/srv/docker/bridgehead/bridgehead update %i
 
 [Install]
 WantedBy=multi-user.target

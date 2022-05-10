@@ -14,10 +14,7 @@ fi
 
 export project=$1
 
-if ! ./lib/prerequisites.sh; then
-    log "Prerequisites failed, exiting"
-    exit 1
-fi
+#checkRequirements // not needed when uninstalling
 
 log "Stopping systemd services and removing bridgehead ..."
 

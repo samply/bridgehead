@@ -3,10 +3,7 @@ service="bridgehead"
 
 source lib/functions.sh
 
-if ! lib/prerequisites.sh; then
-    log "Prerequisites failed, exiting"
-    exit
-fi
+#checkRequirements // not required for mere update
 
 log "INFO" "Checking for updates of $service"
 # check prerequisites

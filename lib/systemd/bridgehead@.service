@@ -5,12 +5,8 @@ Description=Bridgehead (%i) Service
 User=bridgehead
 Restart=always
 RestartSec=30
-
-WorkingDirectory=/srv/docker/bridgehead/
-
-ExecStartPre=exec /srv/docker/bridgehead/stop-bridgehead.sh %i
-ExecStart=exec /srv/docker/bridgehead/start-bridgehead.sh %i
-ExecStop=exec /srv/docker/bridgehead/stop-bridgehead.sh %i
+ExecStart=/srv/docker/bridgehead/bridgehead start %i
+ExecStop=/srv/docker/bridgehead/bridgehead stop %i
 
 [Install]
 WantedBy=multi-user.target

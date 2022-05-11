@@ -44,14 +44,16 @@ services:
     
   landing:
     container_name: bridgehead-landingpage
-    image: nginx:stable
-    volumes:
-      - ../landing/:/usr/share/nginx/html
+    image: samply/bridgehead-landingpage
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
       - "traefik.http.services.landing.loadbalancer.server.port=80"
       - "traefik.http.routers.landing.tls=true"
+    environment:
+      HOST: ${HOST}
+      project: ${project}
+      site_name: ${site_name}
 
   blaze:
     image: "samply/blaze:0.17"

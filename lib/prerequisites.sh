@@ -65,7 +65,7 @@ if [ ! -d "certs" ]; then
   mkdir -p certs
 fi
 
-if [ -e "/etc/bridgehead/traefik.crt" ]; then
+if [ ! -e "certs/traefik.crt" ]; then
   openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/traefik.key -out certs/traefik.crt -days 365
 fi
 

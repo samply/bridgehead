@@ -17,15 +17,15 @@ cd $BASE
 
 source ./lib/functions.sh
 
-action=$1
-export project=$2
+ACTION=$1
+export PROJECT=$2
 
 if [[ -z $1 || -z $2 ]]; then
 	printUsage
 	exit 1
 fi
 
-case "$project" in
+case "$PROJECT" in
 	ccp)
 		#nothing extra to do
 		;;
@@ -43,16 +43,16 @@ esac
 
 source /etc/bridgehead/site.conf
 
-case "$action" in
+case "$ACTION" in
 	start)
 		checkRequirements
-		exec docker-compose -f ./$project/docker-compose.yml --env-file /etc/bridgehead/$project.env up
+		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.env up
 		;;
 	stop)
-		exec docker-compose -f ./$project/docker-compose.yml --env-file /etc/bridgehead/$project.env down
+		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.env down
 		;;
 	update)
-		exec ./lib/update-bridgehead.sh $project
+		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
 	install)
 		exec ./lib/setup-bridgehead-units.sh $project

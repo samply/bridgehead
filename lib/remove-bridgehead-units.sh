@@ -12,12 +12,12 @@ if [ $1 != "ccp" ] && [ $1 != "nngm" ] && [ $1 != "gbn" ]; then
     exit 1
 fi
 
-export project=$1
+export PROJECT=$1
 
 #checkRequirements // not needed when uninstalling
 
 log "Stopping systemd services and removing bridgehead ..."
 
-systemctl disable --now bridgehead@${project}.service bridgehead-update@${project}.timer bridgehead-update@${project}.service
+systemctl disable --now bridgehead@${PROJECT}.service bridgehead-update@${PROJECT}.timer bridgehead-update@${PROJECT}.service
 
 rm -v /etc/systemd/system/{bridgehead\@.service,bridgehead-update\@.timer,bridgehead-update\@.service}

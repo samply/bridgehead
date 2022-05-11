@@ -45,14 +45,14 @@ source /etc/bridgehead/site.conf
 
 # TODO: Check all required variables here in a generic loop
 
-if [ -z "$site_name" ]; then
+if [ -z "$SITE_NAME" ]; then
   log ERROR "Please set site_name."
   exit 1
 fi
 
 #check if project env is present
-if [ -d "/etc/bridgehead/${project}.env" ]; then
-   log ERROR "Project config not found. Please copy the template from ${project} and put it under /etc/bridgehead-config/${project}.env."
+if [ -d "/etc/bridgehead/${PROJECT}.env" ]; then
+   log ERROR "Project config not found. Please copy the template from ${PROJECT} and put it under /etc/bridgehead-config/${PROJECT}.env."
    exit 1
 fi
 

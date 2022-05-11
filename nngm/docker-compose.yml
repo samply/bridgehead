@@ -42,8 +42,8 @@ services:
       - "traefik.http.routers.landing.tls=true"
     environment:
       HOST: ${HOST}
-      project: ${project}
-      site_name: ${site_name}
+      PROJECT: ${PROJECT}
+      SITE_NAME: ${SITE_NAME}
 
   nngm-connector:
       container_name: bridgehead-nngm-connector

@@ -173,14 +173,14 @@ sudo git clone https://github.com/samply/bridgehead-config.git /etc/bridgehead;
 
 You should now be able to run a bridgehead instance. To check if everything works, execute the following:
 ``` shell
-/srv/docker/bridgehead/bridgehead start <project>
+/srv/docker/bridgehead/bridgehead start <Project>
 ```
 
 You should now be able to access the landing page on your system, e.g "https://<your-host>/" 
 
 To shutdown the bridgehead just run.
 ``` shell
-/srv/docker/bridgehead/bridgehead stop <project>
+/srv/docker/bridgehead/bridgehead stop <Project>
 ```
 
 We recommend to run first with the start and stop script and if aviable run the systemd service, which also enables automatic updates and more.
@@ -189,12 +189,12 @@ We recommend to run first with the start and stop script and if aviable run the 
 
 For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. You can do this by executing the [bridgehead](./bridgehead) script:
 ``` shell
-sudo /srv/docker/bridgehead/bridgehead install <project>
+sudo /srv/docker/bridgehead/bridgehead install <Project>
 ```
 
 Finally, you need to configure your sites secrets. These are places as configuration for each bridgeheads system unit. Refer to the section for your specific project:
 
-For Every Project you need to set the proxy this way, if you have a proxy.
+For Every project you need to set the proxy this way, if you have a proxy.
 
 ``` conf
 [Service]

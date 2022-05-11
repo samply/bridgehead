@@ -14,7 +14,7 @@ if [ $1 != "ccp" ] && [ $1 != "nngm" ] && [ $1 != "gbn" ]; then
     exit 1
 fi
 
-export project=$1
+export PROJECT=$1
 
 checkRequirements
 
@@ -29,11 +29,11 @@ systemctl daemon-reload
 
 echo
 
-if ! systemctl is-active --quiet bridgehead@"${project}"; then
-    log "Enabling autostart of bridgehead@${project}.service"
-    systemctl enable bridgehead@"${project}"
-    log "Enabling nightly updates for bridgehead@${project}.service ..."
-    systemctl enable --now bridgehead-update@"${project}".timer
+if ! systemctl is-active --quiet bridgehead@"${PROJECT}"; then
+    log "Enabling autostart of bridgehead@${PROJECT}.service"
+    systemctl enable bridgehead@"${PROJECT}"
+    log "Enabling nightly updates for bridgehead@${PROJECT}.service ..."
+    systemctl enable --now bridgehead-update@"${PROJECT}".timer
 fi
 
-echo -e "\nDone - now start your bridgehead by running\n\tsystemctl start bridgehead@${project}.service\nor by rebooting your machine."
+echo -e "\nDone - now start your bridgehead by running\n\tsystemctl start bridgehead@${PROJECT}.service\nor by rebooting your machine."

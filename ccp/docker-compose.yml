@@ -39,7 +39,7 @@ services:
     
   landing:
     container_name: bridgehead-landingpage
-    image: samply/bridgehead-landingpage
+    image: samply/bridgehead-landingpage:master
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
@@ -70,12 +70,13 @@ services:
       - "traefik.http.routers.blaze_ccp.tls=true"
   
   ccp-search-share:
-    image: "samply/dktk-fed-search-share"
+    image: "samply/dktk-fed-search-share:main"
     container_name: bridgehead-ccp-share
     environment:
       APP_BASE_URL: "http://dktk-fed-search-share:8080"
       APP_BROKER_BASEURL: "https://dktk-fed-search.verbis.dkfz.de/broker/rest/searchbroker"
       APP_BROKER_MAIL: ${CCP_SEARCHBROKER_USERNAME}
+      APP_BROKER_AUTHTOKEN: ${CCP_SEARCHBROKER_PASSWORD}
       APP_STORE_BASEURL: "http://bridgehead-ccp-blaze:8080/fhir"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://bridgehead-ccp-share-db:5432/dktk-fed-search-share"
       JAVA_TOOL_OPTIONS: "-Xmx1g"

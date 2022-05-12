@@ -66,7 +66,7 @@ if [ ! -d "certs" ]; then
 fi
 
 if [ ! -e "certs/traefik.crt" ]; then
-  openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/traefik.key -out certs/traefik.crt -days 365
+  openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/traefik.key -out certs/traefik.crt -days 3650 -subj "/CN=$HOST"
 fi
 
 log INFO "Success - all prerequisites are met!"

@@ -37,7 +37,7 @@ fetchVarsFromVault() {
 		return 0
 	fi
 
-	eval $(docker run --rm -ti -e BW_MASTERPASS -e BW_CLIENTID -e BW_CLIENTSECRET bwcli $VARS_TO_FETCH | sed 's/\r//g')
+	eval $(docker run --rm -ti -e BW_MASTERPASS -e BW_CLIENTID -e BW_CLIENTSECRET samply/bridgehead-vaultfetcher $VARS_TO_FETCH | sed 's/\r//g')
 
 	return 0
 }

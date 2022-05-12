@@ -46,7 +46,7 @@ source /etc/bridgehead/site.conf
 # TODO: Check all required variables here in a generic loop
 
 if [ -z "$SITE_NAME" ]; then
-  log ERROR "Please set site_name."
+  log ERROR "Please set SITE_NAME."
   exit 1
 fi
 

@@ -79,63 +79,45 @@ For running your bridgehead we recommend the follwing Hardware:
 
 Before starting the installation process, please ensure that following software is available on your system:
 
-//Remove
-#### [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-
-To check that you have a working git installation, please run
-``` shell
-cd ~/;
-git clone https://github.com/octocat/Hello-World.git;
-cat ~/Hello-World/README;
-rm -rf Hello-World;
-```
-If you see the output "Hello World!" your installation should be working.
-
-
 //Just install docker-compose und docker with version
 #### [Docker](https://docs.docker.com/get-docker/)
 
-To check your docker installation, you can try to execute dockers "Hello World" Image. The command is:
-``` shell
-docker run --rm --name hello-world hello-world;
-```
-Docker will now download the "hello-world" docker image and try to execute it. After the download you should see a message starting with "Hello from Docker!".
-
-> NOTE: If the download of the image fails (e.g with "connection timed out" message), ensure that you have correctly set the proxy for the docker daemon. Refer to ["Docker Daemon Proxy Configuration" in the "Pitfalls" section](#docker-daemon-proxy-configuration)
-
-You should also check, that the version of docker installed by you is newer than "1.20". To check this, just run 
+To check your docker installation, you should execute the docker with --version:
 
 ``` shell
 docker --version
 ```
 
-#### [Docker Compose](https://docs.docker.com/compose/cli-command/#installing-compose-v2)
-
-To check your docker-compose installation, please run the following command. It uses the "hello-world" image from the previous section:
-``` shell
-docker-compose -f - up <<EOF
-version: "3.9"
-services:
-  hello-world:
-    image: hello-world
-EOF
-```
-After executing the command, you should again see the message starting with "Hello from Docker!".
-
-You should also ensure, that the version of docker-compose installed by you is newer than "2.XX". To check this, just run 
+The Version should be higher than "20.10.1". Otherwise you will have problems startin the bridgehead. The next step is to check ``` docker-compose```  with:
 
 ``` shell
 docker-compose --version
 ```
 
+The recomended version is "2.XX" and higher. To futher check your docker-compose installation, please run the following command. 
+
+``` shell
+docker-compose -f - up <<EOF
+version: "3.7"
+services:
+  hello-world:
+    image: hello-world
+EOF
+```
+Docker will now download the "hello-world" docker image and try to execute it. After the download you should see a message starting with "Hello from Docker!".
+
+> NOTE: If the download of the image fails (e.g with "connection timed out" message), ensure that you have correctly set the proxy for the docker daemon. Refer to ["Docker Daemon Proxy Configuration" in the "Pitfalls" section](#docker-daemon-proxy-configuration)
+
 #### [systemd](https://systemd.io/)
 
-You shouldn't need to install it yourself. If systemd is not available on your system you should get another system.
+You shouldn't need to install it yourself, If systemd is not available on your system you should get another system.
 To check if systemd is available on your system, please execute
 
 ``` shell
 systemctl --version
 ```
+
+If systemd is not installed, you can start the bridgehead but for productive use we recomend using systemd.
 
 ---
 
@@ -150,9 +132,7 @@ sudo mkdir -p /srv/docker/;
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 ```
 
-When using the systemd services we you need to create a bridgehead user for security reasons. This should be done after clone the repository. Since not all linux distros support ```adduser```, we provide a action for the systemcall ```useradd```.
-
-//
+It is recomended to create a user for the bridgehead service.  This should be done after clone the repository. Since not all linux distros support ```adduser```, we provide an action for the systemcall ```useradd```. You should try the first one, when the systm can't create the user you should try the second one.
 
 ``` shell
 adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
@@ -163,15 +143,19 @@ useradd -M -g docker -N -s /sbin/nologin bridgehead
 chown bridgehead /srv/docker/bridgehead/ -R
 ```
 
+### Configuration
 
-Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can visit the configuration template at [GitHub](https://github.com/samply/bridgehead-config). You can download the repositories contents and add them to the "bridgehead-config" directory.
+> NOTE: If you are part of the CCP-IT we will provide you another link for the configuration.
+
+Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can visit the configuration template at [GitHub](https://github.com/samply/bridgehead-config). You can download the repositories contents and add them to the "bridgehead" directory.
 
 ``` shell
 sudo git clone https://github.com/samply/bridgehead-config.git /etc/bridgehead;
 ```
-> NOTE: If you are part of the CCP-IT we will provide you another link for the configuration.
 
-You should now be able to run a bridgehead instance. To check if everything works, execute the following:
+### Testing your bridgehead
+
+Now you ready to run a bridgehead instance. To check if everything works, execute the following:
 ``` shell
 /srv/docker/bridgehead/bridgehead start <Project>
 ```
@@ -183,34 +167,40 @@ To shutdown the bridgehead just run.
 /srv/docker/bridgehead/bridgehead stop <Project>
 ```
 
-We recommend to run first with the start and stop script and if aviable run the systemd service, which also enables automatic updates and more.
+We recomend to run first with the start and stop script and if aviable run the systemd service, which also enables automatic updates and more. If you have trouble starting the bridghead have a look at the troubleshooting section.
 
-### Systemd service
+### Systemd service configuration
 
 For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. You can do this by executing the [bridgehead](./bridgehead) script:
 ``` shell
 sudo /srv/docker/bridgehead/bridgehead install <Project>
 ```
 
-Finally, you need to configure your sites secrets. These are places as configuration for each bridgeheads system unit. Refer to the section for your specific project:
+Finally, you need to configure your sites secrets. These are places as configuration for each bridgehead system unit. Refer to the section for your specific project:
 
-For Every project you need to set the proxy this way, if you have a proxy.
+For Every project you need to set the proxy this way, if you have one. This is done with the ```systemctl edit``` comand.
+
+``` shell
+sudo systemctl edit bridgehead@<project>.service;
+sudo systemctl edit bridgehead-update@<project>.service;
+```
 
 ``` conf
 [Service]
-Environment=http_proxy=
-Environment=https_proxy=
+Environment=http_proxy=<proxy-url>
+Environment=https_proxy=<proxy-url>
 ```
 
-### CCP(DKTK/C4)
+There a further configurations for each project.
+
+#### CCP(DKTK/C4)
+
+For the federate search please follow the basic auth configuration step.
+
+### DKTK/C4
 
 You can create the site specific configuration with: 
 
-``` shell
-sudo systemctl edit bridgehead@ccp.service;
-sudo systemctl edit bridgehead-update@ccp.service;
-
-```
 
 This will open your default editor allowing you to edit the docker system units configuration. Insert the following lines in the editor and define your machines secrets. You share some of the ID-Management secrets with the central patientlist (Mainz) and controlnumbergenerator (Frankfurt). Refer to the ["Configuration" section](#configuration) for this.
 
@@ -226,8 +216,6 @@ To make the configuration effective, you need to tell systemd to reload the conf
 sudo systemctl daemon-reload;
 sudo systemctl bridgehead@ccp.service;
 ```
-
-### DKTK/C4
 
 You can create the site specific configuration with: 
 
@@ -292,28 +280,22 @@ sudo systemctl daemon-reload;
 sudo systemctl bridgehead@gbn.service;
 ```
 
-### Developers
-
-Because some developers machines doesn't support system units (e.g Windows Subsystem for Linux), we provide a dev environment [configuration script](./lib/init-test-environment.sh).
-It is not recommended to use this script in production!
-
 ## Configuration
 
 ### Basic Auth
 
-For Data protection we use basic authenfication for some services. To access those services you need a username and password combination. If you start the bridgehead with them, those services are not accesbile. We provide a script which set the needed config for you, just run the script and follow the instructions.
+For Data protection we use basic authenfication for some services. To access those services you need an username and password combination. If you start the bridgehead without basic auth, then those services are not accesbile. We provide a script which set the needed config for you, just run the script and follow the instructions.
 
 ``` shell
-add_user.sh <project>
+add_user.sh
 ```
 
-If you are not using the systemd service, you need to export it yourself with 
+The result needs to be set in either in the systemd service or in your console.
 
-``` shell
-docker run --rm -it httpd:latest htpasswd -nb <username> <password>
-```
 
-The result needs to be set in your current console with:
+#### Console
+
+When just running the bridgehead you need to export the auth variable. Be aware that this export is only for the current session in the environment and after exit it will not be accessible anymore.
 
 ``` shell
 export bc_auth_user=<output>
@@ -321,11 +303,15 @@ export bc_auth_user=<output>
 
 Cation: you need to escape occrring dollar signs.
 
+#### systemd
+
+
+
 ### HTTPS Access
 
 We advise to use https for all service of your bridgehead. HTTPS is enabled on default. For starting the bridghead you need a ssl certificate. You can either create it yourself or get a signed one. You need to drop the certificates in /certs.
 
-The bridgehead create one autotmatic on the first start. However it will be unsigned and we recomend to get a signed one.
+The bridgehead create one autotmatic on the first start. However, it will be unsigned and we recomend to get a signed one.
 
 
 ### Locally Managed Secrets

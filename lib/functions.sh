@@ -48,7 +48,7 @@ fetchVarsFromVault() {
 
 	set +e
 
-	PASS=$(BW_MASTERPASS="$BW_MASTERPASS" BW_CLIENTID="$BW_CLIENTID" BW_CLIENTSECRET="$BW_CLIENTSECRET" docker run --rm -ti -e BW_MASTERPASS -e BW_CLIENTID -e BW_CLIENTSECRET samply/bridgehead-vaultfetcher $VARS_TO_FETCH)
+	PASS=$(BW_MASTERPASS="$BW_MASTERPASS" BW_CLIENTID="$BW_CLIENTID" BW_CLIENTSECRET="$BW_CLIENTSECRET" docker run --rm -ti -e BW_MASTERPASS -e BW_CLIENTID -e BW_CLIENTSECRET -e http_proxy samply/bridgehead-vaultfetcher $VARS_TO_FETCH)
 	RET=$?
 
 	if [ $RET -ne 0 ]; then

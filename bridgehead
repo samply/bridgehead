@@ -46,7 +46,7 @@ source /etc/bridgehead/site.conf
 case "$ACTION" in
 	start)
 		checkRequirements
-		fetchVarsFromVault /etc/bridgehead/site.conf /etc/bridgehead/$PROJECT.env
+		fetchVarsFromVault /etc/bridgehead/site.conf /etc/bridgehead/$PROJECT.env || exit 1
 		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.env up
 		;;
 	stop)

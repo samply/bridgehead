@@ -63,3 +63,7 @@ fetchVarsFromVault() {
 
 	return 0
 }
+
+##Setting Network properties
+export HOSTIP=$(MSYS_NO_PATHCONV=1 docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}');
+export HOST=$(hostname)

@@ -57,7 +57,7 @@ services:
 
   blaze:
     image: "samply/blaze:0.17"
-    container_name: bridgehead-ccp-blaze
+    container_name: bridgehead-gbn-blaze
     environment:
       BASE_URL: "http://blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx4g"
@@ -67,14 +67,15 @@ services:
     - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.ccp-auth.basicauth.users=${bc_auth_users}"
-      - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/ccp-localdatamanagement`)"
-      - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/ccp-localdatamanagement"
-      - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,ccp-auth"
-      - "traefik.http.routers.blaze_ccp.tls=true"
+      - "traefik.http.middlewares.gbn-auth.basicauth.users=${bc_auth_users}"
+      - "traefik.http.routers.blaze_gbn.rule=PathPrefix(`/gbn-localdatamanagement`)"
+      - "traefik.http.middlewares.gbn_b_strip.stripprefix.prefixes=/gbn-localdatamanagement"
+      - "traefik.http.services.blaze_gbn.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_gbn.middlewares=gbn_b_strip,gbn-auth"
+      - "traefik.http.routers.blaze_gbn.tls=true"
 
   gbn-connector:
+    container_name: bridgehead-gbn-connector
     image: "samply/share-client:gbn-feature-environmentPreconfiguration"
     environment:
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}

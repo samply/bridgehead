@@ -55,10 +55,10 @@ case "$ACTION" in
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
 	install)
-		exec ./lib/setup-bridgehead-units.sh $project
+		exec ./lib/setup-bridgehead-units.sh $PROJECT
 		;;
 	uninstall)
-		exec ./lib/remove-bridgehead-units.sh $project
+		exec ./lib/remove-bridgehead-units.sh $PROJECT
 		;;
 	*)
 		printUsage

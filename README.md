@@ -8,13 +8,17 @@ TOC
 1. [About](#about)
     - [Projects](#projects)
         - [GBA/BBMRI-ERIC](#gbabbmri-eric)
-        - [DKTK/C4](#dktkc4)
+        - [CCP(DKTK/C4)](#ccpdktkc4)
         - [NNGM](#nngm)
     - [Bridgehead Components](#bridgehead-components)
-        - [Blaze Server](#blaze-serverhttpsgithubcomsamplyblaze)   
+        - [Blaze Server](#blaze-serverhttpsgithubcomsamplyblaze)  
+        - [Connector](#connector) 
 1. [Requirements](#requirements)
     - [Hardware](#hardware)
     - [System](#system-requirements)
+      - [git](#git)
+      - [docker](#dockerhttpsdocsdockercomget-docker)
+      - [systemd](#systemd)
 2. [Getting Started](#getting-started)
     - [DKTK](#dktkc4)
     - [C4](#c4)
@@ -32,9 +36,9 @@ TOC
 
 TODO: Insert comprehensive feature list of the bridgehead? Why would anyone install it?
 
-### Projects
+## Projects
 
-#### GBA/BBMRI-ERIC
+### GBA/BBMRI-ERIC
 
 The **Sample Locator** is a tool that allows researchers to make searches for samples over a large number of geographically distributed biobanks. Each biobank runs a so-called **Bridgehead** at its site, which makes it visible to the Sample Locator.  The Bridgehead is designed to give a high degree of protection to patient data. Additionally, a tool called the [Negotiator][negotiator] puts you in complete control over which samples and which data are delivered to which researcher.
 
@@ -44,11 +48,11 @@ The Bridgehead has two primary components:
 * The **Blaze Store**. This is a highly responsive FHIR data store, which you will need to fill with your data via an ETL chain.
 * The **Connector**. This is the communication portal to the Sample Locator, with specially designed features that make it possible to run it behind a corporate firewall without making any compromises on security.
 
-#### CCP(DKTK/C4)
+### CCP(DKTK/C4)
 
 TODO:
 
-#### NNGM
+### nNGM
 
 TODO:
 
@@ -61,8 +65,6 @@ This holds the actual data being searched. This store must be filled by you, gen
 #### [Connector]
 
 TODO:
-
-
 
 ## Requirements
 
@@ -79,7 +81,14 @@ For running your bridgehead we recommend the follwing Hardware:
 
 Before starting the installation process, please ensure that following software is available on your system:
 
-//Just install docker-compose und docker with version
+#### Git
+
+Check if you have at leat git 2.0 installed on the system with:
+
+``` shell
+git --version
+```
+
 #### [Docker](https://docs.docker.com/get-docker/)
 
 To check your docker installation, you should execute the docker with --version:
@@ -88,13 +97,13 @@ To check your docker installation, you should execute the docker with --version:
 docker --version
 ```
 
-The Version should be higher than "20.10.1". Otherwise you will have problems startin the bridgehead. The next step is to check ``` docker-compose```  with:
+The Version should be higher than "20.10.1". Otherwise you will have problems starting the bridgehead. The next step is to check ``` docker-compose```  with:
 
 ``` shell
 docker-compose --version
 ```
 
-The recomended version is "2.XX" and higher. To futher check your docker-compose installation, please run the following command. 
+The recomended version is "2.XX" and higher. If docker-compose was not installed with docker follow these [instructions](https://docs.docker.com/compose/install/#install-compose-as-standalone-binary-on-linux-systems). To futher check your docker and docker-compose installation, please run the following command. 
 
 ``` shell
 docker-compose -f - up <<EOF
@@ -117,11 +126,13 @@ To check if systemd is available on your system, please execute
 systemctl --version
 ```
 
-If systemd is not installed, you can start the bridgehead but for productive use we recomend using systemd.
+If systemd is not installed, you can start the bridgehead. However, for productive use we recomend using systemd.
 
 ---
 
 ## Getting Started
+
+### Installation 
 
 If your system passed all checks from ["Requirements" section], you are now ready to download the bridgehead.
 
@@ -140,6 +151,11 @@ adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
 
 ``` shell
 useradd -M -g docker -N -s /sbin/nologin bridgehead
+```
+
+After adding the User you need to change the ownership of the directory to the bridgehead user.
+
+``` shell
 chown bridgehead /srv/docker/bridgehead/ -R
 ```
 
@@ -147,27 +163,29 @@ chown bridgehead /srv/docker/bridgehead/ -R
 
 > NOTE: If you are part of the CCP-IT we will provide you another link for the configuration.
 
-Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can visit the configuration template at [GitHub](https://github.com/samply/bridgehead-config). You can download the repositories contents and add them to the "bridgehead" directory.
+Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can clone the configuration template at [GitHub](https://github.com/samply/bridgehead-config). The confiugration of the bridgehead should be located in /etc/bridghead.
 
 ``` shell
 sudo git clone https://github.com/samply/bridgehead-config.git /etc/bridgehead;
 ```
 
+After cloning or forking the repository you need to add value to the template. If you are a part of the CCP-IT you will get an already filled out config repo.
+
 ### Testing your bridgehead
 
-Now you ready to run a bridgehead instance. To check if everything works, execute the following:
+We recomend to run first with the start and stop script. If you have trouble starting the bridghead have a look at the troubleshooting section.
+
+Now you ready to run a bridgehead instance. The bridgehead scripts checks if your configuration is correct. To check if everything works, execute the following:
 ``` shell
 /srv/docker/bridgehead/bridgehead start <Project>
 ```
 
-You should now be able to access the landing page on your system, e.g "https://<your-host>/" 
+You should now be able to access the landing page on your system, e.g "https://<your-host>/". 
 
 To shutdown the bridgehead just run.
 ``` shell
 /srv/docker/bridgehead/bridgehead stop <Project>
 ```
-
-We recomend to run first with the start and stop script and if aviable run the systemd service, which also enables automatic updates and more. If you have trouble starting the bridghead have a look at the troubleshooting section.
 
 ### Systemd service configuration
 
@@ -175,6 +193,8 @@ For a server, we highly recommend that you install the system units for managing
 ``` shell
 sudo /srv/docker/bridgehead/bridgehead install <Project>
 ```
+
+This will install the systemd units to run and update the bridghead.
 
 Finally, you need to configure your sites secrets. These are places as configuration for each bridgehead system unit. Refer to the section for your specific project:
 

@@ -2,16 +2,22 @@
 
 source lib/functions.sh
 
-## Check for file permissions
+checkOwner(){
+  ## Check for file permissions
+  COUNT=$(find $1 ! -user $2 |wc -l)
+  if [ $COUNT -gt 0 ]; then
+    log ERROR "$COUNT files in $1 are not owned by user $2. Run find $1 ! -user $2 to see them, chown -R $2 $1 to correct this issue."
+    exit 1
+  fi
+}
+
 if ! id "bridgehead" &>/dev/null; then
   log ERROR "User bridgehead does not exist. Please consult readme for installation."
   exit 1
 fi
-COUNT=$(find . ! -user bridgehead |wc -l)
-if [ $COUNT -gt 0 ]; then
-  log ERROR "$COUNT files in $(pwd) are not owned by user bridgehead. Run find $(pwd) ! -user bridgehead to see them, chown -R bridgehead $(pwd) to correct this issue."
-  exit 1
-fi
+
+checkOwner . bridgehead
+checkOwner /etc/bridgehead bridgehead
 
 ## Check if user is a su
 log INFO "Checking if all prerequisites are met ..."

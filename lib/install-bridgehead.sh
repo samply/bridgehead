@@ -9,14 +9,9 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-if [ $1 != "ccp" ] && [ $1 != "nngm" ] && [ $1 != "bbmri" ]; then
-    log "ERROR" "Please provide a supported project like ccp, bbmri or nngm"
-    exit 1
-fi
-
 export PROJECT=$1
 
-checkRequirements
+checkRequirements noprivkey
 
 log "INFO" "Allowing the bridgehead user to start/stop the bridgehead."
 
@@ -33,7 +28,7 @@ Cmnd_Alias BRIDGEHEAD${PROJECT^^} = \\
 bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF
 
-# TODO: Determine wether this should be located in setup-bridgehead (triggered through bridgehead install) or in update bridgehead (triggered every hour)
+# TODO: Determine whether this should be located in setup-bridgehead (triggered through bridgehead install) or in update bridgehead (triggered every hour)
 if [ -z "$LDM_PASSWORD" ]; then
   log "INFO" "Now generating a password for the local data management. Please save the password for your ETL process!"
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
@@ -42,7 +37,7 @@ if [ -z "$LDM_PASSWORD" ]; then
   echo -e "## Local Data Management Basic Authentication\n# User: $PROJECT\nLDM_PASSWORD=$generated_passwd" >> /etc/bridgehead/${PROJECT}.local.conf;
 fi
 
-log "INFO" "Register system units for bridgehead and bridgehead-update"
+log "INFO" "Registering system units for bridgehead and bridgehead-update"
 cp -v \
     lib/systemd/bridgehead\@.service \
     lib/systemd/bridgehead-update\@.service \
@@ -61,4 +56,11 @@ systemctl enable bridgehead@"${PROJECT}".service
 log "INFO" "Enabling auto-updates for bridgehead@${PROJECT}.service ..."
 systemctl enable --now bridgehead-update@"${PROJECT}".timer
 
-log "INFO" "\nSuccess - now start your bridgehead by running\n            systemctl start bridgehead@${PROJECT}.service\n          or by rebooting your machine."
+STR="\n\n            systemctl start bridgehead@${PROJECT}.service\n\nor by rebooting your machine."
+if [ -e /etc/bridgehead/pki/${SITE_ID}.priv.pem ]; then
+  STR="Success. Next, start your bridgehead by running$STR"
+else
+  STR="Success. Next, enroll into the $PROJECT broker by creating a cryptographic certificate. To do so, run\n\n            /srv/docker/bridgehead/bridgehead enroll $PROJECT\n\nThen, you may start the bridgehead by running$STR"
+fi
+
+log "INFO" "$STR"

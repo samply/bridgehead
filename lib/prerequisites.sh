@@ -51,8 +51,8 @@ if [ -z "$SITE_NAME" ]; then
 fi
 
 #check if project env is present
-if [ -d "/etc/bridgehead/${PROJECT}.env" ]; then
-   log ERROR "Project config not found. Please copy the template from ${PROJECT} and put it under /etc/bridgehead-config/${PROJECT}.env."
+if [ -d "/etc/bridgehead/${PROJECT}.conf" ]; then
+   log ERROR "Project config not found. Please copy the template from ${PROJECT} and put it under /etc/bridgehead-config/${PROJECT}.conf."
    exit 1
 fi
 

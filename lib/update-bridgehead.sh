@@ -8,7 +8,6 @@ for DIR in /etc/bridgehead $(pwd); do
   old_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
   git -C $DIR fetch 2>&1
   git -C $DIR pull 2>&1
-  git -C $DIR remote -v
   new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
   git_updated="false"
   if [ "$old_git_hash" != "$new_git_hash" ]; then

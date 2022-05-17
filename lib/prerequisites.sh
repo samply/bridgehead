@@ -40,21 +40,7 @@ if [ ! -d "/etc/bridgehead/" ]; then
   exit 1
 fi
 
-#check if site.conf is created
-if [ ! -f /etc/bridgehead/site.conf ]; then
-  log ERROR "Please create your specific site.conf file from the site.dev.conf"
-  exit 1
-fi
-
-#Load site specific variables
-source /etc/bridgehead/site.conf
-
 # TODO: Check all required variables here in a generic loop
-
-if [ -z "$SITE_NAME" ]; then
-  log ERROR "Please set SITE_NAME."
-  exit 1
-fi
 
 #check if project env is present
 if [ -d "/etc/bridgehead/${PROJECT}.conf" ]; then

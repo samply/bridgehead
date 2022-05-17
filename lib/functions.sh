@@ -13,6 +13,7 @@ log() {
 
 printUsage() {
 	echo "Usage: bridgehead start|stop|update|install|uninstall PROJECTNAME"
+	echo "PROJECTNAME should be one of ccp|nngm|gbn"
 }
 
 checkRequirements() {

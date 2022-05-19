@@ -20,9 +20,6 @@ for DIR in /etc/bridgehead $(pwd); do
       # Ensure web link even if ssh is used
       git_repository_url="${git_repository_url/git@github.com/https:\/\/github.com\/}"
       log "INFO" "You can review all changes on the repository with $git_repository_url/compare/$old_git_hash...$new_git_hash"
-    elif [ "$( echo $git_repository_url | grep "gitlab.com")" ]; then
-      git_repository_url="${git_repository_url/git@gitlab.com/https:\/\/gitlab.com\/}"
-      log "INFO" "You can review all changes on the repository with $git_repository_url/compare?from=$old_git_hash&to=$new_git_hash"
     elif [ "$( echo $git_repository_url | grep "git.verbis.dkfz.de")" ]; then
       git_repository_url="${git_repository_url/ssh:\/\/git@git.verbis.dkfz.de/https:\/\/git.verbis.dkfz.de\/}"
       git_repository_url="https://$(echo $git_repository_url | awk -F '@' '{print $2}')"

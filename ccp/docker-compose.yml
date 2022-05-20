@@ -50,7 +50,7 @@ services:
     
   monitoring:
     container_name: bridgehead-monitoring
-    image: samply/bridgehead-monitoring:main
+    image: samply/bridgehead-monitoring:ci
     environment:
       HOST: ${HOST}
       PROJECT: ${PROJECT}

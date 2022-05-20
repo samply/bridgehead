@@ -37,12 +37,20 @@ services:
     
   landing:
     container_name: bridgehead-landingpage
-    image: samply/bridgehead-landingpage:master
+    image: samply/bridgehead-landingpage:feature-monitoring
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
       - "traefik.http.services.landing.loadbalancer.server.port=80"
       - "traefik.http.routers.landing.tls=true"
+    environment:
+      HOST: ${HOST}
+      PROJECT: ${PROJECT}
+      SITE_NAME: ${SITE_NAME}
+    
+  monitoring:
+    container_name: bridgehead-monitoring
+    image: samply/bridgehead-monitoring:main
     environment:
       HOST: ${HOST}
       PROJECT: ${PROJECT}

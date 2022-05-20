@@ -2,13 +2,13 @@
 
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
-    echo "Please run as root"
+    log "ERROR" "Please run as root"
     exit 1
   fi
 }
 
 log() {
-  echo "$(date +'%Y-%m-%d %T')" "$1:" "$2"
+  echo -e "$(date +'%Y-%m-%d %T')" "$1:" "$2"
 }
 
 printUsage() {
@@ -18,7 +18,7 @@ printUsage() {
 
 checkRequirements() {
 	if ! lib/prerequisites.sh; then
-		log ERROR "Validating Prerequisites failed, please fix the error(s) above this line."
+		log "ERROR" "Validating Prerequisites failed, please fix the error(s) above this line."
 		exit 1
 	else
 		return 0
@@ -38,12 +38,12 @@ fetchVarsFromVault() {
 		return 0
 	fi
 
-	log INFO "Fetching secrets from vault ..."
+	log "INFO" "Fetching secrets from vault ..."
 
 	[ -e /etc/bridgehead/vault.conf ] && source /etc/bridgehead/vault.conf
 
 	if [ -z "$BW_MASTERPASS" ] || [ -z "$BW_CLIENTID" ] || [ -z "$BW_CLIENTSECRET" ]; then
-		log ERROR "Please supply correct credentials in /etc/bridgehead/vault.conf."
+		log "ERROR" "Please supply correct credentials in /etc/bridgehead/vault.conf."
 		return 1
 	fi
 

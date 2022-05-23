@@ -10,7 +10,7 @@ volumes:
 services:
   traefik:
     container_name: bridgehead-traefik
-    image: traefik:2.4
+    image: traefik:latest
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -87,6 +87,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.gbn_connector.rule=PathPrefix(`/gbn-connector`)"
       - "traefik.http.services.gbn_connector.loadbalancer.server.port=8080"
+      - "traefik.http.routers.gbn_connector.tls=true"
     depends_on:
       - "gbn-connector-db"
     restart: "always"
@@ -94,6 +95,7 @@ services:
   gbn-connector-db:
     container_name: bridgehead-gbn-connector-db
     image: "postgres:10.17"
+    container_name: "bridgehead-gbn-connector-db"
     environment:
       POSTGRES_DB: "samply.connector"
       POSTGRES_USER: "samply"

@@ -92,6 +92,7 @@ services:
     restart: "always"
 
   gbn-connector-db:
+    container_name: bridgehead-gbn-connector-db
     image: "postgres:10.17"
     environment:
       POSTGRES_DB: "samply.connector"

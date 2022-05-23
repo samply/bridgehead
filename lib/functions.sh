@@ -68,3 +68,7 @@ fetchVarsFromVault() {
 ##Setting Network properties
 export HOSTIP=$(MSYS_NO_PATHCONV=1 docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}');
 export HOST=$(hostname)
+export PRODUCTION="false";
+if [ "$(git branch --show-current)" == "main" ]; then
+	export PRODUCTION="true";
+fi

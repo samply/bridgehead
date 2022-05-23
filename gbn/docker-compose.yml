@@ -4,11 +4,13 @@ volumes:
   gbn-connector-logs:
   gbn-connector-db-data:
   gbn-store-db-data:
+  bridgehead-proxy:
+  blaze-data:
 
 services:
   traefik:
     container_name: bridgehead-traefik
-    image: traefik:2
+    image: traefik:2.4
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -44,7 +46,7 @@ services:
     
   landing:
     container_name: bridgehead-landingpage
-    image: samply/bridgehead-landingpage
+    image: samply/bridgehead-landingpage:master
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"

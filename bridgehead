@@ -44,7 +44,7 @@ esac
 case "$ACTION" in
 	start)
 		checkRequirements
-		fetchVarsFromVault /etc/bridgehead/$PROJECT.conf || exit 1
+		fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || exit 1
 		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.conf up
 		;;
 	stop)

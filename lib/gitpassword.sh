@@ -29,9 +29,9 @@ date >> /tmp/gitpass
 PARAMS="$(tee -a /tmp/gitpass)"
 GITHOST=$(echo "$PARAMS" | grep "^host=" | sed 's/host=\(.*\)/\1/g')
 
-fetchVarsFromVault CCP_GIT
+fetchVarsFromVault GIT_PASSWORD
 
-if [ -z "${CCP_GIT}" ]; then
+if [ -z "${GIT_PASSWORD}" ]; then
 	log ERROR "Git password not found."
 	exit 1
 fi
@@ -40,7 +40,7 @@ tee -a /tmp/gitpass <<EOF
 protocol=https
 host=$GITHOST
 username=bk-${SITE_ID}
-password=${CCP_GIT}
+password=${GIT_PASSWORD}
 EOF
 
 echo >> /tmp/gitpass

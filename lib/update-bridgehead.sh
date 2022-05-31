@@ -1,10 +1,30 @@
 #!/bin/bash
 source lib/functions.sh
 
-log "INFO" "Checking for updates of services"
+CONFFILE=/etc/bridgehead/$1.conf
+
+if [ ! -e $CONFFILE ]; then
+  log ERROR "Configuration file $CONFFILE not found."
+  exit 1
+fi
+
+source $CONFFILE
+
+assertVarsNotEmpty SITE_ID || exit 1
+export SITE_ID
+
+checkOwner . bridgehead || exit 1
+checkOwner /etc/bridgehead bridgehead || exit 1
+
+CREDHELPER="/srv/docker/bridgehead/lib/gitpassword.sh"
 
 # Check git updates
 for DIR in /etc/bridgehead $(pwd); do
+  log "INFO" "Checking for updates to git repo $DIR ..."
+  if [ "$(git -C $DIR config --get credential.helper)" != "$CREDHELPER" ]; then
+    log "INFO" "Configuring repo to use bridgehead git credential helper."
+    git -C $DIR config credential.helper "$CREDHELPER"
+  fi
   old_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
   git -C $DIR fetch 2>&1
   git -C $DIR pull 2>&1
@@ -30,6 +50,7 @@ for DIR in /etc/bridgehead $(pwd); do
 done
 
 # Check docker updates
+log "INFO" "Checking for updates to running docker images ..."
 docker_updated="false"
 for IMAGE in $(docker ps --filter "name=bridgehead" --format {{.Image}}); do
   log "INFO" "Checking for Updates of Image: $IMAGE"
@@ -41,10 +62,12 @@ done
 
 # If anything is updated, restart service
 if [ $git_updated = "true" ] || [ $docker_updated = "true" ]; then
-  log "INFO" "Due to previous updates now restarting bridgehead"
+  log "INFO" "Update detected, now restarting bridgehead"
   systemctl restart 'bridgehead@*'
+else
+  log "INFO" "Nothing updated, nothing to restart."
 fi
-log "INFO" "checking updates finished"
+
 exit 0
 
 # TODO: Print last commit explicit

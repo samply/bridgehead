@@ -55,7 +55,7 @@ fetchVarsFromVaultByFile() {
 	VARS_TO_FETCH=""
 
 	for line in $(cat $@); do
-		if [[ $line =~ .*=\<VAULT\>.* ]]; then
+		if [[ $line =~ .*=[\"]*\<VAULT\>[\"]*.* ]]; then
 			VARS_TO_FETCH+="$(echo -n $line | sed 's/=.*//') "
 		fi
 	done

@@ -24,9 +24,7 @@ source lib/functions.sh
 
 assertVarsNotEmpty SITE_ID || exit 1
 
-date >> /tmp/gitpass
-
-PARAMS="$(tee -a /tmp/gitpass)"
+PARAMS="$(cat)"
 GITHOST=$(echo "$PARAMS" | grep "^host=" | sed 's/host=\(.*\)/\1/g')
 
 fetchVarsFromVault GIT_PASSWORD
@@ -36,11 +34,9 @@ if [ -z "${GIT_PASSWORD}" ]; then
 	exit 1
 fi
 
-tee -a /tmp/gitpass <<EOF
+cat <<EOF
 protocol=https
 host=$GITHOST
 username=bk-${SITE_ID}
 password=${GIT_PASSWORD}
 EOF
-
-echo >> /tmp/gitpass

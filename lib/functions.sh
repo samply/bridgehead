@@ -7,6 +7,15 @@ exitIfNotRoot() {
   fi
 }
 
+checkOwner(){
+  COUNT=$(find $1 ! -user $2 |wc -l)
+  if [ $COUNT -gt 0 ]; then
+    log ERROR "$COUNT files in $1 are not owned by user $2. Run find $1 ! -user $2 to see them, chown -R $2 $1 to correct this issue."
+    return 1
+  fi
+  return 0
+}
+
 log() {
   echo -e "$(date +'%Y-%m-%d %T')" "$1:" "$2"
 }

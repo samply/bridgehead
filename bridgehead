@@ -29,6 +29,8 @@ case "$PROJECT" in
 	ccp)
 		#nothing extra to do
 		;;
+	c4)
+	;;
 	nngm)
 		#nothing extra to do
 		;;

@@ -59,11 +59,6 @@ services:
     ports:
       - "8083:8080"
       - "65495:65395"
-    env_file:
-      - "./internal-env/samply.common.environment"
-      - "./internal-env/samply.store.environment"
-      - "./config/samply.common.environment"
-      - "./config/samply.store.environment"
     volumes:
       - "store_logs:/usr/local/tomcat/logs"
     restart: always

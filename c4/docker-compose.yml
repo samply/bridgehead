@@ -91,3 +91,10 @@ services:
     volumes:
       - "connector_db_data:/var/lib/postgresql/data"
     restart: always
+
+volumes:
+  blaze-data:
+  bridgehead-proxy:
+  connector_db_data:
+  store_db_data:
+  connector_logs:  

@@ -10,7 +10,7 @@ volumes:
 services:
   traefik:
     container_name: bridgehead-traefik
-    image: traefik:latest
+    image: traefik:2.4
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443

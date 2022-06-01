@@ -98,3 +98,4 @@ volumes:
   connector_db_data:
   store_db_data:
   connector_logs:  
+  store_logs:

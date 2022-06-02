@@ -82,6 +82,10 @@ services:
   store_db:
     image: postgres:9.5-alpine
     command: postgres -c datestyle='iso, dmy'
+    environment:
+      POSTGRES_DB: ${Store_POSTGRES_DB}
+      POSTGRES_USER: ${Store_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${Store_POSTGRES_PASSWORD}
     volumes:
       - "store_db_data:/var/lib/postgresql/data"
     restart: always
@@ -90,6 +94,10 @@ services:
     image: postgres:9.5-alpine
     volumes:
       - "connector_db_data:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
+      POSTGRES_USER: ${CONNECTOR_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
     restart: always
 
 volumes:

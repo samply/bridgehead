@@ -49,13 +49,13 @@ services:
       SITE_NAME: ${SITE_NAME}
       
   idmanager:
-    image: docker.verbis.dkfz.de/ccp/idmanager:deploy-${SITEID}-${TESTPROD}
+    image: docker.verbis.dkfz.de/ccp/idmanager:bk2
     ports:
       - "8084:8080"
     restart: always
 
   store:
-    image: docker.verbis.dkfz.de/ccp/samply.store:deploy-${SITEID}-${TESTPROD}
+    image: docker.verbis.dkfz.de/ccp/samply.store:bk2
     ports:
       - "8083:8080"
       - "65495:65395"
@@ -64,7 +64,7 @@ services:
     restart: always
 
   connector:
-    image: docker.verbis.dkfz.de/ccp/connector:deploy-${SITEID}-${TESTPROD}
+    image: docker.verbis.dkfz.de/ccp/connector:bk2
     ports:
     - "8082:8080"
     - "65496:65395"

@@ -69,7 +69,7 @@ services:
     - "8082:8080"
     - "65496:65395"
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
       NNGM_MAGICPL_APIKEY: ${NNGM_MAGICPL_APIKEY}
       NNGM_MAINZELLISTE_APIKEY: ${NNGM_MAINZELLISTE_APIKEY}
       NNGM_CTS_APIKEY: ${NNGM_CTS_APIKEY}
@@ -92,12 +92,13 @@ services:
 
   connector_db:
     image: postgres:9.5-alpine
+    container_name: bridgehead-ccp-connector-db
     volumes:
       - "connector_db_data:/var/lib/postgresql/data"
     environment:
-      POSTGRES_DB: ${CONNECTOR_POSTGRES_DB}
-      POSTGRES_USER: ${CONNECTOR_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
+      POSTGRES_DB: "samplyconnector"
+      POSTGRES_USER: "samplyconnector"
+      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
     restart: always
 
 volumes:

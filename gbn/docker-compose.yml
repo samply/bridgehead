@@ -10,7 +10,7 @@ volumes:
 services:
   traefik:
     container_name: bridgehead-traefik
-    image: traefik:2.4
+    image: traefik:latest
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -59,7 +59,7 @@ services:
 
   blaze:
     image: "samply/blaze:0.17"
-    container_name: bridgehead-gbn-blaze
+    container_name: bridgehead-gbn-blaze-store
     environment:
       BASE_URL: "http://blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx4g"
@@ -94,7 +94,7 @@ services:
 
   gbn-connector-db:
     container_name: bridgehead-gbn-connector-db
-    image: "postgres:10.17"
+    image: "postgres:10"
     container_name: "bridgehead-gbn-connector-db"
     environment:
       POSTGRES_DB: "samply.connector"

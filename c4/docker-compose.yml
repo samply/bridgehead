@@ -28,7 +28,7 @@ services:
 
   forward_proxy:
     container_name: bridgehead-forward-proxy
-    image: ubuntu/squid
+    image: samply/bridgehead-forward-proxy:develop
     environment:
       http_proxy: ${http_proxy}
       https_proxy: ${https_proxy}
@@ -59,6 +59,9 @@ services:
     ports:
       - "8083:8080"
       - "65495:65395"
+    environment:
+      HTTP_PROXY_HOST: ${HTTP_PROXY_URL}
+      HTTPS_PROXY_HOST: ${HTTPS_PROXY_URL}
     volumes:
       - "store_logs:/usr/local/tomcat/logs"
     restart: always
@@ -74,6 +77,8 @@ services:
       NNGM_MAINZELLISTE_APIKEY: ${NNGM_MAINZELLISTE_APIKEY}
       NNGM_CTS_APIKEY: ${NNGM_CTS_APIKEY}
       NNGM_CRYPTKEY: ${NNGM_CRYPTKEY}
+      HTTP_PROXY_HOST: ${HTTP_PROXY_URL}
+      HTTPS_PROXY_HOST: ${HTTPS_PROXY_URL}
     volumes:
       - "connector_logs:/usr/local/tomcat/logs"
     restart: always
@@ -89,6 +94,8 @@ services:
     volumes:
       - "store_db_data:/var/lib/postgresql/data"
     restart: always
+    ports:
+      - "5450:5432"
 
   connector_db:
     image: postgres:9.5-alpine
@@ -105,6 +112,8 @@ volumes:
   blaze-data:
   bridgehead-proxy:
   connector_db_data:
+    name: bridgehead_connector_db_data
   store_db_data:
+    name: bridgehead_store_db_data
   connector_logs:  
   store_logs:

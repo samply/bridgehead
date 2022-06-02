@@ -12,7 +12,7 @@ log() {
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|forground|stop|update|install|uninstall PROJECTNAME"
+	echo "Usage: bridgehead start|background|stop|update|install|uninstall PROJECTNAME"
 	echo "PROJECTNAME should be one of ccp|nngm|gbn|c4"
 }
 

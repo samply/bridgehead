@@ -82,9 +82,9 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.landing.rule=PathPrefix(`/ccp-connector`)"
-      - "traefik.http.services.landing.loadbalancer.server.port=8080"
-      - "traefik.http.routers.landing.tls=true"
+      - "traefik.http.routers.connector.rule=PathPrefix(`/ccp-connector`)"
+      - "traefik.http.services.connector.loadbalancer.server.port=8080"
+      - "traefik.http.routers.connector.tls=true"
 
   ## Databases
   store_db:

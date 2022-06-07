@@ -68,7 +68,6 @@ services:
 
   connector:
     image: docker.verbis.dkfz.de/ccp/connector:bk2
-    ports:
     environment:
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
       NNGM_MAGICPL_APIKEY: ${NNGM_MAGICPL_APIKEY}

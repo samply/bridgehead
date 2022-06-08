@@ -107,9 +107,9 @@ services:
     image: postgres:9.5-alpine
     command: postgres -c datestyle='iso, dmy'
     environment:
-      STORE_POSTGRES_DB: ${STORE_POSTGRES_DB}
-      STORE_POSTGRES_USER: ${STORE_POSTGRES_USER}
-      STORE_POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${STORE_POSTGRES_DB}
+      POSTGRES_USER: ${STORE_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
     volumes:
       - "store_db_data:/var/lib/postgresql/data"
     restart: always

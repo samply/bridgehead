@@ -54,6 +54,12 @@ services:
 
   store:
     image: docker.verbis.dkfz.de/ccp/samply.store:bk2
+    environment:
+      STORE_POSTGRES_HOST: ${STORE_POSTGRES_HOST}
+      STORE_POSTGRES_PORT: ${STORE_POSTGRES_PORT}
+      STORE_POSTGRES_DB: ${STORE_POSTGRES_DB}
+      STORE_POSTGRES_USER: ${STORE_POSTGRES_USER}
+      STORE_POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
     volumes:
       - "store_logs:/usr/local/tomcat/logs"
     restart: always
@@ -89,10 +95,6 @@ services:
   store_db:
     image: postgres:9.5-alpine
     command: postgres -c datestyle='iso, dmy'
-    environment:
-      POSTGRES_DB: ${STORE_POSTGRES_DB}
-      POSTGRES_USER: ${STORE_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
     volumes:
       - "store_db_data:/var/lib/postgresql/data"
     restart: always

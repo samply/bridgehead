@@ -95,6 +95,10 @@ services:
   store_db:
     image: postgres:9.5-alpine
     command: postgres -c datestyle='iso, dmy'
+    environment:
+      STORE_POSTGRES_DB: ${STORE_POSTGRES_DB}
+      STORE_POSTGRES_USER: ${STORE_POSTGRES_USER}
+      STORE_POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
     volumes:
       - "store_db_data:/var/lib/postgresql/data"
     restart: always
@@ -114,8 +118,6 @@ volumes:
   blaze-data:
   bridgehead-proxy:
   connector_db_data:
-    name: bridgehead_connector_db_data
   store_db_data:
-    name: bridgehead_store_db_data
   connector_logs:  
   store_logs:

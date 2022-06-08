@@ -59,6 +59,12 @@ services:
 
   store:
     image: docker.verbis.dkfz.de/ccp/samply.store:bk2
+    environment:
+      STORE_POSTGRES_HOST: ${STORE_POSTGRES_HOST}
+      STORE_POSTGRES_PORT: ${STORE_POSTGRES_PORT}
+      STORE_POSTGRES_DB: ${STORE_POSTGRES_DB}
+      STORE_POSTGRES_USER: ${STORE_POSTGRES_USER}
+      STORE_POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
     volumes:
       - "store_logs:/usr/local/tomcat/logs"
     restart: always
@@ -85,8 +91,6 @@ services:
       NNGM_MAINZELLISTE_APIKEY: ${NNGM_MAINZELLISTE_APIKEY}
       NNGM_CTS_APIKEY: ${NNGM_CTS_APIKEY}
       NNGM_CRYPTKEY: ${NNGM_CRYPTKEY}
-      #HTTP_PROXY_HOST: ${HTTP_PROXY_URL}
-      #HTTPS_PROXY_HOST: ${HTTPS_PROXY_URL}
     ports:
       - 8082:8080
     volumes:
@@ -103,13 +107,9 @@ services:
     image: postgres:9.5-alpine
     command: postgres -c datestyle='iso, dmy'
     environment:
-      STORE_POSTGRES_HOST: ${STORE_POSTGRES_HOST}
-      STORE_POSTGRES_PORT: ${STORE_POSTGRES_PORT}
       STORE_POSTGRES_DB: ${STORE_POSTGRES_DB}
       STORE_POSTGRES_USER: ${STORE_POSTGRES_USER}
       STORE_POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
-    ports:
-      - "5450:5432"
     volumes:
       - "store_db_data:/var/lib/postgresql/data"
     restart: always
@@ -129,8 +129,6 @@ volumes:
   blaze-data:
   bridgehead-proxy:
   connector_db_data:
-    name: bridgehead_connector_db_data
   store_db_data:
-    name: bridgehead_store_db_data
   connector_logs:  
   store_logs:

@@ -94,8 +94,6 @@ services:
       NNGM_MAINZELLISTE_APIKEY: ${NNGM_MAINZELLISTE_APIKEY}
       NNGM_CTS_APIKEY: ${NNGM_CTS_APIKEY}
       NNGM_CRYPTKEY: ${NNGM_CRYPTKEY}
-    ports:
-      - 8082:8080
     volumes:
       - "connector_logs:/usr/local/tomcat/logs"
     restart: always

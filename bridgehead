@@ -41,16 +41,21 @@ case "$PROJECT" in
 		;;
 esac
 
+OVERRIDE=""
+if [ -f "$PROJECT/docker-compose.override.yml" ]; then
+	OVERRIDE+="-f ./$PROJECT/docker-compose.override.yml"
+fi
+
 case "$ACTION" in
 	start)
 		checkRequirements
 		fetchVarsFromVault /etc/bridgehead/$PROJECT.conf || exit 1
-		exec docker-compose -f ./$PROJECT/docker-compose.yml -f ./$PROJECT/docker-compose.override.yml --env-file /etc/bridgehead/$PROJECT.conf up
+		exec docker-compose -f ./$PROJECT/docker-compose.yml $OVERRIDE --env-file /etc/bridgehead/$PROJECT.conf up
 		;;
 	background)
 		checkRequirements
 		fetchVarsFromVault /etc/bridgehead/$PROJECT.conf || exit 1
-		exec docker-compose -f ./$PROJECT/docker-compose.yml -f ./$PROJECT/docker-compose.override.yml --env-file /etc/bridgehead/$PROJECT.conf up -d
+		exec docker-compose -f ./$PROJECT/docker-compose.yml $OVERRIDE --env-file /etc/bridgehead/$PROJECT.conf up -d
 		;;
 	stop)
 		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.conf down

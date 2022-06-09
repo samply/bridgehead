@@ -3,7 +3,7 @@ version: "3.7"
 services:
   traefik:
     container_name: bridgehead-traefik
-    image: traefik:latest
+    image: traefik:2.7
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -49,6 +49,7 @@ services:
       SITE_NAME: ${SITE_NAME}
       
   idmanager:
+    container_name: bridgehead-idmanager
     image: docker.verbis.dkfz.de/ccp/idmanager:bk2
     labels:
       - "traefik.enable=true"
@@ -58,6 +59,7 @@ services:
     restart: always
 
   store:
+    container_name: bridgehead-store
     image: docker.verbis.dkfz.de/ccp/samply.store:bk2
     environment:
       STORE_POSTGRES_HOST: ${STORE_POSTGRES_HOST}
@@ -84,6 +86,7 @@ services:
       - "traefik.http.routers.ldm_ccp.tls=true"
 
   connector:
+    container_name: bridgehead-connector
     image: docker.verbis.dkfz.de/ccp/connector:bk2
     environment:
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
@@ -104,6 +107,7 @@ services:
 
   ## Databases
   store_db:
+    container_name: bridgehead-store-db
     image: postgres:9.5-alpine
     command: postgres -c datestyle='iso, dmy'
     environment:

@@ -77,7 +77,7 @@ services:
       APP_BROKER_AUTHTOKEN: ${CCP_SEARCHBROKER_PASSWORD}
       APP_STORE_BASEURL: "http://bridgehead-ccp-blaze:8080/fhir"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://bridgehead-ccp-share-db:5432/postgres"
-      JAVA_TOOL_OPTIONS: -Xmx1g -Dhttp.proxyHost=bridgehead-forward-proxy -Dhttp.proxyPort=3128 -Dhttps.proxyHost=bridgehead-forward-proxy -Dhttps.proxyPort=3128 -Dhttp.noProxyHosts="bridgehead-*"
+      JAVA_TOOL_OPTIONS: -Xmx1g -Dhttp.proxyHost=bridgehead-forward-proxy -Dhttp.proxyPort=3128 -Dhttps.proxyHost=bridgehead-forward-proxy -Dhttps.proxyPort=3128 -Dhttp.nonProxyHosts="bridgehead-*"
     depends_on:
     - ccp-search-share-db
     - blaze

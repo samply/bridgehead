@@ -28,7 +28,7 @@ services:
 
   forward_proxy:
     container_name: bridgehead-forward-proxy
-    image: ubuntu/squid
+    image: samply/bridgehead-forward-proxy:develop
     environment:
       http_proxy: ${http_proxy}
       https_proxy: ${https_proxy}

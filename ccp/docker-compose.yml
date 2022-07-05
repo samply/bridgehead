@@ -58,33 +58,6 @@ services:
       - "traefik.http.routers.idmanager.tls=true"
     restart: always
 
-  store:
-    container_name: bridgehead-store
-    image: docker.verbis.dkfz.de/ccp/samply.store:bk2
-    environment:
-      STORE_POSTGRES_HOST: ${STORE_POSTGRES_HOST}
-      STORE_POSTGRES_PORT: ${STORE_POSTGRES_PORT}
-      STORE_POSTGRES_DB: ${STORE_POSTGRES_DB}
-      STORE_POSTGRES_USER: ${STORE_POSTGRES_USER}
-      STORE_POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
-    volumes:
-      - "store_logs:/usr/local/tomcat/logs"
-    restart: always
-    environment:
-      STORE_POSTGRES_HOST: ${STORE_POSTGRES_HOST}
-      STORE_POSTGRES_PORT: ${STORE_POSTGRES_PORT}
-      STORE_POSTGRES_DB: ${STORE_POSTGRES_DB}
-      STORE_POSTGRES_USER: ${STORE_POSTGRES_USER}
-      STORE_POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.middlewares.ccp-auth.basicauth.users=${bc_auth_users}"
-      - "traefik.http.routers.ldm_ccp.rule=PathPrefix(`/ccp-localdatamanagement`)"
-      - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/ccp-localdatamanagement"
-      - "traefik.http.services.ldm_ccp.loadbalancer.server.port=8080"
-      - "traefik.http.routers.ldm_ccp.middlewares=ccp_b_strip,ccp-auth"
-      - "traefik.http.routers.ldm_ccp.tls=true"
-
   connector:
     container_name: bridgehead-connector
     image: docker.verbis.dkfz.de/ccp/connector:bk2
@@ -103,19 +76,6 @@ services:
       - "traefik.http.services.connector.loadbalancer.server.port=8080"
       - "traefik.http.routers.connector.tls=true"
 
-  ## Databases
-  store_db:
-    container_name: bridgehead-store-db
-    image: postgres:9.5-alpine
-    command: postgres -c datestyle='iso, dmy'
-    environment:
-      POSTGRES_DB: ${STORE_POSTGRES_DB}
-      POSTGRES_USER: ${STORE_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${STORE_POSTGRES_PASSWORD}
-    volumes:
-      - "store_db_data:/var/lib/postgresql/data"
-    restart: always
-
   connector_db:
     image: postgres:9.5-alpine
     container_name: bridgehead-ccp-connector-db
@@ -127,10 +87,27 @@ services:
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
     restart: always
 
+  blaze:
+    image: "samply/blaze:0.17"
+    container_name: bridgehead-ccp-blaze
+    environment:
+      BASE_URL: "http://blaze:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx4g"
+      LOG_LEVEL: "debug"
+      ENFORCE_REFERENTIAL_INTEGRITY: "false"
+    volumes:
+    - "blaze-data:/app/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.ccp-auth.basicauth.users=${bc_auth_users}"
+      - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/ccp-localdatamanagement`)"
+      - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/ccp-localdatamanagement"
+      - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,ccp-auth"
+      - "traefik.http.routers.blaze_ccp.tls=true"
+
 volumes:
   blaze-data:
   bridgehead-proxy:
   connector_db_data:
-  store_db_data:
   connector_logs:  
-  store_logs:

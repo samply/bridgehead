@@ -1,0 +1,68 @@
+#!/bin/bash -e
+
+baseDir() {
+	# see https://stackoverflow.com/questions/59895
+	SOURCE=${BASH_SOURCE[0]}
+	while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+		DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+		SOURCE=$(readlink "$SOURCE")
+		[[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+	done
+	DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+	echo $DIR
+}
+
+BASE=$(baseDir)
+cd $BASE
+
+source ./lib/functions.sh
+
+ACTION=$1
+export PROJECT=$2
+
+if [[ -z $1 || -z $2 ]]; then
+	printUsage
+	exit 1
+fi
+
+case "$PROJECT" in
+	ccp)
+		#nothing extra to do
+		;;
+	nngm)
+		#nothing extra to do
+		;;
+	gbn)
+		#nothing extra to do
+		;;
+	*)
+		printUsage
+		exit 1
+		;;
+esac
+
+case "$ACTION" in
+	start)
+		checkRequirements
+		fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || exit 1
+		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.conf up
+		;;
+	stop)
+		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.conf down
+		;;
+	update)
+		exec ./lib/update-bridgehead.sh $PROJECT
+		;;
+	install)
+		exec ./lib/setup-bridgehead-units.sh $PROJECT
+		;;
+	uninstall)
+		exec ./lib/remove-bridgehead-units.sh $PROJECT
+		;;
+	*)
+		printUsage
+		exit 1
+		;;
+esac
+
+exit 0

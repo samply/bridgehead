@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [Unit]
 Description=Bridgehead (%i) Service
 
@@ -13,3 +14,17 @@ ExecStop=/bin/bash -c '`which docker-compose` -f %i/docker-compose.yml --env-fil
 
 [Install]
 WantedBy=multi-user.target
+=======
+[Unit]
+Description=Bridgehead (%i) Service
+
+[Service]
+User=bridgehead
+Restart=always
+RestartSec=30
+ExecStart=/srv/docker/bridgehead/bridgehead start %i
+ExecStop=/srv/docker/bridgehead/bridgehead stop %i
+
+[Install]
+WantedBy=multi-user.target
+>>>>>>> version-1

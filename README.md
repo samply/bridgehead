@@ -8,13 +8,17 @@ TOC
 1. [About](#about)
     - [Projects](#projects)
         - [GBA/BBMRI-ERIC](#gbabbmri-eric)
-        - [DKTK/C4](#dktkc4)
+        - [CCP(DKTK/C4)](#ccpdktkc4)
         - [NNGM](#nngm)
     - [Bridgehead Components](#bridgehead-components)
-        - [Blaze Server](#blaze-serverhttpsgithubcomsamplyblaze)   
+        - [Blaze Server](#blaze-serverhttpsgithubcomsamplyblaze)  
+        - [Connector](#connector) 
 1. [Requirements](#requirements)
     - [Hardware](#hardware)
     - [System](#system-requirements)
+      - [git](#git)
+      - [docker](#dockerhttpsdocsdockercomget-docker)
+      - [systemd](#systemd)
 2. [Getting Started](#getting-started)
     - [DKTK](#dktkc4)
     - [C4](#c4)
@@ -32,9 +36,9 @@ TOC
 
 TODO: Insert comprehensive feature list of the bridgehead? Why would anyone install it?
 
-### Projects
+## Projects
 
-#### GBA/BBMRI-ERIC
+### GBA/BBMRI-ERIC
 
 The **Sample Locator** is a tool that allows researchers to make searches for samples over a large number of geographically distributed biobanks. Each biobank runs a so-called **Bridgehead** at its site, which makes it visible to the Sample Locator.  The Bridgehead is designed to give a high degree of protection to patient data. Additionally, a tool called the [Negotiator][negotiator] puts you in complete control over which samples and which data are delivered to which researcher.
 
@@ -44,11 +48,11 @@ The Bridgehead has two primary components:
 * The **Blaze Store**. This is a highly responsive FHIR data store, which you will need to fill with your data via an ETL chain.
 * The **Connector**. This is the communication portal to the Sample Locator, with specially designed features that make it possible to run it behind a corporate firewall without making any compromises on security.
 
-#### DKTK/C4
+### CCP(DKTK/C4)
 
 TODO:
 
-#### NNGM
+### nNGM
 
 TODO:
 
@@ -62,8 +66,6 @@ This holds the actual data being searched. This store must be filled by you, gen
 
 TODO:
 
-
-
 ## Requirements
 
 ### Hardware
@@ -72,148 +74,168 @@ For running your bridgehead we recommend the follwing Hardware:
 
 - 4 CPU cores
 - At least 8 GB Ram
-- 10GB Hard Drive + how many data GB you need to store in the bridgehead
+- 100GB Hard Drive, SSD recommended
 
 
 ### System Requirements
 
 Before starting the installation process, please ensure that following software is available on your system:
 
-#### [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+#### Git
 
-To check that you have a working git installation, please run
+Check if you have at leat git 2.0 installed on the system with:
+
 ``` shell
-cd ~/;
-git clone https://github.com/octocat/Hello-World.git;
-cat ~/Hello-World/README;
-rm -rf Hello-World;
+git --version
 ```
-If you see the output "Hello World!" your installation should be working.
 
 #### [Docker](https://docs.docker.com/get-docker/)
 
-To check your docker installation, you can try to execute dockers "Hello World" Image. The command is:
-``` shell
-docker run --rm --name hello-world hello-world;
-```
-Docker will now download the "hello-world" docker image and try to execute it. After the download you should see a message starting with "Hello from Docker!".
-
-> NOTE: If the download of the image fails (e.g with "connection timed out" message), ensure that you have correctly set the proxy for the docker daemon. Refer to ["Docker Daemon Proxy Configuration" in the "Pitfalls" section](#docker-daemon-proxy-configuration)
-
-You should also check, that the version of docker installed by you is newer than "1.20". To check this, just run 
+To check your docker installation, you should execute the docker with --version:
 
 ``` shell
 docker --version
 ```
 
-#### [Docker Compose](https://docs.docker.com/compose/cli-command/#installing-compose-v2)
-
-To check your docker-compose installation, please run the following command. It uses the "hello-world" image from the previous section:
-``` shell
-docker-compose -f - up <<EOF
-version: "3.9"
-services:
-  hello-world:
-    image: hello-world
-EOF
-```
-After executing the command, you should again see the message starting with "Hello from Docker!".
-
-You should also ensure, that the version of docker-compose installed by you is newer than "2.XX". To check this, just run 
+The Version should be higher than "20.10.1". Otherwise you will have problems starting the bridgehead. The next step is to check ``` docker-compose```  with:
 
 ``` shell
 docker-compose --version
 ```
 
+The recomended version is "2.XX" and higher. If docker-compose was not installed with docker follow these [instructions](https://docs.docker.com/compose/install/#install-compose-as-standalone-binary-on-linux-systems). To futher check your docker and docker-compose installation, please run the following command. 
+
+``` shell
+docker-compose -f - up <<EOF
+version: "3.7"
+services:
+  hello-world:
+    image: hello-world
+EOF
+```
+Docker will now download the "hello-world" docker image and try to execute it. After the download you should see a message starting with "Hello from Docker!".
+
+> NOTE: If the download of the image fails (e.g with "connection timed out" message), ensure that you have correctly set the proxy for the docker daemon. Refer to ["Docker Daemon Proxy Configuration" in the "Pitfalls" section](#docker-daemon-proxy-configuration)
+
 #### [systemd](https://systemd.io/)
 
-You shouldn't need to install it yourself. If systemd is not available on your system you should get another system.
+You shouldn't need to install it yourself, If systemd is not available on your system you should get another system.
 To check if systemd is available on your system, please execute
 
 ``` shell
 systemctl --version
 ```
 
+If systemd is not installed, you can start the bridgehead. However, for productive use we recomend using systemd.
+
 ---
 
 ## Getting Started
 
+### Installation 
+
 If your system passed all checks from ["Requirements" section], you are now ready to download the bridgehead.
 
 First, clone the repository to the directory "/srv/docker/bridgehead":
-
-u
 
 ``` shell
 sudo mkdir -p /srv/docker/;
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 ```
 
-Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can visit the configuration template at [GitHub](https://github.com/samply/bridgehead-config). You can download the repositories contents and add them to the "bridgehead-config" directory.
+It is recomended to create a user for the bridgehead service.  This should be done after clone the repository. Since not all linux distros support ```adduser```, we provide an action for the systemcall ```useradd```. You should try the first one, when the systm can't create the user you should try the second one.
 
 ``` shell
-sudo git submodule add -f https://github.com/samply/bridgehead-config.git ./site-config;
+adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
 ```
+
+``` shell
+useradd -M -g docker -N -s /sbin/nologin bridgehead
+```
+
+After adding the User you need to change the ownership of the directory to the bridgehead user.
+
+``` shell
+chown bridgehead /srv/docker/bridgehead/ -R
+```
+
+### Configuration
+
 > NOTE: If you are part of the CCP-IT we will provide you another link for the configuration.
 
-You should now be able to run a bridgehead instance. To check if everything works, execute the following:
+Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can clone the configuration template at [GitHub](https://github.com/samply/bridgehead-config). The confiugration of the bridgehead should be located in /etc/bridghead.
+
 ``` shell
-sudo ./lib/init-test-environment.sh;
-sudo ./start-bridgehead.sh <dktk/gbn/c4>;
+sudo git clone https://github.com/samply/bridgehead-config.git /etc/bridgehead;
 ```
 
-You should now be able to access the landing page on your system, e.g "http://<your-host>/" 
+After cloning or forking the repository you need to add value to the template. If you are a part of the CCP-IT you will get an already filled out config repo.
 
-To remove the test-environment, run (make sure you don't have other docker services installed on this system, docker volume prune is destructive!)
+### Testing your bridgehead
+
+We recomend to run first with the start and stop script. If you have trouble starting the bridghead have a look at the troubleshooting section.
+
+Now you ready to run a bridgehead instance. The bridgehead scripts checks if your configuration is correct. To check if everything works, execute the following:
 ``` shell
-sudo ./stop-bridgehead.sh <dktk/gbn/c4>;
-sudo docker volume prune;
+/srv/docker/bridgehead/bridgehead start <Project>
 ```
 
-For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. . You can do this by executing the [setup-bridgehead-units.sh](./lib/setup-bridgehead-units.sh) script:
+You should now be able to access the landing page on your system, e.g "https://<your-host>/". 
+
+To shutdown the bridgehead just run.
 ``` shell
-sudo ./lib/setup-bridgehead-units.sh
+/srv/docker/bridgehead/bridgehead stop <Project>
 ```
 
-Finally, you need to configure your sites secrets. These are places as configuration for each bridgeheads system unit. Refer to the section for your specific project:
+### Systemd service configuration
+
+For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. You can do this by executing the [bridgehead](./bridgehead) script:
+``` shell
+sudo /srv/docker/bridgehead/bridgehead install <Project>
+```
+
+This will install the systemd units to run and update the bridghead.
+
+Finally, you need to configure your sites secrets. These are places as configuration for each bridgehead system unit. Refer to the section for your specific project:
+
+For Every project you need to set the proxy this way, if you have one. This is done with the ```systemctl edit``` comand.
+
+``` shell
+sudo systemctl edit bridgehead@<project>.service;
+sudo systemctl edit bridgehead-update@<project>.service;
+```
+
+``` conf
+[Service]
+Environment=http_proxy=<proxy-url>
+Environment=https_proxy=<proxy-url>
+```
+
+There a further configurations for each project.
+
+#### CCP(DKTK/C4)
+
+For the federate search please follow the basic auth configuration step.
 
 ### DKTK/C4
 
 You can create the site specific configuration with: 
 
-``` shell
-sudo systemctl edit bridgehead@dktk.service;
-```
 
 This will open your default editor allowing you to edit the docker system units configuration. Insert the following lines in the editor and define your machines secrets. You share some of the ID-Management secrets with the central patientlist (Mainz) and controlnumbergenerator (Frankfurt). Refer to the ["Configuration" section](#configuration) for this.
 
 ``` conf
 [Service]
-Environment=HOSTIP=
-Environment=HOST=
-Environment=HTTP_PROXY_USER=
-Environment=HTTP_PROXY_PASSWORD=
-Environment=HTTPS_PROXY_USER=
-Environment=HTTPS_PROXY_PASSWORD=
-Environment=CONNECTOR_POSTGRES_PASS=
-Environment=ML_DB_PASS=
-Environment=MAGICPL_API_KEY=
-Environment=MAGICPL_MAINZELLISTE_API_KEY=
-Environment=MAGICPL_API_KEY_CONNECTOR=
-Environment=MAGICPL_MAINZELLISTE_CENTRAL_API_KEY=
-Environment=MAGICPL_CENTRAL_API_KEY=
-Environment=MAGICPL_OIDC_CLIENT_ID=
-Environment=MAGICPL_OIDC_CLIENT_SECRET=
+Environment=http_proxy=
+Environment=https_proxy=
 ```
 
 To make the configuration effective, you need to tell systemd to reload the configuration and restart the docker service:
 
 ``` shell
 sudo systemctl daemon-reload;
-sudo systemctl bridgehead@dktk.service;
+sudo systemctl bridgehead@ccp.service;
 ```
-
-### C4
 
 You can create the site specific configuration with: 
 
@@ -225,6 +247,8 @@ This will open your default editor allowing you to edit the docker system units 
 
 ``` conf
 [Service]
+Environment=http_proxy=
+Environment=https_proxy=
 Environment=HOSTIP=
 Environment=HOST=
 Environment=HTTP_PROXY_USER=
@@ -232,7 +256,6 @@ Environment=HTTP_PROXY_PASSWORD=
 Environment=HTTPS_PROXY_USER=
 Environment=HTTPS_PROXY_PASSWORD=
 Environment=CONNECTOR_POSTGRES_PASS=
-Environment=STORE_POSTGRES_PASS=
 Environment=ML_DB_PASS=
 Environment=MAGICPL_API_KEY=
 Environment=MAGICPL_MAINZELLISTE_API_KEY=
@@ -277,28 +300,38 @@ sudo systemctl daemon-reload;
 sudo systemctl bridgehead@gbn.service;
 ```
 
-### Developers
-
-Because some developers machines doesn't support system units (e.g Windows Subsystem for Linux), we provide a dev environment [configuration script](./lib/init-test-environment.sh).
-It is not recommended to use this script in production!
-
 ## Configuration
 
 ### Basic Auth
 
-Some services we use authfication to protect the data. For example for local data managemnt like the blaze.
+For Data protection we use basic authenfication for some services. To access those services you need an username and password combination. If you start the bridgehead without basic auth, then those services are not accesbile. We provide a script which set the needed config for you, just run the script and follow the instructions.
 
-The /auth direcotry contians for each project a file with user and password combination. If it is not present please create a file with just the project name. To add a combination use [htpasswdgenerator](https://htpasswdgenerator.de/) or use htpasswd on your maschine.
+``` shell
+add_user.sh
+```
+
+The result needs to be set in either in the systemd service or in your console.
+
+
+#### Console
+
+When just running the bridgehead you need to export the auth variable. Be aware that this export is only for the current session in the environment and after exit it will not be accessible anymore.
+
+``` shell
+export bc_auth_user=<output>
+```
+
+Cation: you need to escape occrring dollar signs.
+
+#### systemd
+
+
 
 ### HTTPS Access
 
 We advise to use https for all service of your bridgehead. HTTPS is enabled on default. For starting the bridghead you need a ssl certificate. You can either create it yourself or get a signed one. You need to drop the certificates in /certs.
 
-If you want to create it yourself, you can generate the necessary certs with:
-
-``` shell
-openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/traefik.key -out certs/traefik.crt -days 365
-```
+The bridgehead create one autotmatic on the first start. However, it will be unsigned and we recomend to get a signed one.
 
 
 ### Locally Managed Secrets
@@ -357,34 +390,34 @@ sudo systemctl start bridgehead-update@<dktk/c4/gbn>
 
 #### Remove the Bridgehead System Units
 
-If, for some reason you want to remove the installed bridgehead units, we added a [script](./lib/remove-bridgehead-units.sh) you can execute:
+If, for some reason you want to remove the installed bridgehead units, we added a command to [bridgehead](./bridgehead):
 ``` shell
-sudo ./lib/remove-bridgehead-units.sh
+sudo /srv/docker/bridgehead/bridgehead uninstall <project>
 ```
 
 ### On Developers Machine
 
 For developers, we provide additional scripts for starting and stopping the specif bridgehead:
 
-#### Start
+#### Start or stop
 
-This shell script start a specified bridgehead. Choose between "dktk", "c4" and "gbn".
+This command starts a specified bridgehead. Choose between "dktk", "c4" and "gbn".
 ``` shell
-./start-bridgehead <dktk/c4/gbn>
+/srv/docker/bridgehead/bridgehead start <dktk/c4/gbn>
 ```
 
 #### Stop
 
-This shell script stops a specified bridgehead. Choose between "dktk", "c4" and "gbn".
+This command stops a specified bridgehead. Choose between "dktk", "c4" and "gbn".
 ``` shell
-./stop-bridgehead <dktk/c4/gbn>
+/srv/docker/bridgehead/bridgehead stop <dktk/c4/gbn>
 ```
 
 #### Update
 
 This shell script updates the configuration for all bridgeheads installed on your system.
 ``` shell
-./update-bridgehead
+/srv/docker/bridgehead/bridgehead update
 ```
 > NOTE: If you want to regularly update your developing instance, you can create a CRON job that executes this script.
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [Unit]
 Description=Nightly Updates of Bridgehead (%i)
 
@@ -6,3 +7,13 @@ OnCalendar=*-*-* 03:00:00
 
 [Install]
 WantedBy=basic.target
+=======
+[Unit]
+Description=Nightly Updates of Bridgehead (%i)
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+
+[Install]
+WantedBy=basic.target
+>>>>>>> version-1

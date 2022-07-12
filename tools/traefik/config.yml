@@ -1,5 +1,0 @@
-# Specifying a certificate that will be used for matching requests
-tls:
-  certificates:
-    - certFile: /tools/certs/traefik.crt
-      keyFile: /tools/certs/traefik.key

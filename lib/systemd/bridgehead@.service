@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-[Unit]
-Description=Bridgehead (%i) Service
-
-[Service]
-Restart=always
-RestartSec=30
-
-WorkingDirectory=/srv/docker/bridgehead/
-
-ExecStartPre=/bin/bash -c '`which docker-compose` -f %i/docker-compose.yml --env-file site-config/%i.env down'
-ExecStart=/bin/bash -c '`which docker-compose` -f %i/docker-compose.yml --env-file site-config/%i.env up'
-ExecStop=/bin/bash -c '`which docker-compose` -f %i/docker-compose.yml --env-file site-config/%i.env down'
-
-[Install]
-WantedBy=multi-user.target
-=======
 [Unit]
 Description=Bridgehead (%i) Service
 
@@ -27,4 +10,3 @@ ExecStop=/srv/docker/bridgehead/bridgehead stop %i
 
 [Install]
 WantedBy=multi-user.target
->>>>>>> version-1

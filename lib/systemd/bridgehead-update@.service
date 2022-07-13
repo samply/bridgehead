@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-[Unit]
-Description=Bridgehead (%i) Update Service
-
-[Service]
-Type=oneshot
-WorkingDirectory=/srv/docker/bridgehead/
-ExecStart=/bin/bash -c "/srv/docker/bridgehead/update-bridgehead.sh %i"
-
-[Install]
-WantedBy=multi-user.target
-=======
 [Unit]
 Description=Bridgehead (%i) Update Service
 
@@ -20,4 +8,3 @@ ExecStart=/srv/docker/bridgehead/bridgehead update %i
 
 [Install]
 WantedBy=multi-user.target
->>>>>>> version-1

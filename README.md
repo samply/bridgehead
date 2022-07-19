@@ -188,7 +188,7 @@ On this page, there are all important links to each component, central and local
 
 ---
 
-## Roadmap
+## Roadmap 🚀 
 
 - [ ] Securely manage secrets using the [vault warden fetcher](https://github.com/samply/bridgehead-vaultfetcher)
 - [ ] Integrate the [samply/share-client](https://github.com/samply/share-client) for the [DKTK](https://dktk.dkfz.de) project with the new deployment

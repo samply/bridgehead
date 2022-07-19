@@ -8,7 +8,6 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --providers.docker=true
-      - --providers.file.directory=/etc/traefik/dynamic_conf
       - --api.dashboard=true
       - --accesslog=true # print access-logs
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
@@ -25,10 +24,9 @@ services:
       - 443:443
     volumes:
       - ../certs:/tools/certs
-      - ../lib/tls/config.yml:/etc/traefik/dynamic_conf/conf.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
-  forward_proxy:
+        forward_proxy:
     container_name: bridgehead-forward-proxy
     image: samply/bridgehead-forward-proxy:develop
     environment:
@@ -50,6 +48,7 @@ services:
       PROJECT: ${PROJECT}
       SITE_NAME: ${SITE_NAME}
 
+{% if PROJECT == 'ccp' %}
   blaze:
     image: "samply/blaze:0.17"
     container_name: bridgehead-ccp-blaze
@@ -97,8 +96,95 @@ services:
       POSTGRES_DB: "dktk-fed-search-share"
     volumes:
     - "ccp-search-share-db-data:/var/lib/postgresql/data"
+{% elif PROJECT == 'nngm' %}
+  nngm-connector:
+      container_name: bridgehead-nngm-connector
+      image: "samply/share-client:nngm-feature-environmentPreconfiguration"
+      environment:
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        NNGM_MAGICPL_APIKEY: ${NNGM_MAGICPL_APIKEY}
+        NNGM_MAINZELLISTE_APIKEY: ${NNGM_MAINZELLISTE_APIKEY}
+        NNGM_CTS_APIKEY: ${NNGM_CTS_APIKEY}
+        NNGM_CRYPTKEY: ${NNGM_CRYPTKEY}
+      volumes:
+        - "nngm-connector-logs:/usr/local/tomcat/logs"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.nngm_connector.rule=PathPrefix(`/nngm-connector`)"
+        - "traefik.http.services.nngm_connector.loadbalancer.server.port=8080"
+        - "traefik.http.routers.nngm_connector.tls=true"
+
+      depends_on:
+        - "nngm-connector-db"
+        - "forward_proxy"
+      ports:
+      - 5005:5005
+      restart: "always"
+
+  nngm-connector-db:
+      container_name: bridgehead-nngm-connector-db
+      image: "postgres:10.17"
+      environment:
+        POSTGRES_DB: "share_v2"
+        POSTGRES_USER: "samplyweb"
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      volumes:
+        - "nngm-connector-db-data:/var/lib/postgresql/data"
+      restart: "always"
+{% elif PROJECT == 'gbn' %}
+blaze:
+    image: "samply/blaze:0.17"
+    container_name: bridgehead-gbn-blaze-store
+    environment:
+      BASE_URL: "http://blaze:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx4g"
+      LOG_LEVEL: "debug"
+      ENFORCE_REFERENTIAL_INTEGRITY: "false"
+    volumes:
+    - "blaze-data:/app/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.gbn-auth.basicauth.users=${bc_auth_users}"
+      - "traefik.http.routers.blaze_gbn.rule=PathPrefix(`/gbn-localdatamanagement`)"
+      - "traefik.http.middlewares.gbn_b_strip.stripprefix.prefixes=/gbn-localdatamanagement"
+      - "traefik.http.services.blaze_gbn.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_gbn.middlewares=gbn_b_strip,gbn-auth"
+      - "traefik.http.routers.blaze_gbn.tls=true"
+
+  gbn-connector:
+    container_name: bridgehead-gbn-connector
+    image: "samply/share-client:gbn-feature-environmentPreconfiguration"
+    environment:
+      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
+    volumes:
+      - "gbn-connector-logs:/usr/local/tomcat/logs"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gbn_connector.rule=PathPrefix(`/gbn-connector`)"
+      - "traefik.http.services.gbn_connector.loadbalancer.server.port=8080"
+      - "traefik.http.routers.gbn_connector.tls=true"
+    depends_on:
+      - "gbn-connector-db"
+    restart: "always"
+
+  gbn-connector-db:
+    container_name: bridgehead-gbn-connector-db
+    image: "postgres:10"
+    container_name: "bridgehead-gbn-connector-db"
+    environment:
+      POSTGRES_DB: "samply.connector"
+      POSTGRES_USER: "samply"
+      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASS}
+    volumes:
+      - "gbn-connector-db-data:/var/lib/postgresql/data"
+    restart: "always"
+{% else %}
+
+{% endif %}
 
 volumes:
+{% if PROJECT == 'ccp' %}
   blaze-data:
   bridgehead-proxy:
   ccp-search-share-db-data:
+{% endif %}

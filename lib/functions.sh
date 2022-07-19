@@ -2,20 +2,11 @@
 
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
-<<<<<<< HEAD
-    echo "Please run as root"
-=======
     log "ERROR" "Please run as root"
->>>>>>> version-1
     exit 1
   fi
 }
 
-<<<<<<< HEAD
-log() {
-  echo "$(date +'%Y-%m-%d %T')" "$1:" "$2"
-}
-=======
 checkOwner(){
   COUNT=$(find $1 ! -user $2 |wc -l)
   if [ $COUNT -gt 0 ]; then
@@ -113,4 +104,3 @@ export PRODUCTION="false";
 if [ "$(git branch --show-current)" == "main" ]; then
 	export PRODUCTION="true";
 fi
->>>>>>> version-1

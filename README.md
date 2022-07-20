@@ -2,41 +2,39 @@
 
 This repository contains all information and tools to deploy a bridgehead. If you have any questions about deploying a bridgehead, please [contact us](mailto:verbis-support@dkfz-heidelberg.de).
 
-
-# Table of Contents
+## Table of Contents
 
 1. [About](#about)
-    - [Projects](#projects)
-        - [GBA/BBMRI-ERIC](#gbabbmri-eric)
-        - [CCP(DKTK/C4)](#ccpdktkc4)
-        - [NNGM](#nngm)
-    - [Bridgehead Components](#bridgehead-components)
-        - [Blaze Server](#blaze-serverhttpsgithubcomsamplyblaze)  
-        - [Connector](#connector) 
-1. [Requirements](#requirements)
+2. [Requirements](#requirements)
     - [Hardware](#hardware)
-    - [System](#system-requirements)
+    - [System Requrements](#system-requirements)
       - [git](#git)
       - [docker](#dockerhttpsdocsdockercomget-docker)
-      - [systemd](#systemd)
-2. [Getting Started](#getting-started)
-    - [DKTK](#dktkc4)
-    - [C4](#c4)
-    - [GBA/BBMRI-ERIC](#gbabbmri-eric)
-3. [Configuration](#configuration)
-4. [Managing your Bridgehead](#managing-your-bridgehead)
-    - [Systemd](#on-a-server)
-    - [Without Systemd](#on-developers-machine)
-4. [Pitfalls](#pitfalls)
-5. [Migration-guide](#migration-guide)
+3. [Getting Started](#getting-started)
+    - [Installation](#installation)
+4. [Configuration](#configuration)
+    - [Authentication](#basic-auth)
+        - [systemd](#systemd)
+        - [environment](#without-systemd)
+    - [Testing](#testing-your-bridgehead)
+    - [After the Installation](#after-the-installation)
+5. [Roadmap](#roadmap-🚀)
+6. [Authors](#authors)
 7. [License](#license)
-
+8. [Build With](#build-with)
+9. [Acknowledgements](#acknowledgements)
 
 ---
 
 ## About
 
-TODO: Insert comprehensive feature list of the bridgehead? Why would anyone install it?
+The Bridgehead is a collection of Software componentens for medical informatics usecases. This repository helps the user to deploy these compoents efficently. The bridgehead contains of project independen components:
+
+- forward proxy
+- reverse proxy
+- landingpage
+
+Also, the bridgehead contains of componentens that are project specific. For deatil refer to each project in [Projects](docs/projects.md).
 
 ---
 
@@ -105,7 +103,7 @@ If systemd is not installed, you can start the bridgehead. However, for producti
 
 ## Getting Started
 
-### Installation 
+### Installation
 
 If your system passed all checks from ["Requirements" section], you are now ready to download the bridgehead.
 
@@ -126,7 +124,7 @@ adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
 useradd -M -g docker -N -s /sbin/nologin bridgehead
 ```
 
-After adding the User you need to change the ownership of the directory to the bridgehead user.
+After adding the User you need to change the ownership of the directories to the bridgehead user.
 
 ``` shell
 chown bridgehead /srv/docker/bridgehead/ -R
@@ -144,25 +142,44 @@ sudo git clone https://github.com/samply/bridgehead-config.git /etc/bridgehead;
 
 After cloning or forking the repository you need to add value to the template. If you are a part of the CCP-IT you will get an already filled out config repo.
 
+After cloning your configuration you need to change the ownership of the folder aswell.
+
+``` shell
+chown bridgehead /etc/bridgehead/ -R
+```
+
 #### Basic Auth
 
 - [ ] TODO: Explain what will work without this
 
-For Data protection we use basic authenfication for some services. To access those services you need an username and password combination. If you start the bridgehead without basic auth, then those services are not accesbile. We provide a script which set the needed config for you, just run the script and follow the instructions.
+For data protection we use basic authenfication for some services. To access those services you need an username and password combination. If you start the bridgehead without basic auth, then those services are not accesbile. We provide a script to generate a basic auth login.
 
 ``` shell
-add_user.sh
+lib/add_bc_user.sh
 ```
 
-The result needs to be set in either in the _systemd service_ or in your console.
+The result needs to be set in either in the _systemd service_ or in your environment. 
 
-When just running the bridgehead you need to export the auth variable. Be aware that this export is only for the current session in the environment and after exit it will not be accessible anymore.
+##### systemd
+
+``` shell
+sudo systemctl edit <project>
+```
+``` conf
+[Service]
+...
+Environment=bc_auth_users=<hash>
+```
+
+##### without systemd
+
+Either add the hash to the environment with an export, or add it to /etc/environment
 
 ``` shell
 export bc_auth_user=<output>
 ```
 
-Cation: you need to escape occurring dollar signs.
+Cation: for exporting need to escape occurring dollar signs with back slashes.
 
 ### Testing your bridgehead
 
@@ -188,7 +205,7 @@ On this page, there are all important links to each component, central and local
 
 ---
 
-## Roadmap 🚀 
+## Roadmap 🚀
 
 - [ ] Securely manage secrets using the [vault warden fetcher](https://github.com/samply/bridgehead-vaultfetcher)
 - [ ] Integrate the [samply/share-client](https://github.com/samply/share-client) for the [DKTK](https://dktk.dkfz.de) project with the new deployment
@@ -220,6 +237,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ---
 
 ## Build With
+
 - [Git](https://git-scm.com/)
 - [Docker](https://docs.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
@@ -228,4 +246,5 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ---
 
 ## Acknowledgements
+
 - [samply/bridgehead-deployment](https://github.com/samply/bridgehead-deployment)

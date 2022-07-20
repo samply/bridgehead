@@ -7,7 +7,7 @@ This repository contains all information and tools to deploy a bridgehead. If yo
 1. [About](#about)
 2. [Requirements](#requirements)
     - [Hardware](#hardware)
-    - [System Requrements](#system-requirements)
+    - [System Requirements](#system-requirements)
       - [git](#git)
       - [docker](#dockerhttpsdocsdockercomget-docker)
 3. [Getting Started](#getting-started)
@@ -28,13 +28,15 @@ This repository contains all information and tools to deploy a bridgehead. If yo
 
 ## About
 
-The Bridgehead is a collection of Software componentens for medical informatics usecases. This repository helps the user to deploy these compoents efficently. The bridgehead contains of project independen components:
+Maybe this would explain the purpose of this repository better:
 
-- forward proxy
-- reverse proxy
-- landingpage
+The Bridgehead is a collection of Software componentens for medical informatics usecases. This repository aims to ease the deployment of those components to their users, by providing consistent configuration and software updates across the usecases. For this purpose, a minimal set of default components is integrated within this repository:
 
-Also, the bridgehead contains of componentens that are project specific. For deatil refer to each project in [Projects](docs/projects.md).
+- A forward proxy, as a central point for scanning and logging outgoing network traffic of the components deployed with the bridgehead
+- A reverse proxy, that distributes incoming network traffic to the components of the bridgehead.
+- A landingpage, that offers a quick graphical overview of all components running in the bridgehead
+
+Because the different use cases of the bridgehead all require different components, we provide detailed project specific documentation on these inside [Projects](docs/projects.md).
 
 ---
 
@@ -179,7 +181,7 @@ Either add the hash to the environment with an export, or add it to /etc/environ
 export bc_auth_user=<output>
 ```
 
-Cation: for exporting need to escape occurring dollar signs with back slashes.
+Caution: for exporting need to escape occurring dollar signs with back slashes.
 
 ### Testing your bridgehead
 

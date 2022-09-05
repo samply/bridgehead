@@ -13,6 +13,6 @@ source site.conf
 
 log "Starting bridgehead"
 
-docker-compose -f ${project}/docker-compose.yml --env-file site-config/${project}.env up -d
+docker-compose -f <(docker run --rm --volume ${pwd}/${project}/:/tmp/workdir/ samply/templer /tmp/workdir/docker-compose.yml TEST="TEST_0 TEST_1") config
 
 log "The bridgehead should be in online in a few seconds"

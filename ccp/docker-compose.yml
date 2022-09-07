@@ -92,8 +92,9 @@ services:
       APP_1_ID: ${APP_1_ID_SHORT}
       APP_1_KEY: ${APP_1_KEY}
       PRIVKEY_FILE: /run/secrets/proxy.pem
-      http_proxy: http://bridgehead-forward-proxy:3128
-      https_proxy: http://bridgehead-forward-proxy:3128
+      RUST_LOG: info
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
     secrets:
       - proxy.pem
     labels:

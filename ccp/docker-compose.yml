@@ -7,7 +7,8 @@ services:
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      - --providers.docker=true - --api.dashboard=true
+      - --providers.docker=true 
+      - --api.dashboard=true
       - --accesslog=true # print access-logs
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
@@ -51,7 +52,7 @@ services:
     image: "samply/blaze:0.17"
     container_name: bridgehead-ccp-blaze
     environment:
-      BASE_URL: "http://blaze:8080"
+      BASE_URL: "http://bridgehead-ccp-blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx4g"
       LOG_LEVEL: "debug"
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
@@ -65,34 +66,24 @@ services:
       - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
       - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,ccp-auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
-  
-  task-store:
-    image: "samply/blaze:develop"
-    environment:
-      BASE_URL: "http://localhost:8083"
-      JAVA_TOOL_OPTIONS: "-Xmx1g"
-      LOG_LEVEL: "debug"
-    ports:
-    - "8083:8080"
-    volumes:
-    - "task-store-data:/app/data"
 
-  data-store:
-    image: "samply/blaze:develop"
+  spot:
+    image: "docker.verbis.dkfz.de/ccp-private/local-spot@sha256:9a80eeef29f08ecec947fc2df55a65424255e6d60105fee8ee0ef77db27af01c"
     environment:
-      BASE_URL: "http://localhost:8084"
-      JAVA_TOOL_OPTIONS: "-Xmx1g"
-      LOG_LEVEL: "debug"
-    ports:
-    - "8084:8080"
-    volumes:
-    - "data-store-data:/app/data"
-
-  # spot:
-  #   image: "samply/spot"
+      SECRET: ${SECRET}
+      APPID: ${APP_0_ID_SHORT}
+      PROXY_ID: ${PROXY_ID}
+      LDM_URL: ${LDM_URL}
+      BEAM_PROXY: http://beam-proxy:8081
+    depends_on:
+      - "beam-proxy"
+      - "blaze"
+    labels:
+      - "traefik.enable=false"
 
   beam-proxy:
     image: "samply/beam-proxy:develop"
+    container_name: bridgehead-beam-proxy
     environment:
       BROKER_URL: ${BROKER_URL}
       PROXY_ID: ${PROXY_ID}
@@ -101,17 +92,20 @@ services:
       APP_1_ID: ${APP_1_ID_SHORT}
       APP_1_KEY: ${APP_1_KEY}
       PRIVKEY_FILE: /run/secrets/proxy.pem
+      http_proxy: http://bridgehead-forward-proxy:3128
+      https_proxy: http://bridgehead-forward-proxy:3128
     secrets:
       - proxy.pem
+    labels:
+      - "traefik.enable=false"
+    depends_on:
+      - "forward_proxy"
 
 
 volumes:
   blaze-data:
   bridgehead-proxy:
-  ccp-search-share-db-data:
-  task-store-data:
-  data-store-data:
 
 secrets:
   proxy.pem:
-    file: ./pki/${PROXY_ID_SHORT}.priv.pem
+    file: /etc/bridgehead/pki/${PROXY_ID_SHORT}.priv.pem

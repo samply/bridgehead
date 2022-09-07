@@ -52,6 +52,11 @@ if [ ! -e "certs/traefik.crt" ]; then
   openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/traefik.key -out certs/traefik.crt -days 3650 -subj "/CN=$HOST"
 fi
 
+if [ ! -e "etc/bridgehead/pki/*.priv.pem" ]; then
+    log ERROR "Privaste certificsate for beam is missing"
+    exit 1
+fi
+
 if [ -e /etc/bridgehead/vault.conf ]; then
 	if [ "$(stat -c "%a %U" /etc/bridgehead/vault.conf)" != "600 bridgehead" ]; then
 		log ERROR "/etc/bridgehead/vault.conf has wrong owner/permissions. To correct this issue, run chmod 600 /etc/bridgehead/vault.conf && chown bridgehead /etc/bridgehead/vault.conf."

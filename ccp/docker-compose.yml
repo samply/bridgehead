@@ -82,7 +82,7 @@ services:
       - "traefik.enable=false"
 
   beam-proxy:
-    image: "samply/beam-proxy:develop"
+    image: "docker.verbis.dkfz.de/ccp-private/local-spot@sha256:dd57474f9dd0a37ddc45d29fda160eac0070446da974a76cedc78c184b47adda"
     container_name: bridgehead-beam-proxy
     environment:
       BROKER_URL: ${BROKER_URL}

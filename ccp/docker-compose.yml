@@ -68,7 +68,7 @@ services:
       - "traefik.http.routers.blaze_ccp.tls=true"
 
   spot:
-    image: "samply/spot"
+    image: "docker pull docker.verbis.dkfz.de/ccp-private/local-spot@sha256:dd57474f9dd0a37ddc45d29fda160eac0070446da974a76cedc78c184b47adda"
     environment:
       SECRET: ${SECRET}
       APPID: ${APP_0_ID_SHORT}
@@ -82,7 +82,7 @@ services:
       - "traefik.enable=false"
 
   beam-proxy:
-    image: "docker.verbis.dkfz.de/ccp-private/local-spot@sha256:dd57474f9dd0a37ddc45d29fda160eac0070446da974a76cedc78c184b47adda"
+    image: "samply/beam-proxy:develop"
     container_name: bridgehead-beam-proxy
     environment:
       BROKER_URL: ${BROKER_URL}

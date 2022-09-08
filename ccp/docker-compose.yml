@@ -68,7 +68,7 @@ services:
       - "traefik.http.routers.blaze_ccp.tls=true"
 
   spot:
-    image: "docker.verbis.dkfz.de/ccp-private/local-spot@sha256:9a80eeef29f08ecec947fc2df55a65424255e6d60105fee8ee0ef77db27af01c"
+    image: "samply/spot"
     environment:
       SECRET: ${SECRET}
       APPID: ${APP_0_ID_SHORT}
@@ -92,7 +92,7 @@ services:
       APP_1_ID: ${APP_1_ID_SHORT}
       APP_1_KEY: ${APP_1_KEY}
       PRIVKEY_FILE: /run/secrets/proxy.pem
-      RUST_LOG: info
+      RUST_LOG: debug
       http_proxy: ${http_proxy}
       https_proxy: ${https_proxy}
     secrets:

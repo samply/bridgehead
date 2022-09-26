@@ -7,7 +7,9 @@ services:
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      - --providers.docker=true 
+      - --providers.docker=true
+      - --providers.file.watch=true
+      - --providers.file.directory=/configuration/
       - --api.dashboard=true
       - --accesslog=true # print access-logs
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
@@ -24,6 +26,7 @@ services:
       - 443:443
     volumes:
       - ../certs:/tools/certs
+      - ../lib/traefik-configuration/:/configuration
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   forward_proxy:

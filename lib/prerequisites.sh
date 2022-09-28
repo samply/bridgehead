@@ -65,6 +65,16 @@ if [ -e /etc/bridgehead/vault.conf ]; then
 	fi
 fi
 
+if ! which timedatectl > /dev/null; then
+	log ERROR "systemd time sync is missing -- please install package containing timedatectl"
+	exit 1
+fi
+
+if ! timedatectl show | grep NTPSynchronized=yes >/dev/null; then
+	log ERROR "This server's clock is not synchronized with a time server. This will cause Samply.Beam's certificate will fail. Please enter a correct NTP server (e.g. your institution's Active Directory Domain Controller in /etc/systemd/timesyncd.conf (option NTP=) and restart systemd-timesyncd."
+	exit 1
+fi
+
 log INFO "Success - all prerequisites are met!"
 
 exit 0

@@ -96,8 +96,7 @@ services:
       APP_1_KEY: ${APP_1_KEY}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       RUST_LOG: debug
-      http_proxy: ${http_proxy}
-      https_proxy: ${https_proxy}
+      ALL_PROXY: http://forward_proxy:3128
     secrets:
       - proxy.pem
     labels:

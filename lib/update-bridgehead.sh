@@ -26,9 +26,15 @@ for DIR in /etc/bridgehead $(pwd); do
     git -C $DIR config credential.helper "$CREDHELPER"
   fi
   old_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
-  git -C $DIR fetch 2>&1
-  git -C $DIR pull 2>&1
-  new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
+  if [ -z "$HTTP_PROXY_URL" ]; then
+    log "INFO" "Git is using no proxy!"
+    git -C $DIR fetch 2>&1
+    git -C $DIR pull 2>&1
+  else
+    log "INFO" "Git is using proxy ${HTTP_PROXY_URL} from ${CONFFILE}"
+    git -c http.proxy=$HTTP_PROXY_URL -c http.proxy=$HTTP_PROXY_URL -C $DIR fetch 2>&1
+    git -c http.proxy=$HTTP_PROXY_URL -c http.proxy=$HTTP_PROXY_URL -C $DIR pull 2>&1
+  fi  new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
   git_updated="false"
   if [ "$old_git_hash" != "$new_git_hash" ]; then
     log "INFO" "Updated git repository in ${DIR} from commit $old_git_hash to $new_git_hash"

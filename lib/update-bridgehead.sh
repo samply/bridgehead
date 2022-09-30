@@ -70,7 +70,7 @@ done
 # If anything is updated, restart service
 if [ $git_updated = "true" ] || [ $docker_updated = "true" ]; then
   log "INFO" "Update detected, now restarting bridgehead"
-  systemctl restart 'bridgehead@*'
+  sudo /bin/systemctl restart bridgehead@*.service
 else
   log "INFO" "Nothing updated, nothing to restart."
 fi

@@ -22,12 +22,13 @@ log "INFO" "Allowing the bridgehead user to start/stop the bridgehead."
 
 cat <<EOF > /etc/sudoers.d/bridgehead-"${PROJECT}"
 # This has been added by the Bridgehead installer. Remove with bridgehead uninstall.
-Cmnd_Alias BRIDGEHEAD${PROJECT} = \\
-    /bin/systemctl start   bridgehead@${PROJECT}.service, \\
-    /bin/systemctl stop    bridgehead@${PROJECT}.service, \\
-    /bin/systemctl restart bridgehead@${PROJECT}.service
+Cmnd_Alias BRIDGEHEAD${PROJECT^^} = \\
+    /bin/systemctl start bridgehead@${PROJECT}.service, \\
+    /bin/systemctl stop bridgehead@${PROJECT}.service, \\
+    /bin/systemctl restart bridgehead@${PROJECT}.service, \\
+    /bin/systemctl restart bridgehead@*.service
 
-bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT}
+bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF
 
 log "INFO" "Register system units for bridgehead and bridgehead-update"

@@ -65,13 +65,28 @@ if [ -e /etc/bridgehead/vault.conf ]; then
 	fi
 fi
 
-if ! which timedatectl > /dev/null; then
-	log ERROR "systemd time sync is missing -- please install package containing timedatectl"
+log INFO "Checking network access ($BROKER_URL) ..."
+
+source /etc/bridgehead/${PROJECT}.conf
+source ${PROJECT}/vars
+
+set +e
+SERVERTIME=$(curl -I $BROKER_URL)
+if [ $? -ne 0 ]; then
+	log ERROR "Unable to connect to Samply.Beam broker at $BROKER_URL. Please check your proxy settings."
 	exit 1
 fi
+set -e
 
-if ! timedatectl show | grep NTPSynchronized=yes >/dev/null; then
-	log ERROR "This server's clock is not synchronized with a time server. This will cause Samply.Beam's certificate will fail. Please enter a correct NTP server (e.g. your institution's Active Directory Domain Controller in /etc/systemd/timesyncd.conf (option NTP=) and restart systemd-timesyncd."
+log INFO "Checking clock skew ..."
+
+SERVERTIME=$(echo $SERVERTIME | grep -i ^Date: | cut -d: -f2- | sed 's/^ *\(.*\).*/\1/')
+SERVERTIME_AS_TIMESTAMP=$(date --date="$SERVERTIME" +%s)
+MYTIME=$(date +%s)
+SKEW=$(($SERVERTIME_AS_TIMESTAMP - $MYTIME))
+SKEW=$(echo $SKEW | awk -F- '{print $NF}')
+if [ $SKEW -ge 300 ]; then
+	log ERROR "Your clock is not synchronized (${SKEW}s off). This will cause Samply.Beam's certificate will fail. Please setup time synchronization. For example, consider entering a correct NTP server (e.g. your institution's Active Directory Domain Controller in /etc/systemd/timesyncd.conf (option NTP=) and restart systemd-timesyncd."
 	exit 1
 fi
 

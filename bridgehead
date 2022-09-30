@@ -41,14 +41,20 @@ case "$PROJECT" in
 		;;
 esac
 
+# Load variables from /etc/bridgehead and /srv/docker/bridgehead
+set -a
+source /etc/bridgehead/$PROJECT.conf
+fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || exit 1
+[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
+set +a
+
 case "$ACTION" in
 	start)
 		checkRequirements
-		fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || exit 1
-		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.conf up
+		exec docker-compose -f ./$PROJECT/docker-compose.yml up
 		;;
 	stop)
-		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.conf down
+		exec docker-compose -f ./$PROJECT/docker-compose.yml down
 		;;
 	update)
 		exec ./lib/update-bridgehead.sh $PROJECT

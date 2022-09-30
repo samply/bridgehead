@@ -73,10 +73,10 @@ services:
   spot:
     image: samply/spot:latest
     environment:
-      SECRET: ${SECRET}
-      APPID: ${APP_0_ID_SHORT}
+      SECRET: ${SPOT_BEAM_SECRET_LONG}
+      APPID: spot
       PROXY_ID: ${PROXY_ID}
-      LDM_URL: ${LDM_URL}
+      LDM_URL: http://bridgehead-ccp-blaze:8080/fhir
       BEAM_PROXY: http://beam-proxy:8081
     depends_on:
       - "beam-proxy"
@@ -90,10 +90,10 @@ services:
     environment:
       BROKER_URL: ${BROKER_URL}
       PROXY_ID: ${PROXY_ID}
-      APP_0_ID: ${APP_0_ID_SHORT}
-      APP_0_KEY: ${APP_0_KEY}
-      APP_1_ID: ${APP_1_ID_SHORT}
-      APP_1_KEY: ${APP_1_KEY}
+      APP_0_ID: spot
+      APP_0_KEY: ${SPOT_BEAM_SECRET_SHORT}
+      APP_1_ID: report-hub
+      APP_1_KEY: ${REPORTHUB_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       RUST_LOG: debug
       ALL_PROXY: http://forward_proxy:3128
@@ -111,4 +111,4 @@ volumes:
 
 secrets:
   proxy.pem:
-    file: /etc/bridgehead/pki/${PROXY_ID_SHORT}.priv.pem
+    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

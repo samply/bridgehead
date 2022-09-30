@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 source lib/functions.sh
 
@@ -18,6 +18,18 @@ export PROJECT=$1
 
 checkRequirements
 
+log "INFO" "Allowing the bridgehead user to start/stop the bridgehead."
+
+cat <<EOF > /etc/sudoers.d/bridgehead-"${PROJECT}"
+# This has been added by the Bridgehead installer. Remove with bridgehead uninstall.
+Cmnd_Alias BRIDGEHEAD${PROJECT} = \\
+    /bin/systemctl start   bridgehead@${PROJECT}.service, \\
+    /bin/systemctl stop    bridgehead@${PROJECT}.service, \\
+    /bin/systemctl restart bridgehead@${PROJECT}.service
+
+bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT}
+EOF
+
 log "INFO" "Register system units for bridgehead and bridgehead-update"
 cp -v \
     lib/systemd/bridgehead\@.service \
@@ -27,11 +39,14 @@ cp -v \
 
 systemctl daemon-reload
 
-if ! systemctl is-active --quiet bridgehead@"${PROJECT}"; then
-    log "INFO" "Enabling autostart of bridgehead@${PROJECT}.service"
-    systemctl enable bridgehead@"${PROJECT}"
-    log "INFO" "Enabling nightly updates for bridgehead@${PROJECT}.service ..."
-    systemctl enable --now bridgehead-update@"${PROJECT}".timer
-fi
+log INFO "Trying to update your bridgehead ..."
 
-log "INFO" "\nDone - now start your bridgehead by running\n\tsystemctl start bridgehead@${PROJECT}.service\nor by rebooting your machine."
+systemctl start bridgehead-update@"${PROJECT}".service
+
+log "INFO" "Enabling autostart of bridgehead@${PROJECT}.service"
+systemctl enable bridgehead@"${PROJECT}".service
+
+log "INFO" "Enabling auto-updates for bridgehead@${PROJECT}.service ..."
+systemctl enable --now bridgehead-update@"${PROJECT}".timer
+
+log "INFO" "\nSuccess - now start your bridgehead by running\n            systemctl start bridgehead@${PROJECT}.service\n          or by rebooting your machine."

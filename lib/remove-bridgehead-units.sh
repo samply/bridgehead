@@ -16,6 +16,10 @@ export PROJECT=$1
 
 #checkRequirements // not needed when uninstalling
 
+log INFO "Removing bridgehead sudoers permissions."
+
+rm -vf /etc/sudoers.d/bridgehead-${PROJECT}
+
 log "INFO" "Stopping system units and removing bridgehead for ${PROJECT} ..."
 
 systemctl disable --now bridgehead@${PROJECT}.service bridgehead-update@${PROJECT}.timer bridgehead-update@${PROJECT}.service

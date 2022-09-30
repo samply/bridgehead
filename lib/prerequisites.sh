@@ -23,6 +23,12 @@ for prerequisite in $prerequisites; do
   # TODO: Check for specific version
 done
 
+log INFO "Checking if sudo is installed ..."
+if [ ! -d /etc/sudoers.d ]; then
+  log ERROR "/etc/sudoers.d does not exist. Please install sudo package."
+  exit 1
+fi
+
 log INFO "Checking configuration ..."
 
 ## Download submodule

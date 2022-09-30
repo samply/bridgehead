@@ -71,7 +71,7 @@ source /etc/bridgehead/${PROJECT}.conf
 source ${PROJECT}/vars
 
 set +e
-SERVERTIME=$(curl -I $BROKER_URL)
+SERVERTIME=$(https_proxy=$HTTPS_PROXY_URL curl -m 5 -I $BROKER_URL)
 if [ $? -ne 0 ]; then
 	log ERROR "Unable to connect to Samply.Beam broker at $BROKER_URL. Please check your proxy settings."
 	exit 1

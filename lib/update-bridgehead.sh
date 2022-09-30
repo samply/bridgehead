@@ -34,7 +34,8 @@ for DIR in /etc/bridgehead $(pwd); do
     log "INFO" "Git is using proxy ${HTTP_PROXY_URL} from ${CONFFILE}"
     git -c http.proxy=$HTTP_PROXY_URL -c http.proxy=$HTTP_PROXY_URL -C $DIR fetch 2>&1
     git -c http.proxy=$HTTP_PROXY_URL -c http.proxy=$HTTP_PROXY_URL -C $DIR pull 2>&1
-  fi  new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
+  fi
+  new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
   git_updated="false"
   if [ "$old_git_hash" != "$new_git_hash" ]; then
     log "INFO" "Updated git repository in ${DIR} from commit $old_git_hash to $new_git_hash"

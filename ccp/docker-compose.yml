@@ -52,7 +52,7 @@ services:
       SITE_NAME: ${SITE_NAME}
 
   blaze:
-    image: "samply/blaze:0.17"
+    image: "samply/blaze:0.18"
     container_name: bridgehead-ccp-blaze
     environment:
       BASE_URL: "http://bridgehead-ccp-blaze:8080"

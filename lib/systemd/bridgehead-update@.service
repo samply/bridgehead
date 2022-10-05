@@ -4,6 +4,7 @@ Description=Bridgehead (%i) Update Service
 [Service]
 Type=oneshot
 User=bridgehead
+ExecStartPre=-/srv/docker/bridgehead/bridgehead fixPermissions %i
 ExecStart=/srv/docker/bridgehead/bridgehead update %i
 
 [Install]

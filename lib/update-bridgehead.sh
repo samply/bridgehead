@@ -60,7 +60,7 @@ done
 # Check docker updates
 log "INFO" "Checking for updates to running docker images ..."
 docker_updated="false"
-for IMAGE in $(docker ps --filter "name=bridgehead" --format {{.Image}}); do
+for IMAGE in $(cat $PROJECT/docker-compose.yml | grep "image:" | sed -e 's_^.*image: \(.*\).*$_\1_g; s_\"__g'); do
   log "INFO" "Checking for Updates of Image: $IMAGE"
   if docker pull $IMAGE | grep "Downloaded newer image"; then
     log "INFO" "$IMAGE updated."

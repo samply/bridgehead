@@ -1,7 +1,7 @@
 #!/bin/bash
 source lib/functions.sh
 
-hc_send log "Updating bridgehead ..."
+hc_send log "Checking for bridgehead updates ..."
 
 CONFFILE=/etc/bridgehead/$1.conf
 

@@ -1,20 +1,21 @@
 #!/bin/bash
 source lib/functions.sh
 
+hc_send log "Updating bridgehead ..."
+
 CONFFILE=/etc/bridgehead/$1.conf
 
 if [ ! -e $CONFFILE ]; then
-  log ERROR "Configuration file $CONFFILE not found."
-  exit 1
+  fail_and_report 1 "Configuration file $CONFFILE not found."
 fi
 
 source $CONFFILE
 
-assertVarsNotEmpty SITE_ID || exit 1
+assertVarsNotEmpty SITE_ID || fail_and_report 1 "Update failed: SITE_ID empty"
 export SITE_ID
 
-checkOwner . bridgehead || exit 1
-checkOwner /etc/bridgehead bridgehead || exit 1
+checkOwner . bridgehead || fail_and_report 1 "Update failed: Wrong permissions in $(pwd)"
+checkOwner /etc/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong permissions in /etc/bridgehead"
 
 CREDHELPER="/srv/docker/bridgehead/lib/gitpassword.sh"
 
@@ -69,10 +70,14 @@ done
 
 # If anything is updated, restart service
 if [ $git_updated = "true" ] || [ $docker_updated = "true" ]; then
-  log "INFO" "Update detected, now restarting bridgehead"
+  RES="Update detected, now restarting bridgehead"
+  log "INFO" "$RES"
+  hc_send log "$RES"
   sudo /bin/systemctl restart bridgehead@*.service
 else
-  log "INFO" "Nothing updated, nothing to restart."
+  RES="Nothing updated, nothing to restart."
+  log "INFO" "$RES"
+  hc_send log "$RES"
 fi
 
 exit 0

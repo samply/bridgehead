@@ -43,14 +43,16 @@ esac
 
 # Load variables from /etc/bridgehead and /srv/docker/bridgehead
 set -a
-source /etc/bridgehead/$PROJECT.conf
+source /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "/etc/bridgehead/$PROJECT.conf not found"
 fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || exit 1
 [ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 set +a
 
 case "$ACTION" in
 	start)
+		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
+		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
 		exec docker-compose -f ./$PROJECT/docker-compose.yml up --abort-on-container-exit
 		;;
 	stop)
@@ -65,8 +67,12 @@ case "$ACTION" in
 	uninstall)
 		exec ./lib/remove-bridgehead-units.sh $PROJECT
 		;;
-	fixPermissions)
-		chown -R bridgehead /etc/bridgehead .
+	preRun)
+	preUpdate)
+		fixPermissions
+		;;
+	postRun)
+	postUpdate)
 		;;
 	*)
 		printUsage

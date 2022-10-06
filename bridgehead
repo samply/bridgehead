@@ -44,7 +44,7 @@ esac
 # Load variables from /etc/bridgehead and /srv/docker/bridgehead
 set -a
 source /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "/etc/bridgehead/$PROJECT.conf not found"
-fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || exit 1
+fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
 [ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 set +a
 

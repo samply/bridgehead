@@ -30,7 +30,6 @@ function hc_send(){
 
     if [ -z "$UPTIME" ]; then
         UPTIME=$(docker ps --format '{{.Names}} {{.RunningFor}}' --filter name=bridgehead || echo "Unable to get docker statistics")
-        UPTIME=$(echo "$UPTIME" | tr '\n' '|' || echo "Unable to get docker statistics")
     fi
 
     if [ -n "$2" ]; then

@@ -33,7 +33,7 @@ function hc_send(){
     fi
 
     if [ -n "$2" ]; then
-        MSG="$2\n\nDocker stats: $UPTIME"
+        MSG="$2\n\nDocker stats:\n$UPTIME"
         echo -e "$MSG" | https_proxy=$HTTPS_PROXY_URL curl -s -o /dev/null -X POST --data-binary @- "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
     else
         https_proxy=$HTTPS_PROXY_URL curl -s -o /dev/null "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"

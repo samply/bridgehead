@@ -96,7 +96,8 @@ assertVarsNotEmpty() {
 }
 
 fixPermissions() {
-	sudo chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead
+	CHOWN=$(which chown)
+	sudo $CHOWN -R bridgehead /etc/bridgehead /srv/docker/bridgehead
 }
 
 source lib/monitoring.sh

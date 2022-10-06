@@ -65,6 +65,9 @@ case "$ACTION" in
 	uninstall)
 		exec ./lib/remove-bridgehead-units.sh $PROJECT
 		;;
+	fixPermissions)
+		chown -R bridgehead /etc/bridgehead .
+		;;
 	*)
 		printUsage
 		exit 1

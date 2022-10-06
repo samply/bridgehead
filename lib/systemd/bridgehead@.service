@@ -6,6 +6,7 @@ Requires=docker.service
 User=bridgehead
 Restart=always
 RestartSec=30
+ExecStartPre=-/srv/docker/bridgehead/bridgehead fixPermissions %i
 ExecStart=/srv/docker/bridgehead/bridgehead start %i
 ExecStop=/srv/docker/bridgehead/bridgehead stop %i
 

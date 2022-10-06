@@ -48,15 +48,21 @@ fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Una
 [ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 set +a
 
+OVERRIDE=""
+if [ -f "$PROJECT/docker-compose.override.yml" ]; then
+	log INFO "Apply docker-compose.override.yml"
+	OVERRIDE+="-f ./$PROJECT/docker-compose.override.yml"
+fi
+
 case "$ACTION" in
 	start)
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
-		exec docker-compose -f ./$PROJECT/docker-compose.yml up --abort-on-container-exit
+		exec docker-compose -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
-		exec docker-compose -f ./$PROJECT/docker-compose.yml down
+		exec docker-compose -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		;;
 	update)
 		exec ./lib/update-bridgehead.sh $PROJECT

@@ -26,7 +26,9 @@ Cmnd_Alias BRIDGEHEAD${PROJECT^^} = \\
     /bin/systemctl start bridgehead@${PROJECT}.service, \\
     /bin/systemctl stop bridgehead@${PROJECT}.service, \\
     /bin/systemctl restart bridgehead@${PROJECT}.service, \\
-    /bin/systemctl restart bridgehead@*.service
+    /bin/systemctl restart bridgehead@*.service, \\
+    /bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead, \\
+    /usr/bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead
 
 bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF

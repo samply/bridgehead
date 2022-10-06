@@ -17,32 +17,28 @@ for prerequisite in $prerequisites; do
   $prerequisite --version 2>&1
   is_available=$?
   if [ $is_available -gt 0 ]; then
-    log "ERROR" "Prerequisite not fulfilled - $prerequisite is not available!"
-    exit 79
+    fail_and_report 79 "Prerequisite not fulfilled - $prerequisite is not available!"
   fi
   # TODO: Check for specific version
 done
 
 log INFO "Checking if sudo is installed ..."
 if [ ! -d /etc/sudoers.d ]; then
-  log ERROR "/etc/sudoers.d does not exist. Please install sudo package."
-  exit 1
+  fail_and_report 1 "/etc/sudoers.d does not exist. Please install sudo package."
 fi
 
 log INFO "Checking configuration ..."
 
 ## Download submodule
 if [ ! -d "/etc/bridgehead/" ]; then
-  log ERROR "Please set up the config folder at /etc/bridgehead. Instruction are in the readme."
-  exit 1
+  fail_and_report 1 "Please set up the config folder at /etc/bridgehead. Instruction are in the readme."
 fi
 
 # TODO: Check all required variables here in a generic loop
 
 #check if project env is present
 if [ -d "/etc/bridgehead/${PROJECT}.conf" ]; then
-   log ERROR "Project config not found. Please copy the template from ${PROJECT} and put it under /etc/bridgehead-config/${PROJECT}.conf."
-   exit 1
+   fail_and_report 1 "Project config not found. Please copy the template from ${PROJECT} and put it under /etc/bridgehead-config/${PROJECT}.conf."
 fi
 
 # TODO: Make sure you're in the right directory, or, even better, be independent from the working directory.
@@ -60,11 +56,11 @@ fi
 
 if [ -e /etc/bridgehead/vault.conf ]; then
 	if [ "$(stat -c "%a %U" /etc/bridgehead/vault.conf)" != "600 bridgehead" ]; then
-		log ERROR "/etc/bridgehead/vault.conf has wrong owner/permissions. To correct this issue, run chmod 600 /etc/bridgehead/vault.conf && chown bridgehead /etc/bridgehead/vault.conf."
-		exit 1
+    fail_and_report 1 "/etc/bridgehead/vault.conf has wrong owner/permissions. To correct this issue, run chmod 600 /etc/bridgehead/vault.conf && chown bridgehead /etc/bridgehead/vault.conf."
 	fi
 fi
 
 log INFO "Success - all prerequisites are met!"
+hc_send log "Success - all prerequisites are met!"
 
 exit 0

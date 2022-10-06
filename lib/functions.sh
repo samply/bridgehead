@@ -1,9 +1,11 @@
 #!/bin/bash -e
 
+source lib/log.sh
+
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
     log "ERROR" "Please run as root"
-    exit 1
+    fail_and_report 1 "Please run as root"
   fi
 }
 
@@ -16,10 +18,6 @@ checkOwner(){
   return 0
 }
 
-log() {
-  echo -e "$(date +'%Y-%m-%d %T')" "$1:" "$2"
-}
-
 printUsage() {
 	echo "Usage: bridgehead start|stop|update|install|uninstall PROJECTNAME"
 	echo "PROJECTNAME should be one of ccp|nngm|gbn"
@@ -28,7 +26,7 @@ printUsage() {
 checkRequirements() {
 	if ! lib/prerequisites.sh; then
 		log "ERROR" "Validating Prerequisites failed, please fix the error(s) above this line."
-		exit 1
+		fail_and_report 1 "Validating prerequisites failed."
 	else
 		return 0
 	fi
@@ -95,6 +93,19 @@ assertVarsNotEmpty() {
 	fi
 
 	return 0
+}
+
+fixPermissions() {
+	CHOWN=$(which chown)
+	sudo $CHOWN -R bridgehead /etc/bridgehead /srv/docker/bridgehead
+}
+
+source lib/monitoring.sh
+
+fail_and_report() {
+	log ERROR "$2"
+	hc_send $1 "$2"
+	exit $1
 }
 
 ##Setting Network properties

@@ -22,7 +22,7 @@ cd $BASE
 
 source lib/functions.sh
 
-assertVarsNotEmpty SITE_ID || exit 1
+assertVarsNotEmpty SITE_ID || fail_and_report 1 "gitpassword.sh failed: SITE_ID is empty."
 
 PARAMS="$(cat)"
 GITHOST=$(echo "$PARAMS" | grep "^host=" | sed 's/host=\(.*\)/\1/g')
@@ -30,8 +30,7 @@ GITHOST=$(echo "$PARAMS" | grep "^host=" | sed 's/host=\(.*\)/\1/g')
 fetchVarsFromVault GIT_PASSWORD
 
 if [ -z "${GIT_PASSWORD}" ]; then
-	log ERROR "Git password not found."
-	exit 1
+	fail_and_report 1 "gitpassword.sh failed: Git password not found."
 fi
 
 cat <<EOF

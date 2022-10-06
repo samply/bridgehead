@@ -67,12 +67,10 @@ case "$ACTION" in
 	uninstall)
 		exec ./lib/remove-bridgehead-units.sh $PROJECT
 		;;
-	preRun)
-	preUpdate)
+	preRun | preUpdate)
 		fixPermissions
 		;;
-	postRun)
-	postUpdate)
+	postRun | postUpdate)
 		;;
 	*)
 		printUsage

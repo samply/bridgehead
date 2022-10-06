@@ -33,7 +33,7 @@ function hc_send(){
         UPTIME=$(echo "$UPTIME" | tr '\n' '|' || echo "Unable to get docker statistics")
     fi
 
-    if [ -n "$MSG" ]; then
+    if [ -n "$2" ]; then
         MSG="$2\n\nDocker stats: $UPTIME"
         echo -e "$MSG" | curl -s -o /dev/null -X POST --data-binary @- "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
     else

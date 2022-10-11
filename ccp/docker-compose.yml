@@ -31,7 +31,7 @@ services:
 
   forward_proxy:
     container_name: bridgehead-forward-proxy
-    image: samply/bridgehead-forward-proxy:main
+    image: samply/bridgehead-forward-proxy:latest
     environment:
       HTTPS_PROXY: ${HTTPS_PROXY_URL}
       USERNAME: ${HTTPS_PROXY_USERNAME}

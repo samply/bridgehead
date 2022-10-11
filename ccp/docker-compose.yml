@@ -72,6 +72,7 @@ services:
 
   spot:
     image: samply/spot:latest
+    container_name: bridgehead-spot
     environment:
       SECRET: ${SPOT_BEAM_SECRET_LONG}
       APPID: spot

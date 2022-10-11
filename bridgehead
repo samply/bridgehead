@@ -44,13 +44,17 @@ esac
 # Load variables from /etc/bridgehead and /srv/docker/bridgehead
 set -a
 source /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "/etc/bridgehead/$PROJECT.conf not found"
+if [ -e /etc/bridgehead/$PROJECT.local.conf ]; then
+	log INFO "Applying /etc/bridgehead/$PROJECT.local.conf"
+	source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
+fi
 fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
 [ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 set +a
 
 OVERRIDE=""
 if [ -f "$PROJECT/docker-compose.override.yml" ]; then
-	log INFO "Apply docker-compose.override.yml"
+	log INFO "Applying $PROJECT/docker-compose.override.yml"
 	OVERRIDE+="-f ./$PROJECT/docker-compose.override.yml"
 fi
 

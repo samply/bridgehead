@@ -50,8 +50,8 @@ if [ ! -d "/etc/bridgehead/traefik-tls" ]; then
   mkdir -p /etc/bridgehead/traefik-tls
 fi
 
-if [ ! -e "/etc/bridgehead/traefik-tls/traefik.crt" ]; then
-  openssl req -x509 -newkey rsa:4096 -nodes -keyout /etc/bridgehead/traefik-tls/traefik.key -out /etc/bridgehead/traefik-tls/traefik.crt -days 3650 -subj "/CN=$HOST"
+if [ ! -e "/etc/bridgehead/traefik-tls/fullchain.pem" ]; then
+  openssl req -x509 -newkey rsa:4096 -nodes -keyout /etc/bridgehead/traefik-tls/privkey.pem -out /etc/bridgehead/traefik-tls/fullchain.pem -days 3650 -subj "/CN=$HOST"
 fi
 
 if [ -e /etc/bridgehead/vault.conf ]; then

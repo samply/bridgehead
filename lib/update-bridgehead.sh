@@ -22,6 +22,7 @@ CREDHELPER="/srv/docker/bridgehead/lib/gitpassword.sh"
 CHANGES=""
 
 # Check git updates
+git_updated="false"
 for DIR in /etc/bridgehead $(pwd); do
   log "INFO" "Checking for updates to git repo $DIR ..."
   if [ "$(git -C $DIR config --get credential.helper)" != "$CREDHELPER" ]; then
@@ -39,10 +40,9 @@ for DIR in /etc/bridgehead $(pwd); do
     git -c http.proxy=$HTTP_PROXY_URL -c https.proxy=$HTTPS_PROXY_URL -C $DIR pull 2>&1
   fi
   new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
-  git_updated="false"
   if [ "$old_git_hash" != "$new_git_hash" ]; then
     CHANGE="Updated git repository in ${DIR} from commit $old_git_hash to $new_git_hash"
-    CHANGES+="$CHANGE\n"
+    CHANGES+="- $CHANGE\n"
     log "INFO" "$CHANGE"
     # NOTE: Link generation doesn't work on repositories placed at an self-hosted instance of bitbucket.
     # See: https://community.atlassian.com/t5/Bitbucket-questions/BitBucket-4-14-diff-between-any-two-commits/qaq-p/632974
@@ -68,7 +68,7 @@ for IMAGE in $(cat $PROJECT/docker-compose.yml | grep "image:" | sed -e 's_^.*im
   log "INFO" "Checking for Updates of Image: $IMAGE"
   if docker pull $IMAGE | grep "Downloaded newer image"; then
     CHANGE="Image $IMAGE updated."
-    CHANGES+="$CHANGE\n"
+    CHANGES+="- $CHANGE\n"
     log "INFO" "$CHANGE"
     docker_updated="true"
   fi

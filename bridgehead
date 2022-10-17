@@ -78,12 +78,16 @@ case "$ACTION" in
 		exec ./lib/remove-bridgehead-units.sh $PROJECT
 		;;
 	enroll)
-		if [ -e /etc/pki/${SITE_ID}.pem ]; then
-			echo "Private key already exists at /etc/pki/${SITE_ID}.pem. Please delete first to proceed."
+		if [ -e /etc/bridgehead/pki/${SITE_ID}.priv.pem ]; then
+			echo "Private key already exists at /etc/bridgehead/pki/${SITE_ID}.priv.pem. Please delete first to proceed."
 			exit 1
 		fi
-		docker run --rm -ti -v /etc/bridgehead/pki:/pki samply/beam-enroll:latest --admin-email $OPERATOR_EMAIL --output-
-path /pki --proxy-id $PROXY_ID
+		OPTS=""
+		if [ -n "$OPERATOR_EMAIL" ]; then
+			OPTS+="--admin-email $OPERATOR_EMAIL"
+		fi
+		docker run --rm -ti -v /etc/bridgehead/pki:/pki samply/beam-enroll:latest --output-path /pki --proxy-id $PROXY_ID $OPTS
+		;;
 	preRun | preUpdate)
 		fixPermissions
 		;;

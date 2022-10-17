@@ -45,28 +45,28 @@ fi
 
 log INFO "Checking ssl cert for accessing bridgehead via https"
 
-if [ ! -d "certs" ]; then
-  log WARN "TLS cert missing, we'll now create a self-signed one. Please consider getting an officially signed one (e.g. via Let's Encrypt ...)"
-  mkdir -p certs
+if [ ! -d "/etc/bridgehead/traefik-tls" ]; then
+  log WARN "TLS certs for accessing bridgehead via https missing, we'll now create a self-signed one. Please consider getting an officially signed one (e.g. via Let's Encrypt ...) and put into /etc/bridgehead/traefik-tls"
+  mkdir -p /etc/bridgehead/traefik-tls
 fi
 
-if [ ! -e "certs/traefik.crt" ]; then
-  openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/traefik.key -out certs/traefik.crt -days 3650 -subj "/CN=$HOST"
+if [ ! -e "/etc/bridgehead/traefik-tls/traefik.crt" ]; then
+  openssl req -x509 -newkey rsa:4096 -nodes -keyout /etc/bridgehead/traefik-tls/traefik.key -out /etc/bridgehead/traefik-tls/traefik.crt -days 3650 -subj "/CN=$HOST"
 fi
 
 if [ -e /etc/bridgehead/vault.conf ]; then
-	if [ "$(stat -c "%a %U" /etc/bridgehead/vault.conf)" != "600 bridgehead" ]; then
+  if [ "$(stat -c "%a %U" /etc/bridgehead/vault.conf)" != "600 bridgehead" ]; then
     fail_and_report 1 "/etc/bridgehead/vault.conf has wrong owner/permissions. To correct this issue, run chmod 600 /etc/bridgehead/vault.conf && chown bridgehead /etc/bridgehead/vault.conf."
-	fi
+  fi
 fi
 
 log INFO "Checking your beam proxy private key"
 
 if [ -e /etc/bridgehead/pki/${SITE_ID}.priv.pem ]; then
-	log INFO "Success - private key found."
+  log INFO "Success - private key found."
 else
-	log ERROR "Unable to find private key at /etc/bridgehead/pki/${SITE_ID}.priv.pem. To fix, please run bridgehead enroll ${PROJECT} and follow the instructions".
-	exit 1
+  log ERROR "Unable to find private key at /etc/bridgehead/pki/${SITE_ID}.priv.pem. To fix, please run bridgehead enroll ${PROJECT} and follow the instructions".
+  exit 1
 fi
 
 log INFO "Success - all prerequisites are met!"

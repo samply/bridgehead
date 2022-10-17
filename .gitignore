@@ -3,10 +3,4 @@
 site-config/*
 
 ## Ignore site configuration
-config/**/*
-!config/**/*.default
-landing/*
-docker-compose.override.yml
-site.conf
-auth/*
-certs/*
+*/docker-compose.override.yml

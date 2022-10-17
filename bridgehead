@@ -82,11 +82,7 @@ case "$ACTION" in
 			echo "Private key already exists at /etc/bridgehead/pki/${SITE_ID}.priv.pem. Please delete first to proceed."
 			exit 1
 		fi
-		OPTS=""
-		if [ -n "$OPERATOR_EMAIL" ]; then
-			OPTS+="--admin-email $OPERATOR_EMAIL"
-		fi
-		docker run --rm -ti -v /etc/bridgehead/pki:/pki samply/beam-enroll:latest --output-path /pki --proxy-id $PROXY_ID $OPTS
+		docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-path /etc/bridgehead/pki --proxy-id $PROXY_ID --admin-email $SUPPORT_EMAIL
 		;;
 	preRun | preUpdate)
 		fixPermissions

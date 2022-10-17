@@ -77,6 +77,13 @@ case "$ACTION" in
 	uninstall)
 		exec ./lib/remove-bridgehead-units.sh $PROJECT
 		;;
+	enroll)
+		if [ -e /etc/pki/${SITE_ID}.pem ]; then
+			echo "Private key already exists at /etc/pki/${SITE_ID}.pem. Please delete first to proceed."
+			exit 1
+		fi
+		docker run --rm -ti -v /etc/bridgehead/pki:/pki samply/beam-enroll:latest --admin-email $OPERATOR_EMAIL --output-
+path /pki --proxy-id $PROXY_ID
 	preRun | preUpdate)
 		fixPermissions
 		;;

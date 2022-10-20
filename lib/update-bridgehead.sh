@@ -1,6 +1,17 @@
 #!/bin/bash
 source lib/functions.sh
 
+AUTO_HOUSEKEEPING=${AUTO_HOUSEKEEPING:-true}
+
+if [ "$AUTO_HOUSEKEEPING" == "true" ]; then
+	A="Performing automatic maintenance: Cleaning docker images."
+	hc_send log "$A"
+	log INFO "$A"
+	docker system prune -a -f
+else
+	log WARN "Automatic housekeeping disabled (variable AUTO_HOUSEKEEPING != \"true\")"
+fi
+
 hc_send log "Checking for bridgehead updates ..."
 
 CONFFILE=/etc/bridgehead/$1.conf

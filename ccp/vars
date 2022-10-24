@@ -5,3 +5,5 @@ SPOT_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | he
 SPOT_BEAM_SECRET_LONG="ApiKey spot.${PROXY_ID} ${SPOT_BEAM_SECRET_SHORT}"
 REPORTHUB_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 REPORTHUB_BEAM_SECRET_LONG="ApiKey report-hub.${PROXY_ID} ${REPORTHUB_BEAM_SECRET_SHORT}"
+SUPPORT_EMAIL=support-ccp@dkfz-heidelberg.de
+PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem

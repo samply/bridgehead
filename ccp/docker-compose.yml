@@ -31,13 +31,14 @@ services:
 
   forward_proxy:
     container_name: bridgehead-forward-proxy
-    image: samply/bridgehead-forward-proxy:develop
+    image: samply/bridgehead-forward-proxy:latest
     environment:
-      http_proxy: ${HTTP_PROXY_URL}
-      https_proxy: ${HTTPS_PROXY_URL}
+      HTTPS_PROXY: ${HTTPS_PROXY_URL}
+      USERNAME: ${HTTPS_PROXY_USERNAME}
+      PASSWORD: ${HTTPS_PROXY_PASSWORD}
     volumes:
-      - "bridgehead-proxy:/var/log/squid"
-    
+      - /etc/bridgehead/trusted-ca-certs:/docker/custom-certs/:ro
+
   landing:
     container_name: bridgehead-landingpage
     image: samply/bridgehead-landingpage:master
@@ -60,7 +61,7 @@ services:
       LOG_LEVEL: "debug"
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
     volumes:
-    - "blaze-data:/app/data"
+      - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.ccp-auth.basicauth.users=${bc_auth_users}"
@@ -72,6 +73,7 @@ services:
 
   spot:
     image: samply/spot:latest
+    container_name: bridgehead-spot
     environment:
       SECRET: ${SPOT_BEAM_SECRET_LONG}
       APPID: spot
@@ -97,17 +99,19 @@ services:
       PRIVKEY_FILE: /run/secrets/proxy.pem
       RUST_LOG: debug
       ALL_PROXY: http://forward_proxy:3128
+      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
     secrets:
       - proxy.pem
     labels:
       - "traefik.enable=false"
     depends_on:
       - "forward_proxy"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
 
 
 volumes:
   blaze-data:
-  bridgehead-proxy:
 
 secrets:
   proxy.pem:

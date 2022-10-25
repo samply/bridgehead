@@ -39,18 +39,18 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/docker/custom-certs/:ro
 
-  landing:
-    container_name: bridgehead-landingpage
-    image: samply/bridgehead-landingpage:master
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
-      - "traefik.http.services.landing.loadbalancer.server.port=80"
-      - "traefik.http.routers.landing.tls=true"
-    environment:
-      HOST: ${HOST}
-      PROJECT: ${PROJECT}
-      SITE_NAME: ${SITE_NAME}
+#  landing:
+#    container_name: bridgehead-landingpage
+#    image: samply/bridgehead-landingpage:master
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
+#      - "traefik.http.services.landing.loadbalancer.server.port=80"
+#      - "traefik.http.routers.landing.tls=true"
+#    environment:
+#      HOST: ${HOST}
+#      PROJECT: ${PROJECT}
+#      SITE_NAME: ${SITE_NAME}
 
   blaze:
     image: "samply/blaze:0.18"

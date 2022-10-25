@@ -1,0 +1,116 @@
+version: "3.7"
+
+services:
+  traefik:
+    container_name: bridgehead-traefik
+    image: traefik:latest
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker=true
+      - --providers.file.watch=true
+      - --providers.file.directory=/configuration/
+      - --api.dashboard=true
+      - --accesslog=true # print access-logs
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+    labels:
+      - "traefik.http.routers.dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=${bc_auth_users}"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/bridgehead/traefik-tls:/certs:ro
+      - ../lib/traefik-configuration/:/configuration:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  forward_proxy:
+    container_name: bridgehead-forward-proxy
+    image: samply/bridgehead-forward-proxy:latest
+    environment:
+      HTTPS_PROXY: ${HTTPS_PROXY_URL}
+      USERNAME: ${HTTPS_PROXY_USERNAME}
+      PASSWORD: ${HTTPS_PROXY_PASSWORD}
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/docker/custom-certs/:ro
+
+  landing:
+    container_name: bridgehead-landingpage
+    image: samply/bridgehead-landingpage:master
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
+      - "traefik.http.services.landing.loadbalancer.server.port=80"
+      - "traefik.http.routers.landing.tls=true"
+    environment:
+      HOST: ${HOST}
+      PROJECT: ${PROJECT}
+      SITE_NAME: ${SITE_NAME}
+
+  blaze:
+    image: "samply/blaze:0.18"
+    container_name: bridgehead-ccp-blaze
+    environment:
+      BASE_URL: "http://bridgehead-ccp-blaze:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx4g"
+      LOG_LEVEL: "debug"
+      ENFORCE_REFERENTIAL_INTEGRITY: "false"
+    volumes:
+      - "blaze-data:/app/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.ccp-auth.basicauth.users=${bc_auth_users}"
+      - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/ccp-localdatamanagement`)"
+      - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/ccp-localdatamanagement"
+      - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,ccp-auth"
+      - "traefik.http.routers.blaze_ccp.tls=true"
+
+  spot:
+    image: samply/spot:latest
+    container_name: bridgehead-spot
+    environment:
+      SECRET: ${SPOT_BEAM_SECRET_LONG}
+      APPID: spot
+      PROXY_ID: ${PROXY_ID}
+      LDM_URL: http://bridgehead-ccp-blaze:8080/fhir
+      BEAM_PROXY: http://beam-proxy:8081
+    depends_on:
+      - "beam-proxy"
+      - "blaze"
+    labels:
+      - "traefik.enable=false"
+
+  beam-proxy:
+    image: "samply/beam-proxy:develop"
+    container_name: bridgehead-beam-proxy
+    environment:
+      BROKER_URL: ${BROKER_URL}
+      PROXY_ID: ${PROXY_ID}
+      APP_0_ID: spot
+      APP_0_KEY: ${SPOT_BEAM_SECRET_SHORT}
+      PRIVKEY_FILE: /run/secrets/proxy.pem
+      RUST_LOG: debug
+      ALL_PROXY: http://forward_proxy:3128
+      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
+    secrets:
+      - proxy.pem
+    labels:
+      - "traefik.enable=false"
+    depends_on:
+      - "forward_proxy"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+
+
+volumes:
+  blaze-data:
+
+secrets:
+  proxy.pem:
+    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

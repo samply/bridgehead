@@ -32,7 +32,7 @@ case "$PROJECT" in
 	nngm)
 		#nothing extra to do
 		;;
-	gbn)
+	bbmri)
 		#nothing extra to do
 		;;
 	*)

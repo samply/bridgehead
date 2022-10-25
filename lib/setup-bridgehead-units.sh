@@ -33,6 +33,19 @@ Cmnd_Alias BRIDGEHEAD${PROJECT^^} = \\
 bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF
 
+log "INFO" "Now generating a password for the local datamangement. Please safe the password for your ETL process!"
+generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
+
+log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
+parsed_passwd=$(docker run --rm -it httpd:latest htpasswd -nb $PROJECT $generated_passwd)
+
+mkdir /etc/systemd/system/bridgehead@${PROJECT}.service.d
+cat <<EOF > /etc/systemd/system/bridgehead@${PROJECT}.service.d/environment.conf
+[Service]
+Environment=bc_auth_users=${parsed_passwd}
+EOF
+
+
 log "INFO" "Register system units for bridgehead and bridgehead-update"
 cp -v \
     lib/systemd/bridgehead\@.service \

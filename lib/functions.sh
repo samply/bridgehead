@@ -20,7 +20,7 @@ checkOwner(){
 
 printUsage() {
 	echo "Usage: bridgehead start|stop|update|install|uninstall|enroll PROJECTNAME"
-	echo "PROJECTNAME should be one of ccp|nngm|gbn"
+	echo "PROJECTNAME should be one of ccp|nngm|bbmri"
 }
 
 checkRequirements() {

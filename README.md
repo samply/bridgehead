@@ -132,6 +132,16 @@ If systemd is not installed, you can start the bridgehead. However, for producti
 
 ## Getting Started
 
+### Quick Start
+
+```mkdir /etc/bridgehead/ && chown -R bridgehead . /etc/bridgehead/```
+```git clone https://github.com/samply/bridgehead.git -b feature/samplyBeam```
+### Migration
+Run:
+```docker-compose down```
+For the old installation of the BH. Then replace the docker volume name for the blaze store in the BH 2.0 docker-compose.yml with the docker volume of the old Blaze store. 
+
+
 ### Installation 
 
 If your system passed all checks from ["Requirements" section], you are now ready to download the bridgehead.

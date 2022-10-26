@@ -20,6 +20,7 @@ TOC
       - [docker](#dockerhttpsdocsdockercomget-docker)
       - [systemd](#systemd)
 2. [Getting Started](#getting-started)
+    - [Quick Start](#quick-start)
     - [DKTK](#dktkc4)
     - [C4](#c4)
     - [GBA/BBMRI-ERIC](#gbabbmri-eric)
@@ -134,15 +135,6 @@ If systemd is not installed, you can start the bridgehead. However, for producti
 
 ### Quick Start
 
-```mkdir /etc/bridgehead/ && chown -R bridgehead . /etc/bridgehead/```
-```git clone https://github.com/samply/bridgehead.git -b feature/samplyBeam```
-### Migration
-Run:
-```docker-compose down```
-For the old installation of the BH. Then replace the docker volume name for the blaze store in the BH 2.0 docker-compose.yml with the docker volume of the old Blaze store. 
-
-
-### Installation 
 
 If your system passed all checks from ["Requirements" section], you are now ready to download the bridgehead.
 
@@ -156,10 +148,6 @@ sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 It is recomended to create a user for the bridgehead service.  This should be done after clone the repository. Since not all linux distros support ```adduser```, we provide an action for the systemcall ```useradd```. You should try the first one, when the systm can't create the user you should try the second one.
 
 ``` shell
-adduser --no-create-home --disabled-login --ingroup docker --gecos "" bridgehead
-```
-
-``` shell
 useradd -M -g docker -N -s /sbin/nologin bridgehead
 ```
 
@@ -167,6 +155,25 @@ After adding the User you need to change the ownership of the directory to the b
 
 ``` shell
 chown bridgehead /srv/docker/bridgehead/ -R
+```
+Download the configuration repository:
+
+``` shell
+sudo git clone https://github.com/samply/bridgehead-config.git -b fix/bbmri-config /etc/bridgehead;
+```
+Change ownership:
+``` shell
+chown bridgehead /etc/bridgehead/ -R
+```
+Modify SITE_ID and SITE_NAME in bbmri.conf
+RUN:
+
+
+```shell
+sudo /etc/bridgehead/bridgehead enroll bbmri
+```
+```shell
+sudo /srv/docker/bridgehead/bridgehead start bbmri
 ```
 
 ### Configuration

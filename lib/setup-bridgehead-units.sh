@@ -33,18 +33,17 @@ Cmnd_Alias BRIDGEHEAD${PROJECT^^} = \\
 bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF
 
-log "INFO" "Now generating a password for the local datamangement. Please safe the password for your ETL process!"
-generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
+# TODO: Determine wether this should be located in setup-bridgehead (triggered through bridgehead install) or in update bridgehead (triggered every hour)
+if [ -z "$LDM_LOGIN" ]; then
+  log "INFO" "Now generating a password for the local datamangement. Please safe the password for your ETL process!"
+  generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 
-log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
-parsed_passwd=$(docker run --rm -it httpd:latest htpasswd -nb $PROJECT $generated_passwd)
+  log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
+  parsed_passwd=$(docker run --rm -it httpd:latest htpasswd -nb $PROJECT $generated_passwd | tr -d '\n')
 
-mkdir /etc/systemd/system/bridgehead@${PROJECT}.service.d
-cat <<EOF > /etc/systemd/system/bridgehead@${PROJECT}.service.d/environment.conf
-[Service]
-Environment=bc_auth_users=${parsed_passwd}
-EOF
-
+  log "INFO" "These credentials are now written to /etc/bridgehead/${PROJECT}.local.conf"
+  echo "LDM_LOGIN='${parsed_passwd}'" >> /etc/bridgehead/${PROJECT}.local.conf;
+fi
 
 log "INFO" "Register system units for bridgehead and bridgehead-update"
 cp -v \

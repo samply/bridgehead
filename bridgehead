@@ -52,10 +52,10 @@ fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Una
 [ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 set +a
 
-OVERRIDE=""
+OVERRIDE=${OVERRIDE:=""}
 if [ -f "$PROJECT/docker-compose.override.yml" ]; then
 	log INFO "Applying $PROJECT/docker-compose.override.yml"
-	OVERRIDE+="-f ./$PROJECT/docker-compose.override.yml"
+	OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
 fi
 
 case "$ACTION" in

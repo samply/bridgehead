@@ -7,4 +7,5 @@ function nngmSetup() {
 	fi
 }
 
-CONNECTOR_POSTGRES_PASSWORD="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
+#CONNECTOR_POSTGRES_PASSWORD="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
+CONNECTOR_POSTGRES_PASSWORD="$(echo -n /etc/bridgehead/pki/mannheim.priv.pem | sha256sum | head -c 20)"

@@ -24,8 +24,8 @@ function hc_send(){
         HCURL="https://hc-ping.com/$HCUUID"
     fi
     if [ ! -n "$HCURL" ]; then
-        log WARN "Healthcheck reporting failed: Neither Healthcheck UUID nor service set - please check config in /etc/bridgehead"
-        return 1
+        log WARN "Did not report Healthcheck: Neither Healthcheck UUID nor service set. Please define MONITOR_APIKEY in /etc/bridgehead."
+        return 0
     fi
 
     if [ -z "$UPTIME" ]; then

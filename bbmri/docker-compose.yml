@@ -8,12 +8,14 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
       - --providers.file.directory=/configuration/
       - --api.dashboard=true
       - --accesslog=true
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.service=api@internal"
@@ -82,8 +84,6 @@ services:
     depends_on:
       - "beam-proxy"
       - "blaze"
-    labels:
-      - "traefik.enable=false"
 
   beam-proxy:
     image: "samply/beam-proxy:develop"
@@ -99,8 +99,6 @@ services:
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
     secrets:
       - proxy.pem
-    labels:
-      - "traefik.enable=false"
     depends_on:
       - "forward_proxy"
     volumes:

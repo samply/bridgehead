@@ -58,15 +58,17 @@ if [ -f "$PROJECT/docker-compose.override.yml" ]; then
 	OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
 fi
 
+detectCompose
+
 case "$ACTION" in
 	start)
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
-		exec docker-compose -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
+		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
-		exec docker-compose -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		;;
 	update)
 		exec ./lib/update-bridgehead.sh $PROJECT

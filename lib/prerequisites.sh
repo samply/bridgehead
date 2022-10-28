@@ -2,6 +2,8 @@
 
 source lib/functions.sh
 
+detectCompose
+
 if ! id "bridgehead" &>/dev/null; then
   log ERROR "User bridgehead does not exist. Please consult readme for installation."
   exit 1
@@ -12,7 +14,7 @@ checkOwner /etc/bridgehead bridgehead || exit 1
 
 ## Check if user is a su
 log INFO "Checking if all prerequisites are met ..."
-prerequisites="git docker docker-compose"
+prerequisites="git docker $COMPOSE"
 for prerequisite in $prerequisites; do
   $prerequisite --version 2>&1
   is_available=$?

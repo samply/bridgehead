@@ -10,7 +10,7 @@ services:
       - --providers.docker=true
       - --providers.file.directory=/configuration/
       - --api.dashboard=true
-      - --accesslog=true # print access-logs
+      - --accesslog=true
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
     labels:

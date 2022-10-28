@@ -2,6 +2,8 @@
 
 source lib/functions.sh
 
+detectCompose
+
 if ! id "bridgehead" &>/dev/null; then
   log ERROR "User bridgehead does not exist. Please consult readme for installation."
   exit 1

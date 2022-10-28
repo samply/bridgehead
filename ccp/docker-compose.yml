@@ -8,7 +8,6 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --providers.docker=true
-      - --providers.file.watch=true
       - --providers.file.directory=/configuration/
       - --api.dashboard=true
       - --accesslog=true # print access-logs

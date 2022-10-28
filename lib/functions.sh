@@ -11,6 +11,22 @@ detectCompose() {
 	fi
 }
 
+# https://unix.stackexchange.com/questions/539147
+systemctl-exists() {
+	[ $(systemctl list-unit-files "${1}*" | wc -l) -gt 3 ]
+}
+
+dockerUnitName() {
+	if systemctl-exists docker.service; then
+		echo "docker.service"
+	elif systemctl-exists snap.docker.dockerd.service; then
+		echo "snap.docker.dockerd.service"
+	else
+		log ERROR "Unable to detect docker systemd unit."
+		fail_and_report 1 "Unable to detect docker systemd unit."
+	fi
+}
+
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
     log "ERROR" "Please run as root"

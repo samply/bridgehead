@@ -10,12 +10,6 @@ fi
 checkOwner . bridgehead || exit 1
 checkOwner /etc/bridgehead bridgehead || exit 1
 
-if [[ "$(docker compose version 2>/dev/null)" == *"Docker Compose version"* ]]; then
-	COMPOSE="docker compose"
-else
-	COMPOSE="docker-compose"
-fi
-
 ## Check if user is a su
 log INFO "Checking if all prerequisites are met ..."
 prerequisites="git docker $COMPOSE"

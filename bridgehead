@@ -58,6 +58,8 @@ if [ -f "$PROJECT/docker-compose.override.yml" ]; then
 	OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
 fi
 
+detectCompose
+
 case "$ACTION" in
 	start)
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."

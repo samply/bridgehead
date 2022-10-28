@@ -2,6 +2,15 @@
 
 source lib/log.sh
 
+detectCompose() {
+	if [[ "$(docker compose version 2>/dev/null)" == *"Docker Compose version"* ]]; then
+		COMPOSE="docker compose"
+	else
+		COMPOSE="docker-compose"
+		# This is intended to fail on startup in the next prereq check.
+	fi
+}
+
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
     log "ERROR" "Please run as root"

@@ -1,6 +1,6 @@
 [Unit]
 Description=Bridgehead (%i)
-Requires=DOCKER_UNIT_NAME
+Requires=docker.service
 
 [Service]
 User=bridgehead

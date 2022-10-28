@@ -40,12 +40,6 @@ cp -v \
     lib/systemd/bridgehead-update\@.timer \
     /etc/systemd/system/
 
-log INFO "Setting Docker unit ..."
-
-for file in $(find /etc/systemd/system -mindepth 1 -maxdepth 1 -type f -name "bridgehead*"); do
-	sed -i "s/DOCKER_UNIT_NAME/$(dockerUnitName)/g" $file
-done
-
 systemctl daemon-reload
 
 log INFO "Trying to update your bridgehead ..."

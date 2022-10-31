@@ -28,11 +28,11 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/ccp-report-hub`)"
+      - "traefik.http.routers.report-ccp.rule=PathPrefix(`/ccp-report-hub`)"
       - "traefik.http.middlewares.ccp_t_strip.stripprefix.prefixes=/ccp-report-hub"
-      - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_ccp.middlewares=ccp_t_strip,ccp-auth"
-      - "traefik.http.routers.blaze_ccp.tls=true"
+      - "traefik.http.services.report-ccp.loadbalancer.server.port=8080"
+      - "traefik.http.routers.report-ccp.middlewares=ccp_t_strip"
+      - "traefik.http.routers.report-ccp.tls=true"
 
 volumes:
   task-store-data:

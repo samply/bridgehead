@@ -23,6 +23,7 @@ TOC
     - [Locally Managed Secrets](#locally-managed-secrets)
     - [Git Proxy Configuration](#git-proxy-configuration)
     - [Docker Daemon Proxy Configuration](#docker-daemon-proxy-configuration)
+    - [Non-Linux OS](#non-linux-os)
 5. [License](#license)
 
 ## Requirements
@@ -37,7 +38,7 @@ For running your Bridgehead we recommend the follwing Hardware:
 
 ### System
 
-You must install the Bridgehead under a Linux operating system. You will need root (administrator) priveleges on this machine in order to perform the deployment.
+You must install the Bridgehead under a Linux operating system (but see the section [Non-Linux OS](#non-linux-os)). You will need root (administrator) priveleges on this machine in order to perform the deployment.
 
 The following software should be installed:
 
@@ -272,6 +273,23 @@ To make the configuration effective, you need to tell systemd to reload the conf
 sudo systemctl daemon-reload;
 sudo systemctl restart docker;
 ```
+
+### Non-Linux OS
+
+The installation procedures described above have only been tested under Linux.
+
+Below are some suggestions for getting the installation to work on other operating systems. Note that we are not able to provide support for these routes!
+
+We believe that it is likely that installation would also work with FreeBSD and MacOS.
+
+Under Windows, you have 2 options:
+
+- Virtual machine
+- WSL
+
+We have tested the installation procedure in Ubuntu 22.04 on a VMware virtual machine. That worked flawlessly.
+
+Installation under WSL ought to work, but we have not tested this.
 
 ## License
 

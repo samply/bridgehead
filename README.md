@@ -11,16 +11,19 @@ TOC
       - [Git](#git)
       - [Docker](#docker)
 2. [Deployment](#deployment)
-    - [Preparation](#preparation)
-      - [Monitoring](#monitoring)
-      - [Register with Beam](#register-with-beam)
     - [Installation](#installation)
-3. [Configuration](#configuration)
-5. [Migration-guide](#migration-guide)
-4. [Pitfalls](#pitfalls)
-4. [Postinstallation tasks](#postinstallation-tasks)
-7. [License](#license)
-
+    - [Register with Beam](#register-with-beam)
+    - [Starting and stopping your Bridgehead](#starting-and-stopping-your-bridgehead)
+    - [Systemd service configuration](#systemd-service-configuration)
+3. [Additional Services](#additional-Services)
+    - [Monitoring](#monitoring)
+    - [Register with a Directory](#register-with-a-Directory)
+4. [Configuration](#configuration)
+    - [HTTPS Access](#https-access)
+    - [Locally Managed Secrets](#locally-managed-secrets)
+    - [Git Proxy Configuration](#git-proxy-configuration)
+    - [Docker Daemon Proxy Configuration](#docker-daemon-proxy-configuration)
+5. [License](#license)
 
 ## Requirements
 
@@ -32,7 +35,7 @@ For running your Bridgehead we recommend the follwing Hardware:
 - At least 8 GB Ram
 - 100GB Hard Drive, SSD recommended
 
-### System Requirements
+### System
 
 Before starting the installation process, please ensure that following software is available on your system:
 
@@ -44,9 +47,9 @@ Check if you have at leat git 2.0 installed on the system with:
 git --version
 ```
 
-#### [Docker](https://docs.docker.com/get-docker/)
+#### Docker
 
-To check your docker installation, you should execute the docker with --version:
+To check your Docker installation, you should execute the docker with --version:
 
 ``` shell
 docker --version
@@ -59,7 +62,7 @@ docker-compose --version
 ```
 The recomended version is "2.XX" and higher.
 
-If deocker or docker-compose are not installed, please refer to the [Docker website](https://docs.docker.com).
+If docker or docker-compose are not installed, please refer to the [Docker website](https://docs.docker.com).
 
 ## Deployment
 
@@ -129,7 +132,7 @@ The Linux "systemctl" command enables you to autostart processes whenever your s
 
 In this repository you will find tools that allow you to take advantage of "systemctl" to automatically start the Bridgehead whenever your server gets restarted. You can set this up by executing the [bridgehead](./bridgehead) script:
 ``` shell
-sudo /srv/docker/bridgehead/bridgehead install <Project>
+sudo /srv/docker/bridgehead/bridgehead install bbmri
 ```
 
 This will install the systemd units to run and update the bridghead.
@@ -222,7 +225,7 @@ This section describes the secrets you need to configure locally through the con
 | MAGICPL_OIDC_CLIENT_ID               || The client id used for your machine, to connect with the central authentication service           |
 | MAGICPL_OIDC_CLIENT_SECRET           || The client secret used for your machine, to connect with the central authentication service       |
 
-### [Git Proxy Configuration](https://gist.github.com/evantoli/f8c23a37eb3558ab8765)
+### Git Proxy Configuration
 
 Unlike most other tools, git doesn't use the default proxy variables "http_proxy" and "https_proxy". To make git use a proxy, you will need to adjust the global git configuration:
 

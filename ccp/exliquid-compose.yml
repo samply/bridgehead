@@ -5,7 +5,7 @@ services:
     image: "samply/blaze:0.18"
     container_name: bridgehead-task-store
     environment:
-      BASE_URL: "http://localhost:8083"
+      BASE_URL: "http://bridgehead-task-store:8080"
       JAVA_TOOL_OPTIONS: "-Xmx1g"
       LOG_LEVEL: "debug"
     volumes:
@@ -17,7 +17,7 @@ services:
     image: "samply/report-hub:latest"
     container_name: bridgehead-report-hub
     environment:
-      BASE_URL: "http://ccp-task-store:8080"
+      BASE_URL: "http://bridgehead-report-hub:8080"
       JAVA_TOOL_OPTIONS: "-Xmx1g"
       LOG_LEVEL: "debug"
       PROXY_ID: "report-hub.${PROXY_ID}"

@@ -14,7 +14,7 @@ TOC
     - [Installation](#installation)
     - [Register with Beam](#register-with-beam)
     - [Starting and stopping your Bridgehead](#starting-and-stopping-your-bridgehead)
-    - [Systemd service configuration](#systemd-service-configuration)
+    - [Auto-starting your Bridgehead when the server starts](#auto-starting-your-bridgehead-when-the-server-starts)
 3. [Additional Services](#additional-Services)
     - [Monitoring](#monitoring)
     - [Register with a Directory](#register-with-a-Directory)
@@ -38,7 +38,7 @@ For running your Bridgehead we recommend the follwing Hardware:
 
 ### System
 
-You must install the Bridgehead under a Linux operating system (but see the section [Non-Linux OS](#non-linux-os)). You will need root (administrator) priveleges on this machine in order to perform the deployment.
+You are strongly recommended to install the Bridgehead under a Linux operating system (but see the section [Non-Linux OS](#non-linux-os)). You will need root (administrator) priveleges on this machine in order to perform the deployment.
 
 The following software should be installed:
 
@@ -126,7 +126,7 @@ To shut down the Bridgehead, type:
 sudo /srv/docker/bridgehead/bridgehead stop bbmri
 ```
 
-### Local Datamanagement Security
+### Auto-starting your Bridgehead when the server starts
 
 Using this feature is optional.
 

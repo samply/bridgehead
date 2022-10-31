@@ -30,7 +30,7 @@ TOC
 
 ### Hardware
 
-For running your Bridgehead we recommend the follwing Hardware:
+To get the most out of your Bridgehead, we recommend the follwing Hardware:
 
 - 4 CPU cores
 - At least 8 GB Ram
@@ -137,7 +137,7 @@ In this repository you will find tools that allow you to take advantage of "syst
 sudo /srv/docker/bridgehead/bridgehead install bbmri
 ```
 
-This will install the systemd units to run and update the bridghead.
+This will install the systemd units to run and update the Bridgehead.
 
 If your site operates with a proxy, you will need to set it up with ```systemctl edit``` as follows:
 
@@ -185,7 +185,7 @@ Your site should now show up in the monitoring with grey (updates) and green (qu
 
 ### Register with a Directory
 
-The [Directory][directory] is a BBMRI project that aims to catalog all biobanks in Europe and beyond. Each biobank is given its own unique ID and the Directory maintains counts of the number of donors and the number of samples held at each biobank. You are strongly encouraged to register with the Directory, because this opens the door to further services, such as the [Negotiator][negotiator].
+The [Directory](https://directory.bbmri-eric.eu/) is a BBMRI project that aims to catalog all biobanks in Europe and beyond. Each biobank is given its own unique ID and the Directory maintains counts of the number of donors and the number of samples held at each biobank. You are strongly encouraged to register with the Directory, because this opens the door to further services, such as the [Negotiator](https://negotiator.bbmri-eric.eu/login.xhtml).
 
 Generally, you should register with the BBMRI national node for the country where your biobank is based. You can find a list of contacts for the national nodes [here](http://www.bbmri-eric.eu/national-nodes/). If your country is not in this list, or you have any questions, please contact the [BBMRI helpdesk](mailto:directory@helpdesk.bbmri-eric.eu). If your biobank is for COVID samples, you can also take advantage of an accelerated registration process [here](https://docs.google.com/forms/d/e/1FAIpQLSdIFfxADikGUf1GA0M16J0HQfc2NHJ55M_E47TXahju5BlFIQ).
 

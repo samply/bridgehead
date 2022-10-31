@@ -37,7 +37,9 @@ For running your Bridgehead we recommend the follwing Hardware:
 
 ### System
 
-You must install the Bridgehead under a Linux operating system. You will need to install the following software:
+You must install the Bridgehead under a Linux operating system. You will need root (administrator) priveleges on this machine in order to perform the deployment.
+
+The following software should be installed:
 
 #### Git
 

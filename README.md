@@ -18,7 +18,7 @@ TOC
 3. [Additional Services](#additional-Services)
     - [Monitoring](#monitoring)
     - [Register with a Directory](#register-with-a-Directory)
-4. [Configuration](#configuration)
+4. [Site-specific configuration](#site-specific-configuration)
     - [HTTPS Access](#https-access)
     - [Locally Managed Secrets](#locally-managed-secrets)
     - [Git Proxy Configuration](#git-proxy-configuration)
@@ -37,11 +37,11 @@ For running your Bridgehead we recommend the follwing Hardware:
 
 ### System
 
-Before starting the installation process, please ensure that following software is available on your system:
+You must install the Bridgehead under a Linux operating system. You will need to install the following software:
 
 #### Git
 
-Check if you have at leat git 2.0 installed on the system with:
+Check if you have at least git 2.0 installed on the system with:
 
 ``` shell
 git --version
@@ -49,13 +49,12 @@ git --version
 
 #### Docker
 
-To check your Docker installation, you should execute the docker with --version:
+Check the installed Docker version:
 
 ``` shell
 docker --version
 ```
-
-The Version should ideally be higher than "20.10.1". The next step is to check ``` docker-compose```  with:
+The version should ideally be higher than "20.10.1". The next step is to check ``` docker-compose```  with:
 
 ``` shell
 docker-compose --version
@@ -74,13 +73,11 @@ First, clone the repository to the directory "/srv/docker/bridgehead":
 sudo mkdir -p /srv/docker/;
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 ```
-
 Now create a user for the Bridgehead service:
 
 ``` shell
 sudo useradd -M -g docker -N -s /sbin/nologin bridgehead
 ```
-
 After adding the user you will need to change the ownership of the directory to the Bridgehead user.
 
 ``` shell
@@ -114,8 +111,8 @@ Create a file for this private key:
 ```
 
 ### Starting and stopping your Bridgehead
-To start your new Bridgehead, type:
 
+To start your new Bridgehead, type:
 ```shell
 sudo /srv/docker/bridgehead/bridgehead start bbmri
 ```
@@ -128,7 +125,9 @@ sudo /srv/docker/bridgehead/bridgehead stop bbmri
 
 ### Local Datamanagement Security
 
-The Linux "systemctl" command enables you to autostart processes whenever your server is booted. Note that some Linux distributions do not support this command.
+Using this feature is optional.
+
+Many Linux distributions support the "systemctl" command, which enables you to autostart processes whenever your server is booted.
 
 In this repository you will find tools that allow you to take advantage of "systemctl" to automatically start the Bridgehead whenever your server gets restarted. You can set this up by executing the [bridgehead](./bridgehead) script:
 ``` shell
@@ -173,13 +172,13 @@ You can register for it by sending a request to: bridgehead@helpdesk.bbmri-eric.
 
 The confirmation of your registration will contain a monitoring API key.
 
-You need to add the key to the "/etc/bridgehead/bbmri.conf" file:
+You need to add the key to the "/etc/bridgehead/bbmri.conf" file, e.g.:
 ``` conf
 MONITOR_APIKEY=1b9e5e21-8b34-5382-8590-7eae98a4f6d3
 ```
 (your key will be different to the one shown above, obviously).
 
-It should now show up in the monitoring with grey (updates) and green (query) messages at the next full hour.
+Your site should now show up in the monitoring with grey (updates) and green (query) messages at the next full hour.
 
 ### Register with a Directory
 
@@ -193,18 +192,18 @@ Your national node will give you detailed instructions for registering, but for 
 * Add your biobank and enter its details, including contact information for a person involved in running the biobank.
 * You will need to create at least one collection.
 
-## Configuration
+## Site-specific configuration
 
 ### HTTPS Access
 
-We advise to use https for all service of your Bridgehead. HTTPS is enabled on default. For starting the bridghead you need a ssl certificate. You can either create it yourself or get a signed one. You need to drop the certificates in /certs.
+We recommend https for all services of your Bridgehead. HTTPS is enabled by default. For starting the Bridgehead you need an ssl certificate. You can either create it yourself or get a signed one. You need to drop the certificates in /certs.
 
-The Bridgehead create one autotmatic on the first start. However, it will be unsigned and we recomend to get a signed one.
+The Bridgehead creates one autotmatically on the first start. However, it will be unsigned and we recomend getting a signed one.
 
 
 ### Locally Managed Secrets
 
-This section describes the secrets you need to configure locally through the configuration
+This section describes the secrets you may need to configure locally through the configuration
 
 | Name                                 | Recommended Value                                                                                 | Description |  
 |--------------------------------------|---------------------------------------------------------------------------------------------------| ----------- |  

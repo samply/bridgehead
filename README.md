@@ -287,7 +287,7 @@ Under Windows, you have 2 options:
 - Virtual machine
 - WSL
 
-We have tested the installation procedure in Ubuntu 22.04 on a VMware virtual machine. That worked flawlessly.
+We have tested the installation procedure with an Ubuntu 22.04 guest system running on a VMware virtual machine. That worked flawlessly.
 
 Installation under WSL ought to work, but we have not tested this.
 

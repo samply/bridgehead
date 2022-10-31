@@ -1,82 +1,36 @@
 # Bridgehead
 
-This repository contains all information and tools to deploy a bridgehead. If you have any questions about deploying a bridgehead, please [contact us](mailto:verbis-support@dkfz-heidelberg.de).
+A Bridgehead is a set of components that must be installed locally, in order to connect your clinic or research centre to a federated search system. This repository contains the information and tools that you will need to deploy a Bridgehead. If you have questions, please [contact us](mailto:verbis-support@dkfz-heidelberg.de).
 
 
 TOC
 
-1. [About](#about)
-    - [Projects](#projects)
-        - [GBA/BBMRI-ERIC](#gbabbmri-eric)
-        - [CCP(DKTK/C4)](#ccpdktkc4)
-        - [NNGM](#nngm)
-    - [Bridgehead Components](#bridgehead-components)
-        - [Blaze Server](#blaze-serverhttpsgithubcomsamplyblaze)  
-        - [Connector](#connector) 
 1. [Requirements](#requirements)
     - [Hardware](#hardware)
-    - [System](#system-requirements)
-      - [git](#git)
-      - [docker](#dockerhttpsdocsdockercomget-docker)
-      - [systemd](#systemd)
-2. [Getting Started](#getting-started)
-    - [Quick Start](#quick-start)
-    - [DKTK](#dktkc4)
-    - [C4](#c4)
-    - [GBA/BBMRI-ERIC](#gbabbmri-eric)
+    - [System](#system)
+      - [Git](#git)
+      - [Docker](#docker)
+2. [Deployment](#deployment)
+    - [Preparation](#preparation)
+      - [Monitoring](#monitoring)
+      - [Register with Beam](#register-with-beam)
+    - [Installation](#installation)
 3. [Configuration](#configuration)
-4. [Managing your Bridgehead](#managing-your-bridgehead)
-    - [Systemd](#on-a-server)
-    - [Without Systemd](#on-developers-machine)
-4. [Pitfalls](#pitfalls)
 5. [Migration-guide](#migration-guide)
+4. [Pitfalls](#pitfalls)
+4. [Postinstallation tasks](#postinstallation-tasks)
 7. [License](#license)
 
-
-## About
-
-TODO: Insert comprehensive feature list of the bridgehead? Why would anyone install it?
-
-## Projects
-
-### GBA/BBMRI-ERIC
-
-The **Sample Locator** is a tool that allows researchers to make searches for samples over a large number of geographically distributed biobanks. Each biobank runs a so-called **Bridgehead** at its site, which makes it visible to the Sample Locator.  The Bridgehead is designed to give a high degree of protection to patient data. Additionally, a tool called the [Negotiator][negotiator] puts you in complete control over which samples and which data are delivered to which researcher.
-
-You will most likely want to make your biobanks visible via the [publicly accessible Sample Locator][sl], but the possibility also exists to install your own Sample Locator for your site or organization, see the GitHub pages for [the server][sl-server-src] and [the GUI][sl-ui-src].
-
-The Bridgehead has two primary components:
-* The **Blaze Store**. This is a highly responsive FHIR data store, which you will need to fill with your data via an ETL chain.
-* The **Connector**. This is the communication portal to the Sample Locator, with specially designed features that make it possible to run it behind a corporate firewall without making any compromises on security.
-
-### CCP(DKTK/C4)
-
-TODO:
-
-### nNGM
-
-TODO:
-
-### Bridgehead Components
-
-#### [Blaze Server](https://github.com/samply/blaze)
-
-This holds the actual data being searched. This store must be filled by you, generally by running an ETL on your locally stored data to turn it into the standardized FHIR format that we require.
-
-#### [Connector]
-
-TODO:
 
 ## Requirements
 
 ### Hardware
 
-For running your bridgehead we recommend the follwing Hardware:
+For running your Bridgehead we recommend the follwing Hardware:
 
 - 4 CPU cores
 - At least 8 GB Ram
 - 100GB Hard Drive, SSD recommended
-
 
 ### System Requirements
 
@@ -98,45 +52,18 @@ To check your docker installation, you should execute the docker with --version:
 docker --version
 ```
 
-The Version should be higher than "20.10.1". Otherwise you will have problems starting the bridgehead. The next step is to check ``` docker-compose```  with:
+The Version should ideally be higher than "20.10.1". The next step is to check ``` docker-compose```  with:
 
 ``` shell
 docker-compose --version
 ```
+The recomended version is "2.XX" and higher.
 
-The recomended version is "2.XX" and higher. If docker-compose was not installed with docker follow these [instructions](https://docs.docker.com/compose/install/#install-compose-as-standalone-binary-on-linux-systems). To futher check your docker and docker-compose installation, please run the following command. 
+If deocker or docker-compose are not installed, please refer to the [Docker website](https://docs.docker.com).
 
-``` shell
-docker-compose -f - up <<EOF
-version: "3.7"
-services:
-  hello-world:
-    image: hello-world
-EOF
-```
-Docker will now download the "hello-world" docker image and try to execute it. After the download you should see a message starting with "Hello from Docker!".
+## Deployment
 
-> NOTE: If the download of the image fails (e.g with "connection timed out" message), ensure that you have correctly set the proxy for the docker daemon. Refer to ["Docker Daemon Proxy Configuration" in the "Pitfalls" section](#docker-daemon-proxy-configuration)
-
-#### [systemd](https://systemd.io/)
-
-You shouldn't need to install it yourself, If systemd is not available on your system you should get another system.
-To check if systemd is available on your system, please execute
-
-``` shell
-systemctl --version
-```
-
-If systemd is not installed, you can start the bridgehead. However, for productive use we recomend using systemd.
-
----
-
-## Getting Started
-
-### Quick Start
-
-
-If your system passed all checks from ["Requirements" section], you are now ready to download the bridgehead.
+### Installation
 
 First, clone the repository to the directory "/srv/docker/bridgehead":
 
@@ -145,16 +72,16 @@ sudo mkdir -p /srv/docker/;
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
 ```
 
-It is recomended to create a user for the bridgehead service.  This should be done after clone the repository. Since not all linux distros support ```adduser```, we provide an action for the systemcall ```useradd```. You should try the first one, when the systm can't create the user you should try the second one.
+Now create a user for the Bridgehead service:
 
 ``` shell
-useradd -M -g docker -N -s /sbin/nologin bridgehead
+sudo useradd -M -g docker -N -s /sbin/nologin bridgehead
 ```
 
-After adding the User you need to change the ownership of the directory to the bridgehead user.
+After adding the user you will need to change the ownership of the directory to the Bridgehead user.
 
 ``` shell
-chown bridgehead /srv/docker/bridgehead/ -R
+sudo chown bridgehead /srv/docker/bridgehead/ -R
 ```
 Download the configuration repository:
 
@@ -163,73 +90,113 @@ sudo git clone https://github.com/samply/bridgehead-config.git -b fix/bbmri-conf
 ```
 Change ownership:
 ``` shell
-chown bridgehead /etc/bridgehead/ -R
+sudo chown bridgehead /etc/bridgehead/ -R
 ```
-Modify SITE_ID and SITE_NAME in bbmri.conf
-RUN:
-
-
-```shell
-sudo /etc/bridgehead/bridgehead enroll bbmri
+Edit /etc/bridgehead/bbmri.conf and modify SITE_ID and SITE_NAME to be relevant to your biobank. SITE_ID should not contains spaces. By convention, it is lower-case. E.g.:
 ```
+SITE_ID="toulouse-prod"
+SITE_NAME="Toulouse"
+```
+
+### Register with Beam
+
+You will need to register with Beam in order to be able to start your Bridgehead. Please send an email to: bridgehead@helpdesk.bbmri-eric.eu, mentioning the SITE_ID that you chose above.
+
+The response will contain your private key for Beam.
+
+Create a file for this private key:
+
+``` shell
+/etc/bridgehead/pki/$SITE_ID.priv.pem
+```
+
+### Starting and stopping your Bridgehead
+To start your new Bridgehead, type:
+
 ```shell
 sudo /srv/docker/bridgehead/bridgehead start bbmri
 ```
+The script may break, because Spot tries to connect to Blaze, but Blaze is not yet ready, causing Spot to terminate. Try to start and stop the script a few times.
 
-### Configuration
-
-> NOTE: If you are part of the CCP-IT we will provide you another link for the configuration.
-
-Next, you need to configure a set of variables, specific for your site with not so high security concerns. You can clone the configuration template at [GitHub](https://github.com/samply/bridgehead-config). The confiugration of the bridgehead should be located in /etc/bridghead.
-
-``` shell
-sudo git clone https://github.com/samply/bridgehead-config.git /etc/bridgehead;
-```
-
-After cloning or forking the repository you need to add value to the template. If you are a part of the CCP-IT you will get an already filled out config repo.
-
-### Testing your bridgehead
-
-We recomend to run first with the start and stop script. If you have trouble starting the bridghead have a look at the troubleshooting section.
-
-Now you ready to run a bridgehead instance. The bridgehead scripts checks if your configuration is correct. To check if everything works, execute the following:
-``` shell
-/srv/docker/bridgehead/bridgehead start <Project>
-```
-
-You should now be able to access the landing page on your system, e.g "https://<your-host>/". 
-
-To shutdown the bridgehead just run.
-``` shell
-/srv/docker/bridgehead/bridgehead stop <Project>
+To shut down the Bridgehead, type:
+```shell
+sudo /srv/docker/bridgehead/bridgehead stop bbmri
 ```
 
 ### Local Datamanagement Security
 
-For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. You can do this by executing the [bridgehead](./bridgehead) script:
+The Linux "systemctl" command enables you to autostart processes whenever your server is booted. Note that some Linux distributions do not support this command.
+
+In this repository you will find tools that allow you to take advantage of "systemctl" to automatically start the Bridgehead whenever your server gets restarted. You can set this up by executing the [bridgehead](./bridgehead) script:
 ``` shell
 sudo /srv/docker/bridgehead/bridgehead install <Project>
 ```
 
-This will install the systemd units to run and update the bridghead. Also, this will generate a user and password for accessing the LDM. This will be shown only the first time you install the bridgehead.
+This will install the systemd units to run and update the bridghead.
 
-### Basic Auth
+If your site operates with a proxy, you will need to set it up with ```systemctl edit``` as follows:
 
-For Data protection we use basic authentification for some services. To access those services you need an username and password combination. 
-Caution: If you start the bridgehead without the authentification, then those services are not accessible.
-We generate such a combination at the first install (`/etc/bridgehead/<Project>.local.conf`). 
+``` shell
+sudo systemctl edit bridgehead@bbmri.service;
+```
+
+This will open your default editor allowing you to edit the docker system units configuration. Insert the following lines in the editor and define your machines secrets.
+
+``` conf
+[Service]
+Environment=HOSTIP=
+Environment=HOST=
+Environment=HTTP_PROXY_USER=
+Environment=HTTP_PROXY_PASSWORD=
+Environment=HTTPS_PROXY_USER=
+Environment=HTTPS_PROXY_PASSWORD=
+Environment=CONNECTOR_POSTGRES_PASS=
+```
+
+To make the configuration active, you need to tell systemd to reload the configuration and restart the docker service:
+
+``` shell
+sudo systemctl daemon-reload;
+sudo systemctl bridgehead@bbmri.service;
+```
 
 ## Configuration
 
-#### systemd
+### Monitoring
 
+We provide a central monitoring service, which checks the health of your Bridgehead 24/7. Using this service is optional but recommended.
 
+You can register for it by sending a request to: bridgehead@helpdesk.bbmri-eric.eu.
+
+The confirmation of your registration will contain a monitoring API key.
+
+You need to add the key to the "/etc/bridgehead/bbmri.conf" file:
+``` conf
+MONITOR_APIKEY=1b9e5e21-8b34-5382-8590-7eae98a4f6d3
+```
+(your key will be different to the one shown above, obviously).
+
+It should now show up in the monitoring with grey (updates) and green (query) messages at the next full hour.
+
+### Register with a Directory
+
+The [Directory][directory] is a BBMRI project that aims to catalog all biobanks in Europe and beyond. Each biobank is given its own unique ID and the Directory maintains counts of the number of donors and the number of samples held at each biobank. You are strongly encouraged to register with the Directory, because this opens the door to further services, such as the [Negotiator][negotiator].
+
+Generally, you should register with the BBMRI national node for the country where your biobank is based. You can find a list of contacts for the national nodes [here](http://www.bbmri-eric.eu/national-nodes/). If your country is not in this list, or you have any questions, please contact the [BBMRI helpdesk](mailto:directory@helpdesk.bbmri-eric.eu). If your biobank is for COVID samples, you can also take advantage of an accelerated registration process [here](https://docs.google.com/forms/d/e/1FAIpQLSdIFfxADikGUf1GA0M16J0HQfc2NHJ55M_E47TXahju5BlFIQ).
+
+Your national node will give you detailed instructions for registering, but for your information, here are the basic steps:
+
+* Log in to the Directory for your country.
+* Add your biobank and enter its details, including contact information for a person involved in running the biobank.
+* You will need to create at least one collection.
+
+## Configuration
 
 ### HTTPS Access
 
-We advise to use https for all service of your bridgehead. HTTPS is enabled on default. For starting the bridghead you need a ssl certificate. You can either create it yourself or get a signed one. You need to drop the certificates in /certs.
+We advise to use https for all service of your Bridgehead. HTTPS is enabled on default. For starting the bridghead you need a ssl certificate. You can either create it yourself or get a signed one. You need to drop the certificates in /certs.
 
-The bridgehead create one autotmatic on the first start. However, it will be unsigned and we recomend to get a signed one.
+The Bridgehead create one autotmatic on the first start. However, it will be unsigned and we recomend to get a signed one.
 
 
 ### Locally Managed Secrets
@@ -254,76 +221,6 @@ This section describes the secrets you need to configure locally through the con
 | MAGICPL_CENTRAL_API_KEY              | You need to ask the central controlnumbergenerator admin for this.                                |The apiKey for your machine to communicate with the central controlnumbergenerator|
 | MAGICPL_OIDC_CLIENT_ID               || The client id used for your machine, to connect with the central authentication service           |
 | MAGICPL_OIDC_CLIENT_SECRET           || The client secret used for your machine, to connect with the central authentication service       |
-
-### Cooperatively Managed Secrets
-
-> TODO: Describe secrets from site-config 
-
-## Managing your Bridgehead
-
-> TODO: Rewrite this section (restart, stop, uninstall, manual updates)
-
-### On a Server
-
-#### Start
-
-This will start a not running bridgehead system unit:
-``` shell
-sudo systemctl start bridgehead@<dktk/c4/gbn>
-```
-
-#### Stop
-
-This will stop a running bridgehead system unit:
-``` shell
-sudo systemctl stop bridgehead@<dktk/c4/gbn>
-```
-
-#### Update
-
-This will update bridgehead system unit:
-``` shell
-sudo systemctl start bridgehead-update@<dktk/c4/gbn>
-```
-
-#### Remove the Bridgehead System Units
-
-If, for some reason you want to remove the installed bridgehead units, we added a command to [bridgehead](./bridgehead):
-``` shell
-sudo /srv/docker/bridgehead/bridgehead uninstall <project>
-```
-
-### On Developers Machine
-
-For developers, we provide additional scripts for starting and stopping the specif bridgehead:
-
-#### Start or stop
-
-This command starts a specified bridgehead. Choose between "dktk", "c4" and "gbn".
-``` shell
-/srv/docker/bridgehead/bridgehead start <dktk/c4/gbn>
-```
-
-#### Stop
-
-This command stops a specified bridgehead. Choose between "dktk", "c4" and "gbn".
-``` shell
-/srv/docker/bridgehead/bridgehead stop <dktk/c4/gbn>
-```
-
-#### Update
-
-This shell script updates the configuration for all bridgeheads installed on your system.
-``` shell
-/srv/docker/bridgehead/bridgehead update
-```
-> NOTE: If you want to regularly update your developing instance, you can create a CRON job that executes this script.
-
-## Migration Guide
-
-> TODO: How to transfer from windows/gbn
-
-## Pitfalls
 
 ### [Git Proxy Configuration](https://gist.github.com/evantoli/f8c23a37eb3558ab8765)
 
@@ -371,60 +268,6 @@ To make the configuration effective, you need to tell systemd to reload the conf
 sudo systemctl daemon-reload;
 sudo systemctl restart docker;
 ```
-
-## After the Installtion
-
-After starting your bridgehead, visit the landing page under the hostname. If you singed your own ssl certificate, there is probable an error message. However, you can accept it as exception. 
-
-On this page, there are all important links to each component, central and local. 
-
-### Connector Administration
-
-The Connector administration panel allows you to set many of the parameters regulating your Bridgehead. Most especially, it is the place where you can register your site with the Sample Locator. To access this page, proceed as follows:
-
-* Open the Connector page: https://<hostname>/<project>-connector/
-* In the "Local components" box, click the "Samply Share" button.
-* A new page will be opened, where you will need to log in using the administrator credentials (admin/adminpass by default).
-* After log in, you will be taken to the administration dashboard, allowing you to configure the Connector.
-* If this is the first time you have logged in as an administrator, you are strongly recommended to set a more secure password! You can use the "Users" button on the dashboard to do this.
-
-### GBA/BBMRI-ERIC
-
-#### Register with a Directory
-
-The [Directory][directory] is a BBMRI project that aims to catalog all biobanks in Europe and beyond. Each biobank is given its own unique ID and the Directory maintains counts of the number of donors and the number of samples held at each biobank. You are strongly encouraged to register with the Directory, because this opens the door to further services, such as the [Negotiator][negotiator].
-
-Generally, you should register with the BBMRI national node for the country where your biobank is based. You can find a list of contacts for the national nodes [here](http://www.bbmri-eric.eu/national-nodes/). If your country is not in this list, or you have any questions, please contact the [BBMRI helpdesk](mailto:directory@helpdesk.bbmri-eric.eu). If your biobank is for COVID samples, you can also take advantage of an accelerated registration process [here](https://docs.google.com/forms/d/e/1FAIpQLSdIFfxADikGUf1GA0M16J0HQfc2NHJ55M_E47TXahju5BlFIQ).
-
-Your national node will give you detailed instructions for registering, but for your information, here are the basic steps:
-
-* Log in to the Directory for your country.
-* Add your biobank and enter its details, including contact information for a person involved in running the biobank.
-* You will need to create at least one collection.
-* Note the biobank ID and the collection ID that you have created - these will be needed when you register with the Locator (see below).
-
-#### Register with a Locator
-
-* Go to the registration page http://localhost:8082/admin/broker_list.xhtml.
-* To register with a Locator, enter the following values in the three fields under "Join new Searchbroker":
-  * "Address": Depends on which Locator you want to register with:
-    * `https://locator.bbmri-eric.eu/broker/`: BBMRI Locator production service (European).
-    * `http://147.251.124.125:8088/broker/`: BBMRI Locator test service (European).
-    * `https://samplelocator.bbmri.de/broker/`: GBA Sample Locator production service (German).
-    * `https://samplelocator.test.bbmri.de/broker/`: GBA Sample Locator test service (German).
-  * "Your email address": this is the email to which the registration token will be returned.
-  * "Automatic reply": Set this to be `Total Size`
-* Click "Join" to start the registration process.
-* You should now have a list containing exactly one broker. You will notice that the "Status" box is empty.
-* Send an email to `feedback@germanbiobanknode.de` and let us know which of our Sample Locators you would like to register to. Please include the biobank ID and the collection ID from your Directory registration, if you have these available.
-* We will send you a registration token per email.
-* You will then re-open the Connector and enter the token into the "Status" box.
-* You should send us an email to let us know that you have done this.
-* We will then complete the registration process
-* We will email you to let you know that your biobank is now visible in the Sample Locator.
-
-If you are a Sample Locator administrator, you will need to understand the [registration process](./SampleLocatorRegistration.md). Normal bridgehead admins do not need to worry about this.
-
 
 ## License
 

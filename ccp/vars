@@ -11,3 +11,5 @@ PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 # This will load nngm setup. Effective only if nngm configuration is defined.
 source $PROJECT/nngm-setup.sh
 nngmSetup
+source $PROJECT/exliquid-setup.sh
+exliquidSetup

@@ -11,8 +11,6 @@ services:
       NNGM_CTS_APIKEY: ${NNGM_CTS_APIKEY}
       NNGM_CRYPTKEY: ${NNGM_CRYPTKEY}
     restart: always
-    ports:
-      - "8080:8080"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.connector.rule=PathPrefix(`/ccp-connector`)"

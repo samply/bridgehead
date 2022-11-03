@@ -39,7 +39,6 @@ if [ -z "$LDM_LOGIN" ]; then
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 
   log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
-  parsed_passwd=$(docker run --rm -it httpd:latest htpasswd -nb $PROJECT $generated_passwd | tr -d '\n' | tr -d '\r')
   echo -e "## Local Data Management Basic Authentication\n# User: $PROJECT\nLDM_PASSWORD=$generated_passwd" >> /etc/bridgehead/${PROJECT}.local.conf;
 fi
 

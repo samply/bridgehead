@@ -65,7 +65,9 @@ case "$ACTION" in
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
+		set -a
 		setLdmPassword
+		set +a
 		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)

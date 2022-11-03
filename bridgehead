@@ -59,13 +59,13 @@ if [ -f "$PROJECT/docker-compose.override.yml" ]; then
 fi
 
 detectCompose
-setLdmPassword
 
 case "$ACTION" in
 	start)
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
+		setLdmPassword
 		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)

@@ -34,7 +34,7 @@ bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF
 
 # TODO: Determine wether this should be located in setup-bridgehead (triggered through bridgehead install) or in update bridgehead (triggered every hour)
-if [ -z "$LDM_LOGIN" ]; then
+if [ -z "$LDM_PASSWORD" ]; then
   log "INFO" "Now generating a password for the local data management. Please save the password for your ETL process!"
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 

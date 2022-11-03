@@ -14,7 +14,7 @@ detectCompose() {
 setLdmPassword() {
 	if [ -n "$LDM_PASSWORD" ]; then
 		log DEBUG "Transforming LDM_PASSWORD into LDM_LOGIN ..."
-		LDM_LOGIN=$(docker run --rm -it httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r')
+		export LDM_LOGIN=$(docker run --rm -it httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r')
 	fi
 }
 

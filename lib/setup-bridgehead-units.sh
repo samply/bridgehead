@@ -36,7 +36,7 @@ EOF
 # TODO: Determine wether this should be located in setup-bridgehead (triggered through bridgehead install) or in update bridgehead (triggered every hour)
 if [ -z "$LDM_PASSWORD" ]; then
   log "INFO" "Now generating a password for the local data management. Please save the password for your ETL process!"
-  generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
+  generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
 
   log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
   echo -e "## Local Data Management Basic Authentication\n# User: $PROJECT\nLDM_PASSWORD=$generated_passwd" >> /etc/bridgehead/${PROJECT}.local.conf;

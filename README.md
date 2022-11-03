@@ -215,23 +215,9 @@ This will install the systemd units to run and update the bridghead. Also, this 
 
 ### Basic Auth
 
-For Data protection we use basic authenfication for some services. To access those services you need an username and password combination. 
-Cation: If you start the bridgehead without the authenfication, then those services are not accesbile.
-We generate such a combination at the first install. Also, we provide a script which generates such a combination for you.
-
-``` shell
-add_user.sh
-```
-
-The script will print the hashed user password combination. Please put the combination to the ```/etc/bridgehead/<project>.local.conf</project>```
-
-It should look like this
-
-```conf
-LDM_Password='<project>:$...$.....$...............'
-```
-
-You can use the ```add_bc_auth_user.sh``` script to generate an another user and add it to the ```<project>.local.conf``` wiht comma seperation.
+For Data protection we use basic authentification for some services. To access those services you need an username and password combination. 
+Caution: If you start the bridgehead without the authentification, then those services are not accessible.
+We generate such a combination at the first install (`/etc/bridgehead/<Project>.local.conf`). 
 
 ## Configuration
 

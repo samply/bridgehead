@@ -39,10 +39,11 @@ if [ -z "$LDM_LOGIN" ]; then
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 
   log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
-  parsed_passwd=$(docker run --rm -it httpd:latest htpasswd -nb $PROJECT $generated_passwd | tr -d '\n')
+  parsed_passwd=$(docker run --rm -it httpd:latest htpasswd -nb $PROJECT $generated_passwd | tr -d '\n' | tr -d '\r')
+  printf  "##Localdatamanagement basic auth\n#User: $PROJECT\n#Password: $generated_passwd\n" >> /etc/bridgehead/${PROJECT}.local.conf;
 
   log "INFO" "These credentials are now written to /etc/bridgehead/${PROJECT}.local.conf"
-  echo "LDM_LOGIN='${parsed_passwd}'" >> /etc/bridgehead/${PROJECT}.local.conf;
+  echo -n "LDM_LOGIN='${parsed_passwd}'" >> /etc/bridgehead/${PROJECT}.local.conf;
 fi
 
 log "INFO" "Register system units for bridgehead and bridgehead-update"

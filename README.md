@@ -204,141 +204,22 @@ To shutdown the bridgehead just run.
 /srv/docker/bridgehead/bridgehead stop <Project>
 ```
 
-### Systemd service configuration
+### Local Datamanagement Security
 
 For a server, we highly recommend that you install the system units for managing the bridgehead, provided by us. You can do this by executing the [bridgehead](./bridgehead) script:
 ``` shell
 sudo /srv/docker/bridgehead/bridgehead install <Project>
 ```
 
-This will install the systemd units to run and update the bridghead.
-
-Finally, you need to configure your sites secrets. These are places as configuration for each bridgehead system unit. Refer to the section for your specific project:
-
-For Every project you need to set the proxy this way, if you have one. This is done with the ```systemctl edit``` comand.
-
-``` shell
-sudo systemctl edit bridgehead@<project>.service;
-sudo systemctl edit bridgehead-update@<project>.service;
-```
-
-``` conf
-[Service]
-Environment=http_proxy=<proxy-url>
-Environment=https_proxy=<proxy-url>
-```
-
-There a further configurations for each project.
-
-#### CCP(DKTK/C4)
-
-For the federate search please follow the basic auth configuration step.
-
-### DKTK/C4
-
-You can create the site specific configuration with: 
-
-
-This will open your default editor allowing you to edit the docker system units configuration. Insert the following lines in the editor and define your machines secrets. You share some of the ID-Management secrets with the central patientlist (Mainz) and controlnumbergenerator (Frankfurt). Refer to the ["Configuration" section](#configuration) for this.
-
-``` conf
-[Service]
-Environment=http_proxy=
-Environment=https_proxy=
-```
-
-To make the configuration effective, you need to tell systemd to reload the configuration and restart the docker service:
-
-``` shell
-sudo systemctl daemon-reload;
-sudo systemctl bridgehead@ccp.service;
-```
-
-You can create the site specific configuration with: 
-
-``` shell
-sudo systemctl edit bridgehead@c4.service;
-```
-
-This will open your default editor allowing you to edit the docker system units configuration. Insert the following lines in the editor and define your machines secrets. You share some of the ID-Management secrets with the central patientlist (Mainz) and controlnumbergenerator (Frankfurt). Refer to the ["Configuration" section](#configuration) for this.
-
-``` conf
-[Service]
-Environment=http_proxy=
-Environment=https_proxy=
-Environment=HOSTIP=
-Environment=HOST=
-Environment=HTTP_PROXY_USER=
-Environment=HTTP_PROXY_PASSWORD=
-Environment=HTTPS_PROXY_USER=
-Environment=HTTPS_PROXY_PASSWORD=
-Environment=CONNECTOR_POSTGRES_PASS=
-Environment=ML_DB_PASS=
-Environment=MAGICPL_API_KEY=
-Environment=MAGICPL_MAINZELLISTE_API_KEY=
-Environment=MAGICPL_API_KEY_CONNECTOR=
-Environment=MAGICPL_MAINZELLISTE_CENTRAL_API_KEY=
-Environment=MAGICPL_CENTRAL_API_KEY=
-Environment=MAGICPL_OIDC_CLIENT_ID=
-Environment=MAGICPL_OIDC_CLIENT_SECRET=
-```
-
-To make the configuration effective, you need to tell systemd to reload the configuration and restart the docker service:
-
-``` shell
-sudo systemctl daemon-reload;
-sudo systemctl bridgehead@c4.service;
-```
-### GBA/BBMRI-ERIC
-
-You can create the site specific configuration with: 
-
-``` shell
-sudo systemctl edit bridgehead@gbn.service;
-```
-
-This will open your default editor allowing you to edit the docker system units configuration. Insert the following lines in the editor and define your machines secrets.
-
-``` conf
-[Service]
-Environment=HOSTIP=
-Environment=HOST=
-Environment=HTTP_PROXY_USER=
-Environment=HTTP_PROXY_PASSWORD=
-Environment=HTTPS_PROXY_USER=
-Environment=HTTPS_PROXY_PASSWORD=
-Environment=CONNECTOR_POSTGRES_PASS=
-```
-
-To make the configuration effective, you need to tell systemd to reload the configuration and restart the docker service:
-
-``` shell
-sudo systemctl daemon-reload;
-sudo systemctl bridgehead@gbn.service;
-```
-
-## Configuration
+This will install the systemd units to run and update the bridghead. Also, this will generate a user and password for accessing the LDM. This will be shown only the first time you install the bridgehead.
 
 ### Basic Auth
 
-For Data protection we use basic authenfication for some services. To access those services you need an username and password combination. If you start the bridgehead without basic auth, then those services are not accesbile. We provide a script which set the needed config for you, just run the script and follow the instructions.
+For Data protection we use basic authentification for some services. To access those services you need an username and password combination. 
+Caution: If you start the bridgehead without the authentification, then those services are not accessible.
+We generate such a combination at the first install (`/etc/bridgehead/<Project>.local.conf`). 
 
-``` shell
-add_user.sh
-```
-
-The result needs to be set in either in the systemd service or in your console.
-
-
-#### Console
-
-When just running the bridgehead you need to export the auth variable. Be aware that this export is only for the current session in the environment and after exit it will not be accessible anymore.
-
-``` shell
-export bc_auth_user=<output>
-```
-
-Cation: you need to escape occrring dollar signs.
+## Configuration
 
 #### systemd
 

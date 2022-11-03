@@ -21,7 +21,7 @@ services:
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=${bc_auth_users}"
+      - "traefik.http.middlewares.auth.basicauth.users=${LDM_LOGIN}"
     ports:
       - 80:80
       - 443:443
@@ -65,7 +65,7 @@ services:
       - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.ccp-auth.basicauth.users=${bc_auth_users}"
+      - "traefik.http.middlewares.ccp-auth.basicauth.users=${LDM_LOGIN}"
       - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/bbmri-localdatamanagement`)"
       - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/bbmri-localdatamanagement"
       - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"

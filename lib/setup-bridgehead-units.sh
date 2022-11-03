@@ -35,15 +35,12 @@ EOF
 
 # TODO: Determine wether this should be located in setup-bridgehead (triggered through bridgehead install) or in update bridgehead (triggered every hour)
 if [ -z "$LDM_LOGIN" ]; then
-  log "INFO" "Now generating a password for the local datamangement. Please safe the password for your ETL process!"
+  log "INFO" "Now generating a password for the local data management. Please save the password for your ETL process!"
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 
   log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
   parsed_passwd=$(docker run --rm -it httpd:latest htpasswd -nb $PROJECT $generated_passwd | tr -d '\n' | tr -d '\r')
-  printf  "##Localdatamanagement basic auth\n#User: $PROJECT\n#Password: $generated_passwd\n" >> /etc/bridgehead/${PROJECT}.local.conf;
-
-  log "INFO" "These credentials are now written to /etc/bridgehead/${PROJECT}.local.conf"
-  echo -n "LDM_LOGIN='${parsed_passwd}'" >> /etc/bridgehead/${PROJECT}.local.conf;
+  echo -e "## Local Data Management Basic Authentication\n# User: $PROJECT\nLDM_PASSWORD=$generated_passwd" >> /etc/bridgehead/${PROJECT}.local.conf;
 fi
 
 log "INFO" "Register system units for bridgehead and bridgehead-update"

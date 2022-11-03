@@ -59,6 +59,7 @@ if [ -f "$PROJECT/docker-compose.override.yml" ]; then
 fi
 
 detectCompose
+setLdmPassword
 
 case "$ACTION" in
 	start)

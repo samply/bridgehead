@@ -11,6 +11,13 @@ detectCompose() {
 	fi
 }
 
+setLdmPassword() {
+	if [ -z "$LDM_PASSWORD" ]; then
+		log DEBUG "Transforming LDM_PASSWORD into LDM_LOGIN ..."
+		LDM_LOGIN=$(docker run --rm -it httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r')
+	fi
+}
+
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
     log "ERROR" "Please run as root"

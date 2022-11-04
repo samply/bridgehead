@@ -11,7 +11,7 @@ function hc_set_service(){
 }
 
 UPTIME=
-USER_AGENT="git-unknown"
+USER_AGENT=
 
 function hc_send(){
     if [ -n "$MONITOR_APIKEY" ]; then

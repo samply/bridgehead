@@ -36,6 +36,11 @@ CHANGES=""
 git_updated="false"
 for DIR in /etc/bridgehead $(pwd); do
   log "INFO" "Checking for updates to git repo $DIR ..."
+  OUT="$(git -C $DIR status --porcelain)"
+  if [ -n "$OUT" ]; then
+    log WARN "The working directory $DIR is modified. Changed files: $OUT"
+    report_error 1 "The working directory $DIR is modified. Changed files: $OUT"
+  fi
   if [ "$(git -C $DIR config --get credential.helper)" != "$CREDHELPER" ]; then
     log "INFO" "Configuring repo to use bridgehead git credential helper."
     git -C $DIR config credential.helper "$CREDHELPER"
@@ -50,10 +55,6 @@ for DIR in /etc/bridgehead $(pwd); do
   fi
   if [ $? -ne 0 ]; then
     report_error 1 "Unable to update git $DIR: $OUT"
-  fi
-  OUT="$(git -C $DIR status --porcelain)"
-  if [ -n "$OUT" ]; then
-    report_error 1 "The workingdirectory in $DIR is modified. Following files are changed: $OUT"
   fi
 
   new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"

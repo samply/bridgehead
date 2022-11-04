@@ -119,9 +119,13 @@ fixPermissions() {
 
 source lib/monitoring.sh
 
-fail_and_report() {
+report_error() {
 	log ERROR "$2"
 	hc_send $1 "$2"
+}
+
+fail_and_report() {
+	report_error $@
 	exit $1
 }
 
@@ -135,8 +139,3 @@ setHostname() {
 ##Setting Network properties
 # currently not needed
 #export HOSTIP=$(MSYS_NO_PATHCONV=1 docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}');
-
-export PRODUCTION="false";
-if [ "$(git branch --show-current)" == "main" ]; then
-	export PRODUCTION="true";
-fi

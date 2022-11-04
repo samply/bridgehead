@@ -129,8 +129,13 @@ fail_and_report() {
 	exit $1
 }
 
+setHostname() {
+	if [ -z "$HOST" ]; then
+		export HOST=$(hostname -f)
+		log DEBUG "Using auto-detected hostname $HOST."
+	fi
+}
+
 ##Setting Network properties
 # currently not needed
 #export HOSTIP=$(MSYS_NO_PATHCONV=1 docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}');
-
-export HOST=$(hostname -f)

@@ -39,7 +39,7 @@ for DIR in /etc/bridgehead $(pwd); do
   OUT="$(git -C $DIR status --porcelain)"
   if [ -n "$OUT" ]; then
     log WARN "The working directory $DIR is modified. Changed files: $OUT"
-    report_error 1 "The working directory $DIR is modified. Changed files: $OUT"
+    report_error log "The working directory $DIR is modified. Changed files: $OUT"
   fi
   if [ "$(git -C $DIR config --get credential.helper)" != "$CREDHELPER" ]; then
     log "INFO" "Configuring repo to use bridgehead git credential helper."
@@ -54,7 +54,7 @@ for DIR in /etc/bridgehead $(pwd); do
     OUT=$(git -c http.proxy=$HTTP_PROXY_URL -c https.proxy=$HTTPS_PROXY_URL -C $DIR fetch 2>&1 && git -c http.proxy=$HTTP_PROXY_URL -c https.proxy=$HTTPS_PROXY_URL -C $DIR pull 2>&1)
   fi
   if [ $? -ne 0 ]; then
-    report_error 1 "Unable to update git $DIR: $OUT"
+    report_error log "Unable to update git $DIR: $OUT"
   fi
 
   new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"

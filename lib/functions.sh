@@ -119,9 +119,13 @@ fixPermissions() {
 
 source lib/monitoring.sh
 
-fail_and_report() {
+report_error() {
 	log ERROR "$2"
 	hc_send $1 "$2"
+}
+
+fail_and_report() {
+	report_error $@
 	exit $1
 }
 

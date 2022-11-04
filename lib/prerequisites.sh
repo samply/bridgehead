@@ -71,10 +71,7 @@ else
   exit 1
 fi
 
-COMMIT_ETC=$(git -C /etc/bridgehead rev-parse HEAD | cut -c -8)
-COMMIT_SRV=$(git -C /srv/docker/bridgehead rev-parse HEAD | cut -c -8)
-
-log INFO "Success - all prerequisites are met! Git commits: etc:$COMMIT_ETC srv:$COMMIT_SRV"
-hc_send log "Success - all prerequisites are met! Git commits: etc:$COMMIT_ETC srv:$COMMIT_SRV"
+log INFO "Success - all prerequisites are met!"
+hc_send log "Success - all prerequisites are met!"
 
 exit 0

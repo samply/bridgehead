@@ -11,6 +11,7 @@ function hc_set_service(){
 }
 
 UPTIME=
+USER_AGENT="git-unknown"
 
 function hc_send(){
     if [ -n "$MONITOR_APIKEY" ]; then
@@ -32,10 +33,16 @@ function hc_send(){
         UPTIME=$(docker ps -a --format 'table {{.Names}} \t{{.RunningFor}} \t {{.Status}} \t {{.Image}}' --filter name=bridgehead || echo "Unable to get docker statistics")
     fi
 
+    if [ -z "$USER_AGENT" ]; then
+        COMMIT_ETC=$(git -C /etc/bridgehead rev-parse HEAD | cut -c -8)
+        COMMIT_SRV=$(git -C /srv/docker/bridgehead rev-parse HEAD | cut -c -8)
+        USER_AGENT="srv:$COMMIT_SRV etc:$COMMIT_ETC"
+    fi
+
     if [ -n "$2" ]; then
         MSG="$2\n\nDocker stats:\n$UPTIME"
-        echo -e "$MSG" | https_proxy=$HTTPS_PROXY_URL curl -s -o /dev/null -X POST --data-binary @- "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
+        echo -e "$MSG" | https_proxy=$HTTPS_PROXY_URL curl -A "$USER_AGENT" -s -o /dev/null -X POST --data-binary @- "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
     else
-        https_proxy=$HTTPS_PROXY_URL curl -s -o /dev/null "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
+        https_proxy=$HTTPS_PROXY_URL curl -A "$USER_AGENT" -s -o /dev/null "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
     fi
 }

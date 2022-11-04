@@ -65,11 +65,10 @@ services:
       - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.ccp-auth.basicauth.users=${LDM_LOGIN}"
       - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/ccp-localdatamanagement`)"
       - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/ccp-localdatamanagement"
       - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,ccp-auth"
+      - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
 
   spot:

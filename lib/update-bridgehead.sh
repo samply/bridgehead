@@ -51,6 +51,11 @@ for DIR in /etc/bridgehead $(pwd); do
   if [ $? -ne 0 ]; then
     report_error 1 "Unable to update git $DIR: $OUT"
   fi
+  OUT="$(git -C $DIR status --porcelain)"
+  if [ -n "$OUT" ]; then
+    report_error 1 "The workingdirectory in $DIR is modified. Following files are changed: $OUT"
+  fi
+
   new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
   if [ "$old_git_hash" != "$new_git_hash" ]; then
     CHANGE="Updated git repository in ${DIR} from commit $old_git_hash to $new_git_hash"

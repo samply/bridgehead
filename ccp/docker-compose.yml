@@ -94,6 +94,8 @@ services:
       APP_0_KEY: ${SPOT_BEAM_SECRET_SHORT}
       APP_1_ID: report-hub
       APP_1_KEY: ${REPORTHUB_BEAM_SECRET_SHORT}
+      APP_2_ID: monitoring
+      APP_2_KEY: ${MONITORING_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       RUST_LOG: debug
       ALL_PROXY: http://forward_proxy:3128
@@ -104,6 +106,17 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+  monitoring:
+    image: "samply/bridgehead-monitoring:ci"
+    container_name: bridgehead-monitoring
+    environment: 
+      HOST: ${HOST}
+      SITE_NAME: ${SITE_NAME}
+      PROJECT: ${PROJECT}
+      BEAM_URL: http://beam-proxy:8081
+      PROXY_ID: monitoring.${PROXY_ID}
+      MONITORING_TARGET: ${MONITORING_TARGET}
+      KEY: ${MONITORING_BEAM_SECRET_SHORT}
 
 
 volumes:

@@ -37,7 +37,7 @@ services:
       # PLAY_HTTP_PORT: 9000
       # PLAY_HTTP_ADDRESS: 0.0.0.0
     volumes:
-      - ./origin/logback.xml:/bwhc-backend/logback.xml:ro
+      - ../dnpm/origin/logback.xml:/bwhc-backend/logback.xml:ro
       - /etc/bridgehead/dnpm/bwhcConnectorConfig.xml:/bwhc-backend/bwhcConnectorConfig.xml:ro
       - /etc/bridgehead/dnpm/production.conf:/bwhc-backend/production.conf:ro
       - bwhc_data:/bwhc-backend/data/

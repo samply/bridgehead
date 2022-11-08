@@ -11,3 +11,7 @@ PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 # This will load nngm setup. Effective only if nngm configuration is defined.
 source $PROJECT/nngm-setup.sh
 nngmSetup
+
+# This will load DNPM setup. Effective only if DNPM configuration is defined in /etc/bridgehead/dnpm.
+source dnpm/dnpm-setup.sh
+dnpmSetup

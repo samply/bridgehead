@@ -10,8 +10,8 @@ services:
       args:
         NUXT_HOST: 0.0.0.0
         NUXT_PORT: 3000
-        BACKEND_PROTOCOL: http
-        BACKEND_HOSTNAME: localhost
+        BACKEND_PROTOCOL: ${DNPM_BMHC_BACKEND_PROTOCOL}
+        BACKEND_HOSTNAME: ${DNPM_BWHC_BACKEND_HOSTNAME}
         BACKEND_PORT: 9000
         DNPM_BWHC_FRONTEND_ZIP: ${DNPM_BWHC_FRONTEND_ZIP}
         HTTP_PROXY: ${http_proxy}
@@ -19,8 +19,8 @@ services:
     ports:
         - 3000:3000
     environment:
-        BACKEND_PROTOCOL: http
-        BACKEND_HOSTNAME: localhost
+        BACKEND_PROTOCOL: ${DNPM_BMHC_BACKEND_PROTOCOL}
+        BACKEND_HOSTNAME: ${DNPM_BWHC_BACKEND_HOSTNAME}
         BACKEND_PORT: 9000
         no_proxy: dnpm-backend
 

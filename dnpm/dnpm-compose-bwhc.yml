@@ -6,6 +6,7 @@ services:
     build:
       context: ../dnpm/origin
       dockerfile: Frontend.Dockerfile
+      network: host
       args:
         NUXT_HOST: 0.0.0.0
         NUXT_PORT: 3000

@@ -4,7 +4,7 @@ services:
   dnpm-frontend:
     depends_on: [ dnpm-backend ]
     build:
-      context: ./dnpm/origin
+      context: ../dnpm/origin
       dockerfile: Frontend.Dockerfile
       args:
         NUXT_HOST: 0.0.0.0
@@ -23,7 +23,7 @@ services:
 
   dnpm-backend:
     build:
-      context: ./dnpm/origin
+      context: ../dnpm/origin
       dockerfile: Backend.Dockerfile
       args:
         BWHC_BASE_DIR: /bwhc-backend

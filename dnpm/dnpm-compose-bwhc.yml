@@ -13,6 +13,8 @@ services:
         BACKEND_HOSTNAME: localhost
         BACKEND_PORT: 9000
         DNPM_BWHC_FRONTEND_ZIP: ${DNPM_BWHC_FRONTEND_ZIP}
+        HTTP_PROXY: ${http_proxy}
+        HTTPS_PROXY: ${https_proxy}
     ports:
         - 3000:3000
     environment:

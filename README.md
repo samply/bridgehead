@@ -165,7 +165,7 @@ sudo systemctl daemon-reload;
 sudo systemctl bridgehead@bbmri.service;
 ```
 
-## Configuration
+## Additional Services
 
 ### Monitoring
 

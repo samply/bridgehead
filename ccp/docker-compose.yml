@@ -107,7 +107,7 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
   monitoring:
-    image: "samply/bridgehead-monitoring:ci"
+    image: "samply/bridgehead-monitoring:main"
     container_name: bridgehead-monitoring
     environment: 
       HOST: ${HOST}
@@ -117,7 +117,6 @@ services:
       PROXY_ID: monitoring.${PROXY_ID}
       MONITORING_TARGET: ${MONITORING_TARGET}
       KEY: ${MONITORING_BEAM_SECRET_SHORT}
-
 
 volumes:
   blaze-data:

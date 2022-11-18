@@ -1,9 +1,8 @@
 # Bridgehead
 
-A Bridgehead is a set of components that must be installed locally, in order to connect your clinic or research centre to a federated search system. This repository contains the information and tools that you will need to deploy a Bridgehead. If you have questions, please [contact us](mailto:verbis-support@dkfz-heidelberg.de).
+The Bridgehead is a secure, low-effort solution to connect your research institution to a federated research network. It bundles interoperable, open-source software components into a turnkey package for installation on one of your secure servers. The Bridgehead is pre-configured with sane defaults, centrally monitored and with an absolute minimum of "moving parts" on your side, making it an extremely low-maintenance gateway to data sharing.
 
-
-TOC
+This repository is the starting point for any information and tools you will need to deploy a Bridgehead. If you have questions, please [contact us](mailto:verbis-support@dkfz-heidelberg.de).
 
 1. [Requirements](#requirements)
     - [Hardware](#hardware)
@@ -12,7 +11,7 @@ TOC
       - [Docker](#docker)
 2. [Deployment](#deployment)
     - [Installation](#installation)
-    - [Register with Beam](#register-with-beam)
+    - [Register with Samply.Beam](#register-with-samplybeam)
     - [Starting and stopping your Bridgehead](#starting-and-stopping-your-bridgehead)
     - [Auto-starting your Bridgehead when the server starts](#auto-starting-your-bridgehead-when-the-server-starts)
 3. [Additional Services](#additional-Services)
@@ -30,249 +29,89 @@ TOC
 
 ### Hardware
 
-To get the most out of your Bridgehead, we recommend the follwing Hardware:
+Hardware requirements strongly depend on the specific use-cases of your network as well as on the data it is going to serve. Most use-cases are well-served with the following configuration:
 
 - 4 CPU cores
-- At least 8 GB Ram
-- 100GB Hard Drive, SSD recommended
+- 32 GB RAM
+- 160GB Hard Drive, SSD recommended
 
-### System
+### Software
 
-You are strongly recommended to install the Bridgehead under a Linux operating system (but see the section [Non-Linux OS](#non-linux-os)). You will need root (administrator) priveleges on this machine in order to perform the deployment.
+You are strongly recommended to install the Bridgehead under a Linux operating system (but see the section [Non-Linux OS](#non-linux-os)). You will need root (administrator) priveleges on this machine in order to perform the deployment. We recommend the newest Ubuntu LTS server release.
 
-The following software should be installed:
+Ensure the following software (or newer) is installed:
 
-#### Git
+- git >= 2.0
+- docker >= 20.10.1
+- docker-compose >= 2.xx (`docker-compose` and `docker compose` are both supported).
+- systemd
 
-Check if you have at least git 2.0 installed on the system with:
-
-``` shell
-git --version
-```
-
-#### Docker
-
-Check the installed Docker version:
-
-``` shell
-docker --version
-```
-The version should ideally be higher than "20.10.1". The next step is to check ``` docker-compose```  with:
-
-``` shell
-docker-compose --version
-```
-The recomended version is "2.XX" and higher.
-
-If docker or docker-compose are not installed, please refer to the [Docker website](https://docs.docker.com).
+We recommend to install Docker(-compose) from its official sources as described on the [Docker website](https://docs.docker.com). Note for Ubuntu: Please note that snap versions of Docker are not supported.
 
 ## Deployment
 
-### Installation
+### Base Installation
 
-First, clone the repository to the directory "/srv/docker/bridgehead":
+First, clone the repository to the directory `/srv/docker/bridgehead`:
+
+```shell
+sudo mkdir -p /srv/docker/
+sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
+```
+
+Then, run the installation script:
+
+```shell
+cd /srv/docker/bridgehead
+sudo ./bridgehead install <PROJECT>
+```
+
+... and follow the instructions on the screen. You should then be prompted to do the next step:
+
+### Register with Samply.Beam
+
+Many Bridgehead services rely on the secure, performant and flexible messaging middleware called [Samply.Beam](https://github.com/samply/beam). You will need to register ("enroll") with Samply.Beam by creating a cryptographic key pair for your bridgehead:
 
 ``` shell
-sudo mkdir -p /srv/docker/;
-sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead;
-```
-Now create a user for the Bridgehead service:
-
-``` shell
-sudo useradd -M -g docker -N -s /sbin/nologin bridgehead
-```
-After adding the user you will need to change the ownership of the directory to the Bridgehead user.
-
-``` shell
-sudo chown bridgehead /srv/docker/bridgehead/ -R
-```
-Download the configuration repository:
-
-``` shell
-sudo git clone https://github.com/samply/bridgehead-config.git -b fix/bbmri-config /etc/bridgehead;
-```
-Change ownership:
-``` shell
-sudo chown bridgehead /etc/bridgehead/ -R
-```
-Edit /etc/bridgehead/bbmri.conf and modify SITE_ID and SITE_NAME to be relevant to your biobank. SITE_ID should not contains spaces. By convention, it is lower-case. E.g.:
-```
-SITE_ID="toulouse-prod"
-SITE_NAME="Toulouse"
+cd /srv/docker/bridgehead
+sudo ./bridgehead enroll <PROJECT>
 ```
 
-### Register with Beam
-
-You will need to register with Beam in order to be able to start your Bridgehead. Please send an email to: bridgehead@helpdesk.bbmri-eric.eu, mentioning the SITE_ID that you chose above.
-
-The response will contain your private key for Beam.
-
-Create a file for this private key:
-
-``` shell
-/etc/bridgehead/pki/$SITE_ID.priv.pem
-```
+... and follow the instructions on the screen. You should then be prompted to do the next step:
 
 ### Starting and stopping your Bridgehead
 
-To start your new Bridgehead, type:
+If you followed the above steps, your Bridgehead should already be configured to autostart (via systemd). If you would like to start/stop manually:
+
+To start, run
+
 ```shell
-sudo /srv/docker/bridgehead/bridgehead start bbmri
+sudo systemctl start bridgehead@<PROJECT>.service
 ```
-The script may break, because Spot tries to connect to Blaze, but Blaze is not yet ready, causing Spot to terminate. Try to start and stop the script a few times.
 
-To shut down the Bridgehead, type:
+To stop, run
+
 ```shell
-sudo /srv/docker/bridgehead/bridgehead stop bbmri
+sudo systemctl stop bridgehead@<PROJECT>.service
 ```
 
-### Auto-starting your Bridgehead when the server starts
+To enable/disable autostart, run
 
-Using this feature is optional.
-
-Many Linux distributions support the "systemctl" command, which enables you to autostart processes whenever your server is booted.
-
-In this repository you will find tools that allow you to take advantage of "systemctl" to automatically start the Bridgehead whenever your server gets restarted. You can set this up by executing the [bridgehead](./bridgehead) script:
-``` shell
-sudo /srv/docker/bridgehead/bridgehead install bbmri
+```shell
+sudo systemctl [enable|disable] bridgehead@<PROJECT>.service
 ```
-
-This will install the systemd units to run and update the Bridgehead.
-
-If your site operates with a proxy, you will need to set it up with ```systemctl edit``` as follows:
-
-``` shell
-sudo systemctl edit bridgehead@bbmri.service;
-```
-
-This will open your default editor allowing you to edit the docker system units configuration. Insert the following lines in the editor and define your machines secrets.
-
-``` conf
-[Service]
-Environment=HOSTIP=
-Environment=HOST=
-Environment=HTTP_PROXY_USER=
-Environment=HTTP_PROXY_PASSWORD=
-Environment=HTTPS_PROXY_USER=
-Environment=HTTPS_PROXY_PASSWORD=
-Environment=CONNECTOR_POSTGRES_PASS=
-```
-
-To make the configuration active, you need to tell systemd to reload the configuration and restart the docker service:
-
-``` shell
-sudo systemctl daemon-reload;
-sudo systemctl bridgehead@bbmri.service;
-```
-
-## Additional Services
-
-### Monitoring
-
-We provide a central monitoring service, which checks the health of your Bridgehead 24/7. Using this service is optional but recommended.
-
-You can register for it by sending a request to: bridgehead@helpdesk.bbmri-eric.eu.
-
-The confirmation of your registration will contain a monitoring API key.
-
-You need to add the key to the "/etc/bridgehead/bbmri.conf" file, e.g.:
-``` conf
-MONITOR_APIKEY=1b9e5e21-8b34-5382-8590-7eae98a4f6d3
-```
-(your key will be different to the one shown above, obviously).
-
-Your site should now show up in the monitoring with grey (updates) and green (query) messages at the next full hour.
-
-### Register with a Directory
-
-The [Directory](https://directory.bbmri-eric.eu/) is a BBMRI project that aims to catalog all biobanks in Europe and beyond. Each biobank is given its own unique ID and the Directory maintains counts of the number of donors and the number of samples held at each biobank. You are strongly encouraged to register with the Directory, because this opens the door to further services, such as the [Negotiator](https://negotiator.bbmri-eric.eu/login.xhtml).
-
-Generally, you should register with the BBMRI national node for the country where your biobank is based. You can find a list of contacts for the national nodes [here](http://www.bbmri-eric.eu/national-nodes/). If your country is not in this list, or you have any questions, please contact the [BBMRI helpdesk](mailto:directory@helpdesk.bbmri-eric.eu). If your biobank is for COVID samples, you can also take advantage of an accelerated registration process [here](https://docs.google.com/forms/d/e/1FAIpQLSdIFfxADikGUf1GA0M16J0HQfc2NHJ55M_E47TXahju5BlFIQ).
-
-Your national node will give you detailed instructions for registering, but for your information, here are the basic steps:
-
-* Log in to the Directory for your country.
-* Add your biobank and enter its details, including contact information for a person involved in running the biobank.
-* You will need to create at least one collection.
 
 ## Site-specific configuration
 
 ### HTTPS Access
 
-We recommend https for all services of your Bridgehead. HTTPS is enabled by default. For starting the Bridgehead you need an ssl certificate. You can either create it yourself or get a signed one. You need to drop the certificates in /certs.
+Even within your internal network, the Bridgehead enforces HTTPS for all services. During the installation, a self-signed, long-lived certificate was created for you. To increase security, you can simply replace the files under `/etc/bridgehead/traefik-tls` with ones from established certification authorities such as [Let's Encrypt](https://letsencrypt.org) or [DFN-AAI](https://www.aai.dfn.de).
 
-The Bridgehead creates one autotmatically on the first start. However, it will be unsigned and we recomend getting a signed one.
-
-
-### Locally Managed Secrets
-
-This section describes the secrets you may need to configure locally through the configuration
-
-| Name                                 | Recommended Value                                                                                 | Description |  
-|--------------------------------------|---------------------------------------------------------------------------------------------------| ----------- |  
-| HTTP_PROXY_USER                      |                                                                                                   | Your local http proxy user |
-| HOSTIP                               | Compute with: `docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}'` | The ip from which docker containers can reach your host system. |
-| HOST                                 | Compute with: `hostname`                                                                          |The hostname from which all components will eventually be available|
-| HTTP_PROXY_PASSWORD                  |                                                                                                   |Your local http proxy user's password|
-| HTTPS_PROXY_USER                     |                                                                                                   |Your local https proxy user|
-| HTTPS_PROXY_PASSWORD                 || Your local https proxy user's password                                                            |
-| CONNECTOR_POSTGRES_PASS              | Random String                                                                                     |The password for your project specific connector.|
-| STORE_POSTGRES_PASS                  | Random String                                                                                     |The password for your local datamanagements database (only relevant in c4)|
-| ML_DB_PASS                           | Random String                                                                                     |The password for your local patientlist database|
-| MAGICPL_API_KEY                      | Random String                                                                                     |The apiKey used by the local datamanagement to create pseudonymes.|
-| MAGICPL_MAINZELLISTE_API_KEY         | Random String                                                                                     |The apiKey used by the local id-manager to communicate with the local patientlist|
-| MAGICPL_API_KEY_CONNECTOR            | Random String                                                                                     |The apiKey used by the connector to communicate with the local patientlist|
-| MAGICPL_MAINZELLISTE_CENTRAL_API_KEY | You need to ask the central patientlists admin for this.                                          |The apiKey for your machine to communicate with the central patientlist|
-| MAGICPL_CENTRAL_API_KEY              | You need to ask the central controlnumbergenerator admin for this.                                |The apiKey for your machine to communicate with the central controlnumbergenerator|
-| MAGICPL_OIDC_CLIENT_ID               || The client id used for your machine, to connect with the central authentication service           |
-| MAGICPL_OIDC_CLIENT_SECRET           || The client secret used for your machine, to connect with the central authentication service       |
-
-### Git Proxy Configuration
-
-Unlike most other tools, git doesn't use the default proxy variables "http_proxy" and "https_proxy". To make git use a proxy, you will need to adjust the global git configuration:
-
-``` shell
-sudo git config --global http.proxy http://<your-proxy-host>:<your-proxy-port>;
-sudo git config --global https.proxy http://<your-proxy-host>:<your-proxy-port>;
-```
-> NOTE: Some proxies may require user and password authentication. You can adjust the settings like this: "http://<your-proxy-user>:<your-proxy-user-password>@<your-proxy-host>:<your-proxy-port>".
-> NOTE: It is also possible that a proxy requires https protocol, so you can replace this to.
-
-You can check that the updated configuration with
-
-``` shell
-sudo git config --global --list;
-```
+## Troubleshooting
 
 ### Docker Daemon Proxy Configuration
 
-Docker has a background daemon, responsible for downloading images and starting them. To configure the proxy for this daemon, use the systemctl command:
-
-``` shell
-sudo systemctl edit docker
-```
-
-This will open your default editor allowing you to edit the docker system units configuration. Insert the following lines in the editor, replace <your-proxy-host> and <your-proxy-port> with the corresponding values for your machine and save the file:
-``` conf
-[Service]
-Environment=HTTP_PROXY=http://<your-proxy-host>:<your-proxy-port>
-Environment=HTTPS_PROXY=http://<your-proxy-host>:<your-proxy-port>
-Environment=FTP_PROXY=http://<your-proxy-host>:<your-proxy-port>
-```
-> NOTE: Some proxies may require user and password authentication. You can adjust the settings like this: "http://<your-proxy-user>:<your-proxy-user-password>@<your-proxy-host>:<your-proxy-port>".
-> NOTE: It is also possible that a proxy requires https protocol, so you can replace this to.
-
-The file should now be at the location "/etc/systemd/system/docker.service.d/override.conf". You can proof check with
-``` shell
-cat /etc/systemd/system/docker.service.d/override.conf;
-```
-
-To make the configuration effective, you need to tell systemd to reload the configuration and restart the docker service:
-
-``` shell
-sudo systemctl daemon-reload;
-sudo systemctl restart docker;
-```
+Docker has a background daemon, responsible for downloading images and starting them. Sometimes, proxy configuration from your system won't carry over and it will fail to download images. In that case, configure the proxy for this daemon as described in the [official documentation](https://docs.docker.com).
 
 ### Non-Linux OS
 

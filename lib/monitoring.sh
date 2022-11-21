@@ -14,15 +14,16 @@ UPTIME=
 USER_AGENT=
 
 function hc_send(){
+    BASEURL="https://healthchecks.verbis.dkfz.de/ping"
     if [ -n "$MONITOR_APIKEY" ]; then
         hc_set_uuid $MONITOR_APIKEY
     fi
 
     if [ -n "$HCSERVICE" ]; then
-        HCURL="https://hc-ping.com/$PING_KEY/$HCSERVICE"
+        HCURL="$BASEURL/$PING_KEY/$HCSERVICE"
     fi
     if [ -n "$HCUUID" ]; then
-        HCURL="https://hc-ping.com/$HCUUID"
+        HCURL="$BASEURL/$HCUUID"
     fi
     if [ ! -n "$HCURL" ]; then
         log WARN "Did not report Healthcheck: Neither Healthcheck UUID nor service set. Please define MONITOR_APIKEY in /etc/bridgehead."

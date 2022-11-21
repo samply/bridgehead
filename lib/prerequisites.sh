@@ -5,11 +5,11 @@ source lib/functions.sh
 detectCompose
 
 if ! id "bridgehead" &>/dev/null; then
-  log ERROR "User bridgehead does not exist. Please consult readme for installation."
+  log ERROR "User bridgehead does not exist. Please run bridgehead install $PROJECT"
   exit 1
 fi
 
-checkOwner . bridgehead || exit 1
+checkOwner /srv/docker/bridgehead bridgehead || exit 1
 checkOwner /etc/bridgehead bridgehead || exit 1
 
 ## Check if user is a su
@@ -62,16 +62,22 @@ if [ -e /etc/bridgehead/vault.conf ]; then
   fi
 fi
 
-log INFO "Checking your beam proxy private key"
+checkPrivKey() {
+  if [ -e /etc/bridgehead/pki/${SITE_ID}.priv.pem ]; then
+    log INFO "Success - private key found."
+  else
+    log ERROR "Unable to find private key at /etc/bridgehead/pki/${SITE_ID}.priv.pem. To fix, please run\n  bridgehead enroll ${PROJECT}\nand follow the instructions."
+    return 1
+  fi
+  log INFO "Success - all prerequisites are met!"
+  hc_send log "Success - all prerequisites are met!"
+  return 0
+}
 
-if [ -e /etc/bridgehead/pki/${SITE_ID}.priv.pem ]; then
-  log INFO "Success - private key found."
+if [[ "$@" =~ "noprivkey" ]]; then
+  log INFO "Skipping check for private key for now."
 else
-  log ERROR "Unable to find private key at /etc/bridgehead/pki/${SITE_ID}.priv.pem. To fix, please run bridgehead enroll ${PROJECT} and follow the instructions".
-  exit 1
+  checkPrivKey || exit 1
 fi
-
-log INFO "Success - all prerequisites are met!"
-hc_send log "Success - all prerequisites are met!"
 
 exit 0

@@ -35,8 +35,13 @@ function hc_send(){
     fi
 
     if [ -z "$USER_AGENT" ]; then
-        COMMIT_ETC=$(git -C /etc/bridgehead rev-parse HEAD | cut -c -8)
-        COMMIT_SRV=$(git -C /srv/docker/bridgehead rev-parse HEAD | cut -c -8)
+        if [ "$USER" != "root" ]; then
+            COMMIT_ETC=$(git -C /etc/bridgehead rev-parse HEAD | cut -c -8)
+            COMMIT_SRV=$(git -C /srv/docker/bridgehead rev-parse HEAD | cut -c -8)
+        else
+            COMMIT_ETC=$(su -c 'git -C /etc/bridgehead rev-parse HEAD' bridgehead | cut -c -8)
+            COMMIT_SRV=$(su -c 'git -C /srv/docker/bridgehead rev-parse HEAD' bridgehead | cut -c -8)
+        fi
         USER_AGENT="srv:$COMMIT_SRV etc:$COMMIT_ETC"
     fi
 

@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-source lib/log.sh
-
 detectCompose() {
 	if [[ "$(docker compose version 2>/dev/null)" == *"Docker Compose version"* ]]; then
 		COMPOSE="docker compose"
@@ -37,11 +35,11 @@ checkOwner(){
 
 printUsage() {
 	echo "Usage: bridgehead start|stop|update|install|uninstall|enroll PROJECTNAME"
-	echo "PROJECTNAME should be one of ccp|nngm|bbmri"
+	echo "PROJECTNAME should be one of ccp|bbmri"
 }
 
 checkRequirements() {
-	if ! lib/prerequisites.sh; then
+	if ! lib/prerequisites.sh $@; then
 		log "ERROR" "Validating Prerequisites failed, please fix the error(s) above this line."
 		fail_and_report 1 "Validating prerequisites failed."
 	else
@@ -120,8 +118,10 @@ fixPermissions() {
 source lib/monitoring.sh
 
 report_error() {
-	log ERROR "$2"
-	hc_send $1 "$2"
+	CODE=$1
+	shift
+	log ERROR "$@"
+	hc_send $CODE "$@"
 }
 
 fail_and_report() {

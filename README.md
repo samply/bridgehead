@@ -46,11 +46,15 @@ Ensure the following software (or newer) is installed:
 - docker-compose >= 2.xx (`docker-compose` and `docker compose` are both supported).
 - systemd
 
-We recommend to install Docker(-compose) from its official sources as described on the [Docker website](https://docs.docker.com). Note for Ubuntu: Please note that snap versions of Docker are not supported.
+We recommend to install Docker(-compose) from its official sources as described on the [Docker website](https://docs.docker.com).
+
+Note for Ubuntu: Please note that snap versions of Docker are not supported.
 
 ### Network
 
 Since it needs to carry sensitive patient data, Bridgeheads are intended to be deployed within your institution's secure network and behave well even in networks in strict security settings, e.g. firewall rules. The only connectivity required is an outgoing HTTPS proxy. TLS termination is supported, too (see [below](#tls-terminating-proxies))
+
+Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to conflict with Docker [here](https://github.com/chaifeng/ufw-docker).
 
 ## Deployment
 

@@ -96,13 +96,14 @@ services:
       RUST_LOG: debug
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
+      ROOTCERT_FILE: /conf/root.crt.pem
     secrets:
       - proxy.pem
     depends_on:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-
+      - ./root.crt.pem:/conf/root.crt.pem:ro
 
 volumes:
   blaze-data:

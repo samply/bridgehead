@@ -1,0 +1,7 @@
+BROKER_ID=broker.bbmri.samply.de
+BROKER_URL=https://${BROKER_ID}
+PROXY_ID=${SITE_ID}.${BROKER_ID}
+SPOT_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
+SPOT_BEAM_SECRET_LONG="ApiKey spot.${PROXY_ID} ${SPOT_BEAM_SECRET_SHORT}"
+SUPPORT_EMAIL=bridgehead@helpdesk.bbmri-eric.eu
+PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem

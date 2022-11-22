@@ -1,0 +1,107 @@
+#!/bin/bash -e
+
+baseDir() {
+	# see https://stackoverflow.com/questions/59895
+	SOURCE=${BASH_SOURCE[0]}
+	while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+		DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+		SOURCE=$(readlink "$SOURCE")
+		[[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+	done
+	DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+	echo $DIR
+}
+
+BASE=$(baseDir)
+cd $BASE
+
+source ./lib/functions.sh
+
+ACTION=$1
+export PROJECT=$2
+
+if [[ -z $1 || -z $2 ]]; then
+	printUsage
+	exit 1
+fi
+
+case "$PROJECT" in
+	ccp)
+		#nothing extra to do
+		;;
+	bbmri)
+		#nothing extra to do
+		;;
+	*)
+		printUsage
+		exit 1
+		;;
+esac
+
+loadVars() {
+	# Load variables from /etc/bridgehead and /srv/docker/bridgehead
+	set -a
+	source /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "/etc/bridgehead/$PROJECT.conf not found"
+	if [ -e /etc/bridgehead/$PROJECT.local.conf ]; then
+		log INFO "Applying /etc/bridgehead/$PROJECT.local.conf"
+		source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
+	fi
+	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
+	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
+	set +a
+
+	OVERRIDE=${OVERRIDE:=""}
+	if [ -f "$PROJECT/docker-compose.override.yml" ]; then
+		log INFO "Applying $PROJECT/docker-compose.override.yml"
+		OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
+	fi
+	detectCompose
+	setHostname
+}
+
+case "$ACTION" in
+	start)
+		loadVars
+		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
+		checkRequirements
+		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
+		export LDM_LOGIN=$(getLdmPassword)
+		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
+		;;
+	stop)
+		loadVars
+		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		;;
+	update)
+		loadVars
+		exec ./lib/update-bridgehead.sh $PROJECT
+		;;
+	install)
+		source ./lib/prepare-system.sh
+		loadVars
+		exec ./lib/install-bridgehead.sh $PROJECT
+		;;
+	uninstall)
+		exec ./lib/uninstall-bridgehead.sh $PROJECT
+		;;
+	enroll)
+		loadVars
+		if [ -e $PRIVATEKEYFILENAME ]; then
+			log ERROR "Private key already exists at $PRIVATEKEYFILENAME. Please delete first to proceed."
+			exit 1
+		fi
+		docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $PROXY_ID --admin-email $SUPPORT_EMAIL
+		chmod 600 $PRIVATEKEYFILENAME
+		;;
+	preRun | preUpdate)
+		fixPermissions
+		;;
+	postRun | postUpdate)
+		;;
+	*)
+		printUsage
+		exit 1
+		;;
+esac
+
+exit 0

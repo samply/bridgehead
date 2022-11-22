@@ -1,0 +1,8 @@
+[Unit]
+Description=Hourly Updates of Bridgehead (%i)
+
+[Timer]
+OnCalendar=*-*-* *:00:00
+
+[Install]
+WantedBy=basic.target

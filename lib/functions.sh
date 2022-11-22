@@ -1,9 +1,26 @@
 #!/bin/bash -e
 
+detectCompose() {
+	if [[ "$(docker compose version 2>/dev/null)" == *"Docker Compose version"* ]]; then
+		COMPOSE="docker compose"
+	else
+		COMPOSE="docker-compose"
+		# This is intended to fail on startup in the next prereq check.
+	fi
+}
+
+getLdmPassword() {
+	if [ -n "$LDM_PASSWORD" ]; then
+		docker run --rm httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r'
+	else
+		echo -n ""
+	fi
+}
+
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
     log "ERROR" "Please run as root"
-    exit 1
+    fail_and_report 1 "Please run as root"
   fi
 }
 
@@ -16,19 +33,15 @@ checkOwner(){
   return 0
 }
 
-log() {
-  echo -e "$(date +'%Y-%m-%d %T')" "$1:" "$2"
-}
-
 printUsage() {
-	echo "Usage: bridgehead start|stop|update|install|uninstall PROJECTNAME"
-	echo "PROJECTNAME should be one of ccp|nngm|gbn"
+	echo "Usage: bridgehead start|stop|update|install|uninstall|enroll PROJECTNAME"
+	echo "PROJECTNAME should be one of ccp|bbmri"
 }
 
 checkRequirements() {
-	if ! lib/prerequisites.sh; then
+	if ! lib/prerequisites.sh $@; then
 		log "ERROR" "Validating Prerequisites failed, please fix the error(s) above this line."
-		exit 1
+		fail_and_report 1 "Validating prerequisites failed."
 	else
 		return 0
 	fi
@@ -97,10 +110,32 @@ assertVarsNotEmpty() {
 	return 0
 }
 
+fixPermissions() {
+	CHOWN=$(which chown)
+	sudo $CHOWN -R bridgehead /etc/bridgehead /srv/docker/bridgehead
+}
+
+source lib/monitoring.sh
+
+report_error() {
+	CODE=$1
+	shift
+	log ERROR "$@"
+	hc_send $CODE "$@"
+}
+
+fail_and_report() {
+	report_error $@
+	exit $1
+}
+
+setHostname() {
+	if [ -z "$HOST" ]; then
+		export HOST=$(hostname -f)
+		log DEBUG "Using auto-detected hostname $HOST."
+	fi
+}
+
 ##Setting Network properties
-export HOSTIP=$(MSYS_NO_PATHCONV=1 docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}');
-export HOST=$(hostname)
-export PRODUCTION="false";
-if [ "$(git branch --show-current)" == "main" ]; then
-	export PRODUCTION="true";
-fi
+# currently not needed
+#export HOSTIP=$(MSYS_NO_PATHCONV=1 docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}');

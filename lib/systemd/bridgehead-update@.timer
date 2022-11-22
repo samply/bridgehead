@@ -1,8 +1,8 @@
 [Unit]
-Description=Nightly Updates of Bridgehead (%i)
+Description=Hourly Updates of Bridgehead (%i)
 
 [Timer]
-OnCalendar=*-*-* 03:00:00
+OnCalendar=*-*-* *:00:00
 
 [Install]
 WantedBy=basic.target

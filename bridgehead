@@ -29,10 +29,7 @@ case "$PROJECT" in
 	ccp)
 		#nothing extra to do
 		;;
-	nngm)
-		#nothing extra to do
-		;;
-	gbn)
+	bbmri)
 		#nothing extra to do
 		;;
 	*)
@@ -41,23 +38,65 @@ case "$PROJECT" in
 		;;
 esac
 
+loadVars() {
+	# Load variables from /etc/bridgehead and /srv/docker/bridgehead
+	set -a
+	source /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "/etc/bridgehead/$PROJECT.conf not found"
+	if [ -e /etc/bridgehead/$PROJECT.local.conf ]; then
+		log INFO "Applying /etc/bridgehead/$PROJECT.local.conf"
+		source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
+	fi
+	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
+	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
+	set +a
+
+	OVERRIDE=${OVERRIDE:=""}
+	if [ -f "$PROJECT/docker-compose.override.yml" ]; then
+		log INFO "Applying $PROJECT/docker-compose.override.yml"
+		OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
+	fi
+	detectCompose
+	setHostname
+}
+
 case "$ACTION" in
 	start)
+		loadVars
+		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
-		fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || exit 1
-		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.conf up
+		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
+		export LDM_LOGIN=$(getLdmPassword)
+		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
-		exec docker-compose -f ./$PROJECT/docker-compose.yml --env-file /etc/bridgehead/$PROJECT.conf down
+		loadVars
+		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		;;
 	update)
+		loadVars
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
 	install)
-		exec ./lib/setup-bridgehead-units.sh $PROJECT
+		source ./lib/prepare-system.sh
+		loadVars
+		exec ./lib/install-bridgehead.sh $PROJECT
 		;;
 	uninstall)
-		exec ./lib/remove-bridgehead-units.sh $PROJECT
+		exec ./lib/uninstall-bridgehead.sh $PROJECT
+		;;
+	enroll)
+		loadVars
+		if [ -e $PRIVATEKEYFILENAME ]; then
+			log ERROR "Private key already exists at $PRIVATEKEYFILENAME. Please delete first to proceed."
+			exit 1
+		fi
+		docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $PROXY_ID --admin-email $SUPPORT_EMAIL
+		chmod 600 $PRIVATEKEYFILENAME
+		;;
+	preRun | preUpdate)
+		fixPermissions
+		;;
+	postRun | postUpdate)
 		;;
 	*)
 		printUsage

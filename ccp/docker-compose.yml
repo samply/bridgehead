@@ -95,7 +95,6 @@ services:
       APP_1_ID: report-hub
       APP_1_KEY: ${REPORTHUB_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
-      RUST_LOG: debug
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
       ROOTCERT_FILE: /conf/root.crt.pem

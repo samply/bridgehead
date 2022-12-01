@@ -30,6 +30,19 @@ checkOwner /etc/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong
 
 CREDHELPER="/srv/docker/bridgehead/lib/gitpassword.sh"
 
+# Check if access-token is up-to-date
+log INFO "Checking authentication information for git server"
+current_configuration_remote="$(git -C /etc/bridgehead remote get-url origin)"
+
+if [[ ${current_configuration_remote} != "https://$GIT_REMOTE_TOKEN@"* ]];then
+    new_configuration_remote="https://$GIT_REMOTE_TOKEN@${current_configuration_remote#*@}"
+    git -C /etc/bridgehead remote set-url origin "${new_configuration_remote}"
+    log_and_report "Updated the authentication credentials for /etc/bridgehead."
+    log INFO "Your new authentication url is ${new_configuration_remote}"
+else
+    log_and_report "Authentication credentials in /etc/bridgehead are up-to-date"
+fi
+
 CHANGES=""
 
 # Check git updates

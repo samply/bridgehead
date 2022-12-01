@@ -117,6 +117,11 @@ fixPermissions() {
 
 source lib/monitoring.sh
 
+log_and_report() {
+    log INFO "$@"
+    hc_send 0 "$@"
+}
+
 report_error() {
 	CODE=$1
 	shift

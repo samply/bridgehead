@@ -16,3 +16,4 @@ source $PROJECT/nngm-setup.sh
 nngmSetup
 source $PROJECT/exliquid-setup.sh
 exliquidSetup
+mtbaSetup

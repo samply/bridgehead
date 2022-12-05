@@ -17,21 +17,19 @@ services:
     image: "samply/report-hub:latest"
     container_name: bridgehead-report-hub
     environment:
-      BASE_URL: "http://bridgehead-report-hub:8080"
+      SPRING_WEBFLUX_BASE_PATH: "/ccp-report-hub"
       JAVA_TOOL_OPTIONS: "-Xmx1g"
       LOG_LEVEL: "debug"
       PROXY_ID: "report-hub.${PROXY_ID}"
       SECRET: ${REPORTHUB_BEAM_SECRET_SHORT}
-      TASK_STORE: "http://bridgehead-task-store:8080/fhir"
-      LDM_URL:  http://bridgehead-ccp-blaze:8080/fhir
+      APP_TASKSTORE_BASEURL: "http://bridgehead-task-store:8080/fhir"
+      APP_DATASTORE_BASEURL:  http://bridgehead-ccp-blaze:8080/fhir
       BEAM_PROXY: "http://beam-proxy:8081"
     restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.report-ccp.rule=PathPrefix(`/ccp-report-hub`)"
-      - "traefik.http.middlewares.ccp_t_strip.stripprefix.prefixes=/ccp-report-hub"
       - "traefik.http.services.report-ccp.loadbalancer.server.port=8080"
-      - "traefik.http.routers.report-ccp.middlewares=ccp_t_strip"
       - "traefik.http.routers.report-ccp.tls=true"
 
 volumes:

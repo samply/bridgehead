@@ -38,7 +38,6 @@ for DIR in /etc/bridgehead $(pwd); do
   log "INFO" "Checking for updates to git repo $DIR ..."
   OUT="$(git -C $DIR status --porcelain)"
   if [ -n "$OUT" ]; then
-    log WARN "The working directory $DIR is modified. Changed files: $OUT"
     report_error log "The working directory $DIR is modified. Changed files: $OUT"
   fi
   if [ "$(git -C $DIR config --get credential.helper)" != "$CREDHELPER" ]; then

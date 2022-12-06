@@ -1,36 +1,34 @@
 version: "3.7"
 
 services:
-  task-store:
+  exliquid-task-store:
     image: "samply/blaze:0.18"
-    container_name: bridgehead-task-store
+    container_name: bridgehead-exliquid-task-store
     environment:
-      BASE_URL: "http://bridgehead-task-store:8080"
+      BASE_URL: "http://bridgehead-exliquid-task-store:8080"
       JAVA_TOOL_OPTIONS: "-Xmx1g"
-      LOG_LEVEL: "debug"
     volumes:
-    - "task-store-data:/app/data"
+    - "exliquid-task-store-data:/app/data"
     labels:
       - "traefik.enable=false"
 
-  report-hub:
+  exliquid-report-hub:
     image: "samply/report-hub:latest"
-    container_name: bridgehead-report-hub
+    container_name: bridgehead-exliquid-report-hub
     environment:
-      SPRING_WEBFLUX_BASE_PATH: "/ccp-report-hub"
+      SPRING_WEBFLUX_BASE_PATH: "/exliquid"
       JAVA_TOOL_OPTIONS: "-Xmx1g"
-      LOG_LEVEL: "debug"
       PROXY_ID: "report-hub.${PROXY_ID}"
       SECRET: ${REPORTHUB_BEAM_SECRET_SHORT}
-      APP_TASKSTORE_BASEURL: "http://bridgehead-task-store:8080/fhir"
+      APP_TASKSTORE_BASEURL: "http://bridgehead-exliquid-task-store:8080/fhir"
       APP_DATASTORE_BASEURL:  http://bridgehead-ccp-blaze:8080/fhir
       BEAM_PROXY: "http://beam-proxy:8081"
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.report-ccp.rule=PathPrefix(`/ccp-report-hub`)"
+      - "traefik.http.routers.report-ccp.rule=PathPrefix(`/exliquid`)"
       - "traefik.http.services.report-ccp.loadbalancer.server.port=8080"
       - "traefik.http.routers.report-ccp.tls=true"
 
 volumes:
-  task-store-data:
+  exliquid-task-store-data:

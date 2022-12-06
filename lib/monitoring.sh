@@ -14,15 +14,16 @@ UPTIME=
 USER_AGENT=
 
 function hc_send(){
+    BASEURL="https://healthchecks.verbis.dkfz.de/ping"
     if [ -n "$MONITOR_APIKEY" ]; then
         hc_set_uuid $MONITOR_APIKEY
     fi
 
     if [ -n "$HCSERVICE" ]; then
-        HCURL="https://hc-ping.com/$PING_KEY/$HCSERVICE"
+        HCURL="$BASEURL/$PING_KEY/$HCSERVICE"
     fi
     if [ -n "$HCUUID" ]; then
-        HCURL="https://hc-ping.com/$HCUUID"
+        HCURL="$BASEURL/$HCUUID"
     fi
     if [ ! -n "$HCURL" ]; then
         log WARN "Did not report Healthcheck: Neither Healthcheck UUID nor service set. Please define MONITOR_APIKEY in /etc/bridgehead."
@@ -34,8 +35,13 @@ function hc_send(){
     fi
 
     if [ -z "$USER_AGENT" ]; then
-        COMMIT_ETC=$(git -C /etc/bridgehead rev-parse HEAD | cut -c -8)
-        COMMIT_SRV=$(git -C /srv/docker/bridgehead rev-parse HEAD | cut -c -8)
+        if [ "$USER" != "root" ]; then
+            COMMIT_ETC=$(git -C /etc/bridgehead rev-parse HEAD | cut -c -8)
+            COMMIT_SRV=$(git -C /srv/docker/bridgehead rev-parse HEAD | cut -c -8)
+        else
+            COMMIT_ETC=$(su -c 'git -C /etc/bridgehead rev-parse HEAD' bridgehead | cut -c -8)
+            COMMIT_SRV=$(su -c 'git -C /srv/docker/bridgehead rev-parse HEAD' bridgehead | cut -c -8)
+        fi
         USER_AGENT="srv:$COMMIT_SRV etc:$COMMIT_ETC"
     fi
 

@@ -1,0 +1,75 @@
+version: "3.7"
+services:
+  id-manager:
+    image: docker.verbis.dkfz.de/bridgehead/magicpl
+    environment:
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}
+      MAGICPL_SITE: ${SITE_ID}
+      MAGICPL_ALLOWED_ORIGINS: https://${HOST}
+      MAGICPL_LOCAL_PATIENTLIST_APIKEY: ${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
+      MAGICPL_CENTRAXX_APIKEY: ${IDMANAGER_CENTRAXX_APIKEY}
+      MAGICPL_CONNECTOR_APIKEY: ${IDMANAGER_CONNECTOR_APIKEY}
+      MAGICPL_CENTRAL_PATIENTLIST_APIKEY: ${IDMANAGER_CENTRAL_PATIENTLIST_APIKEY}
+      MAGICPL_CONTROLNUMBERGENERATOR_APIKEY: ${IDMANAGER_CONTROLNUMBERGENERATOR_APIKEY}
+      MAGICPL_OIDC_CLIENT_ID: ${IDMANAGER_AUTH_CLIENT_ID}
+      MAGICPL_OIDC_CLIENT_SECRET: ${IDMANAGER_AUTH_CLIENT_SECRET}
+    depends_on:
+      - patientlist
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.id-manager.rule=PathPrefix(`/id-manager`)"
+      - "traefik.http.services.id-manager.loadbalancer.server.port=8080"
+      - "traefik.http.routers.id-manager.tls=true"
+
+  patientlist:
+    image: docker.verbis.dkfz.de/bridgehead/mainzelliste
+    environment:
+      - TOMCAT_REVERSEPROXY_FQDN=${HOST}
+      - ML_SITE=${SITE_ID}
+      - ML_DB_PASS=${PATIENTLIST_POSTGRES_PASSWORD}
+      - ML_API_KEY=${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
+      # Add Variables from /etc/patientlist-id-generators.env
+      - ML_BK_IDGENERATOR_RANDOM_1
+      - ML_BK_IDGENERATOR_RANDOM_2
+      - ML_BK_IDGENERATOR_RANDOM_3
+      - ML_MDS_IDGENERATOR_RANDOM_1
+      - ML_MDS_IDGENERATOR_RANDOM_2
+      - ML_MDS_IDGENERATOR_RANDOM_3
+      - ML_DKTK000001985_IDGENERATOR_RANDOM_1
+      - ML_DKTK000001985_IDGENERATOR_RANDOM_2
+      - ML_DKTK000001985_IDGENERATOR_RANDOM_3
+      - ML_DKTK000001986_IDGENERATOR_RANDOM_1
+      - ML_DKTK000001986_IDGENERATOR_RANDOM_2
+      - ML_DKTK000001986_IDGENERATOR_RANDOM_3
+      - ML_DKTK000001950_IDGENERATOR_RANDOM_1
+      - ML_DKTK000001950_IDGENERATOR_RANDOM_2
+      - ML_DKTK000001950_IDGENERATOR_RANDOM_3
+      - ML_DKTK000001951_IDGENERATOR_RANDOM_1
+      - ML_DKTK000001951_IDGENERATOR_RANDOM_2
+      - ML_DKTK000001951_IDGENERATOR_RANDOM_3
+      - ML_DKTK999999999_IDGENERATOR_RANDOM_1
+      - ML_DKTK999999999_IDGENERATOR_RANDOM_2
+      - ML_DKTK999999999_IDGENERATOR_RANDOM_3
+      - ML_DKTK000002089_IDGENERATOR_RANDOM_1
+      - ML_DKTK000002089_IDGENERATOR_RANDOM_2
+      - ML_DKTK000002089_IDGENERATOR_RANDOM_3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.patientlist.rule=PathPrefix(`/patientlist`)"
+      - "traefik.http.services.patientlist.loadbalancer.server.port=8080"
+      - "traefik.http.routers.patientlist.tls=true"
+    depends_on:
+      - patientlist-db
+
+  patientlist-db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: "mainzelliste"
+      POSTGRES_DB: "mainzelliste"
+      POSTGRES_PASSWORD: ${PATIENTLIST_POSTGRES_PASSWORD}
+    volumes:
+      - "patientlist-db-data:/var/lib/postgresql/data"
+
+volumes:
+  patientlist-db-data:
+

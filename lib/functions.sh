@@ -131,7 +131,7 @@ fail_and_report() {
 
 setHostname() {
 	if [ -z "$HOST" ]; then
-		export HOST=$(hostname -f)
+		export HOST=$(hostname -f | tr "[:upper:]" "[:lower:]")
 		log DEBUG "Using auto-detected hostname $HOST."
 	fi
 }

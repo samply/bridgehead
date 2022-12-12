@@ -20,6 +20,7 @@ services:
       JAVA_TOOL_OPTIONS: "-Xmx1g"
       PROXY_ID: "report-hub.${PROXY_ID}"
       SECRET: ${REPORTHUB_BEAM_SECRET_SHORT}
+      APP_PROXY_BASEURL: http://beam-proxy:8081
       APP_TASKSTORE_BASEURL: "http://bridgehead-exliquid-task-store:8080/fhir"
       APP_DATASTORE_BASEURL:  http://bridgehead-ccp-blaze:8080/fhir
       BEAM_PROXY: "http://beam-proxy:8081"

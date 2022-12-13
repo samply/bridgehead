@@ -128,6 +128,8 @@ All of the Bridgehead's outgoing connections are secured by transport encryption
   - `/etc/bridgehead/traefik-tls` contains your Bridgehead's reverse proxies TLS certificates for [HTTPS access](#https-access).
   - `/etc/bridgehead/pki` contains your Bridgehead's private key (e.g., but not limited to Samply.Beam), generated as part of the [Samply.Beam enrollment](#register-with-samplybeam).
   - `/etc/bridgehead/trusted-ca-certs` contains third-party certificates to be trusted by the Bridgehead. For example, you want to place the certificates of your [TLS-terminating proxy](#network) here.
+- `/var/data/bridgehead` contains persistent data of the bridgehead
+  - `/var/data/bridgehead/backups` contains automatically created backups of the databases.
 
 Your Bridgehead's actual data is not stored in the above directories, but in named docker volumes, see `docker volume ls` and `docker volume inspect <volume_name>`.
 
@@ -138,6 +140,13 @@ Your Bridgehead's actual data is not stored in the above directories, but in nam
 Your Bridgehead will automatically and regularly check for updates. Whenever something has been updates (e.g., one of the git repositories or one of the docker images), your Bridgehead is automatically restarted. This should happen automatically and does not need any configuration.
 
 If you would like to understand what happens exactly and when, please check the systemd units deployed during the [installation](#base-installation) via `systemctl cat bridgehead-update@<PROJECT>.service` and `systemctl cat bridgehead-update@<PROJECT.timer`.
+
+### Auto-Backups
+Some of the components in the bridgehead will store persistent data. For those components, we integrated an automated backup solution in the bridgehead updates. It will automatically save the backup in multiple files
+
+1) Last-XX, were XX represents a weekday to allow re-import of at least one version of the database for each of the past seven days.
+2) Year-KW-XX, were XX represents the calendar week to allow re-import of at least one version per calendar week
+3) Year-Month, to allow re-import of at least one version per month
 
 ### Monitoring
 

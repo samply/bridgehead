@@ -136,6 +136,17 @@ setHostname() {
 	fi
 }
 
+# Takes 1) The Backup Directory Path 2) The name of the Service to be backuped
+# Creates 3 Backups: 1) For the past seven days 2) For the current month and 3) for each calendar week
+createEncryptedPostgresBackup(){
+  docker exec "$2" bash -c 'pg_dump -U $POSTGRES_USER $POSTGRES_DB --format=p --no-owner --no-privileges' | \
+      # TODO: Encrypt using /etc/bridgehead/pki/${SITE_ID}.priv.pem | \
+      tee "$1/$2/$(date +Last-%A).sql" | \
+      tee "$1/$2/$(date +%Y-%m).sql" > \
+      "$1/$2/$(date +%Y-KW%V).sql"
+}
+
+
 # from: https://gist.github.com/sj26/88e1c6584397bb7c13bd11108a579746
 # ex. use: retry 5 /bin/false
 function retry {

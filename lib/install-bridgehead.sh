@@ -22,8 +22,8 @@ Cmnd_Alias BRIDGEHEAD${PROJECT^^} = \\
     /bin/systemctl stop bridgehead@${PROJECT}.service, \\
     /bin/systemctl restart bridgehead@${PROJECT}.service, \\
     /bin/systemctl restart bridgehead@*.service, \\
-    /bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead, \\
-    /usr/bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead
+    /bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/data/bridgehead, \\
+    /usr/bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/data/bridgehead
 
 bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF
@@ -36,6 +36,10 @@ if [ -z "$LDM_PASSWORD" ]; then
   log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
   echo -e "## Local Data Management Basic Authentication\n# User: $PROJECT\nLDM_PASSWORD=$generated_passwd" >> /etc/bridgehead/${PROJECT}.local.conf;
 fi
+
+log "INFO" "Creating directory /var/data/bridgehead for storage of persistent data."
+mkdir -p /var/data/bridgehead
+chown -R bridgehead /var/data/bridgehead
 
 log "INFO" "Registering system units for bridgehead and bridgehead-update"
 cp -v \

@@ -2,6 +2,7 @@ version: "3.7"
 services:
   id-manager:
     image: docker.verbis.dkfz.de/bridgehead/magicpl
+    container_name: bridgehead-id-manager
     environment:
       TOMCAT_REVERSEPROXY_FQDN: ${HOST}
       MAGICPL_SITE: ${SITE_ID}
@@ -23,6 +24,7 @@ services:
 
   patientlist:
     image: docker.verbis.dkfz.de/bridgehead/mainzelliste
+    container_name: bridgehead-patientlist
     environment:
       - TOMCAT_REVERSEPROXY_FQDN=${HOST}
       - ML_SITE=${SITE_ID}
@@ -63,13 +65,12 @@ services:
 
   patientlist-db:
     image: postgres:14-alpine
+    container_name: bridgehead-patientlist-db
     environment:
       POSTGRES_USER: "mainzelliste"
       POSTGRES_DB: "mainzelliste"
       POSTGRES_PASSWORD: ${PATIENTLIST_POSTGRES_PASSWORD}
     volumes:
-      - "patientlist-db-data:/var/lib/postgresql/data"
-
-volumes:
-  patientlist-db-data:
-
+      - "/var/data/bridgehead/patientlist:/var/lib/postgresql/data"
+      # NOTE: Add backups here. This is only imported if /var/data/bridgehead/patientlist/ is empty!!!
+      - "/tmp/bridgehead/patientlist/:/docker-entrypoint-initdb.d/"

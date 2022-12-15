@@ -79,6 +79,15 @@ for DIR in /etc/bridgehead $(pwd); do
   fi
 done
 
+if [ "$(git -C /srv/docker/bridgehead rev-parse --abbrev-ref HEAD)" == "feature/samplyBeam" ]; then
+  A="You are on branch feature/samplyBeam -- switching to main"
+  log "WARN" "$A"
+  report_error 70 "$A"
+  git -C /srv/docker/bridgehead fetch origin main:main
+  git -C /srv/docker/bridgehead checkout main
+  git_updated="true"
+fi
+
 # Check docker updates
 log "INFO" "Checking for updates to running docker images ..."
 docker_updated="false"

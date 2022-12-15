@@ -1,7 +1,6 @@
 #!/bin/bash
 
 function idManagementSetup() {
-#	if [ -n "$IDMANAGER_UPLOAD_APIKEY" ]; then
 	if [ -n "$ENABLE_ID_MANAGEMENT" ]; then
 		log INFO "id-management setup detected -- will start id-management (mainzelliste & magicpl)."
 		OVERRIDE+=" -f ./$PROJECT/modules/id-management-compose.yml"

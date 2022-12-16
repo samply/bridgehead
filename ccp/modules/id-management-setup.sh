@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function idManagementSetup() {
-	if [ -n "$IDMANAGER_CENTRAXX_APIKEY" ]; then
+	if [ -n "$IDMANAGER_UPLOAD_APIKEY" ]; then
 		log INFO "id-management setup detected -- will start id-management (mainzelliste & magicpl)."
 		OVERRIDE+=" -f ./$PROJECT/modules/id-management-compose.yml"
 
@@ -11,7 +11,27 @@ function idManagementSetup() {
 
 		# Source the ID Generators Configuration
 		source /etc/bridgehead/patientlist-id-generators.env
-		log INFO "ID-Management Generator 1: ${ML_BK_IDGENERATOR_RANDOM_1}"
+
+		# Ensure old ids are working !!!
+		legacyIdMapping
 	fi
 
+}
+
+# TODO: Map all old site ids to the new ones
+function legacyIdMapping() {
+    case ${SITE_ID} in
+	"berlin")
+		export IDMANAGEMENT_FRIENDLY_ID=Berlin
+		;;
+	"dresden")
+		export IDMANAGEMENT_FRIENDLY_ID=Dresden
+		;;
+	"frankfurt")
+		export IDMANAGEMENT_FRIENDLY_ID=Frankfurt
+		;;
+	*)
+		export IDMANAGEMENT_FRIENDLY_ID=$SITE_ID
+		;;
+    esac
 }

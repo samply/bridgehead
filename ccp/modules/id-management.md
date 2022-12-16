@@ -5,8 +5,8 @@ This module provides integration with the CCP-Pseudonymiziation Service. To lear
 You must add following configuration variables to your sites-configuration repository:
 
 ```
-IDMANAGER_CENTRAXX_APIKEY="<random-string>"
-IDMANAGER_CONNECTOR_APIKEY="<random-string>"
+IDMANAGER_UPLOAD_APIKEY="<random-string>"
+IDMANAGER_READ_APIKEY="<random-string>"
 IDMANAGER_CENTRAL_PATIENTLIST_APIKEY="<given-to-you-by-ccp-it>"
 IDMANAGER_CONTROLNUMBERGENERATOR_APIKEY="<given-to-you-by-ccp-it>"
 IDMANAGER_AUTH_CLIENT_ID="<given-to-you-by-ccp-it>"
@@ -47,7 +47,7 @@ Typically, the sites connect their local data-management for the pseudonym creat
 On your CentraXX Server, you need to change following settings in the "centraxx-dev.properties" file.
 ```
 dktk.idmanagement.url=https://<your-linux-bk-host>/id-manager/translator/getId
-dktk.idmanagement.apiKey=<your-setting-for-IDMANAGER_CENTRAXX_APIKEY>
+dktk.idmanagement.apiKey=<your-setting-for-IDMANAGER_UPLOAD_APIKEY>
 ```
 They typically already exist, but need to be changed to the new values!
 #### Sites using ADT2FHIR

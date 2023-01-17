@@ -22,8 +22,8 @@ Cmnd_Alias BRIDGEHEAD${PROJECT^^} = \\
     /bin/systemctl stop bridgehead@${PROJECT}.service, \\
     /bin/systemctl restart bridgehead@${PROJECT}.service, \\
     /bin/systemctl restart bridgehead@*.service, \\
-    /bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/data/bridgehead, \\
-    /usr/bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/data/bridgehead
+    /bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/lib/bridgehead /var/cache/bridgehead, \\
+    /usr/bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/lib/bridgehead /var/cache/bridgehead
 
 bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF
@@ -37,9 +37,14 @@ if [ -z "$LDM_PASSWORD" ]; then
   echo -e "## Local Data Management Basic Authentication\n# User: $PROJECT\nLDM_PASSWORD=$generated_passwd" >> /etc/bridgehead/${PROJECT}.local.conf;
 fi
 
-log "INFO" "Creating directory /var/data/bridgehead for storage of persistent data."
-mkdir -p /var/data/bridgehead
-chown -R bridgehead /var/data/bridgehead
+log "INFO" "Creating directory /var/lib/bridgehead for storage of persistent data."
+mkdir -p /var/lib/bridgehead
+chown -R bridgehead /var/lib/bridgehead
+
+
+log "INFO" "Creating directory /var/cache/bridgehead for storage of backups."
+mkdir -p /var/cache/bridgehead
+chown -R bridgehead /var/cache/bridgehead
 
 log "INFO" "Registering system units for bridgehead and bridgehead-update"
 cp -v \

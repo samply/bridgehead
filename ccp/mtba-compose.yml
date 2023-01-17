@@ -24,7 +24,7 @@ services:
       - "traefik.http.routers.mtba.tls=true"
     volumes:
       # This directory persists the FHIR Resources that are needed to import data into blaze.
-      - /var/data/bridgehead/mtba:/app/mtba-files/persist
+      - /var/lib/bridgehead/data/mtba:/app/mtba-files/persist
       # Place new import files in this directory
       - /tmp/bridgehead/mtba/:/app/mtba-files/input
 

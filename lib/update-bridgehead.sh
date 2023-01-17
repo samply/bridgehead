@@ -4,15 +4,7 @@ source lib/functions.sh
 AUTO_BACKUP=${AUTO_BACKUP:-true}
 
 if [ "$AUTO_BACKUP" == "true" ]; then
-  BACKUP_DIRECTORY="/var/data/bridgehead/backups"
-  if [ ! -d /var/data ]; then
-    log DEBUG "Created /var/data"
-    mkdir /var/data
-  fi
-  if [ ! -d /var/data/bridgehead ]; then
-    log DEBUG "Created /var/data/bridgehead"
-    mkdir /var/data/bridgehead
-  fi
+  BACKUP_DIRECTORY="/var/cache/bridgehead/backup"
   if [ ! -d $BACKUP_DIRECTORY ]; then
     message="Performing automatic maintenance: Creating Backup directory $BACKUP_DIRECTORY."
     hc_send log "$message"

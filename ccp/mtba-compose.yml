@@ -17,16 +17,16 @@ services:
       PATIENT_CSV_BIRTHDAY_HEADER: ${PATIENT_CSV_BIRTHDAY_HEADER:-"BIRTHDAY"}
       CBIOPORTAL_URL:  http://bridgehead-ccp-cbioportal:8080
       MUTATIONS_CSV_SCRIPT_INTERPRETER: "python3"
+      NEW_FILES_DIRECTORY: "/app/input"
+      PERSIST_DIRECTORY: "/app/persist"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mtba.rule=PathPrefix(`/`)"
       - "traefik.http.services.mtba.loadbalancer.server.port=80"
       - "traefik.http.routers.mtba.tls=true"
     volumes:
-      # This directory persists the FHIR Resources that are needed to import data into blaze.
-      - mtba-data:/app/mtba-files/persist
-      # Place new import files in this directory
-      - /tmp/bridgehead/mtba/:/app/mtba-files/input
+      - /tmp/bridgehead/mtba/input:/app/input
+      - /tmp/bridgehead/mtba/persist:/app/persist
 
   # TODO: Include CBioPortal in Deployment ...
   # NOTE: CBioPortal can't load data while the system is running. So after import of data bridgehead needs to be restarted!

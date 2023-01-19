@@ -57,10 +57,43 @@ Since it needs to carry sensitive patient data, Bridgeheads are intended to be d
 Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to conflict with Docker [here](https://github.com/chaifeng/ufw-docker).
 
 ## Deployment
+You will need to choose a short name for your site. This is not a URL, just a simple identifying string. For the examples below, we will use "your-site-name", but you should obviously choose something that is meaningful to you and which is unique.
+
+### Projects
+
+The following "projects" are known to the Bridgehead installation:
+
+- bbmri
+- ccp
+
+Use "bbmri" if you are in the BBMRI-ERIC European biobank network or the GBA (German Biobank Alliance) network.
+
+Use "ccp" if you are in the DKTK network, the C4 network or the nNGM network.
+
+### GitLab repository
+
+In order to be able to install, you will need to have your own repository in GitLab for your site's configuration settings. This allows automated updates of the Bridgehead software.
+
+To request a new repository, please send an email to bridgehead@helpdesk.bbmri-eric.eu. Mention which project you belong to, i.e. "bbmri" or "ccp", plus your chosen site name.
+
+We will set the repository up for you. We will then send you the repository's URL plus a token to access it.
+
+Before installation, you must set up your site's configuration in GitLab.
+
+To do this, visit the configuration repository's URL and click on the configuration file. Depending on your project, this will be called either ```bbmri.conf```or ```ccp.conf```. Use the blue button to edit it. You will need to change, as a minimum, the following variables:
+
+- SITE_NAME
+- SITE_ID
+- OPERATOR_FIRST_NAME
+- OPERATOR_LAST_NAME
+- OPERATOR_EMAIL
+- OPERATOR_PHONE
+
+SITE_NAME and SITE_ID can be set to the chosen name for your site, e.g. "your-site-name". OPERATOR_* should be set to values appropriate for the administrator of your site.
 
 ### Base Installation
 
-First, clone the repository to the directory `/srv/docker/bridgehead`:
+First, get the Bridgehead:
 
 ```shell
 sudo mkdir -p /srv/docker/
@@ -74,7 +107,11 @@ cd /srv/docker/bridgehead
 sudo ./bridgehead install <PROJECT>
 ```
 
-... and follow the instructions on the screen. You should then be prompted to do the next step:
+When prompted with "Please enter your site", you should enter the name you have given to your site (not its URL). E.g., in the example in the previous section, that would be "your-site-name".
+
+When prompted with "Please enter the bridgehead's access token for your site configuration repository", you should enter the token for the GitLab repository that was given to you.
+
+You should then be prompted to do the next step:
 
 ### Register with Samply.Beam
 

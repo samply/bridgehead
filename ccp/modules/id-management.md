@@ -11,11 +11,13 @@ IDMANAGER_CENTRAL_PATIENTLIST_APIKEY="<given-to-you-by-ccp-it>"
 IDMANAGER_CONTROLNUMBERGENERATOR_APIKEY="<given-to-you-by-ccp-it>"
 IDMANAGER_AUTH_CLIENT_ID="<given-to-you-by-ccp-it>"
 IDMANAGER_AUTH_CLIENT_SECRET="<given-to-you-by-ccp-it>"
+
+IDMANAGER_SEEDS_BK="<three-numbers>"
+IDMANAGER_SEEDS_MDS="<three-numbers>"
+IDMANAGER_SEEDS_DKTK000001985="<three-numbers>"
 ```
 
-Most of the configuration is kept identical across all sites. Some site-specific variables, however, go into a file called `/etc/bridgehead/ccp/id-management.local`.
-
-After adding the configuration, you simply need to update your bridgehead. You're all set!
+Once your Bridgehead is updated and restarted, you're all set!
 
 ## Additional information you may want to know
 ### Services

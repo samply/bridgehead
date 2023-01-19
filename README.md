@@ -59,6 +59,14 @@ Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to c
 ## Deployment
 You will need to choose a short name for your site. This is not a URL, just a simple identifying string. For the examples below, we will use "your-site-name", but you should obviously choose something that is meaningful to you and which is unique.
 
+Site names should adhere to the following conventions:
+
+- They should be lower-case.
+- They should generally be named after the city where your site is based, e.g. ```karlsruhe```.
+- If you have a multi-part name, please use a hypen ("-") as separator, e.g. ```le-havre```.
+- If your site is for testing purposes, rather than production, please prepend with "test-", e.g. ```test-zaragoza```.
+- If you are a developer and you are making changes to the Bridgehead, please use your name and prepend with "dev-", e.g. ```dev-joe-doe```.
+
 ### Projects
 
 The following "projects" are known to the Bridgehead installation:

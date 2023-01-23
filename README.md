@@ -99,6 +99,8 @@ To do this, visit the configuration repository's URL and click on the configurat
 
 SITE_NAME and SITE_ID can be set to the chosen name for your site, e.g. "your-site-name". OPERATOR_* should be set to values appropriate for the administrator of your site.
 
+Once you have made your changes, these will need to be reviewed by members of our team before you can proceed with the installation.
+
 ### Base Installation
 
 First, get the Bridgehead:

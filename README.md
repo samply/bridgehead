@@ -57,6 +57,9 @@ Since it needs to carry sensitive patient data, Bridgeheads are intended to be d
 Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to conflict with Docker [here](https://github.com/chaifeng/ufw-docker).
 
 ## Deployment
+
+### Site name
+
 You will need to choose a short name for your site. This is not a URL, just a simple identifying string. For the examples below, we will use "your-site-name", but you should obviously choose something that is meaningful to you and which is unique.
 
 Site names should adhere to the following conventions:
@@ -155,6 +158,35 @@ To enable/disable autostart, run
 ```shell
 sudo systemctl [enable|disable] bridgehead@<PROJECT>.service
 ```
+
+### De-installing a Bridgehead
+
+You may decide that you want to remove a Bridgehead installation from your machine, e.g. if you want to migrate it to a new location or if you want to start a fresh installation because the initial attempts did not work.
+
+The following steps will remove all traces of the Bridgehead from your machine. All locally stored data pertaining to the Bridgehead will be lost.
+
+First, purge the Bridgehead from ```systemctl```:
+
+```shell
+sudo systemctl stop bridgehead@bbmri.service
+sudo systemctl disable bridgehead@bbmri.service
+sudo systemctl daemon-reload
+sudo systemctl reset-failed
+```
+
+Now remove the directories where the Bridgehead files reside:
+
+```shell
+sudo rm -rf /srv/docker/bridgehead /etc/bridgehead
+```
+
+Finally, get rid of the Docker images:
+
+```shell
+docker image rm traefik:latest samply/beam-proxy:develop samply/blaze:0.18 samply/bridgehead-forward-proxy:latest samply/bridgehead-landingpage:master samply/spot:latest
+```
+
+Note that you will still have a functioning Beam certificate and a functioning GitLab configuration repository, even after you have removed everything locally.
 
 ## Site-specific configuration
 

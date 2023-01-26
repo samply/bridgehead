@@ -159,6 +159,46 @@ To enable/disable autostart, run
 sudo systemctl [enable|disable] bridgehead@<PROJECT>.service
 ```
 
+### Testing your new Bridgehead
+
+After starting the Bridgehead, you can watch the initialization process with the following command:
+
+```shell
+sudo journalctl -xefu bridgehead@bbmri.service
+```
+
+if this exits with the following:
+
+```
+bridgehead@bbmri.service: Main process exited, code=exited, status=1/FAILURE
+```
+
+Then you know that there was a problem with starting the Bridgehead. Scroll up the printout to find the cause of the error.
+
+Once the Bridgehead is running, you can also view the individual Docker processes with:
+
+```shell
+docker ps
+```
+
+There should be 6 Docker proceses. If there are fewer, then you know that something has gone wrong.
+
+Once the Bridgehead has passed these checks, take a look at the landing page:
+
+```
+https://localhost
+```
+
+You can either do this in a browser or with curl. If you visit the URL in the browser, you will neet to click through several warnings, because you will initially be using a self-signed certificate. With curl, you can bypass these checks:
+
+```shell
+curl -k https://localhost
+```
+
+If you get errors when you do this, you need to use ```docker logs``` to examine your landing page container in order to determine what is going wrong.
+
+If you have chosen to take part in our monitoring program (by setting the ```MONITOR_APIKEY``` variable in the configuration), you will be informed by email when problems are detected in your Bridgehead.
+
 ### De-installing a Bridgehead
 
 You may decide that you want to remove a Bridgehead installation from your machine, e.g. if you want to migrate it to a new location or if you want to start a fresh installation because the initial attempts did not work.

@@ -181,7 +181,11 @@ Once the Bridgehead is running, you can also view the individual Docker processe
 docker ps
 ```
 
-There should be 6 Docker proceses. If there are fewer, then you know that something has gone wrong.
+There should be 6 Docker proceses. If there are fewer, then you know that something has gone wrong. To see what is going on, run:
+
+```shell
+docker-compose -f bbmri/docker-compose.yml logs --follow
+```
 
 Once the Bridgehead has passed these checks, take a look at the landing page:
 

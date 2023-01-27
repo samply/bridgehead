@@ -85,7 +85,12 @@ Use "ccp" if you are in the DKTK network, the C4 network or the nNGM network.
 
 In order to be able to install, you will need to have your own repository in GitLab for your site's configuration settings. This allows automated updates of the Bridgehead software.
 
-To request a new repository, please send an email to bridgehead@helpdesk.bbmri-eric.eu. Mention which project you belong to, i.e. "bbmri" or "ccp", plus your chosen site name.
+To request a new repository, please send an email to one of the following:
+
+- For the bbmri project: bridgehead@helpdesk.bbmri-eric.eu.
+- For the ccp project: support-ccp@dkfz-heidelberg.de
+
+Mention which project you belong to, i.e. "bbmri" or "ccp", plus your chosen site name.
 
 We will set the repository up for you. We will then send you:
 
@@ -168,7 +173,7 @@ sudo systemctl [enable|disable] bridgehead@<PROJECT>.service
 After starting the Bridgehead, you can watch the initialization process with the following command:
 
 ```shell
-sudo journalctl -xefu bridgehead@bbmri.service
+journalctl -u bridgehead@bbmri -f
 ```
 
 if this exits with the following:
@@ -188,7 +193,7 @@ docker ps
 There should be 6 Docker proceses. If there are fewer, then you know that something has gone wrong. To see what is going on, run:
 
 ```shell
-docker-compose -f bbmri/docker-compose.yml logs --follow
+journalctl -u bridgehead@bbmri -f
 ```
 
 Once the Bridgehead has passed these checks, take a look at the landing page:

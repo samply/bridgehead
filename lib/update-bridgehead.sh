@@ -103,27 +103,24 @@ else
   hc_send log "$RES"
 fi
 
-AUTO_BACKUP=${AUTO_BACKUP:-true}
-
-if [ "$AUTO_BACKUP" == "true" ]; then
-  BACKUP_DIRECTORY="/var/cache/bridgehead/backup"
-  if [ ! -d $BACKUP_DIRECTORY ]; then
-    message="Performing automatic maintenance: Creating Backup directory $BACKUP_DIRECTORY."
+if [ -z "${BACKUP_DIRECTORY}" ]; then
+  if [ ! -d "$BACKUP_DIRECTORY" ]; then
+    message="Performing automatic maintenance: Attempting to create backup directory $BACKUP_DIRECTORY."
     hc_send log "$message"
     log INFO "$message"
-    mkdir -p $BACKUP_DIRECTORY
+    mkdir -p "$BACKUP_DIRECTORY"
   fi
   BACKUP_SERVICES="$(docker ps --filter ancestor=postgres:14-alpine --format "{{.Names}}" | tr "\n" "\ ")"
   log INFO "Performing automatic maintenance: Creating Backups for $BACKUP_SERVICES";
   for service in $BACKUP_SERVICES; do
-    if [ ! -d $BACKUP_DIRECTORY/$service ]; then
-      message="Performing automatic maintenance: Creating Backup directory for $service in $BACKUP_DIRECTORY."
+    if [ ! -d "$BACKUP_DIRECTORY/$service" ]; then
+      message="Performing automatic maintenance: Attempting to create backup directory for $service in $BACKUP_DIRECTORY."
       hc_send log "$message"
       log INFO "$message"
-      mkdir -p $BACKUP_DIRECTORY/$service
+      mkdir -p "$BACKUP_DIRECTORY/$service"
     fi
     if createEncryptedPostgresBackup "$BACKUP_DIRECTORY" "$service"; then
-      message="Performing automatic maintenance: Stored encrypted Backup for $service in $BACKUP_DIRECTORY."
+      message="Performing automatic maintenance: Stored encrypted backup for $service in $BACKUP_DIRECTORY."
       hc_send log "$message"
       log INFO "$message"
     else

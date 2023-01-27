@@ -26,7 +26,7 @@ Upon configuration, the Bridgehead will spawn the following services:
 
 - The `bridgehead-id-manager` at https://bridgehead.local/id-manager, provides a common interface for creating pseudonyms in the bridgehead.
 - The `bridgehead-patientlist` at https://bridgehead.local/patientlist is a local instance of the open-source software [Mainzelliste](https://mainzelliste.de). This service's primary task is to map patients IDAT to pseudonyms identifying them along the different CCP projects.
-- The `bridgehead-patientlist-db` is only accessible within the Bridgehead itself. This is a local postgresql instance storing the database for `bridgehead-patientlist`. The data is persisted as a named volume `patientlist-db-data` and backups are automatically created in `/var/cache/bridgehead/backup/bridgehead-patientlist-db`.
+- The `bridgehead-patientlist-db` is only accessible within the Bridgehead itself. This is a local postgresql instance storing the database for `bridgehead-patientlist`. The data is persisted as a named volume `patientlist-db-data`.
 
 ### How to import an existing database (e.g from Legacy Windows or from Backups)
 First you must shutdown your local bridgehead instance:

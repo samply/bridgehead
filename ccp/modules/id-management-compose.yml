@@ -71,6 +71,9 @@ services:
       POSTGRES_DB: "mainzelliste"
       POSTGRES_PASSWORD: ${PATIENTLIST_POSTGRES_PASSWORD}
     volumes:
-      - "/var/lib/bridgehead/data/patientlist:/var/lib/postgresql/data"
+      - "patientlist-db-data:/var/lib/postgresql/data"
       # NOTE: Add backups here. This is only imported if /var/lib/bridgehead/data/patientlist/ is empty!!!
       - "/tmp/bridgehead/patientlist/:/docker-entrypoint-initdb.d/"
+
+volumes:
+  patientlist-db-data:

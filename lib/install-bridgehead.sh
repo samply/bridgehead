@@ -22,8 +22,8 @@ Cmnd_Alias BRIDGEHEAD${PROJECT^^} = \\
     /bin/systemctl stop bridgehead@${PROJECT}.service, \\
     /bin/systemctl restart bridgehead@${PROJECT}.service, \\
     /bin/systemctl restart bridgehead@*.service, \\
-    /bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/lib/bridgehead /var/cache/bridgehead, \\
-    /usr/bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/lib/bridgehead /var/cache/bridgehead
+    /bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/cache/bridgehead, \\
+    /usr/bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead /var/cache/bridgehead
 
 bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF
@@ -36,11 +36,6 @@ if [ -z "$LDM_PASSWORD" ]; then
   log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
   echo -e "## Local Data Management Basic Authentication\n# User: $PROJECT\nLDM_PASSWORD=$generated_passwd" >> /etc/bridgehead/${PROJECT}.local.conf;
 fi
-
-log "INFO" "Creating directory /var/lib/bridgehead for storage of persistent data."
-mkdir -p /var/lib/bridgehead
-chown -R bridgehead /var/lib/bridgehead
-
 
 log "INFO" "Creating directory /var/cache/bridgehead for storage of backups."
 mkdir -p /var/cache/bridgehead

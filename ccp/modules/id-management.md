@@ -26,7 +26,7 @@ Upon configuration, the Bridgehead will spawn the following services:
 
 - The `bridgehead-id-manager` at https://bridgehead.local/id-manager, provides a common interface for creating pseudonyms in the bridgehead.
 - The `bridgehead-patientlist` at https://bridgehead.local/patientlist is a local instance of the open-source software [Mainzelliste](https://mainzelliste.de). This service's primary task is to map patients IDAT to pseudonyms identifying them along the different CCP projects.
-- The `bridgehead-patientlist-db` is only accessible within the Bridgehead itself. This is a local postgresql instance storing the database for `bridgehead-patientlist`. The data is persisted in `/var/lib/bridgehead/data/patientlist` and backups are automatically created in `/var/cache/bridgehead/backup/bridgehead-patientlist-db`.
+- The `bridgehead-patientlist-db` is only accessible within the Bridgehead itself. This is a local postgresql instance storing the database for `bridgehead-patientlist`. The data is persisted as a named volume `patientlist-db-data` and backups are automatically created in `/var/cache/bridgehead/backup/bridgehead-patientlist-db`.
 
 ### How to import an existing database (e.g from Legacy Windows or from Backups)
 First you must shutdown your local bridgehead instance:
@@ -36,10 +36,10 @@ systemctl stop bridgehead@ccp
 
 Next you need to remove the current patientlist database:
 ```
-rm -rf /var/lib/bridgehead/data/patientlist
+docker volume rm patientlist-db-data;
 ```
 
-Third, you need to place your postgres dump in the import directory `/tmp/bridgehead/patientlist/some-dump.sql`. This will only be imported, then /var/lib/bridgehead/data/patientlist is empty. 
+Third, you need to place your postgres dump in the import directory `/tmp/bridgehead/patientlist/some-dump.sql`. This will only be imported, then the volume `patientlist-db-data` was removed previously. 
 > NOTE: Please create the postgres dump with the options "--no-owner" and "--no-privileges". Additionally ensure the dump is created in the plain format (SQL).
 
 After this, you can restart your bridgehead and the dump will be imported:

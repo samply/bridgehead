@@ -67,8 +67,8 @@ Site names should adhere to the following conventions:
 - They should be lower-case.
 - They should generally be named after the city where your site is based, e.g. ```karlsruhe```.
 - If you have a multi-part name, please use a hypen ("-") as separator, e.g. ```le-havre```.
-- If your site is for testing purposes, rather than production, please prepend with "test-", e.g. ```test-zaragoza```.
-- If you are a developer and you are making changes to the Bridgehead, please use your name and prepend with "dev-", e.g. ```dev-joe-doe```.
+- If your site is for testing purposes, rather than production, please append "-test", e.g. ```zaragoza-test```.
+- If you are a developer and you are making changes to the Bridgehead, please use your name and append "-dev", e.g. ```joe-doe-dev```.
 
 ### Projects
 
@@ -87,7 +87,11 @@ In order to be able to install, you will need to have your own repository in Git
 
 To request a new repository, please send an email to bridgehead@helpdesk.bbmri-eric.eu. Mention which project you belong to, i.e. "bbmri" or "ccp", plus your chosen site name.
 
-We will set the repository up for you. We will then send you the repository's URL plus a token to access it.
+We will set the repository up for you. We will then send you:
+
+- A Repository Short Name (RSN). Beware: this is distinct from your site name.
+- The repository's URL.
+- A token to access the repository.
 
 Before installation, you must set up your site's configuration in GitLab.
 
@@ -120,7 +124,7 @@ cd /srv/docker/bridgehead
 sudo ./bridgehead install <PROJECT>
 ```
 
-When prompted with "Please enter your site", you should enter the name you have given to your site (not its URL). E.g., in the example in the previous section, that would be "your-site-name".
+When prompted with "Please enter your site", you should enter the Repository Short Name (RSN) for GitLab that you were given in the previous section.
 
 When prompted with "Please enter the bridgehead's access token for your site configuration repository", you should enter the token for the GitLab repository that was given to you.
 

@@ -6,7 +6,7 @@ function idManagementSetup() {
 		OVERRIDE+=" -f ./$PROJECT/modules/id-management-compose.yml"
 
 		# Auto Generate local Passwords
-		PATIENTLIST_POSTGRES_PASSWORD="$(echo \"This is a salt string to generate one consistent password. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
+		PATIENTLIST_POSTGRES_PASSWORD="$(echo \"id-management-module-db-password-salt\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
 		IDMANAGER_LOCAL_PATIENTLIST_APIKEY="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 
 		# Source the ID Generators Configuration

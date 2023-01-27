@@ -16,10 +16,12 @@ IDMANAGER_SEEDS_BK="<three-numbers>"
 IDMANAGER_SEEDS_MDS="<three-numbers>"
 IDMANAGER_SEEDS_DKTK000001985="<three-numbers>"
 ```
+> NOTE: Additionally, the CCP-IT adds lines declaring the `PATIENTLIST_SEEDS` array in your site configuration. This will contain the seeds for the different id-generators used in all projects.
 
 Once your Bridgehead is updated and restarted, you're all set!
 
 ## Additional information you may want to know
+
 ### Services
 
 Upon configuration, the Bridgehead will spawn the following services:

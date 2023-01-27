@@ -9,8 +9,8 @@ function idManagementSetup() {
 		PATIENTLIST_POSTGRES_PASSWORD="$(echo \"id-management-module-db-password-salt\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
 		IDMANAGER_LOCAL_PATIENTLIST_APIKEY="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 
-		# Source the ID Generators Configuration
-		source /etc/bridgehead/patientlist-id-generators.env
+		# Transform Seeds Configuration to pass it to the Mainzelliste Container
+		PATIENTLIST_SEEDS_TRANSFORMED="$(declare -p PATIENTLIST_SEEDS | tr -d '\"' | sed 's/\[/\[\"/g' | sed 's/\]/\"\]/g')"
 
 		# Ensure old ids are working !!!
 		legacyIdMapping

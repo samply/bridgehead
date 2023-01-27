@@ -109,7 +109,9 @@ if [ -z "${BACKUP_DIRECTORY}" ]; then
     hc_send log "$message"
     log INFO "$message"
     mkdir -p "$BACKUP_DIRECTORY"
+    chown -R "$BACKUP_DIRECTORY" bridgehead;
   fi
+  checkOwner "$BACKUP_DIRECTORY" bridgehead || fail_and_report 1 "Automatic maintenance failed: Wrong permissions for backup directory $(pwd)"
   BACKUP_SERVICES="$(docker ps --filter ancestor=postgres:14-alpine --format "{{.Names}}" | tr "\n" "\ ")"
   log INFO "Performing automatic maintenance: Creating Backups for $BACKUP_SERVICES";
   for service in $BACKUP_SERVICES; do

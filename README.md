@@ -137,14 +137,14 @@ This is an optional feature for bbmri projects.  It keeps the [BBMRI Directory](
 
 Full details can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
 
-To enable it, you will need to add some extra variables to the ```bbmri.conf``` file in your GitLab repository, like so:
+To enable it, you will need to add some extra variables to the ```bbmri.conf``` file in your GitLab repository, for example:
 
 ```
 ### Directory sync service
-DIRECTORY_URL=https://directory.bbmri-eric.eu
-DIRECTORY_USER_NAME=your_directory_username
-DIRECTORY_PASS_CODE=qwdnqwswdvqHBVGFR9887
-TIMER_CRON="0 22 * * *"
+DS_DIRECTORY_URL=https://directory.bbmri-eric.eu
+DS_DIRECTORY_USER_NAME=your_directory_username
+DS_DIRECTORY_USER_PASS=qwdnqwswdvqHBVGFR9887
+DS_TIMER_CRON="0 22 * * *"
 ```
 You must contact the Directory for your national node to find the URL, and to register as a user.
 

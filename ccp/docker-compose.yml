@@ -85,7 +85,7 @@ services:
       - "blaze"
 
   beam-proxy:
-    image: "samply/beam-proxy:develop"
+    image: samply/beam-proxy:main
     container_name: bridgehead-beam-proxy
     environment:
       BROKER_URL: ${BROKER_URL}

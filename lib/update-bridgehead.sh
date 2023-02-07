@@ -1,45 +1,6 @@
 #!/bin/bash
 source lib/functions.sh
 
-AUTO_BACKUP=${AUTO_BACKUP:-true}
-
-if [ "$AUTO_BACKUP" == "true" ]; then
-  BACKUP_DIRECTORY="/var/data/bridgehead/backups"
-  if [ ! -d /var/data ]; then
-    log DEBUG "Created /var/data"
-    mkdir /var/data
-  fi
-  if [ ! -d /var/data/bridgehead ]; then
-    log DEBUG "Created /var/data/bridgehead"
-    mkdir /var/data/bridgehead
-  fi
-  if [ ! -d $BACKUP_DIRECTORY ]; then
-    message="Performing automatic maintenance: Creating Backup directory $BACKUP_DIRECTORY."
-    hc_send log "$message"
-    log INFO "$message"
-    mkdir -p $BACKUP_DIRECTORY
-  fi
-  BACKUP_SERVICES="$(docker ps --filter ancestor=postgres:14-alpine --format "{{.Names}}" | tr "\n" "\ ")"
-  log INFO "Performing automatic maintenance: Creating Backups for $BACKUP_SERVICES";
-  for service in $BACKUP_SERVICES; do
-    if [ ! -d $BACKUP_DIRECTORY/$service ]; then
-      message="Performing automatic maintenance: Creating Backup directory for $service in $BACKUP_DIRECTORY."
-      hc_send log "$message"
-      log INFO "$message"
-      mkdir -p $BACKUP_DIRECTORY/$service
-    fi
-    if createEncryptedPostgresBackup "$BACKUP_DIRECTORY" "$service"; then
-      message="Performing automatic maintenance: Stored encrypted Backup for $service in $BACKUP_DIRECTORY."
-      hc_send log "$message"
-      log INFO "$message"
-    else
-      fail_and_report 5 "Failed to create encrypted update for $service"
-    fi
-  done
-else
-  log WARN "Automated backups are disabled (variable AUTO_BACKUPS != \"true\")"
-fi
-
 AUTO_HOUSEKEEPING=${AUTO_HOUSEKEEPING:-true}
 
 if [ "$AUTO_HOUSEKEEPING" == "true" ]; then
@@ -140,6 +101,37 @@ else
   RES="Nothing updated, nothing to restart."
   log "INFO" "$RES"
   hc_send log "$RES"
+fi
+
+if [ -z "${BACKUP_DIRECTORY}" ]; then
+  if [ ! -d "$BACKUP_DIRECTORY" ]; then
+    message="Performing automatic maintenance: Attempting to create backup directory $BACKUP_DIRECTORY."
+    hc_send log "$message"
+    log INFO "$message"
+    mkdir -p "$BACKUP_DIRECTORY"
+    chown -R "$BACKUP_DIRECTORY" bridgehead;
+  fi
+  checkOwner "$BACKUP_DIRECTORY" bridgehead || fail_and_report 1 "Automatic maintenance failed: Wrong permissions for backup directory $(pwd)"
+  # Collect all container names that contain '-db'
+  BACKUP_SERVICES="$(docker ps --filter name=-db --format "{{.Names}}" | tr "\n" "\ ")"
+  log INFO "Performing automatic maintenance: Creating Backups for $BACKUP_SERVICES";
+  for service in $BACKUP_SERVICES; do
+    if [ ! -d "$BACKUP_DIRECTORY/$service" ]; then
+      message="Performing automatic maintenance: Attempting to create backup directory for $service in $BACKUP_DIRECTORY."
+      hc_send log "$message"
+      log INFO "$message"
+      mkdir -p "$BACKUP_DIRECTORY/$service"
+    fi
+    if createEncryptedPostgresBackup "$BACKUP_DIRECTORY" "$service"; then
+      message="Performing automatic maintenance: Stored encrypted backup for $service in $BACKUP_DIRECTORY."
+      hc_send log "$message"
+      log INFO "$message"
+    else
+      fail_and_report 5 "Failed to create encrypted update for $service"
+    fi
+  done
+else
+  log WARN "Automated backups are disabled (variable AUTO_BACKUPS != \"true\")"
 fi
 
 exit 0

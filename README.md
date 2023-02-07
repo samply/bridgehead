@@ -128,8 +128,6 @@ All of the Bridgehead's outgoing connections are secured by transport encryption
   - `/etc/bridgehead/traefik-tls` contains your Bridgehead's reverse proxies TLS certificates for [HTTPS access](#https-access).
   - `/etc/bridgehead/pki` contains your Bridgehead's private key (e.g., but not limited to Samply.Beam), generated as part of the [Samply.Beam enrollment](#register-with-samplybeam).
   - `/etc/bridgehead/trusted-ca-certs` contains third-party certificates to be trusted by the Bridgehead. For example, you want to place the certificates of your [TLS-terminating proxy](#network) here.
-- `/var/data/bridgehead` contains persistent data of the bridgehead
-  - `/var/data/bridgehead/backups` contains automatically created backups of the databases.
 
 Your Bridgehead's actual data is not stored in the above directories, but in named docker volumes, see `docker volume ls` and `docker volume inspect <volume_name>`.
 
@@ -147,6 +145,8 @@ Some of the components in the bridgehead will store persistent data. For those c
 1) Last-XX, were XX represents a weekday to allow re-import of at least one version of the database for each of the past seven days.
 2) Year-KW-XX, were XX represents the calendar week to allow re-import of at least one version per calendar week
 3) Year-Month, to allow re-import of at least one version per month
+
+To enable the Auto-Backup feature, please set the Variable `BACKUP_DIRECTORY` in your sites configuration.
 
 ### Monitoring
 

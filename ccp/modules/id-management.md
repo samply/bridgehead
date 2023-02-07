@@ -16,17 +16,19 @@ IDMANAGER_SEEDS_BK="<three-numbers>"
 IDMANAGER_SEEDS_MDS="<three-numbers>"
 IDMANAGER_SEEDS_DKTK000001985="<three-numbers>"
 ```
+> NOTE: Additionally, the CCP-IT adds lines declaring the `PATIENTLIST_SEEDS` array in your site configuration. This will contain the seeds for the different id-generators used in all projects.
 
 Once your Bridgehead is updated and restarted, you're all set!
 
 ## Additional information you may want to know
+
 ### Services
 
 Upon configuration, the Bridgehead will spawn the following services:
 
 - The `bridgehead-id-manager` at https://bridgehead.local/id-manager, provides a common interface for creating pseudonyms in the bridgehead.
 - The `bridgehead-patientlist` at https://bridgehead.local/patientlist is a local instance of the open-source software [Mainzelliste](https://mainzelliste.de). This service's primary task is to map patients IDAT to pseudonyms identifying them along the different CCP projects.
-- The `bridgehead-patientlist-db` is only accessible within the Bridgehead itself. This is a local postgresql instance storing the database for `bridgehead-patientlist`. The data is persisted in `/var/data/bridgehead/patientlist` and backups are automatically created in `/var/data/bridgehead/backups/bridgehead-patientlist-db`.
+- The `bridgehead-patientlist-db` is only accessible within the Bridgehead itself. This is a local postgresql instance storing the database for `bridgehead-patientlist`. The data is persisted as a named volume `patientlist-db-data`.
 
 ### How to import an existing database (e.g from Legacy Windows or from Backups)
 First you must shutdown your local bridgehead instance:
@@ -36,10 +38,10 @@ systemctl stop bridgehead@ccp
 
 Next you need to remove the current patientlist database:
 ```
-rm -rf /var/data/bridgehead/patientlist
+docker volume rm patientlist-db-data;
 ```
 
-Third, you need to place your postgres dump in the import directory `/tmp/bridgehead/patientlist/some-dump.sql`. This will only be imported, then /var/data/bridgehead/patientlist is empty. 
+Third, you need to place your postgres dump in the import directory `/tmp/bridgehead/patientlist/some-dump.sql`. This will only be imported, then the volume `patientlist-db-data` was removed previously. 
 > NOTE: Please create the postgres dump with the options "--no-owner" and "--no-privileges". Additionally ensure the dump is created in the plain format (SQL).
 
 After this, you can restart your bridgehead and the dump will be imported:

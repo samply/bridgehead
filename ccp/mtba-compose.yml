@@ -5,28 +5,28 @@ services:
     image: samply/mtba:develop
     container_name: bridgehead-mtba
     environment:
-      BLAZE_STORE_URL: http://bridgehead-ccp-blaze:8080/fhir
+      BLAZE_STORE_URL: http://blaze:8080
       # NOTE: Aktuell Berechtigungen wie MagicPL!!!
       # TODO: Add separate ApiKey to MagicPL only for MTBA!
       ID_MANAGER_API_KEY: ${IDMANAGER_UPLOAD_APIKEY}
       ID_MANAGER_PSEUDONYM_ID_TYPE: BK_${IDMANAGEMENT_FRIENDLY_ID}_L-ID
-      ID_MANAGER_URL: http://bridgehead-id-manager:8080
-      PATIENT_CSV_FIRST_NAME_HEADER: ${PATIENT_CSV_FIRST_NAME_HEADER:-"FIRST_NAME"}
-      PATIENT_CSV_LAST_NAME_HEADER: ${PATIENT_CSV_LAST_NAME_HEADER:-"LAST_NAME"}
-      PATIENT_CSV_GENDER_HEADER: ${PATIENT_CSV_GENDER_HEADER:-"GENDER"}
-      PATIENT_CSV_BIRTHDAY_HEADER: ${PATIENT_CSV_BIRTHDAY_HEADER:-"BIRTHDAY"}
-      CBIOPORTAL_URL:  http://bridgehead-ccp-cbioportal:8080
-      MUTATIONS_CSV_SCRIPT_INTERPRETER: "python3"
+      ID_MANAGER_URL: http://id-manager:8080/id-manager
+      PATIENT_CSV_FIRST_NAME_HEADER: ${MTBA_PATIENT_CSV_FIRST_NAME_HEADER}
+      PATIENT_CSV_LAST_NAME_HEADER: ${MTBA_PATIENT_CSV_LAST_NAME_HEADER}
+      PATIENT_CSV_GENDER_HEADER: ${MTBA_PATIENT_CSV_GENDER_HEADER}
+      PATIENT_CSV_BIRTHDAY_HEADER: ${MTBA_PATIENT_CSV_BIRTHDAY_HEADER}
+      CBIOPORTAL_URL:  http://cbioportal:8080
+      FILE_CHARSET: ${MTBA_FILE_CHARSET}
+      FILE_END_OF_LINE: ${MTBA_FILE_END_OF_LINE}
+      CSV_DELIMITER: ${MTBA_CSV_DELIMITER}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mtba.rule=PathPrefix(`/`)"
       - "traefik.http.services.mtba.loadbalancer.server.port=80"
       - "traefik.http.routers.mtba.tls=true"
     volumes:
-      # This directory persists the FHIR Resources that are needed to import data into blaze.
-      - mtba-data:/app/mtba-files/persist
-      # Place new import files in this directory
-      - /tmp/bridgehead/mtba/:/app/mtba-files/input
+      - /tmp/bridgehead/mtba/input:/app/input
+      - /tmp/bridgehead/mtba/persist:/app/persist
 
   # TODO: Include CBioPortal in Deployment ...
   # NOTE: CBioPortal can't load data while the system is running. So after import of data bridgehead needs to be restarted!

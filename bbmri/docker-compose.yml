@@ -107,13 +107,13 @@ services:
   directory_sync_service:
     image: "samply/directory_sync_service"
     environment:
-      DIRECTORY_URL: ${DIRECTORY_URL}
-      DIRECTORY_USER_NAME: ${DIRECTORY_USER_NAME}
-      DIRECTORY_PASS_CODE: ${DIRECTORY_PASS_CODE}
-      FHIR_STORE_URL: "http://bridgehead-bbmri-blaze:8080"
-      TIMER_CRON: ${TIMER_CRON}
-      RETRY_MAX: ${RETRY_MAX}
-      RETRY_INTERVAL: ${RETRY_INTERVAL}
+      DS_DIRECTORY_URL: ${DS_DIRECTORY_URL}
+      DS_DIRECTORY_USER_NAME: ${DS_DIRECTORY_USER_NAME}
+      DS_DIRECTORY_PASS_CODE: ${DS_DIRECTORY_PASS_CODE}
+      DS_FHIR_STORE_URL: "http://bridgehead-bbmri-blaze:8080"
+      DS_TIMER_CRON: ${DS_TIMER_CRON}
+      DS_RETRY_MAX: ${DS_RETRY_MAX}
+      DS_RETRY_INTERVAL: ${DS_RETRY_INTERVAL}
 
 volumes:
   blaze-data:

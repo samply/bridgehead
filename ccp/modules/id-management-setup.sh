@@ -13,25 +13,40 @@ function idManagementSetup() {
 		PATIENTLIST_SEEDS_TRANSFORMED="$(declare -p PATIENTLIST_SEEDS | tr -d '\"' | sed 's/\[/\[\"/g' | sed 's/\]/\"\]/g')"
 
 		# Ensure old ids are working !!!
-		legacyIdMapping
+		export IDMANAGEMENT_FRIENDLY_ID=$(legacyIdMapping "$SITE_ID")
 	fi
-
 }
 
-# TODO: Map all old site ids to the new ones
+# Transform into single string array, e.g. 'dktk-test' to 'dktk test'
+# Usage: transformToSingleStringArray 'dktk-test' -> 'dktk test'
+function transformToSingleStringArray() {
+	echo "${1//-/ }";
+}
+
+# Ensure all Words are Uppercase
+# Usage: transformToUppercase 'dktk test' -> 'Dktk Test'
+function transformToUppercase() {
+	result="";
+	for word in $1; do
+		result+=" ${word^}";
+	done
+	echo "$result";
+}
+
+# Handle all execeptions from the norm (e.g LMU, TUM)
+# Usage: applySpecialCases 'Muenchen Lmu Test' -> 'Muenchen LMU Test'
+function applySpecialCases() {
+	result="$1";
+	result="${result/Lmu/LMU}";
+	result="${result/Tum/TUM}";
+	echo "$result";
+}
+
+# Transform current siteids to legacy version
+# Usage: legacyIdMapping "dktk-test" -> "DktkTest"
 function legacyIdMapping() {
-    case ${SITE_ID} in
-	"berlin")
-		export IDMANAGEMENT_FRIENDLY_ID=Berlin
-		;;
-	"dresden")
-		export IDMANAGEMENT_FRIENDLY_ID=Dresden
-		;;
-	"frankfurt")
-		export IDMANAGEMENT_FRIENDLY_ID=Frankfurt
-		;;
-	*)
-		export IDMANAGEMENT_FRIENDLY_ID=$SITE_ID
-		;;
-    esac
+	single_string_array=$(transformToSingleStringArray "$1");
+	uppercase_string=$(transformToUppercase "$single_string_array");
+	normalized_string=$(applySpecialCases "$uppercase_string");
+	echo "$normalized_string" | tr -d ' '
 }

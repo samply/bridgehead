@@ -103,7 +103,7 @@ else
   hc_send log "$RES"
 fi
 
-if [ -z "${BACKUP_DIRECTORY}" ]; then
+if [ -n "${BACKUP_DIRECTORY}" ]; then
   if [ ! -d "$BACKUP_DIRECTORY" ]; then
     message="Performing automatic maintenance: Attempting to create backup directory $BACKUP_DIRECTORY."
     hc_send log "$message"

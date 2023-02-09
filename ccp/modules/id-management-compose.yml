@@ -27,7 +27,7 @@ services:
     container_name: bridgehead-patientlist
     environment:
       - TOMCAT_REVERSEPROXY_FQDN=${HOST}
-      - ML_SITE=${SITE_ID}
+      - ML_SITE=${IDMANAGEMENT_FRIENDLY_ID}
       - ML_DB_PASS=${PATIENTLIST_POSTGRES_PASSWORD}
       - ML_API_KEY=${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
       - ML_UPLOAD_API_KEY=${IDMANAGER_UPLOAD_APIKEY}

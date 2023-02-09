@@ -30,6 +30,7 @@ services:
       - ML_SITE=${SITE_ID}
       - ML_DB_PASS=${PATIENTLIST_POSTGRES_PASSWORD}
       - ML_API_KEY=${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
+      - ML_UPLOAD_API_KEY=${IDMANAGER_UPLOAD_APIKEY}
       # Add Variables from /etc/patientlist-id-generators.env
       - PATIENTLIST_SEEDS_TRANSFORMED
     labels:

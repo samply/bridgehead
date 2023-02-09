@@ -139,6 +139,15 @@ Your Bridgehead will automatically and regularly check for updates. Whenever som
 
 If you would like to understand what happens exactly and when, please check the systemd units deployed during the [installation](#base-installation) via `systemctl cat bridgehead-update@<PROJECT>.service` and `systemctl cat bridgehead-update@<PROJECT.timer`.
 
+### Auto-Backups
+Some of the components in the bridgehead will store persistent data. For those components, we integrated an automated backup solution in the bridgehead updates. It will automatically save the backup in multiple files
+
+1) Last-XX, were XX represents a weekday to allow re-import of at least one version of the database for each of the past seven days.
+2) Year-KW-XX, were XX represents the calendar week to allow re-import of at least one version per calendar week
+3) Year-Month, to allow re-import of at least one version per month
+
+To enable the Auto-Backup feature, please set the Variable `BACKUP_DIRECTORY` in your sites configuration.
+
 ### Monitoring
 
 To keep all Bridgeheads up and working and detect any errors before a user does, a central monitoring 

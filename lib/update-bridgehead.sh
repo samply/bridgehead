@@ -81,7 +81,7 @@ done
 # Check docker updates
 log "INFO" "Checking for updates to running docker images ..."
 docker_updated="false"
-for IMAGE in $(cat $PROJECT/docker-compose.yml | grep -v "^#" | grep "image:" | sed -e 's_^.*image: \(.*\).*$_\1_g; s_\"__g'); do
+for IMAGE in $(cat $PROJECT/docker-compose.yml ${OVERRIDE//-f/} | grep -v "^#" | grep "image:" | sed -e 's_^.*image: \(.*\).*$_\1_g; s_\"__g'); do
   log "INFO" "Checking for Updates of Image: $IMAGE"
   if docker pull $IMAGE | grep "Downloaded newer image"; then
     CHANGE="Image $IMAGE updated."
@@ -101,6 +101,37 @@ else
   RES="Nothing updated, nothing to restart."
   log "INFO" "$RES"
   hc_send log "$RES"
+fi
+
+if [ -n "${BACKUP_DIRECTORY}" ]; then
+  if [ ! -d "$BACKUP_DIRECTORY" ]; then
+    message="Performing automatic maintenance: Attempting to create backup directory $BACKUP_DIRECTORY."
+    hc_send log "$message"
+    log INFO "$message"
+    mkdir -p "$BACKUP_DIRECTORY"
+    chown -R "$BACKUP_DIRECTORY" bridgehead;
+  fi
+  checkOwner "$BACKUP_DIRECTORY" bridgehead || fail_and_report 1 "Automatic maintenance failed: Wrong permissions for backup directory $(pwd)"
+  # Collect all container names that contain '-db'
+  BACKUP_SERVICES="$(docker ps --filter name=-db --format "{{.Names}}" | tr "\n" "\ ")"
+  log INFO "Performing automatic maintenance: Creating Backups for $BACKUP_SERVICES";
+  for service in $BACKUP_SERVICES; do
+    if [ ! -d "$BACKUP_DIRECTORY/$service" ]; then
+      message="Performing automatic maintenance: Attempting to create backup directory for $service in $BACKUP_DIRECTORY."
+      hc_send log "$message"
+      log INFO "$message"
+      mkdir -p "$BACKUP_DIRECTORY/$service"
+    fi
+    if createEncryptedPostgresBackup "$BACKUP_DIRECTORY" "$service"; then
+      message="Performing automatic maintenance: Stored encrypted backup for $service in $BACKUP_DIRECTORY."
+      hc_send log "$message"
+      log INFO "$message"
+    else
+      fail_and_report 5 "Failed to create encrypted update for $service"
+    fi
+  done
+else
+  log WARN "Automated backups are disabled (variable AUTO_BACKUPS != \"true\")"
 fi
 
 exit 0

@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   teiler:
-    image: docker.verbis.dkfz.de/dktk/dktk-teiler:latest
+    image: docker.verbis.dkfz.de/ccp/dktk-teiler:latest
     container_name: bridgehead-ccp-teiler
     environment:
       LOG_LEVEL: "INFO"

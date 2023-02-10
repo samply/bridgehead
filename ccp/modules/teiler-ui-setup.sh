@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function teilerUiSetup() {
 	if [ -n "$ENABLE_TEILER" ];then
 		log INFO "Teiler-UI setup detected -- will start Teiler-UI services."

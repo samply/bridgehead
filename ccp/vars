@@ -12,10 +12,11 @@ PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 source $PROJECT/modules/id-management-setup.sh
 idManagementSetup
 # This will load nngm setup. Effective only if nngm configuration is defined.
-source $PROJECT/nngm-setup.sh
+source $PROJECT/modules/nngm-setup.sh
 nngmSetup
-source $PROJECT/exliquid-setup.sh
+source $PROJECT/modules/exliquid-setup.sh
 exliquidSetup
+source $PROJECT/modules/mtba-setup.sh
 mtbaSetup
 source $PROJECT/modules/teiler-setup.sh
 teilerSetup

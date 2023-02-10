@@ -13,7 +13,7 @@ login-db:
 
 login:
   #image: "jboss/keycloak:16.1.1"
-  image: docker.verbis.dkfz.de/dktk/dktk-keycloak:latest
+  image: docker.verbis.dkfz.de/ccp/dktk-keycloak:latest
   container_name: bridgehead-login
   environment:
     KEYCLOAK_USER: "admin"

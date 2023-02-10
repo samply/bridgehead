@@ -1,6 +1,6 @@
 ##Ignore site configuration
 .gitmodules
 site-config/*
-
+.idea
 ## Ignore site configuration
 */docker-compose.override.yml

@@ -17,3 +17,7 @@ nngmSetup
 source $PROJECT/exliquid-setup.sh
 exliquidSetup
 mtbaSetup
+source $PROJECT/modules/teiler-setup.sh
+teilerSetup
+source $PROJECT/modules/teiler-ui-setup.sh
+teilerUiSetup

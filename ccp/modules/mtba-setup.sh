@@ -8,6 +8,6 @@ function mtbaSetup() {
 			log ERROR "Detected MTBA Module configuration but ID-Management Module seems not to be configured!"
 			exit 1;
 		fi
-		OVERRIDE+=" -f ./$PROJECT/mtba-compose.yml"
+		OVERRIDE+=" -f ./$PROJECT/modules/mtba-compose.yml"
 	fi
 }

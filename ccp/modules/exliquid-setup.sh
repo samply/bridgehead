@@ -14,6 +14,6 @@ function exliquidSetup() {
 	esac
 	if [[ $EXLIQUID -eq 1 ]]; then
 		log INFO "EXLIQUID setup detected -- will start Report-Hub."
-		OVERRIDE+=" -f ./$PROJECT/exliquid-compose.yml"
+		OVERRIDE+=" -f ./$PROJECT/modules/exliquid-compose.yml"
 	fi
 }

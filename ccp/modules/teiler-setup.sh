@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function teilerSetup() {
 	if [ -n "$ENABLE_TEILER" ];then
 		log INFO "Teiler setup detected -- will start Teiler service."

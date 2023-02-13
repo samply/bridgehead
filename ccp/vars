@@ -19,6 +19,6 @@ exliquidSetup
 source $PROJECT/modules/mtba-setup.sh
 mtbaSetup
 source $PROJECT/modules/teiler-setup.sh
-teilerSetup
+exporterSetup
 source $PROJECT/modules/teiler-ui-setup.sh
 teilerUiSetup

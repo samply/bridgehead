@@ -20,6 +20,8 @@ services:
       KEYCLOAK_USER: "admin"
       KEYCLOAK_PASSWORD: "${KEYCLOAK_ADMIN_PASSWORD}"
       DB_PASSWORD: "${KEYCLOAK_DB_PASSWORD}" # Set in teiler-setup.sh
+      TEILER_ROOT_CONFIG_EXTERN_URL: "https://${HOST}/ccp-teiler-root-config"
+      LOGIN_EXTERN_URL: "https://${HOST}/login"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.login.rule=PathPrefix(`/login`)"

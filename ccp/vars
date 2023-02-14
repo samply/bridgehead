@@ -8,17 +8,8 @@ REPORTHUB_BEAM_SECRET_LONG="ApiKey report-hub.${PROXY_ID} ${REPORTHUB_BEAM_SECRE
 SUPPORT_EMAIL=support-ccp@dkfz-heidelberg.de
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
-# This will load id-management setup. Effective only if id-management configuration is defined.
-source $PROJECT/modules/id-management-setup.sh
-idManagementSetup
-# This will load nngm setup. Effective only if nngm configuration is defined.
-source $PROJECT/modules/nngm-setup.sh
-nngmSetup
-source $PROJECT/modules/exliquid-setup.sh
-exliquidSetup
-source $PROJECT/modules/mtba-setup.sh
-mtbaSetup
-source $PROJECT/modules/exporter-setup.sh
-exporterSetup
-source $PROJECT/modules/teiler-ui-setup.sh
-teilerUiSetup
+for module in $PROJECT/modules/*.sh
+do
+    log INFO "sourcing $module"
+    source $module
+done

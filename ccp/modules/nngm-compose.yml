@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   connector:
-    container_name: bridgehead-connector
+    container_name: bridgehead-nngm-connector
     image: docker.verbis.dkfz.de/ccp/connector:bk2
     environment:
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
@@ -19,7 +19,7 @@ services:
 
   connector_db:
     image: postgres:9.5-alpine
-    container_name: bridgehead-ccp-connector-db
+    container_name: bridgehead-nngm-connector-db
     volumes:
       - "connector_db_data:/var/lib/postgresql/data"
     environment:

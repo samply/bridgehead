@@ -24,7 +24,8 @@ services:
       KC_HOSTNAME_STRICT: "false"
       KC_PROXY_ADDRESS_FORWARDING: "true"
       TEILER_ROOT_CONFIG_EXTERN_URL: "https://${HOST}/ccp-teiler-root-config"
-      LOGIN_EXTERN_URL: "https://${HOST}/login"
+    command:
+      - start-dev --import-realm --proxy edge --http-relative-path=/login
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.login.rule=PathPrefix(`/login`)"

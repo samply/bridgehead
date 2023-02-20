@@ -6,24 +6,30 @@ This repository is the starting point for any information and tools you will nee
 
 1. [Requirements](#requirements)
     - [Hardware](#hardware)
-    - [System](#system)
+    - [Software](#software)
       - [Git](#git)
       - [Docker](#docker)
+    - [Network](#network)
 2. [Deployment](#deployment)
-    - [Installation](#installation)
+    - [Site name](#site-name)
+    - [Projects](#projects)
+    - [GitLab repository](#gitlab-repository)
+    - [Base Installation](#base-installation)
     - [Register with Samply.Beam](#register-with-samplybeam)
     - [Starting and stopping your Bridgehead](#starting-and-stopping-your-bridgehead)
-    - [Auto-starting your Bridgehead when the server starts](#auto-starting-your-bridgehead-when-the-server-starts)
-3. [Additional Services](#additional-Services)
-    - [Monitoring](#monitoring)
-    - [Register with a Directory](#register-with-a-Directory)
-4. [Site-specific configuration](#site-specific-configuration)
+    - [Testing your new Bridgehead](#testing-your-new-bridgehead)
+    - [De-installing a Bridgehead](#de-installing-a-bridgehead)
+3. [Site-specific configuration](#site-specific-configuration)
     - [HTTPS Access](#https-access)
-    - [Locally Managed Secrets](#locally-managed-secrets)
-    - [Git Proxy Configuration](#git-proxy-configuration)
-    - [Docker Daemon Proxy Configuration](#docker-daemon-proxy-configuration)
+    - [TLS terminating proxies](#tls-terminating-proxies)
+    - [File structure](#file-structure)
+4. [Things you should know](#things-you-should-know)
+    - [Auto-Updates](#auto-updates)
     - [Non-Linux OS](#non-linux-os)
-5. [License](#license)
+5. [Troubleshooting](#troubleshooting)
+    - [Monitoring](#monitoring)
+    - [Docker Daemon Proxy Configuration](#docker-Daemon-Proxy-Configuration)
+6. [License](#license)
 
 ## Requirements
 
@@ -98,9 +104,7 @@ We will set the repository up for you. We will then send you:
 - The repository's URL.
 - A token to access the repository.
 
-Before installation, you must set up your site's configuration in GitLab.
-
-To do this, visit the configuration repository's URL and click on the configuration file. Depending on your project, this will be called either ```bbmri.conf```or ```ccp.conf```. Use the blue button to edit it. You will need to change, as a minimum, the following variables:
+During the installation, your Bridgehead will download your site's configuration from GitLab. You will receive a weblink to review these settings and make changes as needed. To do this, visit the URL and click on the configuration file (```*.conf```, depending on your network). Use the blue button to edit it. You will need to check, as a minimum, the following variables:
 
 - SITE_NAME
 - SITE_ID
@@ -109,9 +113,9 @@ To do this, visit the configuration repository's URL and click on the configurat
 - OPERATOR_EMAIL
 - OPERATOR_PHONE
 
-SITE_NAME and SITE_ID can be set to the chosen name for your site, e.g. "your-site-name". OPERATOR_* should be set to values appropriate for the administrator of your site.
+SITE_NAME and SITE_ID should be set to the chosen name for your site. OPERATOR_* should be set to values appropriate for the administrator of your site (see examples in the file).
 
-Once you have made your changes, these will need to be reviewed by members of our team before you can proceed with the installation.
+Once you have made your changes, these will need to be reviewed by members of our team as part of a git pull request. Once accepted, the Bridgehead will automatically re-download these settings as part of its auto-update.
 
 ### Base Installation
 
@@ -176,7 +180,7 @@ After starting the Bridgehead, you can watch the initialization process with the
 journalctl -u bridgehead@bbmri -f
 ```
 
-if this exits with the following:
+if this exits with something similar to the following:
 
 ```
 bridgehead@bbmri.service: Main process exited, code=exited, status=1/FAILURE
@@ -190,7 +194,7 @@ Once the Bridgehead is running, you can also view the individual Docker processe
 docker ps
 ```
 
-There should be 6 Docker proceses. If there are fewer, then you know that something has gone wrong. To see what is going on, run:
+There should be 6 - 10 Docker proceses. If there are fewer, then you know that something has gone wrong. To see what is going on, run:
 
 ```shell
 journalctl -u bridgehead@bbmri -f
@@ -216,30 +220,11 @@ If you have chosen to take part in our monitoring program (by setting the ```MON
 
 You may decide that you want to remove a Bridgehead installation from your machine, e.g. if you want to migrate it to a new location or if you want to start a fresh installation because the initial attempts did not work.
 
-The following steps will remove all traces of the Bridgehead from your machine. All locally stored data pertaining to the Bridgehead will be lost.
-
-First, purge the Bridgehead from ```systemctl```:
+To do this, run:
 
 ```shell
-sudo systemctl stop bridgehead@bbmri.service
-sudo systemctl disable bridgehead@bbmri.service
-sudo systemctl daemon-reload
-sudo systemctl reset-failed
+sh bridgehead uninstall
 ```
-
-Now remove the directories where the Bridgehead files reside:
-
-```shell
-sudo rm -rf /srv/docker/bridgehead /etc/bridgehead
-```
-
-Finally, get rid of the Docker images:
-
-```shell
-docker image rm traefik:latest samply/beam-proxy:develop samply/blaze:0.18 samply/bridgehead-forward-proxy:latest samply/bridgehead-landingpage:master samply/spot:latest
-```
-
-Note that you will still have a functioning Beam certificate and a functioning GitLab configuration repository, even after you have removed everything locally.
 
 ## Site-specific configuration
 
@@ -271,21 +256,6 @@ Your Bridgehead will automatically and regularly check for updates. Whenever som
 
 If you would like to understand what happens exactly and when, please check the systemd units deployed during the [installation](#base-installation) via `systemctl cat bridgehead-update@<PROJECT>.service` and `systemctl cat bridgehead-update@<PROJECT.timer`.
 
-### Monitoring
-
-To keep all Bridgeheads up and working and detect any errors before a user does, a central monitoring 
-
-- Your Bridgehead itself will report relevant system events, such as successful/failed updates, restarts, performance metrics or version numbers.
-- Your Bridgehead is also monitored from the outside by your network's central components. For example, the federated search will regularly perform a black-box test by sending an empty query to your Bridgehead and checking if the results make sense.
-
-In all monitoring cases, obviously no sensitive information is transmitted, in particular not any patient-related data. Aggregated data, e.g. total amount of datasets, may be transmitted for diagnostic purposes.
-
-## Troubleshooting
-
-### Docker Daemon Proxy Configuration
-
-Docker has a background daemon, responsible for downloading images and starting them. Sometimes, proxy configuration from your system won't carry over and it will fail to download images. In that case, configure the proxy for this daemon as described in the [official documentation](https://docs.docker.com).
-
 ### Non-Linux OS
 
 The installation procedures described above have only been tested under Linux.
@@ -302,6 +272,21 @@ Under Windows, you have 2 options:
 We have tested the installation procedure with an Ubuntu 22.04 guest system running on a VMware virtual machine. That worked flawlessly.
 
 Installation under WSL ought to work, but we have not tested this.
+
+## Troubleshooting
+
+### Monitoring
+
+To keep all Bridgeheads up and working and detect any errors before a user does, a central monitoring 
+
+- Your Bridgehead itself will report relevant system events, such as successful/failed updates, restarts, performance metrics or version numbers.
+- Your Bridgehead is also monitored from the outside by your network's central components. For example, the federated search will regularly perform a black-box test by sending an empty query to your Bridgehead and checking if the results make sense.
+
+In all monitoring cases, obviously no sensitive information is transmitted, in particular not any patient-related data. Aggregated data, e.g. total amount of datasets, may be transmitted for diagnostic purposes.
+
+### Docker Daemon Proxy Configuration
+
+Docker has a background daemon, responsible for downloading images and starting them. Sometimes, proxy configuration from your system won't carry over and it will fail to download images. In that case, configure the proxy for this daemon as described in the [official documentation](https://docs.docker.com).
 
 ## License
 

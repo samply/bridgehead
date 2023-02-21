@@ -23,7 +23,7 @@ services:
       KC_HOSTNAME_URL: "https://${HOST}/login"
       KC_HOSTNAME_STRICT: "false"
       KC_PROXY_ADDRESS_FORWARDING: "true"
-      TEILER_ROOT_CONFIG_EXTERN_URL: "https://${HOST}/ccp-teiler-root-config"
+      TEILER_ROOT_CONFIG_EXTERN_URL: "https://${HOST}/ccp-teiler"
     command:
       - start-dev --import-realm --proxy edge --http-relative-path=/login
     labels:
@@ -40,7 +40,7 @@ services:
     container_name: bridgehead-teiler-root-config
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.teiler_root_config_ccp.rule=PathPrefix(`/ccp-teiler-root-config`)"
+      - "traefik.http.routers.teiler_root_config_ccp.rule=PathPrefix(`/ccp-teiler`)"
       - "traefik.http.services.teiler_root_config_ccp.loadbalancer.server.port=9000"
       - "traefik.http.routers.teiler_root_config_ccp.tls=true"
     environment:
@@ -85,7 +85,7 @@ services:
       DEFAULT_LANGUAGE: "DE"
       CONFIG_ENV_VAR_PATH: "/app/ccp.conf"
       TEILER_CONFIG_UPDATER_CRON: "0 1 * * * *"
-      TEILER_ROOT_CONFIG_URL: "https://${HOST}/ccp-teiler-root-config"
+      TEILER_ROOT_CONFIG_URL: "https://${HOST}/ccp-teiler"
       TEILER_UI_DE_URL: "https://${HOST}/ccp-teiler-ui/de"
       TEILER_UI_EN_URL: "https://${HOST}/ccp-teiler-ui/en"
       TEILER_APP1_NAME: "config"

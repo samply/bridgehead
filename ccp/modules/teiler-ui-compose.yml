@@ -71,7 +71,7 @@ services:
 
   teiler-core:
     image: samply/teiler-core:developer
-    container_name: bridgehead-teiler
+    container_name: bridgehead-teiler-core
     volumes:
       - "/etc/bridgehead/ccp.conf:/app/ccp.conf"
     labels:

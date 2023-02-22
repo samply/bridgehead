@@ -5,6 +5,15 @@ source lib/functions.sh
 
 log "INFO" "Preparing your system for bridgehead installation ..."
 
+# Check, if running in WSL
+if [[ $(grep -i Microsoft /proc/version) ]]; then
+    # Check, if systemd is available
+    if [ ! $(systemctl) ]; then
+        log "ERROR" "It seems, that you have no active systemd environment in your WSL. Please follow the guide in https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/"
+        exit 1
+    fi
+fi
+
 # Create the bridgehead user
 if id bridgehead &>/dev/null; then
     log "INFO" "Existing user with id $(id -u bridgehead) will be used by the bridgehead system units."

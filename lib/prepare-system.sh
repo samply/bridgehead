@@ -52,8 +52,12 @@ if [ -d /etc/bridgehead ]; then
     fi
 else
     log "INFO" "Now cloning your site configuration repository for you."
-    read -p "Please enter your site: " site
-    read -s -p "Please enter the bridgehead's access token for your site configuration repository (will not be echoed): " access_token
+    if [ -z "$site" ]; then
+        read -p "Please enter your site: " site
+    fi
+    if [ -z "$access_token" ]; then
+        read -s -p "Please enter the bridgehead's access token for your site configuration repository (will not be echoed): " access_token
+    fi
     site_configuration_repository_url="https://bytoken:${access_token}@${site_configuration_repository_middle}$(echo $site | tr '[:upper:]' '[:lower:]').git"
     git clone $site_configuration_repository_url /etc/bridgehead
     if [ $? -gt 0 ]; then

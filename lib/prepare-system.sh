@@ -26,7 +26,7 @@ if [ -d "/srv/docker/bridgehead" ]; then
 else
     log "INFO" "Cloning $bridgehead_repository_url to /srv/docker/bridgehead"
     mkdir -p /srv/docker/
-    git clone bridgehead_repository_url /srv/docker/bridgehead
+    git clone $bridgehead_repository_url /srv/docker/bridgehead
 fi
 
 case "$PROJECT" in

@@ -1,0 +1,83 @@
+version: "3.7"
+
+services:
+  traefik:
+    container_name: bridgehead-traefik
+    image: traefik:latest
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.file.directory=/configuration/
+      - --api.dashboard=true
+      - --accesslog=true
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=${LDM_LOGIN}"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/bridgehead/traefik-tls:/certs:ro
+      - ../lib/traefik-configuration/:/configuration:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  forward_proxy:
+    container_name: bridgehead-forward-proxy
+    image: samply/bridgehead-forward-proxy:latest
+    environment:
+      HTTPS_PROXY: ${HTTPS_PROXY_URL}
+      USERNAME: ${HTTPS_PROXY_USERNAME}
+      PASSWORD: ${HTTPS_PROXY_PASSWORD}
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/docker/custom-certs/:ro
+
+  spot:
+    image: samply/spot:latest
+    container_name: bridgehead-spot
+    environment:
+      SECRET: ${SPOT_BEAM_SECRET_LONG}
+      APPID: spot
+      PROXY_ID: ${PROXY_ID}
+      LDM_URL: ${LDM_URL}
+      AUTH_USER: ${}
+      AUTH_PW: ${}
+      BEAM_PROXY: http://beam-proxy:8081
+    depends_on:
+      - "beam-proxy"
+
+  beam-proxy:
+    image: "samply/beam-proxy:develop"
+    container_name: bridgehead-beam-proxy
+    environment:
+      BROKER_URL: ${BROKER_URL}
+      PROXY_ID: ${PROXY_ID}
+      APP_0_ID: snap
+      APP_0_KEY: ${SPOT_BEAM_SECRET_SHORT}
+      PRIVKEY_FILE: /run/secrets/proxy.pem
+      ALL_PROXY: http://forward_proxy:3128
+      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
+      ROOTCERT_FILE: /conf/root.crt.pem
+    secrets:
+      - proxy.pem
+    depends_on:
+      - "forward_proxy"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+      - ./root.crt.pem:/conf/root.crt.pem:ro
+
+
+volumes:
+  blaze-data:
+
+secrets:
+  proxy.pem:
+    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

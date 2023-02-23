@@ -2,7 +2,7 @@
 
 function exliquidSetup() {
 	case ${SITE_ID} in
-		berlin|dresden|essen|frankfurt|freiburg|luebeck|mainz|muenchen-lmu|muenchen-tu|mannheim|tuebingen)
+		berlin|dresden|essen|frankfurt|freiburg|luebeck|mainz|muenchen-lmu|muenchen-tum|mannheim|tuebingen)
 			EXLIQUID=1
 			;;
 		dktk-test)

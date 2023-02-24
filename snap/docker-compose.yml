@@ -41,7 +41,7 @@ services:
       - /etc/bridgehead/trusted-ca-certs:/docker/custom-certs/:ro
 
   spot:
-    image: samply/spot:latest
+    image: docker.verbis.dkfz.de/ccp-private/aql-local-spot
     container_name: bridgehead-spot
     environment:
       SECRET: ${SPOT_BEAM_SECRET_LONG}

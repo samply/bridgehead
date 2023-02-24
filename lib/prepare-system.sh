@@ -8,8 +8,8 @@ log "INFO" "Preparing your system for bridgehead installation ..."
 # Check, if running in WSL
 if [[ $(grep -i Microsoft /proc/version) ]]; then
     # Check, if systemd is available
-    if [ $(systemctl is-system-running) = "offline" ]; then
-        log "ERROR" "It seems, that you have no active systemd environment in your WSL. Please follow the guide in https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/"
+    if [ "$(systemctl is-system-running)" = "offline" ]; then
+        log "ERROR" "It seems you have no active systemd environment in your WSL environment. Please follow the guide in https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/"
         exit 1
     fi
 fi

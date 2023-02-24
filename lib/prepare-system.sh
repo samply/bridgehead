@@ -14,7 +14,12 @@ else
 fi
 
 # Clone the OpenSource repository of bridgehead
-bridgehead_repository_url="https://github.com/samply/bridgehead.git"
+set +e
+bridgehead_repository_url=$(git remote get-url origin)
+if [ $? -ne 0 ]; then
+    bridgehead_repository_url="https://github.com/samply/bridgehead.git"
+fi
+set -e
 if [ -d "/srv/docker/bridgehead" ]; then
     current_owner=$(stat -c '%U' /srv/docker/bridgehead)
     if [ "$(su -c 'git -C /srv/docker/bridgehead remote get-url origin' $current_owner)" == "$bridgehead_repository_url" ]; then
@@ -26,7 +31,7 @@ if [ -d "/srv/docker/bridgehead" ]; then
 else
     log "INFO" "Cloning $bridgehead_repository_url to /srv/docker/bridgehead"
     mkdir -p /srv/docker/
-    git clone bridgehead_repository_url /srv/docker/bridgehead
+    git clone $bridgehead_repository_url /srv/docker/bridgehead
 fi
 
 case "$PROJECT" in

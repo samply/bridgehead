@@ -48,8 +48,8 @@ services:
       APPID: spot
       PROXY_ID: ${PROXY_ID}
       LDM_URL: ${LDM_URL}
-      AUTH_USER: ${}
-      AUTH_PW: ${}
+      AUTH_USER: ${AUTH_USER}
+      AUTH_PW: ${AUTH_PW}
       BEAM_PROXY: http://beam-proxy:8081
     depends_on:
       - "beam-proxy"

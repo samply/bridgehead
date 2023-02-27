@@ -77,7 +77,12 @@ case "$ACTION" in
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
 	install)
-		source ./lib/prepare-system.sh
+		source ./lib/prepare-system.sh NODEV
+		loadVars
+		exec ./lib/install-bridgehead.sh $PROJECT
+		;;
+	dev-install)
+		exec ./lib/prepare-system.sh DEV
 		loadVars
 		exec ./lib/install-bridgehead.sh $PROJECT
 		;;

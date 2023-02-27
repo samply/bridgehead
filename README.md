@@ -157,6 +157,10 @@ To keep all Bridgeheads up and working and detect any errors before a user does,
 
 In all monitoring cases, obviously no sensitive information is transmitted, in particular not any patient-related data. Aggregated data, e.g. total amount of datasets, may be transmitted for diagnostic purposes.
 
+### Development Installation
+
+By using `./bridgehead dev-install <projectname>` instead of `install`, you can install a developer bridgehead. The difference is, that you can provide an arbitrary configuration repository during the installation, meaning that it does not have to adhere to the usual naming scheme. This allows for better decoupling between development and production configurations.
+
 ## Troubleshooting
 
 ### Docker Daemon Proxy Configuration

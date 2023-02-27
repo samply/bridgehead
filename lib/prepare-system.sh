@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+DEV_MODE="${1:-NODEV}"
+
 source lib/log.sh
 source lib/functions.sh
 
@@ -64,7 +66,7 @@ if [ -d /etc/bridgehead ]; then
     else
         log "WARN" "Your site configuration repository in /etc/bridgehead seems to have another origin than git.verbis.dkfz.de. Please check if the repository is correctly cloned!"
     fi
-else
+elif [[ "$DEV_MODE" == "NODEV" ]]; then
     log "INFO" "Now cloning your site configuration repository for you."
     read -p "Please enter your site: " site
     read -s -p "Please enter the bridgehead's access token for your site configuration repository (will not be echoed): " access_token
@@ -73,9 +75,13 @@ else
     if [ $? -gt 0 ]; then
         log "ERROR" "Unable to clone your configuration repository. Please obtain correct access data and try again."
     fi
+elif [[ "$DEV_MODE" == "DEV" ]]; then
+    log "INFO" "Now cloning your developer configuration repository for you."
+    read -p "Please enter your config repository URL: " url
+    git clone "$url" /etc/bridgehead
 fi
 
 chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead
 
-log INFO "System preparation is completed and private key is present."
+log INFO "System preparation is completed and configuration is present."
 

@@ -16,6 +16,8 @@ services:
       - "traefik.http.routers.connector.rule=PathPrefix(`/ccp-connector`)"
       - "traefik.http.services.connector.loadbalancer.server.port=8080"
       - "traefik.http.routers.connector.tls=true"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/custom-certs
 
   connector_db:
     image: postgres:9.5-alpine

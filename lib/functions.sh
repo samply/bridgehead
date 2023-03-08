@@ -34,7 +34,7 @@ checkOwner(){
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|stop|update|install|uninstall|enroll PROJECTNAME"
+	echo "Usage: bridgehead start|stop|is-running|update|install|uninstall|enroll PROJECTNAME"
 	echo "PROJECTNAME should be one of ccp|bbmri"
 }
 
@@ -167,6 +167,16 @@ function retry {
     fi
   done
   return 0
+}
+
+function bk_is_running {
+	RUNNING="$($COMPOSE -p bridgehead-$PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE ps -q)"
+	NUMBEROFRUNNING=$(echo "$RUNNING" | wc -l)
+	if [ $NUMBEROFRUNNING -gt 0 ]; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 ##Setting Network properties

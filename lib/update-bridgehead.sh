@@ -4,10 +4,15 @@ source lib/functions.sh
 AUTO_HOUSEKEEPING=${AUTO_HOUSEKEEPING:-true}
 
 if [ "$AUTO_HOUSEKEEPING" == "true" ]; then
-	A="Performing automatic maintenance: Cleaning docker images."
+	A="Performing automatic maintenance: "
+	if bk_is_running; then
+		A="$A Cleaning docker images."
+		docker system prune -a -f
+	else
+		A="$A Not cleaning docker images since BK is not running."
+	fi
 	hc_send log "$A"
 	log INFO "$A"
-	docker system prune -a -f
 else
 	log WARN "Automatic housekeeping disabled (variable AUTO_HOUSEKEEPING != \"true\")"
 fi

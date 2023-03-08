@@ -73,7 +73,8 @@ case "$ACTION" in
 		exec $COMPOSE -p bridgehead-$PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		;;
 	is-running)
-		exit bk_is_running
+		bk_is_running
+		exit $?
 		;;
 	update)
 		loadVars

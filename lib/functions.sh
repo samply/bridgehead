@@ -170,9 +170,10 @@ function retry {
 }
 
 function bk_is_running {
+	detectCompose
 	RUNNING="$($COMPOSE -p bridgehead-$PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE ps -q)"
 	NUMBEROFRUNNING=$(echo "$RUNNING" | wc -l)
-	if [ $NUMBEROFRUNNING -gt 0 ]; then
+	if [ $NUMBEROFRUNNING -ge 2 ]; then
 		return 0
 	else
 		return 1

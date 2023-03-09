@@ -11,7 +11,7 @@ detectCompose() {
 
 getLdmPassword() {
 	if [ -n "$LDM_PASSWORD" ]; then
-		docker run --rm httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r'
+		docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r'
 	else
 		echo -n ""
 	fi

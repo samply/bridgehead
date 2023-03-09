@@ -66,11 +66,13 @@ case "$ACTION" in
 		checkRequirements
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
 		export LDM_LOGIN=$(getLdmPassword)
-		exec $COMPOSE -p bridgehead-$PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
+		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
 		loadVars
-		exec $COMPOSE -p bridgehead-$PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		# HACK: This is tempoarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
+		$COMPOSE -p bridgehead-$PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		;;
 	is-running)
 		bk_is_running

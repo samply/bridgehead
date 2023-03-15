@@ -10,10 +10,9 @@ services:
       POSTGRES_PASSWORD: "${KEYCLOAK_DB_PASSWORD}" # Set in teiler-setup.sh
       POSTGRES_DB: "keycloak"
     volumes:
-      - "login-db:/var/lib/postgresql/data"
+      - "bridgehead-login-db:/var/lib/postgresql/data"
 
   login:
-    #image: "jboss/keycloak:16.1.1"
     image: docker.verbis.dkfz.de/ccp/dktk-keycloak:latest
     container_name: bridgehead-login
     environment:
@@ -263,5 +262,5 @@ services:
   #    TEILER_APP27_ISLOCAL: "true"
 
 volumes:
-  login-db:
-    name: "login-db"
+  bridgehead-login-db:
+    name: "bridgehead-login-db"

@@ -31,6 +31,3 @@ services:
   # TODO: Include CBioPortal in Deployment ...
   # NOTE: CBioPortal can't load data while the system is running. So after import of data bridgehead needs to be restarted!
   # TODO: Find a trigger to let mtba signal a restart for CBioPortal
-
-volumes:
-  mtba-data:

@@ -82,7 +82,7 @@ services:
     environment:
       LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"
-      APPLICATION_FORWARD_STRATEGY: "framework"
+      APPLICATION_FORWARD_STRATEGY: "native"
       APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "DE"
       CONFIG_ENV_VAR_PATH: "/app/ccp.conf"

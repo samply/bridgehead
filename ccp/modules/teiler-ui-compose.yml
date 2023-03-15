@@ -69,7 +69,8 @@ services:
       TEILER_PROJECT: "${PROJECT}"
 
   teiler-core:
-    image: samply/teiler-core:developer
+    #image: samply/teiler-core:developer
+    image: teiler-core
     container_name: bridgehead-teiler-core
     volumes:
       - "/etc/bridgehead/ccp.conf:/app/ccp.conf"
@@ -81,6 +82,8 @@ services:
     environment:
       LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"
+      APPLICATION_FORWARD_STRATEGY: "framework"
+      APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "DE"
       CONFIG_ENV_VAR_PATH: "/app/ccp.conf"
       TEILER_CONFIG_UPDATER_CRON: "0 1 * * * *"

@@ -19,11 +19,11 @@ services:
       FILE_CHARSET: ${MTBA_FILE_CHARSET}
       FILE_END_OF_LINE: ${MTBA_FILE_END_OF_LINE}
       CSV_DELIMITER: ${MTBA_CSV_DELIMITER}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.mtba.rule=PathPrefix(`/`)"
-      - "traefik.http.services.mtba.loadbalancer.server.port=80"
-      - "traefik.http.routers.mtba.tls=true"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.mtba.rule=PathPrefix(`/mtba`)"
+#      - "traefik.http.services.mtba.loadbalancer.server.port=80"
+#      - "traefik.http.routers.mtba.tls=true"
     volumes:
       - /tmp/bridgehead/mtba/input:/app/input
       - /tmp/bridgehead/mtba/persist:/app/persist

@@ -73,12 +73,14 @@ services:
     image: teiler-core
     container_name: bridgehead-teiler-core
     volumes:
-      - "/etc/bridgehead/ccp.conf:/app/ccp.conf"
+      - "/etc/bridgehead/ccp.conf:/app/ccp.conf:ro"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.teiler_core_ccp.rule=PathPrefix(`/ccp-teiler-core`)"
       - "traefik.http.services.teiler_core_ccp.loadbalancer.server.port=8085"
       - "traefik.http.routers.teiler_core_ccp.tls=true"
+      - "traefik.http.middlewares.teiler_core_ccp_strip.stripprefix.prefixes=/ccp-teiler-core"
+      - "traefik.http.routers.teiler_core_ccp.middlewares=teiler_core_ccp_strip"
     environment:
       LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"

@@ -35,28 +35,32 @@ services:
 
   ############################################ Teiler-UI
   teiler-root-config:
-    image: samply/teiler-root-config:developer
+    #image: samply/teiler-root-config:developer
+    image: teiler-root-config
     container_name: bridgehead-teiler-root-config
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.teiler_root_config_ccp.rule=PathPrefix(`/ccp-teiler`)"
       - "traefik.http.services.teiler_root_config_ccp.loadbalancer.server.port=9000"
       - "traefik.http.routers.teiler_root_config_ccp.tls=true"
+      - "traefik.http.middlewares.teiler_root_config_ccp_strip.stripprefix.prefixes=/ccp-teiler"
+      - "traefik.http.routers.teiler_root_config_ccp.middlewares=teiler_root_config_ccp_strip"
     environment:
       TEILER_CORE_URL: "https://${HOST}/ccp-teiler-core"
       TEILER_UI_URL: "https://${HOST}/ccp-teiler-ui"
       DEFAULT_LANGUAGE: "de"
 
   teiler-ui:
-    image: samply/teiler-ui:developer
+    #image: samply/teiler-ui:developer
+    image: teiler-ui
     container_name: bridgehead-teiler-ui
-    #  ports:
-    #    - 4200:80
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.teiler_ui_ccp.rule=PathPrefix(`/ccp-teiler-ui`)"
       - "traefik.http.services.teiler_ui_ccp.loadbalancer.server.port=80"
       - "traefik.http.routers.teiler_ui_ccp.tls=true"
+      - "traefik.http.middlewares.teiler_ui_ccp_strip.stripprefix.prefixes=/ccp-teiler-ui"
+      - "traefik.http.routers.teiler_ui_ccp.middlewares=teiler_ui_ccp_strip"
     environment:
       DEFAULT_LANGUAGE: "DE"
       TEILER_CORE_URL: "https://${HOST}/ccp-teiler-core"
@@ -67,10 +71,12 @@ services:
       TEILER_ADMIN_EMAIL: "${OPERATOR_EMAIL}"
       TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
       TEILER_PROJECT: "${PROJECT}"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
+      TEILER_ROOT_CONFIG_URL: "https://${HOST}/ccp-teiler"
+      HTTP_RELATIVE_PATH: "/ccp-teiler"
 
   teiler-core:
-    #image: samply/teiler-core:developer
-    image: teiler-core
+    image: samply/teiler-core:developer
     container_name: bridgehead-teiler-core
     volumes:
       - "/etc/bridgehead/ccp.conf:/app/ccp.conf:ro"
@@ -84,7 +90,6 @@ services:
     environment:
       LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"
-      APPLICATION_FORWARD_STRATEGY: "native"
       APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "DE"
       CONFIG_ENV_VAR_PATH: "/app/ccp.conf"
@@ -96,9 +101,9 @@ services:
       #    TEILER_APP2_NAME: "quality-report"
       TEILER_APP3_NAME: "keycloak"
       TEILER_APP3_TITLE: "Keycloak"
-      TEILER_APP4_DESCRIPTION_EN: "Authentication site"
-      TEILER_APP4_DESCRIPTION_DE: "Authentifizierungsseite"
-      TEILER_APP4_SOURCEURL: "https://${HOST}/login/auth/"
+      TEILER_APP4_EN_DESCRIPTION: "Authentication site"
+      TEILER_APP4_DE_DESCRIPTION: "Authentifizierungsseite"
+      TEILER_APP4_SOURCEURL: "https://${HOST}/login/"
       TEILER_APP4_ROLES: "TEILER_ADMIN"
       TEILER_APP4_ISACTIVATED: "true"
       TEILER_APP4_ICONSOURCEURL: "https://upload.wikimedia.org/wikipedia/commons/2/29/Keycloak_Logo.png"
@@ -116,10 +121,10 @@ services:
       #    TEILER_APP5_ISEXTERNALLINK: "true"
       #    TEILER_APP5_ISLOCAL: "true"
       TEILER_APP6_NAME: "ldm"
-      TEILER_APP6_TITLE_EN: "Local data management"
-      TEILER_APP6_TITLE_DE: "Lokales Datenmanagement"
-      TEILER_APP6_DESCRIPTION_EN: "Local Data Management"
-      TEILER_APP6_DESCRIPTION_DE: "Lokales Datenmanagement"
+      TEILER_APP6_EN_TITLE: "Local data management"
+      TEILER_APP6_DE_TITLE: "Lokales Datenmanagement"
+      TEILER_APP6_EN_DESCRIPTION: "Local Data Management"
+      TEILER_APP6_DE_DESCRIPTION: "Lokales Datenmanagement"
       TEILER_APP6_SOURCEURL: "${CENTRAXX_URL}"
       TEILER_APP6_ROLES: "TEILER_PUBLIC"
       TEILER_APP6_ISACTIVATED: "${IS_DKTK_SITE}"
@@ -138,10 +143,10 @@ services:
       TEILER_APP7_ISEXTERNALLINK: "true"
       TEILER_APP7_ISLOCAL: "true"
       TEILER_APP8_NAME: "patient-list"
-      TEILER_APP8_TITLE_EN: "Patient List"
-      TEILER_APP8_TITLE_DE: "Patientenliste"
-      TEILER_APP8_DESCRIPTION_EN: "Patient List"
-      TEILER_APP8_DESCRIPTION_DE: "Patientenliste"
+      TEILER_APP8_EN_TITLE: "Patient List"
+      TEILER_APP8_DE_TITLE: "Patientenliste"
+      TEILER_APP8_EN_DESCRIPTION: "Patient List"
+      TEILER_APP8_DE_DESCRIPTION: "Patientenliste"
       TEILER_APP8_SOURCEURL: "https://${HOST}/patientlist"
       TEILER_APP8_ROLES: "TEILER_PUBLIC"
       TEILER_APP8_ISACTIVATED: "true"
@@ -150,10 +155,10 @@ services:
       TEILER_APP8_ISEXTERNALLINK: "true"
       TEILER_APP8_ISLOCAL: "true"
       TEILER_APP9_NAME: "project-pseudonymisation"
-      TEILER_APP9_TITLE_EN: "Project Pseudonymisation"
-      TEILER_APP9_TITLE_DE: "Projectpseudonymisierung"
-      TEILER_APP9_DESCRIPTION_EN: "Project Pseudonymisation"
-      TEILER_APP9_DESCRIPTION_DE: "Projectpseudonymisierung"
+      TEILER_APP9_EN_TITLE: "Project Pseudonymisation"
+      TEILER_APP9_DE_TITLE: "Projectpseudonymisierung"
+      TEILER_APP9_EN_DESCRIPTION: "Project Pseudonymisation"
+      TEILER_APP9_DE_DESCRIPTION: "Projectpseudonymisierung"
       TEILER_APP9_SOURCEURL: "https://${HOST}/id-manager/html/projectSelection.html"
       TEILER_APP9_ROLES: "TEILER_PUBLIC"
       TEILER_APP9_ISACTIVATED: "true"
@@ -163,8 +168,8 @@ services:
       TEILER_APP9_ISLOCAL: "true"
       TEILER_APP10_NAME: "federated-search"
       TEILER_APP10_TITLE: "Lens"
-      TEILER_APP10_DESCRIPTION_EN: "Federated Search"
-      TEILER_APP10_DESCRIPTION_DE: "Föderierte Suche"
+      TEILER_APP10_EN_DESCRIPTION: "Federated Search"
+      TEILER_APP10_DE_DESCRIPTION: "Föderierte Suche"
       TEILER_APP10_SOURCEURL: "https://demo.lens.samply.de/"
       TEILER_APP10_ROLES: "TEILER_PUBLIC"
       TEILER_APP10_ISACTIVATED: "true"
@@ -173,10 +178,10 @@ services:
       TEILER_APP10_ISEXTERNALLINK: "true"
       TEILER_APP10_ISLOCAL: "false"
       TEILER_APP11_NAME: "central-patient-list"
-      TEILER_APP11_TITLE_EN: "Central Patient List"
-      TEILER_APP11_TITLE_DE: "Zentrale Patientenliste"
-      TEILER_APP11_DESCRIPTION_EN: "Central Patient List"
-      TEILER_APP11_DESCRIPTION_DE: "Zentrale Patientenliste"
+      TEILER_APP11_EN_TITLE: "Central Patient List"
+      TEILER_APP11_DE_TITLE: "Zentrale Patientenliste"
+      TEILER_APP11_EN_DESCRIPTION: "Central Patient List"
+      TEILER_APP11_DE_DESCRIPTION: "Zentrale Patientenliste"
       TEILER_APP11_SOURCEURL: "https://patientlist.ccp-it.dktk.dkfz.de/"
       TEILER_APP11_ROLES: "TEILER_PUBLIC"
       TEILER_APP11_ISACTIVATED: "true"
@@ -185,10 +190,10 @@ services:
       TEILER_APP11_ISEXTERNALLINK: "true"
       TEILER_APP11_ISLOCAL: "false"
       TEILER_APP12_NAME: "central id-manager"
-      TEILER_APP12_TITLE_EN: "Central ID-Manager"
-      TEILER_APP12_TITLE_DE: "Zentraler ID-Manager"
-      TEILER_APP12_DESCRIPTION_EN: "Central ID Manager"
-      TEILER_APP12_DESCRIPTION_DE: "Zentraler ID-Manager"
+      TEILER_APP12_EN_TITLE: "Central ID-Manager"
+      TEILER_APP12_DE_TITLE: "Zentraler ID-Manager"
+      TEILER_APP12_EN_DESCRIPTION: "Central ID Manager"
+      TEILER_APP12_DE_DESCRIPTION: "Zentraler ID-Manager"
       TEILER_APP12_SOURCEURL: "https://dktk-kne.kgu.de/"
       TEILER_APP12_ROLES: "TEILER_PUBLIC"
       TEILER_APP12_ISACTIVATED: "true"

@@ -76,17 +76,6 @@ Site names should adhere to the following conventions:
 - If your site is for testing purposes, rather than production, please append "-test", e.g. ```zaragoza-test```.
 - If you are a developer and you are making changes to the Bridgehead, please use your name and prepend "dev-", e.g. ```dev-joe-doe```.
 
-### Projects
-
-The following "projects" are known to the Bridgehead installation:
-
-- bbmri
-- ccp
-
-Use "bbmri" if you are in the BBMRI-ERIC European biobank network or the GBA (German Biobank Alliance) network.
-
-Use "ccp" if you are in the DKTK network, the C4 network or the nNGM network.
-
 ### GitLab repository
 
 In order to be able to install, you will need to have your own repository in GitLab for your site's configuration settings. This allows automated updates of the Bridgehead software.

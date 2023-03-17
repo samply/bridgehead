@@ -96,15 +96,33 @@ To request a new repository, please send an email to one of the following:
 - For the bbmri project: bridgehead@helpdesk.bbmri-eric.eu.
 - For the ccp project: support-ccp@dkfz-heidelberg.de
 
-Mention which project you belong to, i.e. "bbmri" or "ccp", plus your chosen site name.
+Mention:
+- which project you belong to, i.e. "bbmri" or "ccp"
+- site name (According to conventions listed above)
+- operator name, email and contact phone
 
 We will set the repository up for you. We will then send you:
 
 - A Repository Short Name (RSN). Beware: this is distinct from your site name.
-- The repository's URL.
-- A token to access the repository.
+- Repository URL containing the acces token eg. https://BH_Dummy:dummy_token@git.verbis.dkfz.de/bbmri-bridgehead-configs/dummy.git
 
-During the installation, your Bridgehead will download your site's configuration from GitLab. You will receive a weblink to review these settings and make changes as needed. To do this, visit the URL and click on the configuration file (```*.conf```, depending on your network). Use the blue button to edit it. You will need to check, as a minimum, the following variables:
+During the installation, your Bridgehead will download your site's configuration from GitLab and you can review the details provided to us by email.
+
+
+### Base Installation
+
+First, download your site specific configuration repository:
+```shell
+sudo mkdir -p /etc/bridgehead/
+sudo git clone <REPO_URL_FROM_EMAIL> /etc/bridgehead/
+```
+
+Review the site configuration:
+```shell
+sudo cat /etc/bridgehead/bbmri.conf
+```
+
+Pay special attention to:
 
 - SITE_NAME
 - SITE_ID
@@ -113,14 +131,7 @@ During the installation, your Bridgehead will download your site's configuration
 - OPERATOR_EMAIL
 - OPERATOR_PHONE
 
-SITE_NAME and SITE_ID should be set to the chosen name for your site. OPERATOR_* should be set to values appropriate for the administrator of your site (see examples in the file).
-
-Once you have made your changes, these will need to be reviewed by members of our team as part of a git pull request. Once accepted, the Bridgehead will automatically re-download these settings as part of its auto-update.
-
-### Base Installation
-
-First, get the Bridgehead:
-
+Download the bridghead repository:
 ```shell
 sudo mkdir -p /srv/docker/
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
@@ -132,12 +143,6 @@ Then, run the installation script:
 cd /srv/docker/bridgehead
 sudo ./bridgehead install <PROJECT>
 ```
-
-When prompted with "Please enter your site", you should enter the Repository Short Name (RSN) for GitLab that you were given in the previous section.
-
-When prompted with "Please enter the bridgehead's access token for your site configuration repository", you should enter the token for the GitLab repository that was given to you.
-
-You should then be prompted to do the next step:
 
 ### Register with Samply.Beam
 

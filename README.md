@@ -74,7 +74,7 @@ Site names should adhere to the following conventions:
 - They should generally be named after the city where your site is based, e.g. ```karlsruhe```.
 - If you have a multi-part name, please use a hypen ("-") as separator, e.g. ```le-havre```.
 - If your site is for testing purposes, rather than production, please append "-test", e.g. ```zaragoza-test```.
-- If you are a developer and you are making changes to the Bridgehead, please use your name and append "-dev", e.g. ```joe-doe-dev```.
+- If you are a developer and you are making changes to the Bridgehead, please use your name and prepend "dev-", e.g. ```dev-joe-doe```.
 
 ### Projects
 

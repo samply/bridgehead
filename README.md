@@ -80,7 +80,7 @@ Site names should adhere to the following conventions:
 
 In order to be able to install, you will need to have your own repository in GitLab for your site's configuration settings. This allows automated updates of the Bridgehead software.
 
-To request a new repository, please send an email to one of the following:
+To request a new repository, please contact your research network administration or send an email to one of the project specific addresses:
 
 - For the bbmri project: bridgehead@helpdesk.bbmri-eric.eu.
 - For the ccp project: support-ccp@dkfz-heidelberg.de
@@ -88,7 +88,7 @@ To request a new repository, please send an email to one of the following:
 Mention:
 - which project you belong to, i.e. "bbmri" or "ccp"
 - site name (According to conventions listed above)
-- operator name, email and contact phone
+- operator name and email
 
 We will set the repository up for you. We will then send you:
 
@@ -118,9 +118,8 @@ Pay special attention to:
 - OPERATOR_FIRST_NAME
 - OPERATOR_LAST_NAME
 - OPERATOR_EMAIL
-- OPERATOR_PHONE
 
-Download the bridghead repository:
+Clone the bridgehead repository:
 ```shell
 sudo mkdir -p /srv/docker/
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead

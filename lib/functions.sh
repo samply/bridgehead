@@ -11,7 +11,7 @@ detectCompose() {
 
 getLdmPassword() {
 	if [ -n "$LDM_PASSWORD" ]; then
-		docker run --rm httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r'
+		docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r'
 	else
 		echo -n ""
 	fi
@@ -34,7 +34,7 @@ checkOwner(){
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|stop|update|install|uninstall|enroll PROJECTNAME"
+	echo "Usage: bridgehead start|stop|is-running|update|install|uninstall|enroll PROJECTNAME"
 	echo "PROJECTNAME should be one of ccp|bbmri"
 }
 
@@ -131,10 +131,21 @@ fail_and_report() {
 
 setHostname() {
 	if [ -z "$HOST" ]; then
-		export HOST=$(hostname -f)
+		export HOST=$(hostname -f | tr "[:upper:]" "[:lower:]")
 		log DEBUG "Using auto-detected hostname $HOST."
 	fi
 }
+
+# Takes 1) The Backup Directory Path 2) The name of the Service to be backuped
+# Creates 3 Backups: 1) For the past seven days 2) For the current month and 3) for each calendar week
+createEncryptedPostgresBackup(){
+  docker exec "$2" bash -c 'pg_dump -U $POSTGRES_USER $POSTGRES_DB --format=p --no-owner --no-privileges' | \
+      # TODO: Encrypt using /etc/bridgehead/pki/${SITE_ID}.priv.pem | \
+      tee "$1/$2/$(date +Last-%A).sql" | \
+      tee "$1/$2/$(date +%Y-%m).sql" > \
+      "$1/$2/$(date +%Y-KW%V).sql"
+}
+
 
 # from: https://gist.github.com/sj26/88e1c6584397bb7c13bd11108a579746
 # ex. use: retry 5 /bin/false
@@ -156,6 +167,17 @@ function retry {
     fi
   done
   return 0
+}
+
+function bk_is_running {
+	detectCompose
+	RUNNING="$($COMPOSE -p $PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE ps -q)"
+	NUMBEROFRUNNING=$(echo "$RUNNING" | wc -l)
+	if [ $NUMBEROFRUNNING -ge 2 ]; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 ##Setting Network properties

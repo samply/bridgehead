@@ -25,10 +25,11 @@ This repository is the starting point for any information and tools you will nee
     - [File structure](#file-structure)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
+    - [Auto-Backups](#auto-backups)
     - [Non-Linux OS](#non-linux-os)
 5. [Troubleshooting](#troubleshooting)
+    - [Docker Daemon Proxy Configuration](#docker-daemon-proxy-configuration)
     - [Monitoring](#monitoring)
-    - [Docker Daemon Proxy Configuration](#docker-Daemon-Proxy-Configuration)
 6. [License](#license)
 
 ## Requirements
@@ -249,6 +250,20 @@ Your Bridgehead will automatically and regularly check for updates. Whenever som
 
 If you would like to understand what happens exactly and when, please check the systemd units deployed during the [installation](#base-installation) via `systemctl cat bridgehead-update@<PROJECT>.service` and `systemctl cat bridgehead-update@<PROJECT.timer`.
 
+### Auto-Backups
+
+Some of the components in the bridgehead will store persistent data. For those components, we integrated an automated backup solution in the bridgehead updates. It will automatically save the backup in multiple files
+
+1) Last-XX, were XX represents a weekday to allow re-import of at least one version of the database for each of the past seven days.
+2) Year-KW-XX, were XX represents the calendar week to allow re-import of at least one version per calendar week
+3) Year-Month, to allow re-import of at least one version per month
+
+To enable the Auto-Backup feature, please set the Variable `BACKUP_DIRECTORY` in your sites configuration.
+
+### Development Installation
+
+By using `./bridgehead dev-install <projectname>` instead of `install`, you can install a developer bridgehead. The difference is, that you can provide an arbitrary configuration repository during the installation, meaning that it does not have to adhere to the usual naming scheme. This allows for better decoupling between development and production configurations.
+
 ### Non-Linux OS
 
 The installation procedures described above have only been tested under Linux.
@@ -268,6 +283,11 @@ Installation under WSL ought to work, but we have not tested this.
 
 ## Troubleshooting
 
+### Docker Daemon Proxy Configuration
+
+Docker has a background daemon, responsible for downloading images and starting them. Sometimes, proxy configuration from your system won't carry over and it will fail to download images. In that case, configure the proxy for this daemon as described in the [official documentation](https://docs.docker.com).
+
+
 ### Monitoring
 
 To keep all Bridgeheads up and working and detect any errors before a user does, a central monitoring 
@@ -276,10 +296,6 @@ To keep all Bridgeheads up and working and detect any errors before a user does,
 - Your Bridgehead is also monitored from the outside by your network's central components. For example, the federated search will regularly perform a black-box test by sending an empty query to your Bridgehead and checking if the results make sense.
 
 In all monitoring cases, obviously no sensitive information is transmitted, in particular not any patient-related data. Aggregated data, e.g. total amount of datasets, may be transmitted for diagnostic purposes.
-
-### Docker Daemon Proxy Configuration
-
-Docker has a background daemon, responsible for downloading images and starting them. Sometimes, proxy configuration from your system won't carry over and it will fail to download images. In that case, configure the proxy for this daemon as described in the [official documentation](https://docs.docker.com).
 
 ## License
 

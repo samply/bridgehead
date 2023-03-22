@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   exliquid-task-store:
-    image: "samply/blaze:0.18"
+    image: docker.verbis.dkfz.de/cache/samply/blaze:0.19
     container_name: bridgehead-exliquid-task-store
     environment:
       BASE_URL: "http://bridgehead-exliquid-task-store:8080"
@@ -13,7 +13,7 @@ services:
       - "traefik.enable=false"
 
   exliquid-report-hub:
-    image: "samply/report-hub:latest"
+    image: docker.verbis.dkfz.de/cache/samply/report-hub:latest
     container_name: bridgehead-exliquid-report-hub
     environment:
       SPRING_WEBFLUX_BASE_PATH: "/exliquid"

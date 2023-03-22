@@ -1,9 +1,20 @@
 #!/bin/bash -e
 
+DEV_MODE="${1:-NODEV}"
+
 source lib/log.sh
 source lib/functions.sh
 
 log "INFO" "Preparing your system for bridgehead installation ..."
+
+# Check, if running in WSL
+if [[ $(grep -i Microsoft /proc/version) ]]; then
+    # Check, if systemd is available
+    if [ "$(systemctl is-system-running)" = "offline" ]; then
+        log "ERROR" "It seems you have no active systemd environment in your WSL environment. Please follow the guide in https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/"
+        exit 1
+    fi
+fi
 
 # Create the bridgehead user
 if id bridgehead &>/dev/null; then
@@ -14,7 +25,12 @@ else
 fi
 
 # Clone the OpenSource repository of bridgehead
-bridgehead_repository_url="https://github.com/samply/bridgehead.git"
+set +e
+bridgehead_repository_url=$(git remote get-url origin)
+if [ $? -ne 0 ]; then
+    bridgehead_repository_url="https://github.com/samply/bridgehead.git"
+fi
+set -e
 if [ -d "/srv/docker/bridgehead" ]; then
     current_owner=$(stat -c '%U' /srv/docker/bridgehead)
     if [ "$(su -c 'git -C /srv/docker/bridgehead remote get-url origin' $current_owner)" == "$bridgehead_repository_url" ]; then
@@ -26,7 +42,7 @@ if [ -d "/srv/docker/bridgehead" ]; then
 else
     log "INFO" "Cloning $bridgehead_repository_url to /srv/docker/bridgehead"
     mkdir -p /srv/docker/
-    git clone bridgehead_repository_url /srv/docker/bridgehead
+    git clone $bridgehead_repository_url /srv/docker/bridgehead
 fi
 
 case "$PROJECT" in
@@ -50,7 +66,7 @@ if [ -d /etc/bridgehead ]; then
     else
         log "WARN" "Your site configuration repository in /etc/bridgehead seems to have another origin than git.verbis.dkfz.de. Please check if the repository is correctly cloned!"
     fi
-else
+elif [[ "$DEV_MODE" == "NODEV" ]]; then
     log "INFO" "Now cloning your site configuration repository for you."
     read -p "Please enter your site: " site
     read -s -p "Please enter the bridgehead's access token for your site configuration repository (will not be echoed): " access_token
@@ -59,9 +75,13 @@ else
     if [ $? -gt 0 ]; then
         log "ERROR" "Unable to clone your configuration repository. Please obtain correct access data and try again."
     fi
+elif [[ "$DEV_MODE" == "DEV" ]]; then
+    log "INFO" "Now cloning your developer configuration repository for you."
+    read -p "Please enter your config repository URL: " url
+    git clone "$url" /etc/bridgehead
 fi
 
 chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead
 
-log INFO "System preparation is completed and private key is present."
+log INFO "System preparation is completed and configuration is present."
 

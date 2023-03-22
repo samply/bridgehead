@@ -70,14 +70,25 @@ case "$ACTION" in
 		;;
 	stop)
 		loadVars
+		# HACK: This is tempoarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
+		$COMPOSE -p bridgehead-$PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		;;
+	is-running)
+		bk_is_running
+		exit $?
 		;;
 	update)
 		loadVars
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
 	install)
-		source ./lib/prepare-system.sh
+		source ./lib/prepare-system.sh NODEV
+		loadVars
+		exec ./lib/install-bridgehead.sh $PROJECT
+		;;
+	dev-install)
+		exec ./lib/prepare-system.sh DEV
 		loadVars
 		exec ./lib/install-bridgehead.sh $PROJECT
 		;;

@@ -76,10 +76,11 @@ services:
     container_name: bridgehead-focus
     environment:
       API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
-      APP_ID: focus
+      BEAM_APP_ID: focus
       PROXY_ID: ${PROXY_ID}
-      LDM_URL: http://bridgehead-bbmri-blaze:8080/fhir
-      BEAM_PROXY: http://beam-proxy:8081
+      BLAZE_URL: http://bridgehead-bbmri-blaze:8080/fhir
+      BEAM_PROXY_URL: http://beam-proxy:8081
+      RETRY_COUNT: ${FOCUS_RETRY_COUNT}
     depends_on:
       - "beam-proxy"
       - "blaze"

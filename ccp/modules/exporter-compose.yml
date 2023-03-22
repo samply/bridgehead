@@ -22,7 +22,7 @@ services:
       - "traefik.http.routers.exporter_ccp.tls=true"
       - "traefik.http.routers.exporter_ccp.middlewares=auth"
     volumes:
-      - "exporter:/app/exporter-files"
+      - "bridgehead-exporter:/app/exporter-files"
 
   exporter-db:
     image: postgres:15.1-alpine
@@ -32,11 +32,11 @@ services:
       POSTGRES_PASSWORD: "${EXPORTER_DB_PASSWORD}" # Set in exporter-setup.sh
       POSTGRES_DB: "exporter"
     volumes:
-      - "exporter-db:/var/lib/postgresql/data"
+      - "bridgehead-exporter-db:/var/lib/postgresql/data"
 
 
 volumes:
-  exporter-db:
-    name: "exporter-db"
-  exporter:
-    name: "exporter"
+  bridgehead-exporter-db:
+    name: "bridgehead-exporter-db"
+  bridgehead-exporter:
+    name: "bridgehead-exporter"

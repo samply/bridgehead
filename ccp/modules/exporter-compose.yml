@@ -15,12 +15,16 @@ services:
       TEMP_FILES_LIFETIME_IN_DAYS: "1"
       CLEAN_WRITE_FILES_CRON_EXPRESSION: "0 0 2 * * *"
       WRITE_FILES_LIFETIME_IN_DAYS: "30"
+      HTTP_RELATIVE_PATH: "/ccp-exporter"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.exporter_ccp.rule=PathPrefix(`/ccp-exporter`)"
       - "traefik.http.services.exporter_ccp.loadbalancer.server.port=8092"
       - "traefik.http.routers.exporter_ccp.tls=true"
-      - "traefik.http.routers.exporter_ccp.middlewares=auth"
+      # TODO: Add basic auth in Teiler UI to access exporter?
+      #- "traefik.http.routers.exporter_ccp.middlewares=auth"
+      - "traefik.http.middlewares.exporter_ccp_strip.stripprefix.prefixes=/ccp-exporter"
+      - "traefik.http.routers.exporter_ccp.middlewares=exporter_ccp_strip"
     volumes:
       - "bridgehead-exporter:/app/exporter-files"
 

@@ -6,24 +6,31 @@ This repository is the starting point for any information and tools you will nee
 
 1. [Requirements](#requirements)
     - [Hardware](#hardware)
-    - [System](#system)
+    - [Software](#software)
       - [Git](#git)
       - [Docker](#docker)
+    - [Network](#network)
 2. [Deployment](#deployment)
-    - [Installation](#installation)
+    - [Site name](#site-name)
+    - [Projects](#projects)
+    - [GitLab repository](#gitlab-repository)
+    - [Base Installation](#base-installation)
     - [Register with Samply.Beam](#register-with-samplybeam)
     - [Starting and stopping your Bridgehead](#starting-and-stopping-your-bridgehead)
-    - [Auto-starting your Bridgehead when the server starts](#auto-starting-your-bridgehead-when-the-server-starts)
-3. [Additional Services](#additional-Services)
-    - [Monitoring](#monitoring)
-    - [Register with a Directory](#register-with-a-Directory)
-4. [Site-specific configuration](#site-specific-configuration)
+    - [Testing your new Bridgehead](#testing-your-new-bridgehead)
+    - [De-installing a Bridgehead](#de-installing-a-bridgehead)
+3. [Site-specific configuration](#site-specific-configuration)
     - [HTTPS Access](#https-access)
-    - [Locally Managed Secrets](#locally-managed-secrets)
-    - [Git Proxy Configuration](#git-proxy-configuration)
-    - [Docker Daemon Proxy Configuration](#docker-daemon-proxy-configuration)
+    - [TLS terminating proxies](#tls-terminating-proxies)
+    - [File structure](#file-structure)
+4. [Things you should know](#things-you-should-know)
+    - [Auto-Updates](#auto-updates)
+    - [Auto-Backups](#auto-backups)
     - [Non-Linux OS](#non-linux-os)
-5. [License](#license)
+5. [Troubleshooting](#troubleshooting)
+    - [Docker Daemon Proxy Configuration](#docker-daemon-proxy-configuration)
+    - [Monitoring](#monitoring)
+6. [License](#license)
 
 ## Requirements
 
@@ -58,10 +65,62 @@ Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to c
 
 ## Deployment
 
+### Site name
+
+You will need to choose a short name for your site. This is not a URL, just a simple identifying string. For the examples below, we will use "your-site-name", but you should obviously choose something that is meaningful to you and which is unique.
+
+Site names should adhere to the following conventions:
+
+- They should be lower-case.
+- They should generally be named after the city where your site is based, e.g. ```karlsruhe```.
+- If you have a multi-part name, please use a hypen ("-") as separator, e.g. ```le-havre```.
+- If your site is for testing purposes, rather than production, please append "-test", e.g. ```zaragoza-test```.
+- If you are a developer and you are making changes to the Bridgehead, please use your name and prepend "dev-", e.g. ```dev-joe-doe```.
+
+### GitLab repository
+
+In order to be able to install, you will need to have your own repository in GitLab for your site's configuration settings. This allows automated updates of the Bridgehead software.
+
+To request a new repository, please contact your research network administration or send an email to one of the project specific addresses:
+
+- For the bbmri project: bridgehead@helpdesk.bbmri-eric.eu.
+- For the ccp project: support-ccp@dkfz-heidelberg.de
+
+Mention:
+- which project you belong to, i.e. "bbmri" or "ccp"
+- site name (According to conventions listed above)
+- operator name and email
+
+We will set the repository up for you. We will then send you:
+
+- A Repository Short Name (RSN). Beware: this is distinct from your site name.
+- Repository URL containing the acces token eg. https://BH_Dummy:dummy_token@git.verbis.dkfz.de/bbmri-bridgehead-configs/dummy.git
+
+During the installation, your Bridgehead will download your site's configuration from GitLab and you can review the details provided to us by email.
+
+
 ### Base Installation
 
-First, clone the repository to the directory `/srv/docker/bridgehead`:
+First, download your site specific configuration repository:
+```shell
+sudo mkdir -p /etc/bridgehead/
+sudo git clone <REPO_URL_FROM_EMAIL> /etc/bridgehead/
+```
 
+Review the site configuration:
+```shell
+sudo cat /etc/bridgehead/bbmri.conf
+```
+
+Pay special attention to:
+
+- SITE_NAME
+- SITE_ID
+- OPERATOR_FIRST_NAME
+- OPERATOR_LAST_NAME
+- OPERATOR_EMAIL
+
+Clone the bridgehead repository:
 ```shell
 sudo mkdir -p /srv/docker/
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
@@ -73,8 +132,6 @@ Then, run the installation script:
 cd /srv/docker/bridgehead
 sudo ./bridgehead install <PROJECT>
 ```
-
-... and follow the instructions on the screen. You should then be prompted to do the next step:
 
 ### Register with Samply.Beam
 
@@ -109,6 +166,60 @@ To enable/disable autostart, run
 sudo systemctl [enable|disable] bridgehead@<PROJECT>.service
 ```
 
+### Testing your new Bridgehead
+
+After starting the Bridgehead, you can watch the initialization process with the following command:
+
+```shell
+journalctl -u bridgehead@bbmri -f
+```
+
+if this exits with something similar to the following:
+
+```
+bridgehead@bbmri.service: Main process exited, code=exited, status=1/FAILURE
+```
+
+Then you know that there was a problem with starting the Bridgehead. Scroll up the printout to find the cause of the error.
+
+Once the Bridgehead is running, you can also view the individual Docker processes with:
+
+```shell
+docker ps
+```
+
+There should be 6 - 10 Docker proceses. If there are fewer, then you know that something has gone wrong. To see what is going on, run:
+
+```shell
+journalctl -u bridgehead@bbmri -f
+```
+
+Once the Bridgehead has passed these checks, take a look at the landing page:
+
+```
+https://localhost
+```
+
+You can either do this in a browser or with curl. If you visit the URL in the browser, you will neet to click through several warnings, because you will initially be using a self-signed certificate. With curl, you can bypass these checks:
+
+```shell
+curl -k https://localhost
+```
+
+If you get errors when you do this, you need to use ```docker logs``` to examine your landing page container in order to determine what is going wrong.
+
+If you have chosen to take part in our monitoring program (by setting the ```MONITOR_APIKEY``` variable in the configuration), you will be informed by email when problems are detected in your Bridgehead.
+
+### De-installing a Bridgehead
+
+You may decide that you want to remove a Bridgehead installation from your machine, e.g. if you want to migrate it to a new location or if you want to start a fresh installation because the initial attempts did not work.
+
+To do this, run:
+
+```shell
+sh bridgehead uninstall
+```
+
 ## Site-specific configuration
 
 ### HTTPS Access
@@ -140,6 +251,7 @@ Your Bridgehead will automatically and regularly check for updates. Whenever som
 If you would like to understand what happens exactly and when, please check the systemd units deployed during the [installation](#base-installation) via `systemctl cat bridgehead-update@<PROJECT>.service` and `systemctl cat bridgehead-update@<PROJECT.timer`.
 
 ### Auto-Backups
+
 Some of the components in the bridgehead will store persistent data. For those components, we integrated an automated backup solution in the bridgehead updates. It will automatically save the backup in multiple files
 
 1) Last-XX, were XX represents a weekday to allow re-import of at least one version of the database for each of the past seven days.
@@ -148,24 +260,9 @@ Some of the components in the bridgehead will store persistent data. For those c
 
 To enable the Auto-Backup feature, please set the Variable `BACKUP_DIRECTORY` in your sites configuration.
 
-### Monitoring
-
-To keep all Bridgeheads up and working and detect any errors before a user does, a central monitoring 
-
-- Your Bridgehead itself will report relevant system events, such as successful/failed updates, restarts, performance metrics or version numbers.
-- Your Bridgehead is also monitored from the outside by your network's central components. For example, the federated search will regularly perform a black-box test by sending an empty query to your Bridgehead and checking if the results make sense.
-
-In all monitoring cases, obviously no sensitive information is transmitted, in particular not any patient-related data. Aggregated data, e.g. total amount of datasets, may be transmitted for diagnostic purposes.
-
 ### Development Installation
 
 By using `./bridgehead dev-install <projectname>` instead of `install`, you can install a developer bridgehead. The difference is, that you can provide an arbitrary configuration repository during the installation, meaning that it does not have to adhere to the usual naming scheme. This allows for better decoupling between development and production configurations.
-
-## Troubleshooting
-
-### Docker Daemon Proxy Configuration
-
-Docker has a background daemon, responsible for downloading images and starting them. Sometimes, proxy configuration from your system won't carry over and it will fail to download images. In that case, configure the proxy for this daemon as described in the [official documentation](https://docs.docker.com).
 
 ### Non-Linux OS
 
@@ -183,6 +280,22 @@ Under Windows, you have 2 options:
 We have tested the installation procedure with an Ubuntu 22.04 guest system running on a VMware virtual machine. That worked flawlessly.
 
 Installation under WSL ought to work, but we have not tested this.
+
+## Troubleshooting
+
+### Docker Daemon Proxy Configuration
+
+Docker has a background daemon, responsible for downloading images and starting them. Sometimes, proxy configuration from your system won't carry over and it will fail to download images. In that case, configure the proxy for this daemon as described in the [official documentation](https://docs.docker.com).
+
+
+### Monitoring
+
+To keep all Bridgeheads up and working and detect any errors before a user does, a central monitoring 
+
+- Your Bridgehead itself will report relevant system events, such as successful/failed updates, restarts, performance metrics or version numbers.
+- Your Bridgehead is also monitored from the outside by your network's central components. For example, the federated search will regularly perform a black-box test by sending an empty query to your Bridgehead and checking if the results make sense.
+
+In all monitoring cases, obviously no sensitive information is transmitted, in particular not any patient-related data. Aggregated data, e.g. total amount of datasets, may be transmitted for diagnostic purposes.
 
 ## License
 

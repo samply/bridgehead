@@ -45,7 +45,7 @@ services:
     container_name: bridgehead-spot
     environment:
       SECRET: ${SPOT_BEAM_SECRET_LONG}
-      APPID: spot
+      APPID: snap
       PROXY_ID: ${PROXY_ID}
       LDM_URL: ${LDM_URL}
       AUTH_USER: ${AUTH_USER}
@@ -68,6 +68,7 @@ services:
       ROOTCERT_FILE: /conf/root.crt.pem
     secrets:
       - proxy.pem
+      - root.crt.pem
     depends_on:
       - "forward_proxy"
     volumes:
@@ -81,3 +82,5 @@ volumes:
 secrets:
   proxy.pem:
     file: /etc/bridgehead/pki/${SITE_ID}.priv.pem
+  root.crt.pem:
+    file: /srv/docker/bridgehead/snap/root.crt.pem

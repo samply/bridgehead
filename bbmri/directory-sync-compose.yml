@@ -1,0 +1,8 @@
+services:
+  directory_sync_service:
+    image: "samply/directory_sync_service"
+    environment:
+      DS_DIRECTORY_URL: ${DS_DIRECTORY_URL}
+      DS_DIRECTORY_USER_NAME: ${DS_DIRECTORY_USER_NAME}
+      DS_DIRECTORY_PASS_CODE: ${DS_DIRECTORY_PASS_CODE}
+      DS_TIMER_CRON: ${DS_TIMER_CRON}

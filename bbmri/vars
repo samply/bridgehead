@@ -5,3 +5,7 @@ SPOT_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | he
 SPOT_BEAM_SECRET_LONG="ApiKey spot.${PROXY_ID} ${SPOT_BEAM_SECRET_SHORT}"
 SUPPORT_EMAIL=bridgehead@helpdesk.bbmri-eric.eu
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
+
+# This will load directory-sync setup.
+source $PROJECT/directory-sync.sh
+dirSetup

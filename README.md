@@ -242,6 +242,29 @@ All of the Bridgehead's outgoing connections are secured by transport encryption
 
 Your Bridgehead's actual data is not stored in the above directories, but in named docker volumes, see `docker volume ls` and `docker volume inspect <volume_name>`.
 
+### Directory sync
+
+This is an optional feature for bbmri projects. It keeps the [BBMRI Directory](https://directory.bbmri-eric.eu/) up to date with your local data eg. number of samples. It also updates the local FHIR store with the latest contact details etc. from the Directory.  You must explicitly set your country specific directory url, username and password to enable this feature.
+
+Full details can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
+
+To enable it, you will need to set these variables to the ```bbmri.conf``` file of your GitLab repository. Here is an example config:
+
+```
+### Directory sync service
+DS_DIRECTORY_URL=https://directory.bbmri-eric.eu
+DS_DIRECTORY_USER_NAME=your_directory_username
+DS_DIRECTORY_USER_PASS=qwdnqwswdvqHBVGFR9887
+DS_TIMER_CRON="0 22 * * *"
+```
+You must contact the Directory for your national node to find the URL, and to register as a user.
+
+Additionally, you should choose when you want Directory sync to run. In the example above, this is set to happen at 10 pm every evening. You can modify this to suit your requirements. The timer specification should follow the [cron](https://crontab.guru) convention.
+
+Once you edited the gitlab config. The bridgehead will autoupdate the config with the values and will sync the data.
+
+There will be a delay before the effects of Directory sync become visible. First, you will need to wait until the time you have specified in ```TIMER_CRON```. Second, the information will then be synchronized from your national node with the central European Directory. This can take up to 24 hours.
+
 ## Things you should know
 
 ### Auto-Updates

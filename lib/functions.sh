@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-source lib/log.sh
-
 detectCompose() {
 	if [[ "$(docker compose version 2>/dev/null)" == *"Docker Compose version"* ]]; then
 		COMPOSE="docker compose"
@@ -13,7 +11,7 @@ detectCompose() {
 
 getLdmPassword() {
 	if [ -n "$LDM_PASSWORD" ]; then
-		docker run --rm httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r'
+		docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r'
 	else
 		echo -n ""
 	fi
@@ -36,12 +34,12 @@ checkOwner(){
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|stop|update|install|uninstall|enroll PROJECTNAME"
-	echo "PROJECTNAME should be one of ccp|nngm|bbmri"
+	echo "Usage: bridgehead start|stop|is-running|update|install|uninstall|enroll PROJECTNAME"
+	echo "PROJECTNAME should be one of ccp|bbmri"
 }
 
 checkRequirements() {
-	if ! lib/prerequisites.sh; then
+	if ! lib/prerequisites.sh $@; then
 		log "ERROR" "Validating Prerequisites failed, please fix the error(s) above this line."
 		fail_and_report 1 "Validating prerequisites failed."
 	else
@@ -120,8 +118,10 @@ fixPermissions() {
 source lib/monitoring.sh
 
 report_error() {
-	log ERROR "$2"
-	hc_send $1 "$2"
+	CODE=$1
+	shift
+	log ERROR "$@"
+	hc_send $CODE "$@"
 }
 
 fail_and_report() {
@@ -131,8 +131,52 @@ fail_and_report() {
 
 setHostname() {
 	if [ -z "$HOST" ]; then
-		export HOST=$(hostname -f)
+		export HOST=$(hostname -f | tr "[:upper:]" "[:lower:]")
 		log DEBUG "Using auto-detected hostname $HOST."
+	fi
+}
+
+# Takes 1) The Backup Directory Path 2) The name of the Service to be backuped
+# Creates 3 Backups: 1) For the past seven days 2) For the current month and 3) for each calendar week
+createEncryptedPostgresBackup(){
+  docker exec "$2" bash -c 'pg_dump -U $POSTGRES_USER $POSTGRES_DB --format=p --no-owner --no-privileges' | \
+      # TODO: Encrypt using /etc/bridgehead/pki/${SITE_ID}.priv.pem | \
+      tee "$1/$2/$(date +Last-%A).sql" | \
+      tee "$1/$2/$(date +%Y-%m).sql" > \
+      "$1/$2/$(date +%Y-KW%V).sql"
+}
+
+
+# from: https://gist.github.com/sj26/88e1c6584397bb7c13bd11108a579746
+# ex. use: retry 5 /bin/false
+function retry {
+  local retries=$1
+  shift
+
+  local count=0
+  until "$@"; do
+    exit=$?
+    wait=$((2 ** $count))
+    count=$(($count + 1))
+    if [ $count -lt $retries ]; then
+      echo "Retry $count/$retries exited with code $exit, retrying in $wait seconds..."
+      sleep $wait
+    else
+      echo "Retry $count/$retries exited with code $exit, giving up."
+      return $exit
+    fi
+  done
+  return 0
+}
+
+function bk_is_running {
+	detectCompose
+	RUNNING="$($COMPOSE -p $PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE ps -q)"
+	NUMBEROFRUNNING=$(echo "$RUNNING" | wc -l)
+	if [ $NUMBEROFRUNNING -ge 2 ]; then
+		return 0
+	else
+		return 1
 	fi
 }
 

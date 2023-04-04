@@ -1,5 +1,7 @@
 #!/bin/bash
 
 log() {
-  echo -e "$(date +'%Y-%m-%d %T')" "$1:" "$2"
+  SEVERITY="$1"
+  shift
+  echo -e "$(date +'%Y-%m-%d %T')" "$SEVERITY:" "$@"
 }

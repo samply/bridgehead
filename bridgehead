@@ -29,9 +29,6 @@ case "$PROJECT" in
 	ccp)
 		#nothing extra to do
 		;;
-	nngm)
-		#nothing extra to do
-		;;
 	bbmri)
 		#nothing extra to do
 		;;
@@ -41,28 +38,30 @@ case "$PROJECT" in
 		;;
 esac
 
-# Load variables from /etc/bridgehead and /srv/docker/bridgehead
-set -a
-source /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "/etc/bridgehead/$PROJECT.conf not found"
-if [ -e /etc/bridgehead/$PROJECT.local.conf ]; then
-	log INFO "Applying /etc/bridgehead/$PROJECT.local.conf"
-	source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
-fi
-fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
-[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
-set +a
+loadVars() {
+	# Load variables from /etc/bridgehead and /srv/docker/bridgehead
+	set -a
+	source /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "/etc/bridgehead/$PROJECT.conf not found"
+	if [ -e /etc/bridgehead/$PROJECT.local.conf ]; then
+		log INFO "Applying /etc/bridgehead/$PROJECT.local.conf"
+		source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
+	fi
+	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
+	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
+	set +a
 
-OVERRIDE=${OVERRIDE:=""}
-if [ -f "$PROJECT/docker-compose.override.yml" ]; then
-	log INFO "Applying $PROJECT/docker-compose.override.yml"
-	OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
-fi
-
-detectCompose
-setHostname
+	OVERRIDE=${OVERRIDE:=""}
+	if [ -f "$PROJECT/docker-compose.override.yml" ]; then
+		log INFO "Applying $PROJECT/docker-compose.override.yml"
+		OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
+	fi
+	detectCompose
+	setHostname
+}
 
 case "$ACTION" in
 	start)
+		loadVars
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
@@ -70,20 +69,36 @@ case "$ACTION" in
 		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
+		loadVars
+		# HACK: This is tempoarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
+		$COMPOSE -p bridgehead-$PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		;;
+	is-running)
+		bk_is_running
+		exit $?
+		;;
 	update)
+		loadVars
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
 	install)
-		exec ./lib/setup-bridgehead-units.sh $PROJECT
+		source ./lib/prepare-system.sh NODEV
+		loadVars
+		exec ./lib/install-bridgehead.sh $PROJECT
+		;;
+	dev-install)
+		exec ./lib/prepare-system.sh DEV
+		loadVars
+		exec ./lib/install-bridgehead.sh $PROJECT
 		;;
 	uninstall)
-		exec ./lib/remove-bridgehead-units.sh $PROJECT
+		exec ./lib/uninstall-bridgehead.sh $PROJECT
 		;;
 	enroll)
+		loadVars
 		if [ -e $PRIVATEKEYFILENAME ]; then
-			echo "Private key already exists at $PRIVATEKEYFILENAME. Please delete first to proceed."
+			log ERROR "Private key already exists at $PRIVATEKEYFILENAME. Please delete first to proceed."
 			exit 1
 		fi
 		docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $PROXY_ID --admin-email $SUPPORT_EMAIL

@@ -4,10 +4,15 @@ source lib/functions.sh
 AUTO_HOUSEKEEPING=${AUTO_HOUSEKEEPING:-true}
 
 if [ "$AUTO_HOUSEKEEPING" == "true" ]; then
-	A="Performing automatic maintenance: Cleaning docker images."
+	A="Performing automatic maintenance: "
+	if bk_is_running; then
+		A="$A Cleaning docker images."
+		docker system prune -a -f
+	else
+		A="$A Not cleaning docker images since BK is not running."
+	fi
 	hc_send log "$A"
 	log INFO "$A"
-	docker system prune -a -f
 else
 	log WARN "Automatic housekeeping disabled (variable AUTO_HOUSEKEEPING != \"true\")"
 fi
@@ -38,7 +43,6 @@ for DIR in /etc/bridgehead $(pwd); do
   log "INFO" "Checking for updates to git repo $DIR ..."
   OUT="$(git -C $DIR status --porcelain)"
   if [ -n "$OUT" ]; then
-    log WARN "The working directory $DIR is modified. Changed files: $OUT"
     report_error log "The working directory $DIR is modified. Changed files: $OUT"
   fi
   if [ "$(git -C $DIR config --get credential.helper)" != "$CREDHELPER" ]; then
@@ -48,10 +52,10 @@ for DIR in /etc/bridgehead $(pwd); do
   old_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
   if [ -z "$HTTP_PROXY_URL" ]; then
     log "INFO" "Git is using no proxy!"
-    OUT=$(git -C $DIR fetch 2>&1 && git -C $DIR pull 2>&1)
+    OUT=$(retry 5 git -C $DIR fetch 2>&1 && retry 5 git -C $DIR pull 2>&1)
   else
     log "INFO" "Git is using proxy ${HTTP_PROXY_URL} from ${CONFFILE}"
-    OUT=$(git -c http.proxy=$HTTP_PROXY_URL -c https.proxy=$HTTPS_PROXY_URL -C $DIR fetch 2>&1 && git -c http.proxy=$HTTP_PROXY_URL -c https.proxy=$HTTPS_PROXY_URL -C $DIR pull 2>&1)
+    OUT=$(retry 5 git -c http.proxy=$HTTP_PROXY_URL -c https.proxy=$HTTPS_PROXY_URL -C $DIR fetch 2>&1 && retry 5 git -c http.proxy=$HTTP_PROXY_URL -c https.proxy=$HTTPS_PROXY_URL -C $DIR pull 2>&1)
   fi
   if [ $? -ne 0 ]; then
     report_error log "Unable to update git $DIR: $OUT"
@@ -82,7 +86,7 @@ done
 # Check docker updates
 log "INFO" "Checking for updates to running docker images ..."
 docker_updated="false"
-for IMAGE in $(cat $PROJECT/docker-compose.yml | grep -v "^#" | grep "image:" | sed -e 's_^.*image: \(.*\).*$_\1_g; s_\"__g'); do
+for IMAGE in $(cat $PROJECT/docker-compose.yml ${OVERRIDE//-f/} | grep -v "^#" | grep "image:" | sed -e 's_^.*image: \(.*\).*$_\1_g; s_\"__g'); do
   log "INFO" "Checking for Updates of Image: $IMAGE"
   if docker pull $IMAGE | grep "Downloaded newer image"; then
     CHANGE="Image $IMAGE updated."
@@ -102,6 +106,37 @@ else
   RES="Nothing updated, nothing to restart."
   log "INFO" "$RES"
   hc_send log "$RES"
+fi
+
+if [ -n "${BACKUP_DIRECTORY}" ]; then
+  if [ ! -d "$BACKUP_DIRECTORY" ]; then
+    message="Performing automatic maintenance: Attempting to create backup directory $BACKUP_DIRECTORY."
+    hc_send log "$message"
+    log INFO "$message"
+    mkdir -p "$BACKUP_DIRECTORY"
+    chown -R "$BACKUP_DIRECTORY" bridgehead;
+  fi
+  checkOwner "$BACKUP_DIRECTORY" bridgehead || fail_and_report 1 "Automatic maintenance failed: Wrong permissions for backup directory $(pwd)"
+  # Collect all container names that contain '-db'
+  BACKUP_SERVICES="$(docker ps --filter name=-db --format "{{.Names}}" | tr "\n" "\ ")"
+  log INFO "Performing automatic maintenance: Creating Backups for $BACKUP_SERVICES";
+  for service in $BACKUP_SERVICES; do
+    if [ ! -d "$BACKUP_DIRECTORY/$service" ]; then
+      message="Performing automatic maintenance: Attempting to create backup directory for $service in $BACKUP_DIRECTORY."
+      hc_send log "$message"
+      log INFO "$message"
+      mkdir -p "$BACKUP_DIRECTORY/$service"
+    fi
+    if createEncryptedPostgresBackup "$BACKUP_DIRECTORY" "$service"; then
+      message="Performing automatic maintenance: Stored encrypted backup for $service in $BACKUP_DIRECTORY."
+      hc_send log "$message"
+      log INFO "$message"
+    else
+      fail_and_report 5 "Failed to create encrypted update for $service"
+    fi
+  done
+else
+  log WARN "Automated backups are disabled (variable AUTO_BACKUPS != \"true\")"
 fi
 
 exit 0

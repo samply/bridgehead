@@ -1,0 +1,73 @@
+version: "3.7"
+
+services:
+  ############################################ DataSHIELD Client (Rocker R-Studio)
+  bridgehead-rstudio:
+    image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
+    #TODO: Connect with Keycloak: https://rocker-project.org/images/versioned/rstudio.html
+    environment:
+      USER: "ruser"
+      PASSWORD: "${RSTUDIO_PASSWORD}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rstudio_ccp.rule=PathPrefix(`/rstudio`)"
+      - "traefik.http.services.rstudio_ccp.loadbalancer.server.port=8787"
+      - "traefik.http.routers.rstudio_ccp.tls=true"
+      - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
+      - "traefik.http.routers.rstudio_ccp.middlewares=rstudio_ccp_strip"
+    volumes:
+      - "bridgehead-dev-rstudio-config:/home/rstudio/.config/rstudio"
+      - "bridgehead-dev-rstudio-workspace:/home/rstudio/workspace"
+
+  ############################################ DataSHIELD Server (Opal)
+  bridgehead-opal:
+    image: obiba/opal:4.5
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.opal_ccp.rule=PathPrefix(`/opal`)"
+      - "traefik.http.services.opal_ccp.loadbalancer.server.port=8443"
+      - "traefik.http.routers.opal_ccp.tls=true"
+      - "traefik.http.middlewares.opal_ccp_strip.stripprefix.prefixes=/opal"
+      - "traefik.http.routers.opal_ccp.middlewares=opal_ccp_strip"
+    links:
+      - bridgehead-opal-rserver
+      - bridgehead-opal-mongo
+      - bridgehead-opal-db
+    environment:
+      JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
+      # OPAL_ADMINISTRATOR_USER: "administrator"
+      OPAL_ADMINISTRATOR_PASSWORD: "${OPAL_ADMINISTRATOR_PASSWORD}"
+      MONGO_HOST: "bridgehead-opal-mongo"
+      MONGO_PORT: "27017"
+      POSTGRESDATA_HOST: "bridgehead-opal-db"
+      POSTGRESDATA_DATABASE: "opal"
+      POSTGRESDATA_USER: "opal"
+      POSTGRESDATA_PASSWORD: "${OPAL_DB_PASSWORD}"
+      ROCK_HOSTS: "bridgehead-opal-rserver:8085"
+    volumes:
+      - "bridgehead-dev-opal:/srv"
+
+  bridgehead-opal-mongo: # IDs
+    image: mongo:4.2 # TODO: Update mongo:6.0.4
+
+  bridgehead-opal-db: # Data
+    image: postgres:15.1-alpine
+    environment:
+      POSTGRES_PASSWORD: "${OPAL_DB_PASSWORD}"
+      POSTGRES_USER: "opal"
+      POSTGRES_DB: "opal"
+    volumes:
+      - "bridgehead-opal-db:/var/lib/postgresql/data"
+
+  bridgehead-opal-rserver:
+    image: datashield/rock-base:6.2-R4.2  # https://datashield.discourse.group/t/ds-aggregate-method-error/416/4
+
+volumes:
+  bridgehead-dev-rstudio-config:
+    name: "bridgehead-dev-rstudio-config"
+  bridgehead-dev-rstudio-workspace:
+    name: "bridgehead-dev-rstudio-workspace"
+  bridgehead-opal-db:
+    name: "bridgehead-opal-db"
+  bridgehead-dev-opal:
+    name: "bridgehead-dev-opal"

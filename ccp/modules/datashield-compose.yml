@@ -2,12 +2,14 @@ version: "3.7"
 
 services:
   ############################################ DataSHIELD Client (Rocker R-Studio)
-  bridgehead-rstudio:
+  rstudio:
+    container_name: bridgehead-rstudio
     image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
     #TODO: Connect with Keycloak: https://rocker-project.org/images/versioned/rstudio.html
     environment:
       USER: "ruser"
       PASSWORD: "${RSTUDIO_PASSWORD}"
+      HTTP_RELATIVE_PATH: "/rstudio"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rstudio_ccp.rule=PathPrefix(`/rstudio`)"
@@ -16,41 +18,57 @@ services:
       - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
       - "traefik.http.routers.rstudio_ccp.middlewares=rstudio_ccp_strip"
     volumes:
-      - "bridgehead-dev-rstudio-config:/home/rstudio/.config/rstudio"
-      - "bridgehead-dev-rstudio-workspace:/home/rstudio/workspace"
+      #- "bridgehead-rstudio-config:/home/rstudio/.config/rstudio"
+      - "bridgehead-rstudio-workspace:/home/rstudio/workspace"
 
   ############################################ DataSHIELD Server (Opal)
-  bridgehead-opal:
+  opal:
+    container_name: bridgehead-opal
     image: obiba/opal:4.5
     labels:
       - "traefik.enable=true"
+#      - "traefik.http.routers.opal_ccp.service=opal_ccp"
       - "traefik.http.routers.opal_ccp.rule=PathPrefix(`/opal`)"
-      - "traefik.http.services.opal_ccp.loadbalancer.server.port=8443"
+      - "traefik.http.services.opal_ccp.loadbalancer.server.port=8080"
       - "traefik.http.routers.opal_ccp.tls=true"
-      - "traefik.http.middlewares.opal_ccp_strip.stripprefix.prefixes=/opal"
-      - "traefik.http.routers.opal_ccp.middlewares=opal_ccp_strip"
+#      - "traefik.http.routers.opal_ccp.middlewares=opal_ccp_strip"
+#      - "traefik.http.middlewares.opal_ccp_strip.stripprefix.prefixes=/opal"
+
+#      - "traefik.http.routers.opal_ccp2.service=opal_ccp"
+#      - "traefik.http.routers.opal_ccp2.rule=PathPrefix(`/ws`)"
+#      - "traefik.http.routers.opal_ccp2.tls=true"
+#      - "traefik.http.routers.opal_ccp2.middlewares=opal_ccp2_strip"
+#      - "traefik.http.middlewares.opal_ccp2_strip.stripprefix.prefixes=/ws"
+#      - "traefik.http.routers.opal_ccp2.middlewares=opal_ccp2_add"
+#      - "traefik.http.middlewares.opal_ccp2_add.addprefix.prefix=/opal/ws"
+
     links:
-      - bridgehead-opal-rserver
-      - bridgehead-opal-mongo
-      - bridgehead-opal-db
+      - opal-rserver
+      - opal-mongo
+      - opal-db
     environment:
       JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
       # OPAL_ADMINISTRATOR_USER: "administrator"
       OPAL_ADMINISTRATOR_PASSWORD: "${OPAL_ADMINISTRATOR_PASSWORD}"
-      MONGO_HOST: "bridgehead-opal-mongo"
+      MONGO_HOST: "opal-mongo"
       MONGO_PORT: "27017"
-      POSTGRESDATA_HOST: "bridgehead-opal-db"
+      POSTGRESDATA_HOST: "opal-db"
       POSTGRESDATA_DATABASE: "opal"
       POSTGRESDATA_USER: "opal"
       POSTGRESDATA_PASSWORD: "${OPAL_DB_PASSWORD}"
-      ROCK_HOSTS: "bridgehead-opal-rserver:8085"
-    volumes:
-      - "bridgehead-dev-opal:/srv"
+      ROCK_HOSTS: "opal-rserver:8085"
+#      APP_URL: "https://${HOST}/opal"
+#      APP_CONTEXT_PATH: "/opal"
 
-  bridgehead-opal-mongo: # IDs
+#    volumes:
+#      - "bridgehead-opal:/srv"
+
+  opal-mongo: # IDs
+    container_name: bridgehead-opal-mongo
     image: mongo:4.2 # TODO: Update mongo:6.0.4
 
-  bridgehead-opal-db: # Data
+  opal-db: # Data
+    container_name: bridgehead-opal-db
     image: postgres:15.1-alpine
     environment:
       POSTGRES_PASSWORD: "${OPAL_DB_PASSWORD}"
@@ -59,15 +77,16 @@ services:
     volumes:
       - "bridgehead-opal-db:/var/lib/postgresql/data"
 
-  bridgehead-opal-rserver:
+  opal-rserver:
+    container_name: bridgehead-opal-rserver
     image: datashield/rock-base:6.2-R4.2  # https://datashield.discourse.group/t/ds-aggregate-method-error/416/4
 
 volumes:
-  bridgehead-dev-rstudio-config:
-    name: "bridgehead-dev-rstudio-config"
-  bridgehead-dev-rstudio-workspace:
-    name: "bridgehead-dev-rstudio-workspace"
+#  bridgehead-rstudio-config:
+#    name: "bridgehead-rstudio-config"
+  bridgehead-rstudio-workspace:
+    name: "bridgehead-rstudio-workspace"
   bridgehead-opal-db:
     name: "bridgehead-opal-db"
-  bridgehead-dev-opal:
-    name: "bridgehead-dev-opal"
+  bridgehead-opal:
+    name: "bridgehead-opal"

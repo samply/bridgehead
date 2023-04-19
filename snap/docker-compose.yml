@@ -3,7 +3,7 @@ version: "3.7"
 services:
   traefik:
     container_name: bridgehead-traefik
-    image: traefik:latest
+    image: docker.verbis.dkfz.de/cache/traefik:latest
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -32,7 +32,7 @@ services:
 
   forward_proxy:
     container_name: bridgehead-forward-proxy
-    image: samply/bridgehead-forward-proxy:latest
+    image: docker.verbis.dkfz.de/cache/samply/bridgehead-forward-proxy:latest
     environment:
       HTTPS_PROXY: ${HTTPS_PROXY_URL}
       USERNAME: ${HTTPS_PROXY_USERNAME}
@@ -55,7 +55,7 @@ services:
       - "beam-proxy"
 
   beam-proxy:
-    image: "samply/beam-proxy:develop"
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
     container_name: bridgehead-beam-proxy
     environment:
       BROKER_URL: ${BROKER_URL}

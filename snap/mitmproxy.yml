@@ -10,4 +10,4 @@ services:
 
   spot:
     environment:
-      MITM_PROXY: http://mitmproxy:8080 --> set like this in override if needed
+      MITM_PROXY: http://mitmproxy:8080

@@ -85,10 +85,6 @@ services:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - ./root.crt.pem:/conf/root.crt.pem:ro
 
-
-volumes:
-  blaze-data:
-
 secrets:
   proxy.pem:
     file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

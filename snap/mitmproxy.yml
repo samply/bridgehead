@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  mitmproxy:
+    image: mitmproxy/mitmproxy
+    stop_signal: SIGKILL
+    command: mitmweb --web-host 0.0.0.0 --web-port 9090
+    ports:
+      - 9090:9090
+
+  spot:
+    environment:
+      MITM_PROXY: http://mitmproxy:8080 --> set like this in override if needed

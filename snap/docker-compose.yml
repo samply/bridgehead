@@ -1,6 +1,13 @@
 version: "3.7"
 
 services:
+#  mitmproxy:
+#    image: mitmproxy/mitmproxy
+#    stop_signal: SIGKILL
+#    command: mitmweb --web-host 0.0.0.0 --web-port 9090
+#    ports:
+#      - 9090:9090
+
   traefik:
     container_name: bridgehead-traefik
     image: docker.verbis.dkfz.de/cache/traefik:latest
@@ -32,6 +39,7 @@ services:
 
   forward_proxy:
     container_name: bridgehead-forward-proxy
+    stop_signal: SIGKILL
     image: docker.verbis.dkfz.de/cache/samply/bridgehead-forward-proxy:latest
     environment:
       HTTPS_PROXY: ${HTTPS_PROXY_URL}
@@ -42,6 +50,7 @@ services:
 
   spot:
     image: docker.verbis.dkfz.de/cache/samply/spot:feature-loadcerts
+    stop_signal: SIGKILL
     container_name: bridgehead-spot
     environment:
       SECRET: ${SPOT_BEAM_SECRET_LONG}
@@ -51,6 +60,7 @@ services:
       AUTH_USER: ${AUTH_USER}
       AUTH_PW: ${AUTH_PW}
       BEAM_PROXY: http://beam-proxy:8081
+#      MITM_PROXY: http://mitmproxy:8080 --> set like this in override if needed
     depends_on:
       - "beam-proxy"
 
@@ -74,10 +84,6 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - ./root.crt.pem:/conf/root.crt.pem:ro
-
-
-volumes:
-  blaze-data:
 
 secrets:
   proxy.pem:

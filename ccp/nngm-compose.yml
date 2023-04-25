@@ -3,13 +3,14 @@ version: "3.7"
 services:
   connector:
     container_name: bridgehead-connector
-    image: docker.verbis.dkfz.de/ccp/connector:bk2
+    image: docker.verbis.dkfz.de/ccp/connector:test
     environment:
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
       NNGM_MAGICPL_APIKEY: ${NNGM_MAGICPL_APIKEY}
       NNGM_MAINZELLISTE_APIKEY: ${NNGM_MAINZELLISTE_APIKEY}
       NNGM_CTS_APIKEY: ${NNGM_CTS_APIKEY}
       NNGM_CRYPTKEY: ${NNGM_CRYPTKEY}
+      NNGM_CTS_URL: ${NNGM_CTS_URL}
     restart: always
     labels:
       - "traefik.enable=true"

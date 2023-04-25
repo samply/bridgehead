@@ -84,6 +84,8 @@ services:
   beam-connect:
     image: docker.verbis.dkfz.de/cache/samply/beam-connect:develop
     container_name: bridgehead-datashield-connect
+    ports:
+      - 8062:8062
     environment:
       PROXY_URL: "http://beam-proxy:8081"
       APP_ID: datashield-connect.${SITE_ID}.${BROKER_ID}

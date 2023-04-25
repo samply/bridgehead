@@ -86,7 +86,7 @@ services:
     container_name: bridgehead-datashield-connect
     environment:
       PROXY_URL: "http://beam-proxy:8081"
-      APP_ID: datashield-connect
+      APP_ID: datashield-connect.${SITE_ID}.${BROKER_ID}
       PROXY_APIKEY: ${DATASHIELD_CONNECT_SECRET}
       DISCOVERY_URL: "./map/central.json"
       LOCAL_TARGETS_FILE: "./map/local.json"

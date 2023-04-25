@@ -81,6 +81,25 @@ services:
     container_name: bridgehead-opal-rserver
     image: datashield/rock-base:6.2-R4.2  # https://datashield.discourse.group/t/ds-aggregate-method-error/416/4
 
+  beam-connect:
+    image: docker.verbis.dkfz.de/cache/samply/beam-connect:develop
+    container_name: bridgehead-datashield-connect
+    environment:
+      PROXY_URL: "http://beam-proxy:8081"
+      APP_ID: datashield-connect
+      PROXY_APIKEY: ${DATASHIELD_CONNECT_SECRET}
+      DISCOVERY_URL: "./map/central.json"
+      LOCAL_TARGETS_FILE: "./map/local.json"
+    depends_on:
+      - "beam-proxy"
+    volumes:
+      - /etc/bridgehead/datashield-connect/:/map:ro
+
+  beam-proxy:
+    environment:
+      APP_2_ID: datashield-connect
+      APP_2_KEY: ${DATASHIELD_CONNECT_SECRET}
+
 volumes:
 #  bridgehead-rstudio-config:
 #    name: "bridgehead-rstudio-config"

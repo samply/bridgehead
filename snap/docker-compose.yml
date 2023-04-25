@@ -32,7 +32,6 @@ services:
 
   forward_proxy:
     container_name: bridgehead-forward-proxy
-    stop_signal: SIGKILL
     image: docker.verbis.dkfz.de/cache/samply/bridgehead-forward-proxy:latest
     environment:
       HTTPS_PROXY: ${HTTPS_PROXY_URL}

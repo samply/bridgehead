@@ -18,6 +18,7 @@ services:
       WRITE_FILES_LIFETIME_IN_DAYS: "30"
       HTTP_RELATIVE_PATH: "/ccp-exporter"
       HTTP_SERVLET_REQUEST_SCHEME: "https"
+      OPAL_ADMINISTRATOR_PASSWORD: "${OPAL_ADMINISTRATOR_PASSWORD}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.exporter_ccp.rule=PathPrefix(`/ccp-exporter`)"

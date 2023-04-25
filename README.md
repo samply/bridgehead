@@ -7,8 +7,6 @@ This repository is the starting point for any information and tools you will nee
 1. [Requirements](#requirements)
     - [Hardware](#hardware)
     - [Software](#software)
-      - [Git](#git)
-      - [Docker](#docker)
     - [Network](#network)
 2. [Deployment](#deployment)
     - [Site name](#site-name)

@@ -2,8 +2,8 @@ version: "3.7"
 
 services:
   exporter:
-    #image: docker.verbis.dkfz.de/ccp/dktk-exporter:latest
-    image: dktk-exporter
+    image: docker.verbis.dkfz.de/ccp/dktk-exporter:latest
+    #image: dktk-exporter
     container_name: bridgehead-ccp-exporter
     environment:
       LOG_LEVEL: "INFO"

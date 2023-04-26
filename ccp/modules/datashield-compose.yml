@@ -17,9 +17,9 @@ services:
       - "traefik.http.routers.rstudio_ccp.tls=true"
       - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
       - "traefik.http.routers.rstudio_ccp.middlewares=rstudio_ccp_strip"
-    volumes:
+    #volumes:
       #- "bridgehead-rstudio-config:/home/rstudio/.config/rstudio"
-      - "bridgehead-rstudio-workspace:/home/rstudio/workspace"
+      #- "bridgehead-rstudio-workspace:/home/rstudio/workspace"
 
   ############################################ DataSHIELD Server (Opal)
   opal:
@@ -27,45 +27,27 @@ services:
     image: obiba/opal:4.5
     labels:
       - "traefik.enable=true"
-#      - "traefik.http.routers.opal_ccp.service=opal_ccp"
       - "traefik.http.routers.opal_ccp.rule=PathPrefix(`/opal`)"
       - "traefik.http.services.opal_ccp.loadbalancer.server.port=8080"
       - "traefik.http.routers.opal_ccp.tls=true"
-#      - "traefik.http.routers.opal_ccp.middlewares=opal_ccp_strip"
-#      - "traefik.http.middlewares.opal_ccp_strip.stripprefix.prefixes=/opal"
-
-#      - "traefik.http.routers.opal_ccp2.service=opal_ccp"
-#      - "traefik.http.routers.opal_ccp2.rule=PathPrefix(`/ws`)"
-#      - "traefik.http.routers.opal_ccp2.tls=true"
-#      - "traefik.http.routers.opal_ccp2.middlewares=opal_ccp2_strip"
-#      - "traefik.http.middlewares.opal_ccp2_strip.stripprefix.prefixes=/ws"
-#      - "traefik.http.routers.opal_ccp2.middlewares=opal_ccp2_add"
-#      - "traefik.http.middlewares.opal_ccp2_add.addprefix.prefix=/opal/ws"
-
     links:
       - opal-rserver
-      - opal-mongo
       - opal-db
     environment:
       JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
       # OPAL_ADMINISTRATOR_USER: "administrator"
       OPAL_ADMINISTRATOR_PASSWORD: "${OPAL_ADMINISTRATOR_PASSWORD}"
-      MONGO_HOST: "opal-mongo"
-      MONGO_PORT: "27017"
       POSTGRESDATA_HOST: "opal-db"
       POSTGRESDATA_DATABASE: "opal"
       POSTGRESDATA_USER: "opal"
       POSTGRESDATA_PASSWORD: "${OPAL_DB_PASSWORD}"
       ROCK_HOSTS: "opal-rserver:8085"
-#      APP_URL: "https://${HOST}/opal"
-#      APP_CONTEXT_PATH: "/opal"
+      APP_URL: "https://${HOST}/opal"
+      APP_CONTEXT_PATH: "/opal"
 
 #    volumes:
 #      - "bridgehead-opal:/srv"
 
-  opal-mongo: # IDs
-    container_name: bridgehead-opal-mongo
-    image: mongo:4.2 # TODO: Update mongo:6.0.4
 
   opal-db: # Data
     container_name: bridgehead-opal-db
@@ -105,9 +87,9 @@ services:
 volumes:
 #  bridgehead-rstudio-config:
 #    name: "bridgehead-rstudio-config"
-  bridgehead-rstudio-workspace:
-    name: "bridgehead-rstudio-workspace"
+#  bridgehead-rstudio-workspace:
+#    name: "bridgehead-rstudio-workspace"
   bridgehead-opal-db:
     name: "bridgehead-opal-db"
-  bridgehead-opal:
-    name: "bridgehead-opal"
+#  bridgehead-opal:
+#    name: "bridgehead-opal"

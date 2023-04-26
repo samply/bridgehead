@@ -14,13 +14,13 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.connector.rule=PathPrefix(`/ccp-connector`)"
+      - "traefik.http.routers.connector.rule=PathPrefix(`/nngm-connector`)"
       - "traefik.http.services.connector.loadbalancer.server.port=8080"
       - "traefik.http.routers.connector.tls=true"
 
   connector_db:
     image: docker.verbis.dkfz.de/cache/postgres:9.5-alpine
-    container_name: bridgehead-ccp-connector-db
+    container_name: bridgehead-connector-db
     volumes:
       - "connector_db_data:/var/lib/postgresql/data"
     environment:

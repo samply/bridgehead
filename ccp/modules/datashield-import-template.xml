@@ -1,0 +1,157 @@
+<template id="opal-ccp" source-id="blaze-store" opal-project="ccp-demo" target-id="opal" >
+
+  <container csv-filename="Patient-${TIMESTAMP}.csv" opal-table="patient" opal-entity-type="Patient">
+    <attribute csv-column="patient-id" opal-value-type="text" primary-key="true" val-fhir-path="Patient.id.value" anonym="Pat" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="dktk-id-global" opal-value-type="text" val-fhir-path="Patient.identifier.where(type.coding.code = 'Global').value.value"/>
+    <attribute csv-column="dktk-id-lokal" opal-value-type="text" val-fhir-path="Patient.identifier.where(type.coding.code = 'Lokal').value.value" />
+    <attribute csv-column="geburtsdatum" opal-value-type="date" val-fhir-path="Patient.birthDate.value"/>
+    <attribute csv-column="geschlecht" opal-value-type="text" val-fhir-path="Patient.gender.value" />
+    <attribute csv-column="datum_des_letztbekannten_vitalstatus" opal-value-type="date" val-fhir-path="Observation.where(code.coding.code = '75186-7').effective.value" join-fhir-path="/Observation.where(code.coding.code = '75186-7').subject.reference.value"/>
+    <attribute csv-column="vitalstatus" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '75186-7').value.coding.code.value" join-fhir-path="/Observation.where(code.coding.code = '75186-7').subject.reference.value"/>
+    <!--fehlt in ADT2FHIR--><attribute csv-column="tod_tumorbedingt" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '68343-3').value.coding.where(system = 'http://fhir.de/CodeSystem/bfarm/icd-10-gm').code.value" join-fhir-path="/Observation.where(code.coding.code = '68343-3').subject.reference.value"/>
+    <!--fehlt in ADT2FHIR--><attribute csv-column="todesursachen" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '68343-3').value.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/JNUCS').code.value" join-fhir-path="/Observation.where(code.coding.code = '68343-3').subject.reference.value"/>
+  </container>
+
+  <container csv-filename="Diagnosis-${TIMESTAMP}.csv" opal-table="diagnosis" opal-entity-type="Diagnosis">
+    <attribute csv-column="diagnosis-id" primary-key="true" opal-value-type="text" val-fhir-path="Condition.id.value" anonym="Dia" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="Condition.subject.reference.value" anonym="Pat"/>
+    <attribute csv-column="primaerdiagnose" opal-value-type="text" val-fhir-path="Condition.code.coding.code.value"/>
+    <attribute csv-column="tumor_diagnosedatum" opal-value-type="date" val-fhir-path="Condition.onset.value"/>
+    <attribute csv-column="primaertumor_diagnosetext" opal-value-type="text" val-fhir-path="Condition.code.text.value"/>
+    <attribute csv-column="version_des_icd-10_katalogs" opal-value-type="integer" val-fhir-path="Condition.code.coding.version.value"/>
+    <attribute csv-column="lokalisation" opal-value-type="text" val-fhir-path="Condition.bodySite.coding.where(system = 'urn:oid:2.16.840.1.113883.6.43.1').code.value"/>
+    <attribute csv-column="icd-o_katalog_topographie_version" opal-value-type="text" val-fhir-path="Condition.bodySite.coding.where(system = 'urn:oid:2.16.840.1.113883.6.43.1').version.value"/>
+    <attribute csv-column="seitenlokalisation_nach_adt-gekid" opal-value-type="text" val-fhir-path="Condition.bodySite.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS').code.value"/>
+  </container>
+
+  <container csv-filename="Progress-${TIMESTAMP}.csv" opal-table="progress" opal-entity-type="Progress">
+<!--it would be better to generate a an ID, instead of extracting the ClinicalImpression id-->
+    <attribute csv-column="progress-id" primary-key="true" opal-value-type="text" val-fhir-path="ClinicalImpression.id.value" anonym="Pro" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="diagnosis-id" opal-value-type="text" val-fhir-path="ClinicalImpression.problem.reference.value" anonym="Dia"/>
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="ClinicalImpression.subject.reference.value" anonym="Pat" />
+    <attribute csv-column="untersuchungs-_befunddatum_im_verlauf" opal-value-type="date" val-fhir-path="ClinicalImpression.effective.value" />
+    <!-- just for evaluation: redundant to Untersuchungs-, Befunddatum im Verlauf-->
+    <attribute csv-column="datum_lokales_oder_regionaeres_rezidiv" opal-value-type="date" val-fhir-path="Observation.where(code.coding.code = 'LA4583-6').effective.value" join-fhir-path="ClinicalImpression.finding.itemReference.reference.value" />
+    <attribute csv-column="gesamtbeurteilung_tumorstatus" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21976-6').value.coding.code.value" join-fhir-path="ClinicalImpression.finding.itemReference.reference.value"/>
+    <attribute csv-column="lokales_oder_regionaeres_rezidiv" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = 'LA4583-6').value.coding.code.value" join-fhir-path="ClinicalImpression.finding.itemReference.reference.value"/>
+    <attribute csv-column="lymphknoten-rezidiv" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = 'LA4370-8').value.coding.code.value" join-fhir-path="ClinicalImpression.finding.itemReference.reference.value" />
+    <attribute csv-column="fernmetastasen" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = 'LA4226-2').value.coding.code.value" join-fhir-path="ClinicalImpression.finding.itemReference.reference.value" />
+  </container>
+
+  <container csv-filename="Histology-${TIMESTAMP}.csv" opal-table="histology" opal-entity-type="Histology" >
+    <attribute csv-column="histology-id" primary-key="true" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '59847-4').id" anonym="His" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="diagnosis-id" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '59847-4').focus.reference.value" anonym="Dia"/>
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '59847-4').subject.reference.value" anonym="Pat" />
+    <attribute csv-column="histologie_datum" opal-value-type="date" val-fhir-path="Observation.where(code.coding.code = '59847-4').effective.value"/>
+    <attribute csv-column="icd-o_katalog_morphologie_version" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '59847-4').value.coding.version.value" />
+    <attribute csv-column="morphologie" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '59847-4').value.coding.code.value"/>
+    <attribute csv-column="morphologie-freitext" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '59847-4').value.text.value"/>
+    <attribute csv-column="grading" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '59542-1').value.coding.code.value" join-fhir-path="Observation.where(code.coding.code = '59847-4').hasMember.reference.value"/>
+  </container>
+
+
+  <container csv-filename="Metastasis-${TIMESTAMP}.csv" opal-table="metastasis" opal-entity-type="Metastasis" >
+    <attribute csv-column="metastasis-id" primary-key="true" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21907-1').id" anonym="Met" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="diagnosis-id" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21907-1').focus.reference.value" anonym="Dia"/>
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21907-1').subject.reference.value" anonym="Pat" />
+    <attribute csv-column="datum_fernmetastasen" opal-value-type="date" val-fhir-path="Observation.where(code.coding.code = '21907-1').effective.value"/>
+    <attribute csv-column="fernmetastasen_vorhanden" opal-value-type="boolean" val-fhir-path="Observation.where(code.coding.code = '21907-1').value.coding.code.value"/>
+    <attribute csv-column="lokalisation_fernmetastasen" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21907-1').bodySite.coding.code.value"/>
+  </container>
+
+  <container csv-filename="TNM-${TIMESTAMP}.csv" opal-table="tnm" opal-entity-type="TNM">
+    <attribute csv-column="tnm-id" primary-key="true" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').id" anonym="TNM" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="diagnosis-id" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').focus.reference.value" anonym="Dia"/>
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').subject.reference.value" anonym="Pat" />
+    <attribute csv-column="datum_der_tnm_dokumentation_datum_befund" opal-value-type="date" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').effective.value"/>
+    <attribute csv-column="uicc_stadium" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').value.coding.code.value"/>
+    <attribute csv-column="tnm-t" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').component.where(code.coding.code = '21905-5' or code.coding.code = '21899-0').value.coding.code.value"/>
+    <attribute csv-column="tnm-n" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').component.where(code.coding.code = '21906-3' or code.coding.code = '21900-6').value.coding.code.value"/>
+    <attribute csv-column="tnm-m" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').component.where(code.coding.code = '21907-1' or code.coding.code = '21901-4').value.coding.code.value"/>
+    <attribute csv-column="c_p_u_preefix_t" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').component.where(code.coding.code = '21905-5' or code.coding.code = '21899-0').extension('http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix').value.coding.code.value"/>
+    <attribute csv-column="c_p_u_preefix_n" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').component.where(code.coding.code = '21906-3' or code.coding.code = '21900-6').extension('http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix').value.coding.code.value"/>
+    <attribute csv-column="c_p_u_preefix_m" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').component.where(code.coding.code = '21907-1' or code.coding.code = '21901-4').extension('http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix').value.coding.code.value"/>
+    <attribute csv-column="tnm-y-symbol" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').component.where(code.coding.code = '59479-6' or code.coding.code = '59479-6').value.coding.code.value"/>
+    <attribute csv-column="tnm-r-symbol" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').component.where(code.coding.code = '21983-2' or code.coding.code = '21983-2').value.coding.code.value"/>
+    <attribute csv-column="tnm-m-symbol" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').component.where(code.coding.code = '42030-7' or code.coding.code = '42030-7').value.coding.code.value"/>
+    <!--nur bei UICC, nicht in ADT2FHIR--><attribute csv-column="tnm-version" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '21908-9' or code.coding.code = '21902-2').value.coding.version.value"/>
+  </container>
+
+
+  <container csv-filename="System-Therapy-${TIMESTAMP}.csv" opal-table="system-therapy" opal-entity-type="SystemTherapy">
+    <attribute csv-column="system-therapy-id" primary-key="true" opal-value-type="text" val-fhir-path="MedicationStatement.id" anonym="Sys" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="diagnosis-id" opal-value-type="text" val-fhir-path="MedicationStatement.reasonReference.reference.value" anonym="Dia"/>
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="MedicationStatement.subject.reference.value" anonym="Pat" />
+    <attribute csv-column="systemische_therapie_stellung_zu_operativer_therapie" opal-value-type="text" val-fhir-path="MedicationStatement.extension('http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-StellungZurOp').value.coding.code.value"/>
+    <attribute csv-column="intention_chemotherapie" opal-value-type="text" val-fhir-path="MedicationStatement.extension('http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-SYSTIntention').value.coding.code.value"/>
+    <attribute csv-column="therapieart" opal-value-type="text" val-fhir-path="MedicationStatement.category.coding.code.value"/>
+    <attribute csv-column="systemische_therapie_beginn" opal-value-type="date" val-fhir-path="MedicationStatement.effective.start.value"/>
+    <attribute csv-column="systemische_therapie_ende" opal-value-type="date" val-fhir-path="MedicationStatement.effective.end.value"/>
+    <attribute csv-column="systemische_therapie_protokoll" opal-value-type="text" val-fhir-path="MedicationStatement.extension('http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-SystemischeTherapieProtokoll').value.text.value"/>
+    <attribute csv-column="systemische_therapie_substanzen" opal-value-type="text" val-fhir-path="MedicationStatement.medication.text.value"/>
+    <attribute csv-column="chemotherapie" opal-value-type="boolean" val-fhir-path="MedicationStatement.where(category.coding.code = 'CH').exists().value" />
+    <attribute csv-column="hormontherapie" opal-value-type="boolean" val-fhir-path="MedicationStatement.where(category.coding.code = 'HO').exists().value" />
+    <attribute csv-column="immuntherapie" opal-value-type="boolean" val-fhir-path="MedicationStatement.where(category.coding.code = 'IM').exists().value" />
+    <attribute csv-column="knochenmarktransplantation" opal-value-type="boolean" val-fhir-path="MedicationStatement.where(category.coding.code = 'KM').exists().value" />
+    <attribute csv-column="abwartende_strategie" opal-value-type="boolean" val-fhir-path="MedicationStatement.where(category.coding.code = 'WS').exists().value" />
+  </container>
+
+
+  <container csv-filename="Surgery-${TIMESTAMP}.csv" opal-table="surgery" opal-entity-type="Surgery">
+    <attribute csv-column="surgery-id" primary-key="true" opal-value-type="text" val-fhir-path="Procedure.where(category.coding.code = 'OP').id" anonym="Sur" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="diagnosis-id" opal-value-type="text" val-fhir-path="Procedure.where(category.coding.code = 'OP').reasonReference.reference.value" anonym="Dia"/>
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="Procedure.where(category.coding.code = 'OP').subject.reference.value" anonym="Pat" />
+    <attribute csv-column="ops-code" opal-value-type="text" val-fhir-path="Procedure.where(category.coding.code = 'OP').code.coding.code.value"/>
+    <attribute csv-column="datum_der_op" opal-value-type="date" val-fhir-path="Procedure.where(category.coding.code = 'OP').performed.value"/>
+    <attribute csv-column="intention_op" opal-value-type="text" val-fhir-path="Procedure.extension('http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-OPIntention').value.coding.code.value"/>
+    <attribute csv-column="lokale_beurteilung_resttumor" opal-value-type="text" val-fhir-path="Procedure.where(category.coding.code = 'OP').outcome.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS').code.value" />
+    <attribute csv-column="gesamtbeurteilung_resttumor" opal-value-type="text" val-fhir-path="Procedure.where(category.coding.code = 'OP').outcome.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GesamtbeurteilungResidualstatusCS').code.value"  />
+  </container>
+
+
+  <container csv-filename="Radiation-Therapy-${TIMESTAMP}.csv" opal-table="radiation-therapy" opal-entity-type="RadiationTherapy">
+    <attribute csv-column="radiation-therapy-id" primary-key="true" opal-value-type="text" val-fhir-path="Procedure.where(category.coding.code = 'ST').id" anonym="Rad" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="diagnosis-id" opal-value-type="text" val-fhir-path="Procedure.where(category.coding.code = 'ST').reasonReference.reference.value" anonym="Dia"/>
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="Procedure.where(category.coding.code = 'ST').subject.reference.value" anonym="Pat" />
+    <attribute csv-column="strahlentherapie_stellung_zu_operativer_therapie" opal-value-type="text" val-fhir-path="Procedure.extension('http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-StellungZurOp').value.coding.code.value"/>
+    <attribute csv-column="intention_strahlentherapie" opal-value-type="text" val-fhir-path="Procedure.extension('http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-SYSTIntention').value.coding.code.value" />
+    <attribute csv-column="strahlentherapie_beginn" opal-value-type="date" val-fhir-path="Procedure.where(category.coding.code = 'ST').performed.start.value"/>
+    <attribute csv-column="strahlentherapie_ende" opal-value-type="date" val-fhir-path="Procedure.where(category.coding.code = 'ST').performed.end.value"/>
+  </container>
+
+
+  <container csv-filename="Molecular-Marker-${TIMESTAMP}.csv" opal-table="molecular-marker" opal-entity-type="MolecularMarker">
+    <attribute csv-column="mol-marker-id" primary-key="true" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '69548-6').id" anonym="Mol" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="diagnosis-id" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '69548-6').focus.reference.value" anonym="Dia" />
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '69548-6').subject.reference.value" anonym="Pat" />
+    <attribute csv-column="datum_der_datenerhebung" opal-value-type="date" val-fhir-path="Observation.where(code.coding.code = '69548-6').effective.value"/>
+    <attribute csv-column="marker" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '69548-6').component.value.coding.code.value"/>
+    <attribute csv-column="status_des_molekularen_markers" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '69548-6').value.coding.code.value" />
+    <attribute csv-column="zusaetzliche_alternative_dokumentation" opal-value-type="text" val-fhir-path="Observation.where(code.coding.code = '69548-6').value.text.value"/>
+  </container>
+
+
+  <container csv-filename="Sample-${TIMESTAMP}.csv" opal-table="sample" opal-entity-type="Sample">
+    <attribute csv-column="sample-id" primary-key="true" opal-value-type="text" val-fhir-path="Specimen.id" anonym="Sam" op="EXTRACT_RELATIVE_ID"/>
+    <attribute csv-column="patient-id" opal-value-type="text" val-fhir-path="Specimen.subject.reference.value" anonym="Pat" />
+    <attribute csv-column="entnahmedatum" opal-value-type="date" val-fhir-path="Specimen.collection.collectedDateTime.value"/>
+    <attribute csv-column="probenart" opal-value-type="text" val-fhir-path="Specimen.type.coding.code.value"/>
+    <attribute csv-column="status" opal-value-type="text" val-fhir-path="Specimen.status.code.value"/>
+    <attribute csv-column="projekt" opal-value-type="text" val-fhir-path="Specimen.identifier.system.value"/>
+   <!-- @TODO: it is still necessary to clarify whether it would not be better to take the quantity of collection.quantity -->
+    <attribute csv-column="menge" opal-value-type="integer" val-fhir-path="Specimen.container.specimenQuantity.value.value"/>
+    <attribute csv-column="einheit" opal-value-type="text" val-fhir-path="Specimen.container.specimenQuantity.unit.value"/>
+    <attribute csv-column="aliquot" opal-value-type="text" val-fhir-path="Specimen.parent.reference.exists().value" />
+  </container>
+
+
+
+
+  <fhir-rev-include>Observation:patient</fhir-rev-include>
+  <fhir-rev-include>Condition:patient</fhir-rev-include>
+  <fhir-rev-include>ClinicalImpression:patient</fhir-rev-include>
+  <fhir-rev-include>MedicationStatement:patient</fhir-rev-include>
+  <fhir-rev-include>Procedure:patient</fhir-rev-include>
+  <fhir-rev-include>Specimen:patient</fhir-rev-include>
+
+</template>

@@ -23,12 +23,10 @@ services:
       - "traefik.http.routers.exporter_ccp.rule=PathPrefix(`/ccp-exporter`)"
       - "traefik.http.services.exporter_ccp.loadbalancer.server.port=8092"
       - "traefik.http.routers.exporter_ccp.tls=true"
-      # TODO: Add basic auth in Teiler UI to access exporter?
-      #- "traefik.http.routers.exporter_ccp.middlewares=auth"
       - "traefik.http.middlewares.exporter_ccp_strip.stripprefix.prefixes=/ccp-exporter"
       - "traefik.http.routers.exporter_ccp.middlewares=exporter_ccp_strip"
-    volumes:
-      - "bridgehead-exporter:/app/exporter-files"
+#    volumes:
+#      - "bridgehead-exporter:/app/exporter-files"
 
   exporter-db:
     image: postgres:15.1-alpine
@@ -38,11 +36,12 @@ services:
       POSTGRES_PASSWORD: "${EXPORTER_DB_PASSWORD}" # Set in exporter-setup.sh
       POSTGRES_DB: "exporter"
     volumes:
+      # TODO: Move to logging component in bridgehead
       - "bridgehead-exporter-db:/var/lib/postgresql/data"
 
 
 volumes:
   bridgehead-exporter-db:
     name: "bridgehead-exporter-db"
-  bridgehead-exporter:
-    name: "bridgehead-exporter"
+#  bridgehead-exporter:
+#    name: "bridgehead-exporter"

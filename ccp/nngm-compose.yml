@@ -3,7 +3,7 @@ version: "3.7"
 services:
   connector:
     container_name: bridgehead-connector
-    image: docker.verbis.dkfz.de/ccp/connector:test
+    image: docker.verbis.dkfz.de/ccp/connector:bk2
     environment:
       POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
       NNGM_MAGICPL_APIKEY: ${NNGM_MAGICPL_APIKEY}
@@ -17,6 +17,8 @@ services:
       - "traefik.http.routers.connector.rule=PathPrefix(`/nngm-connector`)"
       - "traefik.http.services.connector.loadbalancer.server.port=8080"
       - "traefik.http.routers.connector.tls=true"
+      - "traefik.http.middlewares.connector_strip.stripprefix.prefixes=/nngm-connector"
+      - "traefik.http.routers.connector.middlewares=connector_strip"
 
   connector_db:
     image: docker.verbis.dkfz.de/cache/postgres:9.5-alpine

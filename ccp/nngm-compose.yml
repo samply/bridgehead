@@ -1,32 +1,24 @@
 version: "3.7"
+volumes:
+  nngm-rest:
 
 services:
   connector:
     container_name: bridgehead-connector
-    image: docker.verbis.dkfz.de/ccp/connector:bk2
+    image: docker.verbis.dkfz.de/ccp/nngm-rest:main
     environment:
-      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
-      NNGM_MAGICPL_APIKEY: ${NNGM_MAGICPL_APIKEY}
-      NNGM_MAINZELLISTE_APIKEY: ${NNGM_MAINZELLISTE_APIKEY}
-      NNGM_CTS_APIKEY: ${NNGM_CTS_APIKEY}
-      NNGM_CRYPTKEY: ${NNGM_CRYPTKEY}
+      CTS_MAGICPL_API_KEY: ${NNGM_MAGICPL_APIKEY}
+      CTS_API_KEY: ${NNGM_CTS_APIKEY}
+      CRYPT_KEY: ${NNGM_CRYPTKEY}
+      #CTS_MAGICPL_SITE: ${SITE_ID}TODO
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.connector.rule=PathPrefix(`/ccp-connector`)"
+      - "traefik.http.routers.connector.rule=PathPrefix(`/nngm-connector`)"
+      - "traefik.http.middlewares.connector_strip.stripprefix.prefixes=/nngm-connector"
       - "traefik.http.services.connector.loadbalancer.server.port=8080"
       - "traefik.http.routers.connector.tls=true"
-
-  connector_db:
-    image: docker.verbis.dkfz.de/cache/postgres:9.5-alpine
-    container_name: bridgehead-ccp-connector-db
+      - "traefik.http.routers.connector.middlewares=connector_strip,auth"
     volumes:
-      - "connector_db_data:/var/lib/postgresql/data"
-    environment:
-      POSTGRES_DB: "samplyconnector"
-      POSTGRES_USER: "samplyconnector"
-      POSTGRES_PASSWORD: ${CONNECTOR_POSTGRES_PASSWORD}
-    restart: always
+      - nngm-rest:/var/log
 
-volumes:
-  connector_db_data:

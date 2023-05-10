@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  beam-proxy:
+    environment:
+      APP_3_ID: dnpm-connect
+      APP_3_KEY: ${DNPM_BEAM_SECRET_SHORT}
+
+  dnpm-beam-connect:
+    depends_on: [ beam-proxy ]
+    image: samply/beam-connect:sites-without-auth
+    environment:
+      PROXY_URL: http://beam-proxy:8081
+      PROXY_APIKEY: ${DNPM_BEAM_SECRET_SHORT}
+      APP_ID: dnpm-connect.${PROXY_ID}
+      DISCOVERY_URL: ${DNPM_DISCOVERY_URL}
+      LOCAL_TARGETS_FILE: /conf/connect_targets.json
+      HTTP_PROXY: http://forward_proxy:3128
+      HTTPS_PROXY: http://forward_proxy:3128
+      NO_PROXY: beam-proxy,dnpm-backend
+      RUST_LOG: ${RUST_LOG:-info}
+    volumes:
+      - /etc/bridgehead/dnpm/local_targets.json:/conf/connect_targets.json:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dnpm-connect.rule=PathPrefix(`/dnpm-connect`)"
+      - "traefik.http.services.dnpm-connect.loadbalancer.server.port=8062"
+      - "traefik.http.routers.dnpm-connect.tls=true"

@@ -171,7 +171,7 @@ function retry {
 
 function bk_is_running {
 	detectCompose
-	RUNNING="$($COMPOSE -p $PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE ps -q)"
+	RUNNING="$($COMPOSE -p $PROJECT -f minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE ps -q)"
 	NUMBEROFRUNNING=$(echo "$RUNNING" | wc -l)
 	if [ $NUMBEROFRUNNING -ge 2 ]; then
 		return 0

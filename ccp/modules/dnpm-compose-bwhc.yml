@@ -1,0 +1,54 @@
+version: "3.7"
+
+services:
+  dnpm-frontend:
+    depends_on: [ dnpm-backend ]
+    build:
+      context: ../../dnpm/origin
+      dockerfile: Frontend.Dockerfile
+      network: host
+      args:
+        NUXT_HOST: 0.0.0.0
+        NUXT_PORT: 3000
+        BACKEND_PROTOCOL: ${DNPM_BMHC_BACKEND_PROTOCOL}
+        BACKEND_HOSTNAME: ${DNPM_BWHC_BACKEND_HOSTNAME}
+        BACKEND_PORT: 9000
+        DNPM_BWHC_FRONTEND_ZIP: ${DNPM_BWHC_FRONTEND_ZIP}
+        HTTP_PROXY: ${http_proxy}
+        HTTPS_PROXY: ${https_proxy}
+    environment:
+        BACKEND_PROTOCOL: ${DNPM_BMHC_BACKEND_PROTOCOL}
+        BACKEND_HOSTNAME: ${DNPM_BWHC_BACKEND_HOSTNAME}
+        BACKEND_PORT: 9000
+        no_proxy: dnpm-backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dnpm-frontend.rule=PathPrefix(`/dnpm-frontend`)"
+      - "traefik.http.services.dnpm-frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.dnpm-frontend.tls=true"
+
+  dnpm-backend:
+    build:
+      context: ../../dnpm/origin
+      dockerfile: Backend.Dockerfile
+      args:
+        BWHC_BASE_DIR: /bwhc-backend
+        DNPM_BWHC_BACKEND_ZIP: ${DNPM_BWHC_BACKEND_ZIP}
+    ports:
+      - 9000:9000
+    environment:
+      APPLICATION_SECRET: ${DNPM_APPLICATION_SECRET}
+      ZPM_SITE: ${ZPM_SITE}
+      noproxy: dnpm-frontend,dnpm-beam-connect
+      # PLAY_HTTP_PORT: 9000
+      # PLAY_HTTP_ADDRESS: 0.0.0.0
+    volumes:
+      - ../dnpm/origin/logback.xml:/bwhc-backend/logback.xml:ro
+      - /etc/bridgehead/dnpm/bwhcConnectorConfig.xml:/bwhc-backend/bwhcConnectorConfig.xml:ro
+      - /etc/bridgehead/dnpm/production.conf:/bwhc-backend/production.conf:ro
+      - bwhc_data:/bwhc-backend/data/
+      - bwhc_hgnc_data:/bwhc-backend/hgnc_data/
+
+volumes:
+  bwhc_data:
+  bwhc_hgnc_data:

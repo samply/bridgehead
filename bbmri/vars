@@ -5,3 +5,9 @@ FOCUS_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | h
 FOCUS_RETRY_COUNT=32
 SUPPORT_EMAIL=bridgehead@helpdesk.bbmri-eric.eu
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
+
+for module in $PROJECT/modules/*.sh
+do
+    log INFO "sourcing $module"
+    source $module
+done

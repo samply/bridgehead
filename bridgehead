@@ -32,6 +32,9 @@ case "$PROJECT" in
 	bbmri)
 		#nothing extra to do
 		;;
+	minimal)
+		#nothing extra to do
+		;;
 	*)
 		printUsage
 		exit 1
@@ -51,6 +54,11 @@ loadVars() {
 	set +a
 
 	OVERRIDE=${OVERRIDE:=""}
+	# minimal contains shared components, so potential overrides must be applied in every project
+	if [ -f "minimal/docker-compose.override.yml" ]; then
+		log INFO "Applying minimal/docker-compose.override.yml"
+		OVERRIDE+=" -f ./minimal/docker-compose.override.yml"
+	fi
 	if [ -f "$PROJECT/docker-compose.override.yml" ]; then
 		log INFO "Applying $PROJECT/docker-compose.override.yml"
 		OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
@@ -66,13 +74,13 @@ case "$ACTION" in
 		checkRequirements
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
 		export LDM_LOGIN=$(getLdmPassword)
-		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
+		exec $COMPOSE -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
 		loadVars
 		# HACK: This is tempoarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
-		$COMPOSE -p bridgehead-$PROJECT -f ./$PROJECT/docker-compose.yml $OVERRIDE down
-		exec $COMPOSE -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		$COMPOSE -p bridgehead-$PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		exec $COMPOSE -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		;;
 	is-running)
 		bk_is_running

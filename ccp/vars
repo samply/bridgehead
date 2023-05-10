@@ -19,6 +19,8 @@ source $PROJECT/exliquid-setup.sh
 exliquidSetup
 mtbaSetup
 
-# This will load DNPM setup. Effective only if DNPM configuration is defined in /etc/bridgehead/dnpm.
-source dnpm/dnpm-setup.sh
-dnpmSetup
+for module in $PROJECT/modules/*.sh
+do
+    log INFO "sourcing $module"
+    source $module
+done

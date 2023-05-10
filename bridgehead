@@ -97,10 +97,6 @@ case "$ACTION" in
 		;;
 	enroll)
 		loadVars
-		if [ -e $PRIVATEKEYFILENAME ]; then
-			log ERROR "Private key already exists at $PRIVATEKEYFILENAME. Please delete first to proceed."
-			exit 1
-		fi
 		docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $PROXY_ID --admin-email $SUPPORT_EMAIL
 		chmod 600 $PRIVATEKEYFILENAME
 		;;

@@ -7,7 +7,9 @@ if [ -n "${ENABLE_DNPM}" ]; then
 	# Set variables required for Beam-Connect
 	DNPM_APPLICATION_SECRET="$(echo \"This is a salt string to generate one consistent password. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
 	DNPM_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
-	DNPM_DISCOVERY_URL="https://dnpm.medizin.uni-tuebingen.de/sites"
+	DNPM_BROKER_ID="broker.dev.ccp-it.dktk.dkfz.de"
+	DNPM_BROKER_URL="https://${DNPM_BROKER_ID}"
+	DNPM_PROXY_ID="${SITE_ID}.${DNPM_BROKER_ID}"
 
 	# Optionally, start bwhc as well. This is currently only experimental
 	if [ -n "${ENABLE_DNPM_BWHC}" ]; then

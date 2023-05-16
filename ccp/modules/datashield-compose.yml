@@ -24,7 +24,7 @@ services:
   ############################################ DataSHIELD Server (Opal)
   opal:
     container_name: bridgehead-opal
-    image: obiba/opal:4.5
+    image: docker.verbis.dkfz.de/ccp/dktk-opal:latest
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.opal_ccp.rule=PathPrefix(`/opal`)"
@@ -44,6 +44,11 @@ services:
       ROCK_HOSTS: "opal-rserver:8085"
       APP_URL: "https://${HOST}/opal"
       APP_CONTEXT_PATH: "/opal"
+      OPAL_PRIVATE_KEY: "/run/secrets/opal-key.pem"
+      OPAL_CERTIFICATE: "/run/secrets/opal-cert.pem"
+    secrets:
+      - opal-cert.pem
+      - opal-key.pem
 
   #    volumes:
   #      - "bridgehead-opal:/srv"
@@ -93,3 +98,9 @@ services:
 #    name: "bridgehead-opal-db"
 #  bridgehead-opal:
 #    name: "bridgehead-opal"
+
+secrets:
+  opal-cert.pem:
+    file: /etc/bridgehead/traefik-tls/opal-cert.pem
+  opal-key.pem:
+    file: /etc/bridgehead/traefik-tls/opal-key.pem

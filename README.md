@@ -87,7 +87,7 @@ To request a new repository, please contact your research network administration
 - For the ccp project: support-ccp@dkfz-heidelberg.de
 
 Mention:
-- which project you belong to, i.e. "bbmri" or "ccp"
+- which project you belong to, i.e. "bbmri", "ccp", or "minimal"
 - site name (According to conventions listed above)
 - operator name and email
 
@@ -248,7 +248,7 @@ Your Bridgehead's actual data is not stored in the above directories, but in nam
 
 Your Bridgehead will automatically and regularly check for updates. Whenever something has been updates (e.g., one of the git repositories or one of the docker images), your Bridgehead is automatically restarted. This should happen automatically and does not need any configuration.
 
-If you would like to understand what happens exactly and when, please check the systemd units deployed during the [installation](#base-installation) via `systemctl cat bridgehead-update@<PROJECT>.service` and `systemctl cat bridgehead-update@<PROJECT.timer`.
+If you would like to understand what happens exactly and when, please check the systemd units deployed during the [installation](#base-installation) via `systemctl cat bridgehead-update@<PROJECT>.service` and `systemctl cat bridgehead-update@<PROJECT>.timer`.
 
 ### Auto-Backups
 

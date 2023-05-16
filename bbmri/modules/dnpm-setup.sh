@@ -15,5 +15,15 @@ if [ -n "${ENABLE_DNPM}" ]; then
 	if [ -n "${ENABLE_DNPM_BWHC}" ]; then
 		log INFO "DNPM setup detected (with Frontend/Backend) -- will start BWHC Frontend/Backend. This is highly experimental!"
 		OVERRIDE+=" -f ./$PROJECT/modules/dnpm-compose-bwhc.yml"
+
+		if [ -z "${DNPM_BWHC_FRONTEND_ZIP}" ]; then
+			fail_and_report 1 "Variable DNPM_BWHC_FRONTEND_ZIP is not set."
+		fi
+		if [ -z "${DNPM_BWHC_BACKEND_ZIP}" ]; then
+			fail_and_report 1 "Variable DNPM_BWHC_BACKEND_ZIP is not set."
+		fi
+		if [ -z "${ZPM_SITE}" ]; then
+			fail_and_report 1 "Variable ZPM_SITE is not set."
+		fi
 	fi
 fi

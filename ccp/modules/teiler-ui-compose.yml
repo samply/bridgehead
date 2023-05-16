@@ -46,8 +46,6 @@ services:
   teiler-core:
     image: docker.verbis.dkfz.de/ccp/dktk-teiler-core:latest
     container_name: bridgehead-teiler-core
-    volumes:
-      - "/etc/bridgehead/ccp.conf:/app/ccp.conf:ro"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.teiler_core_ccp.rule=PathPrefix(`/ccp-teiler-core`)"
@@ -60,7 +58,7 @@ services:
       APPLICATION_PORT: "8085"
       APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "DE"
-      CONFIG_ENV_VAR_PATH: "/app/ccp.conf"
+      CONFIG_ENV_VAR_PATH: "/run/secrets/ccp.conf"
       TEILER_CONFIG_UPDATER_CRON: "0 1 * * * *"
       TEILER_ROOT_CONFIG_HTTP_RELATIVE_PATH: "/ccp-teiler"
       TEILER_ROOT_CONFIG_URL: "https://${HOST}/ccp-teiler"
@@ -68,3 +66,9 @@ services:
       TEILER_UI_EN_URL: "https://${HOST}/ccp-teiler-ui/en"
       CENTRAX_URL: "${CENTRAXX_URL}"
       IS_DKTK_SITE: "${IS_DKTK_SITE}"
+    secrets:
+      - ccp.conf
+
+secrets:
+  ccp.conf:
+    file: /etc/bridgehead/ccp.conf

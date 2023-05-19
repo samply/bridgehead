@@ -85,7 +85,7 @@ To request a new repository, please contact your research network administration
 - For the ccp project: support-ccp@dkfz-heidelberg.de
 
 Mention:
-- which project you belong to, i.e. "bbmri", "ccp", or "minimal"
+- which project you belong to, i.e. "bbmri" or "ccp"
 - site name (According to conventions listed above)
 - operator name and email
 

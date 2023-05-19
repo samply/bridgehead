@@ -23,7 +23,7 @@ services:
 
   dnpm-beam-connect:
     depends_on: [ dnpm-beam-proxy ]
-    image: docker.verbis.dkfz.de/cache/samply/beam-connect:sites-without-auth
+    image: docker.verbis.dkfz.de/cache/samply/beam-connect:dnpm
     container_name: bridgehead-dnpm-beam-connect
     environment:
       PROXY_URL: http://dnpm-beam-proxy:8081

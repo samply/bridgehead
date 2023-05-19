@@ -56,7 +56,7 @@ loadVars() {
 	OVERRIDE=${OVERRIDE:=""}
 	# minimal contains shared components, so potential overrides must be applied in every project
 	if [ -f "minimal/docker-compose.override.yml" ]; then
-		log INFO "Applying minimal/docker-compose.override.yml"
+		log INFO "Applying Bridgehead common components override (minimal/docker-compose.override.yml)"
 		OVERRIDE+=" -f ./minimal/docker-compose.override.yml"
 	fi
 	if [ -f "$PROJECT/docker-compose.override.yml" ]; then
@@ -78,7 +78,7 @@ case "$ACTION" in
 		;;
 	stop)
 		loadVars
-		# HACK: This is tempoarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
+		# HACK: This is temporarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
 		$COMPOSE -p bridgehead-$PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		exec $COMPOSE -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		;;

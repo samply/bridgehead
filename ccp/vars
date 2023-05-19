@@ -21,6 +21,6 @@ mtbaSetup
 
 for module in $PROJECT/modules/*.sh
 do
-    log INFO "sourcing $module"
+    log DEBUG "sourcing $module"
     source $module
 done

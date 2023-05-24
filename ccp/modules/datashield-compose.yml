@@ -106,7 +106,7 @@ services:
 
 secrets:
   opal-cert.pem:
-    file: /etc/bridgehead/trusted-ca-certs/opal-cert.pem:ro
+    file: /etc/bridgehead/trusted-ca-certs/opal-cert.pem
   opal-key.pem:
-    file: /etc/bridgehead/trusted-ca-certs/opal-key.pem:ro
+    file: /etc/bridgehead/trusted-ca-certs/opal-key.pem
   

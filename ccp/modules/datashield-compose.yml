@@ -69,7 +69,9 @@ services:
     image: datashield/rock-base:6.2-R4.2  # https://datashield.discourse.group/t/ds-aggregate-method-error/416/4
 
   beam-connect:
-    image: docker.verbis.dkfz.de/cache/samply/beam-connect:fix-connect
+    # We want to switch to this image if the changes from fix-connect are merged
+    # image: docker.verbis.dkfz.de/cache/samply/beam-connect:no-auth
+    image: samply/beam-connect:fix-connect
     container_name: bridgehead-datashield-connect
     ports:
       - 8062:8062

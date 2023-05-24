@@ -69,16 +69,19 @@ services:
     image: datashield/rock-base:6.2-R4.2  # https://datashield.discourse.group/t/ds-aggregate-method-error/416/4
 
   beam-connect:
-    image: docker.verbis.dkfz.de/cache/samply/beam-connect:develop
+    image: docker.verbis.dkfz.de/cache/samply/beam-connect:fix-connect
     container_name: bridgehead-datashield-connect
     ports:
       - 8062:8062
     environment:
       PROXY_URL: "http://beam-proxy:8081"
+      TLS_CA_CERTIFICATES_DIR: /run/secrets
       APP_ID: datashield-connect.${SITE_ID}.${BROKER_ID}
       PROXY_APIKEY: ${DATASHIELD_CONNECT_SECRET}
       DISCOVERY_URL: "./map/central.json"
       LOCAL_TARGETS_FILE: "./map/local.json"
+    secrets:
+      - opal-cert.pem
     depends_on:
       - beam-proxy
     volumes:
@@ -101,6 +104,7 @@ services:
 
 secrets:
   opal-cert.pem:
-    file: /etc/bridgehead/traefik-tls/opal-cert.pem
+    file: /etc/bridgehead/trusted-ca-certs/opal-cert.pem:ro
   opal-key.pem:
-    file: /etc/bridgehead/traefik-tls/opal-key.pem
+    file: /etc/bridgehead/trusted-ca-certs/opal-key.pem:ro
+  

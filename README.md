@@ -70,18 +70,11 @@ Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to c
 
 ### Register with a Directory
 
-The [Directory][https://directory.bbmri-eric.eu] is a BBMRI project that aims to catalog all biobanks in Europe and beyond. Each biobank is given its own unique ID and the Directory maintains counts of the number of donors and the number of samples held at each biobank. You are strongly encouraged to register with the Directory, because this opens the door to further services, such as the [Negotiator][https://negotiator.bbmri-eric.eu/login.xhtml].
+If you run a biobank, you should register with the [Directory][https://directory.bbmri-eric.eu], a BBMRI project that catalogs biobanks.
 
-Generally, you should register with the BBMRI national node for the country where your biobank is based. You can find a list of contacts for the national nodes [here](http://www.bbmri-eric.eu/national-nodes/). If your country is not in this list, or you have any questions, please contact the [BBMRI helpdesk](mailto:directory@helpdesk.bbmri-eric.eu). If your biobank is for COVID samples, you can also take advantage of an accelerated registration process [here](https://docs.google.com/forms/d/e/1FAIpQLSdIFfxADikGUf1GA0M16J0HQfc2NHJ55M_E47TXahju5BlFIQ).
+To do this, contact the BBMRI national node for the country where your biobank is based, see [the list of nodes](http://www.bbmri-eric.eu/national-nodes/).
 
-Your national node will give you detailed instructions for registering, but for your information, here are the basic steps:
-
-* Log in to the Directory for your country.
-* Add your biobank and enter its details, including contact information for a person involved in running the biobank.
-* You will need to create at least one collection.
-* Note the biobank ID and the collection ID that you have created - these will be needed when you register with the Locator (see below).
-
-Once you have registered, you should choose one of your Collections as a default collection for your biobank. This is the Collection that will be automatically used to label any samples that have not been assigned a Collection ID in your ETL process. Make a note of this ID, you will need it later on in the installation process.
+Once you have registered, **you should choose one of your sample collections as a default collection for your biobank**. This is the collection that will be automatically used to label any samples that have not been assigned a collection ID in your ETL process. Make a note of this ID, you will need it later on in the installation process.
 
 ## Deployment
 

@@ -8,7 +8,7 @@ This repository is the starting point for any information and tools you will nee
     - [Hardware](#hardware)
     - [Software](#software)
     - [Network](#network)
-    - [Register with a Directory](#register-with-a-directory)
+    - [Register with the Directory](#register-with-the-directory)
 2. [Deployment](#deployment)
     - [Site name](#site-name)
     - [Projects](#projects)
@@ -68,9 +68,9 @@ If there is a site firewall, this needs to be configured so that git and Docker 
 
 Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to conflict with Docker [here](https://github.com/chaifeng/ufw-docker).
 
-### Register with a Directory
+### Register with the Directory
 
-If you run a biobank, you should register with the [Directory][https://directory.bbmri-eric.eu], a BBMRI project that catalogs biobanks.
+If you run a biobank, you should register with the [Directory](https://directory.bbmri-eric.eu), a BBMRI project that catalogs biobanks.
 
 To do this, contact the BBMRI national node for the country where your biobank is based, see [the list of nodes](http://www.bbmri-eric.eu/national-nodes/).
 

@@ -8,6 +8,7 @@ This repository is the starting point for any information and tools you will nee
     - [Hardware](#hardware)
     - [Software](#software)
     - [Network](#network)
+    - [Register with the Directory](#register-with-the-directory)
 2. [Deployment](#deployment)
     - [Site name](#site-name)
     - [Projects](#projects)
@@ -57,9 +58,23 @@ Note for Ubuntu: Please note that snap versions of Docker are not supported.
 
 ### Network
 
-Since it needs to carry sensitive patient data, Bridgeheads are intended to be deployed within your institution's secure network and behave well even in networks in strict security settings, e.g. firewall rules. The only connectivity required is an outgoing HTTPS proxy. TLS termination is supported, too (see [below](#tls-terminating-proxies))
+A running Bridgehead requires an outgoing HTTPS proxy to communicate with the central components.
+
+Additionally, your site might use its own proxy. You should discuss this with your local systems administration. If a proxy is being used, you will need to note down the URL of the proxy. If it is a secure proxy, then you will also need to make a note of its username and password. This information will be used later on during the installation process.
+
+Note that git and Docker may also need to be configured to use this proxy. This is a job for your systems administrators.
+
+If there is a site firewall, this needs to be configured so that git and Docker can reach the outside world. Another job for the systems administrators.
 
 Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to conflict with Docker [here](https://github.com/chaifeng/ufw-docker).
+
+### Register with the Directory
+
+If you run a biobank, you should register with the [Directory](https://directory.bbmri-eric.eu), a BBMRI project that catalogs biobanks.
+
+To do this, contact the BBMRI national node for the country where your biobank is based, see [the list of nodes](http://www.bbmri-eric.eu/national-nodes/).
+
+Once you have registered, **you should choose one of your sample collections as a default collection for your biobank**. This is the collection that will be automatically used to label any samples that have not been assigned a collection ID in your ETL process. Make a note of this ID, you will need it later on in the installation process.
 
 ## Deployment
 
@@ -140,7 +155,7 @@ cd /srv/docker/bridgehead
 sudo ./bridgehead enroll <PROJECT>
 ```
 
-... and follow the instructions on the screen. You should then be prompted to do the next step:
+... and follow the instructions on the screen. Please send your default Collection ID and the display name of your site together with the certificate request when you enroll. You should then be prompted to do the next step:
 
 ### Starting and stopping your Bridgehead
 

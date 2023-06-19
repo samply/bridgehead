@@ -71,15 +71,17 @@ services:
       - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
 
-  spot:
-    image: docker.verbis.dkfz.de/cache/samply/spot:latest
-    container_name: bridgehead-spot
+  focus:
+    image: docker.verbis.dkfz.de/cache/samply/focus:main
+    container_name: bridgehead-focus
     environment:
-      SECRET: ${SPOT_BEAM_SECRET_LONG}
-      APPID: spot
+      SECRET: ${FOCUS_BEAM_SECRET_SHORT}
+      BEAM_APP_ID_LONG: focus.${PROXY_ID}
       PROXY_ID: ${PROXY_ID}
-      LDM_URL: http://bridgehead-ccp-blaze:8080/fhir
-      BEAM_PROXY: http://beam-proxy:8081
+      BLAZE_URL: "http://bridgehead-ccp-blaze:8080/fhir/"
+      BEAM_PROXY_URL: http://beam-proxy:8081
+      RETRY_COUNT: ${FOCUS_RETRY_COUNT}
+      OBFUSCATE: "no"
     depends_on:
       - "beam-proxy"
       - "blaze"
@@ -90,8 +92,8 @@ services:
     environment:
       BROKER_URL: ${BROKER_URL}
       PROXY_ID: ${PROXY_ID}
-      APP_0_ID: spot
-      APP_0_KEY: ${SPOT_BEAM_SECRET_SHORT}
+      APP_0_ID: focus
+      APP_0_KEY: ${FOCUS_BEAM_SECRET_SHORT}
       APP_1_ID: report-hub
       APP_1_KEY: ${REPORTHUB_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem

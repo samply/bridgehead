@@ -75,7 +75,7 @@ services:
     image: docker.verbis.dkfz.de/cache/samply/focus:main
     container_name: bridgehead-focus
     environment:
-      SECRET: ${FOCUS_BEAM_SECRET_SHORT}
+      API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
       BEAM_APP_ID_LONG: focus.${PROXY_ID}
       PROXY_ID: ${PROXY_ID}
       BLAZE_URL: "http://bridgehead-ccp-blaze:8080/fhir/"

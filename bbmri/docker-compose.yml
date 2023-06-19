@@ -91,8 +91,7 @@ services:
     environment:
       BROKER_URL: ${BROKER_URL}
       PROXY_ID: ${PROXY_ID}
-      APP_0_ID: focus
-      APP_0_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      APP_focus_KEY: ${FOCUS_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs

@@ -97,7 +97,7 @@ case "$ACTION" in
 		;;
 	enroll)
 		loadVars
-		docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $PROXY_ID --admin-email $SUPPORT_EMAIL
+		docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki docker.verbis.dkfz.de/cache/samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $PROXY_ID --admin-email $SUPPORT_EMAIL
 		chmod 600 $PRIVATEKEYFILENAME
 		;;
 	preRun | preUpdate)

@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.19
+    image: docker.verbis.dkfz.de/cache/samply/blaze:latest
     container_name: bridgehead-bbmri-blaze
     environment:
       BASE_URL: "http://bridgehead-bbmri-blaze:8080"
@@ -20,7 +20,7 @@ services:
       - "traefik.http.routers.blaze_ccp.tls=true"
 
   focus:
-    image: docker.verbis.dkfz.de/cache/samply/focus:develop
+    image: docker.verbis.dkfz.de/cache/samply/focus:main
     container_name: bridgehead-focus
     environment:
       API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
@@ -39,8 +39,7 @@ services:
     environment:
       BROKER_URL: ${BROKER_URL}
       PROXY_ID: ${PROXY_ID}
-      APP_0_ID: focus
-      APP_0_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      APP_focus_KEY: ${FOCUS_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs

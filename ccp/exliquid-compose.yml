@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   exliquid-task-store:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.19
+    image: docker.verbis.dkfz.de/cache/samply/blaze:0.20
     container_name: bridgehead-exliquid-task-store
     environment:
       BASE_URL: "http://bridgehead-exliquid-task-store:8080"

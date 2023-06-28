@@ -14,6 +14,13 @@ idManagementSetup
 # This will load nngm setup. Effective only if nngm configuration is defined.
 source $PROJECT/nngm-setup.sh
 nngmSetup
+
 source $PROJECT/exliquid-setup.sh
 exliquidSetup
 mtbaSetup
+
+for module in $PROJECT/modules/*.sh
+do
+    log DEBUG "sourcing $module"
+    source $module
+done

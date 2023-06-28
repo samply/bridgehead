@@ -1,0 +1,48 @@
+version: "3.7"
+
+services:
+  dnpm-beam-proxy:
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    container_name: bridgehead-dnpm-beam-proxy
+    environment:
+      BROKER_URL: ${DNPM_BROKER_URL}
+      PROXY_ID: ${DNPM_PROXY_ID}
+      APP_dnpm-connect_KEY: ${DNPM_BEAM_SECRET_SHORT}
+      PRIVKEY_FILE: /run/secrets/proxy.pem
+      ALL_PROXY: http://forward_proxy:3128
+      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
+      ROOTCERT_FILE: /conf/root.crt.pem
+    secrets:
+      - proxy.pem
+    depends_on:
+      - "forward_proxy"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
+
+  dnpm-beam-connect:
+    depends_on: [ dnpm-beam-proxy ]
+    image: docker.verbis.dkfz.de/cache/samply/beam-connect:dnpm
+    container_name: bridgehead-dnpm-beam-connect
+    environment:
+      PROXY_URL: http://dnpm-beam-proxy:8081
+      PROXY_APIKEY: ${DNPM_BEAM_SECRET_SHORT}
+      APP_ID: dnpm-connect.${DNPM_PROXY_ID}
+      DISCOVERY_URL: "./conf/central_targets.json"
+      LOCAL_TARGETS_FILE: "./conf/connect_targets.json"
+      HTTP_PROXY: http://forward_proxy:3128
+      HTTPS_PROXY: http://forward_proxy:3128
+      NO_PROXY: dnpm-beam-proxy,dnpm-backend
+      RUST_LOG: ${RUST_LOG:-info}
+    volumes:
+      - /etc/bridgehead/dnpm/local_targets.json:/conf/connect_targets.json:ro
+      - /etc/bridgehead/dnpm/central_targets.json:/conf/central_targets.json:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dnpm-connect.rule=PathPrefix(`/dnpm-connect`)"
+      - "traefik.http.services.dnpm-connect.loadbalancer.server.port=8062"
+      - "traefik.http.routers.dnpm-connect.tls=true"
+
+secrets:
+  proxy.pem:
+    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

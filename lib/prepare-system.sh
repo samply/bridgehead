@@ -52,6 +52,9 @@ case "$PROJECT" in
 	bbmri)
 		site_configuration_repository_middle="git.verbis.dkfz.de/bbmri-bridgehead-configs/"
 		;;
+	minimal)
+		site_configuration_repository_middle="git.verbis.dkfz.de/minimal-bridgehead-configs/"
+		;;
 	*)
 		log ERROR "Internal error, this should not happen."
         exit 1

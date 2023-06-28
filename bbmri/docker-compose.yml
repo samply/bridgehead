@@ -50,7 +50,7 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - ./root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/bbmri/root.crt.pem:/conf/root.crt.pem:ro
 
 volumes:
   blaze-data:

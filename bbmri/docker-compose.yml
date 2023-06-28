@@ -54,7 +54,7 @@ services:
       SITE_NAME: ${SITE_NAME}
 
   blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.19
+    image: docker.verbis.dkfz.de/cache/samply/blaze:latest
     container_name: bridgehead-bbmri-blaze
     environment:
       BASE_URL: "http://bridgehead-bbmri-blaze:8080"

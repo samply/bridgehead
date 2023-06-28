@@ -1,58 +1,6 @@
 version: "3.7"
 
 services:
-  traefik:
-    container_name: bridgehead-traefik
-    image: docker.verbis.dkfz.de/cache/traefik:latest
-    command:
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --providers.file.directory=/configuration/
-      - --api.dashboard=true
-      - --accesslog=true
-      - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      - --entrypoints.web.http.redirections.entrypoint.scheme=https
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=${LDM_LOGIN}"
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - /etc/bridgehead/traefik-tls:/certs:ro
-      - ../lib/traefik-configuration/:/configuration:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
-  forward_proxy:
-    container_name: bridgehead-forward-proxy
-    image: docker.verbis.dkfz.de/cache/samply/bridgehead-forward-proxy:latest
-    environment:
-      HTTPS_PROXY: ${HTTPS_PROXY_URL}
-      USERNAME: ${HTTPS_PROXY_USERNAME}
-      PASSWORD: ${HTTPS_PROXY_PASSWORD}
-    volumes:
-      - /etc/bridgehead/trusted-ca-certs:/docker/custom-certs/:ro
-
-  landing:
-    container_name: bridgehead-landingpage
-    image: docker.verbis.dkfz.de/cache/samply/bridgehead-landingpage:master
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
-      - "traefik.http.services.landing.loadbalancer.server.port=80"
-      - "traefik.http.routers.landing.tls=true"
-    environment:
-      HOST: ${HOST}
-      PROJECT: ${PROJECT}
-      SITE_NAME: ${SITE_NAME}
-
   blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:latest
     container_name: bridgehead-bbmri-blaze

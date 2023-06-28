@@ -7,8 +7,7 @@ services:
     environment:
       BROKER_URL: ${DNPM_BROKER_URL}
       PROXY_ID: ${DNPM_PROXY_ID}
-      APP_0_ID: dnpm-connect
-      APP_0_KEY: ${DNPM_BEAM_SECRET_SHORT}
+      APP_dnpm-connect_KEY: ${DNPM_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs

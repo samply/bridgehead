@@ -3,9 +3,7 @@ version: "3.7"
 services:
   beam-proxy:
     environment:
-      APP_3_ID: dnpm-connect
-      APP_3_KEY: ${DNPM_BEAM_SECRET_SHORT}
-
+      APP_dnpm-connect_KEY: ${DNPM_BEAM_SECRET_SHORT}
   dnpm-beam-connect:
     depends_on: [ beam-proxy ]
     image: docker.verbis.dkfz.de/cache/samply/beam-connect:dnpm

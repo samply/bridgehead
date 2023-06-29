@@ -80,7 +80,7 @@ case "$ACTION" in
 		loadVars
 		# HACK: This is temporarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
 		$COMPOSE -p bridgehead-$PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
-		exec $COMPOSE -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		;;
 	is-running)
 		bk_is_running

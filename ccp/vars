@@ -15,8 +15,6 @@ idManagementSetup
 source $PROJECT/nngm-setup.sh
 nngmSetup
 
-source $PROJECT/exliquid-setup.sh
-exliquidSetup
 mtbaSetup
 
 for module in $PROJECT/modules/*.sh

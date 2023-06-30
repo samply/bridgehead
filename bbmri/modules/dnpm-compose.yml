@@ -18,7 +18,7 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/ccp/root-new.crt.pem:/conf/root.crt.pem:ro
 
   dnpm-beam-connect:
     depends_on: [ dnpm-beam-proxy ]

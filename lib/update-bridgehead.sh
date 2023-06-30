@@ -80,6 +80,10 @@ for DIR in /etc/bridgehead $(pwd); do
       log "INFO" "You can review all changes on the repository with $git_repository_url/compare?from=$old_git_hash&to=$new_git_hash"
     fi
     git_updated="true"
+    git -C "$DIR" checkout main
+    REPORT_BRANCH_NAME=$(git -C "$DIR" branch --show-current)
+    REPORT_STATUS_CHECK=$(git -C "$DIR" status --porcelain)
+    report_error 7 "MAINTENANCE: Switched Branch to main, you are now on branch $REPORT_BRANCH_NAME \n see status \n $REPORT_STATUS_CHECK"
   fi
 done
 

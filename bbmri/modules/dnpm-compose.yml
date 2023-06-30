@@ -40,6 +40,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dnpm-connect.rule=PathPrefix(`/dnpm-connect`)"
+      - "traefik.http.middlewares.dnpm-connect-strip.stripprefix.prefixes=/dnpm-connect"
+      - "traefik.http.routers.dnpm-connect.middlewares=dnpm-connect-strip"
       - "traefik.http.services.dnpm-connect.loadbalancer.server.port=8062"
       - "traefik.http.routers.dnpm-connect.tls=true"
 

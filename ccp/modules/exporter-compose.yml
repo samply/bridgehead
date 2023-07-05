@@ -39,6 +39,22 @@ services:
       # TODO: Move to logging component in bridgehead
       - "bridgehead-exporter-db:/var/lib/postgresql/data"
 
+  reporter:
+    image: docker.verbis.dkfz.de/ccp/dktk-reporter:latest
+    container_name: bridgehead-ccp-reporter
+    environment:
+      LOG_LEVEL: "INFO"
+      CROSS_ORIGINS: "https://${HOST}"
+      HTTP_RELATIVE_PATH: "/ccp-reporter"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
+      EXPORTER_URL: "http://exporter:8092"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.reporter_ccp.rule=PathPrefix(`/ccp-reporter`)"
+      - "traefik.http.services.reporter_ccp.loadbalancer.server.port=8095"
+      - "traefik.http.routers.reporter_ccp.tls=true"
+      - "traefik.http.middlewares.reporter_ccp_strip.stripprefix.prefixes=/ccp-reporter"
+      - "traefik.http.routers.reporter_ccp.middlewares=reporter_ccp_strip"
 
 volumes:
   bridgehead-exporter-db:

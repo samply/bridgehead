@@ -48,6 +48,7 @@ services:
       HTTP_RELATIVE_PATH: "/ccp-reporter"
       EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
       EXPORTER_URL: "http://exporter:8092"
+      LOG_FHIR_VALIDATION: "false"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.reporter_ccp.rule=PathPrefix(`/ccp-reporter`)"

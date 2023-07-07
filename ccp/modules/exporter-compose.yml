@@ -49,6 +49,8 @@ services:
       EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
       EXPORTER_URL: "http://exporter:8092"
       LOG_FHIR_VALIDATION: "false"
+#    volumes:
+#      - "bridgehead-reporter:/app/reports"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.reporter_ccp.rule=PathPrefix(`/ccp-reporter`)"
@@ -62,3 +64,5 @@ volumes:
     name: "bridgehead-exporter-db"
 #  bridgehead-exporter:
 #    name: "bridgehead-exporter"
+#  bridgehead-reporter:
+#    name: "bridgehead-reporter"

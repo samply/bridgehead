@@ -89,8 +89,7 @@ services:
 
   beam-proxy:
     environment:
-      APP_2_ID: datashield-connect
-      APP_2_KEY: ${DATASHIELD_CONNECT_SECRET}
+      APP_datashield-connect_KEY: ${DATASHIELD_CONNECT_SECRET}
 
 #volumes:
 #  bridgehead-rstudio-config:

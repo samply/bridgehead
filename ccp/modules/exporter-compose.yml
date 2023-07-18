@@ -25,8 +25,8 @@ services:
       - "traefik.http.routers.exporter_ccp.tls=true"
       - "traefik.http.middlewares.exporter_ccp_strip.stripprefix.prefixes=/ccp-exporter"
       - "traefik.http.routers.exporter_ccp.middlewares=exporter_ccp_strip"
-#    volumes:
-#      - "bridgehead-exporter:/app/exporter-files"
+  #    volumes:
+  #      - "bridgehead-exporter:/app/exporter-files"
 
   exporter-db:
     image: postgres:15.1-alpine
@@ -49,8 +49,9 @@ services:
       EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
       EXPORTER_URL: "http://exporter:8092"
       LOG_FHIR_VALIDATION: "false"
-#    volumes:
-#      - "bridgehead-reporter:/app/reports"
+      HTTP_SERVLET_REQUEST_SCHEME: "https"
+    #    volumes:
+    #      - "bridgehead-reporter:/app/reports"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.reporter_ccp.rule=PathPrefix(`/ccp-reporter`)"

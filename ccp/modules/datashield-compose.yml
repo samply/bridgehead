@@ -71,8 +71,6 @@ services:
   beam-connect:
     image: docker.verbis.dkfz.de/cache/samply/beam-connect:no-auth
     container_name: bridgehead-datashield-connect
-    ports:
-      - 8062:8062
     environment:
       PROXY_URL: "http://beam-proxy:8081"
       TLS_CA_CERTIFICATES_DIR: /run/secrets
@@ -106,4 +104,3 @@ secrets:
     file: /etc/bridgehead/trusted-ca-certs/opal-cert.pem
   opal-key.pem:
     file: /etc/bridgehead/trusted-ca-certs/opal-key.pem
-  

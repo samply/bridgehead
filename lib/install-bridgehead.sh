@@ -34,7 +34,7 @@ if [ -z "$LDM_PASSWORD" ]; then
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
 
   log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
-  echo -e "## Local Data Management Basic Authentication\n# User: $PROJECT\nLDM_PASSWORD=$generated_passwd" >> /etc/bridgehead/${PROJECT}.local.conf;
+  addBasicAuthUser $PROJECT $generated_passwd "LDM_LOGIN" $PROJECT
 fi
 
 log "INFO" "Registering system units for bridgehead and bridgehead-update"

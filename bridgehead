@@ -103,6 +103,10 @@ case "$ACTION" in
 	uninstall)
 		exec ./lib/uninstall-bridgehead.sh $PROJECT
 		;;
+	addUser)
+		loadVars
+		exec ./lib/sitespecific-functions.sh $PROJECT
+		;;
 	enroll)
 		loadVars
 

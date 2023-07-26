@@ -120,7 +120,7 @@ case "$ACTION" in
 			EMAIL_PARAM="--admin-email $SUPPORT_EMAIL"
 		fi
 			
-		docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $EMAIL_PARAM
+		docker run --rm -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $EMAIL_PARAM
 		chmod 600 $PRIVATEKEYFILENAME
 		;;
 	preRun | preUpdate)

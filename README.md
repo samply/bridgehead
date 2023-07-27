@@ -64,7 +64,7 @@ Additionally, your site might use its own proxy. You should discuss this with yo
 
 Note that git and Docker may also need to be configured to use this proxy. This is a job for your systems administrators.
 
-If there is a site firewall, this needs to be configured so that git and Docker can reach the outside world. Another job for the systems administrators.
+If there is a site firewall, this needs to be configured so that outgoing calls to the following URLs are allowed: *.dkfz.de, github.com, docker.com, *.docker.io, *.samply.de.
 
 Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to conflict with Docker [here](https://github.com/chaifeng/ufw-docker).
 

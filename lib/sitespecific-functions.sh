@@ -1,7 +1,11 @@
 #!/bin/bash -e
+
 source lib/functions.sh
-PROJECT="ccp"
-log "INFO" "Adding custom encrypted credentials in /etc/bridgehead/$PROJECT.local.conf"
-read -p "Please enter custom user: " user
-read -s -p "Please enter password (will not be echoed): "$'\n' password
-addBasicAuthUser $user $password "NNGM_AUTH" $PROJECT
+
+PROJECT=$1
+
+log "INFO" "Adding encrypted credentials in /etc/bridgehead/$PROJECT.local.conf"
+read -p "Please choose the component (LDM_AUTH|NNGM_AUTH) you want to add a user to : " COMPONENT
+read -p "Please enter a username: " USER
+read -s -p "Please enter a password (will not be echoed): "$'\n' PASSWORD
+add_basic_auth_user $USER $PASSWORD $COMPONENT $PROJECT

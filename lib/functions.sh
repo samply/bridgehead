@@ -9,14 +9,6 @@ detectCompose() {
 	fi
 }
 
-getLdmPassword() {
-	if [ -n "$LDM_PASSWORD" ]; then
-		docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb $PROJECT $LDM_PASSWORD | tr -d '\n' | tr -d '\r'
-	else
-		echo -n ""
-	fi
-}
-
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
     log "ERROR" "Please run as root"
@@ -34,7 +26,7 @@ checkOwner(){
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|stop|is-running|update|install|uninstall|enroll PROJECTNAME"
+	echo "Usage: bridgehead start|stop|is-running|update|install|uninstall|addUser|enroll PROJECTNAME"
 	echo "PROJECTNAME should be one of ccp|bbmri"
 }
 
@@ -183,27 +175,21 @@ function bk_is_running {
 ##Setting Network properties
 # currently not needed
 #export HOSTIP=$(MSYS_NO_PATHCONV=1 docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}');
-addBasicAuthUser() {
+
+
+add_basic_auth_user() {
   USER="${1}"
   PASSWORD="${2}"
   NAME="${3}"
   PROJECT="${4}"
   FILE="/etc/bridgehead/${PROJECT}.local.conf"
   ENCRY_CREDENTIALS="$(docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb $USER $PASSWORD  | tr -d '\n' | tr -d '\r')"
-  if [ -f $FILE ] && grep -R -q "$NAME=" $FILE # if a basic auth user already exists:
+  if [ -f $FILE ] && grep -R -q "$NAME=" $FILE # if a specific basic auth user already exists:
   then
-    sed -i "/$NAME/ s/$/,$ENCRY_CREDENTIALS/" $FILE
+    sed -i "/$NAME/ s|='|='$ENCRY_CREDENTIALS,|" $FILE
   else
-    echo -e "\n## Basic Authentication Credentials for:\n$NAME=$ENCRY_CREDENTIALS" >> $FILE;
+    echo -e "\n## Basic Authentication Credentials for:\n$NAME='$ENCRY_CREDENTIALS'" >> $FILE;
   fi
-  read -p "Do you want to have your cleartext credentials saved in your $FILE: [y/n]" yn
-  case $yn in
-      [yYjJ] )
-        echo "ok, variables are saved in $FILE"
-        echo -e "# User: $USER\n# Password: $PASSWORD" >> $FILE;
-        ;;
-      [nN] )
-        echo "skip saving cleartext LDM credentials; make sure to save them somewhere else"
-        ;;
-  esac
+	log DEBUG "Saving clear text credentials in $FILE. If wanted, delete them manually."
+  sed -i "/^$NAME/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
 }

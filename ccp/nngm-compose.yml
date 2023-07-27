@@ -24,6 +24,6 @@ services:
 
   traefik:
     labels:
-      - "traefik.http.middlewares.auth-nngm.basicauth.users=$NNGM_AUTH"
+      - "traefik.http.middlewares.auth-nngm.basicauth.users=${NNGM_AUTH}"
 
 

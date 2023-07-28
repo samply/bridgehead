@@ -84,7 +84,7 @@ else
 	SKEW=$(echo $SKEW | awk -F- '{print $NF}')
 	SYNCTEXT="For example, consider entering a correct NTP server (e.g. your institution's Active Directory Domain Controller in /etc/systemd/timesyncd.conf (option NTP=) and restart systemd-timesyncd."
 	if [ $SKEW -ge 300 ]; then
-		log ERROR "Your clock is not synchronized (${SKEW}s off). This will cause Samply.Beam's certificate will fail. Please setup time synchronization. $SYNCTEXT"
+		report_error 5 "Your clock is not synchronized (${SKEW}s off). This will cause Samply.Beam's certificate will fail. Please setup time synchronization. $SYNCTEXT"
 		exit 1
 	elif [ $SKEW -ge 60 ]; then
 		log WARN "Your clock is more than a minute off (${SKEW}s). Consider syncing to a time server. $SYNCTEXT"
@@ -98,8 +98,6 @@ checkPrivKey() {
     log ERROR "Unable to find private key at /etc/bridgehead/pki/${SITE_ID}.priv.pem. To fix, please run\n  bridgehead enroll ${PROJECT}\nand follow the instructions."
     return 1
   fi
-  log INFO "Success - all prerequisites are met!"
-  hc_send log "Success - all prerequisites are met!"
   return 0
 }
 
@@ -110,5 +108,6 @@ else
 fi
 
 log INFO "Success - all prerequisites are met!"
+hc_send log "Success - all prerequisites are met!"
 
 exit 0

@@ -1,0 +1,24 @@
+version: "3.7"
+volumes:
+  nngm-rest:
+
+services:
+  connector:
+    container_name: bridgehead-connector
+    image: docker.verbis.dkfz.de/ccp/nngm-rest:main
+    environment:
+      CTS_MAGICPL_API_KEY: ${NNGM_MAGICPL_APIKEY}
+      CTS_API_KEY: ${NNGM_CTS_APIKEY}
+      CRYPT_KEY: ${NNGM_CRYPTKEY}
+      #CTS_MAGICPL_SITE: ${SITE_ID}TODO
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.connector.rule=PathPrefix(`/nngm-connector`)"
+      - "traefik.http.middlewares.connector_strip.stripprefix.prefixes=/nngm-connector"
+      - "traefik.http.services.connector.loadbalancer.server.port=8080"
+      - "traefik.http.routers.connector.tls=true"
+      - "traefik.http.routers.connector.middlewares=connector_strip,auth"
+    volumes:
+      - nngm-rest:/var/log
+

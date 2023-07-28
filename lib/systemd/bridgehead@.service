@@ -6,8 +6,10 @@ Requires=docker.service
 User=bridgehead
 Restart=always
 RestartSec=30
+ExecStartPre=-/srv/docker/bridgehead/bridgehead preRun %i
 ExecStart=/srv/docker/bridgehead/bridgehead start %i
 ExecStop=/srv/docker/bridgehead/bridgehead stop %i
+ExecStopPost=-/srv/docker/bridgehead/bridgehead postRun %i
 
 [Install]
 WantedBy=multi-user.target

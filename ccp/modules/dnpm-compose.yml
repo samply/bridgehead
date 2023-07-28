@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+  beam-proxy:
+    environment:
+      APP_dnpm-connect_KEY: ${DNPM_BEAM_SECRET_SHORT}
+  dnpm-beam-connect:
+    depends_on: [ beam-proxy ]
+    image: docker.verbis.dkfz.de/cache/samply/beam-connect:dnpm
+    container_name: bridgehead-dnpm-beam-connect
+    environment:
+      PROXY_URL: http://beam-proxy:8081
+      PROXY_APIKEY: ${DNPM_BEAM_SECRET_SHORT}
+      APP_ID: dnpm-connect.${PROXY_ID}
+      DISCOVERY_URL: "./conf/central_targets.json"
+      LOCAL_TARGETS_FILE: "./conf/connect_targets.json"
+      HTTP_PROXY: "http://forward_proxy:3128"
+      HTTPS_PROXY: "http://forward_proxy:3128"
+      NO_PROXY: beam-proxy,dnpm-backend
+      RUST_LOG: ${RUST_LOG:-info}
+    volumes:
+      - /etc/bridgehead/dnpm/local_targets.json:/conf/connect_targets.json:ro
+      - /etc/bridgehead/dnpm/central_targets.json:/conf/central_targets.json:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dnpm-connect.rule=PathPrefix(`/dnpm-connect`)"
+      - "traefik.http.middlewares.dnpm-connect-strip.stripprefix.prefixes=/dnpm-connect"
+      - "traefik.http.routers.dnpm-connect.middlewares=dnpm-connect-strip"
+      - "traefik.http.services.dnpm-connect.loadbalancer.server.port=8062"
+      - "traefik.http.routers.dnpm-connect.tls=true"

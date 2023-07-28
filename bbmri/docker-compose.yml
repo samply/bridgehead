@@ -3,9 +3,9 @@ version: "3.7"
 services:
   blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:latest
-    container_name: bridgehead-ccp-blaze
+    container_name: bridgehead-bbmri-blaze
     environment:
-      BASE_URL: "http://bridgehead-ccp-blaze:8080"
+      BASE_URL: "http://bridgehead-bbmri-blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx4g"
       LOG_LEVEL: "debug"
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
@@ -13,8 +13,8 @@ services:
       - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/ccp-localdatamanagement`)"
-      - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/ccp-localdatamanagement"
+      - "traefik.http.routers.blaze_ccp.rule=PathPrefix(`/bbmri-localdatamanagement`)"
+      - "traefik.http.middlewares.ccp_b_strip.stripprefix.prefixes=/bbmri-localdatamanagement"
       - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
       - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
@@ -26,10 +26,9 @@ services:
       API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
       BEAM_APP_ID_LONG: focus.${PROXY_ID}
       PROXY_ID: ${PROXY_ID}
-      BLAZE_URL: "http://bridgehead-ccp-blaze:8080/fhir/"
+      BLAZE_URL: "http://bridgehead-bbmri-blaze:8080/fhir/"
       BEAM_PROXY_URL: http://beam-proxy:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
-      OBFUSCATE: "no"
     depends_on:
       - "beam-proxy"
       - "blaze"
@@ -51,8 +50,7 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
-
+      - /srv/docker/bridgehead/bbmri/root.crt.pem:/conf/root.crt.pem:ro
 
 volumes:
   blaze-data:

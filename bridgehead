@@ -29,10 +29,10 @@ case "$PROJECT" in
 	ccp)
 		#nothing extra to do
 		;;
-	nngm)
+	bbmri)
 		#nothing extra to do
 		;;
-	gbn)
+	minimal)
 		#nothing extra to do
 		;;
 	*)
@@ -41,29 +41,92 @@ case "$PROJECT" in
 		;;
 esac
 
-# Load variables from /etc/bridgehead and /srv/docker/bridgehead
-set -a
-source /etc/bridgehead/$PROJECT.conf
-fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || exit 1
-[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
-set +a
+loadVars() {
+	# Load variables from /etc/bridgehead and /srv/docker/bridgehead
+	set -a
+	source /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "/etc/bridgehead/$PROJECT.conf not found"
+	if [ -e /etc/bridgehead/$PROJECT.local.conf ]; then
+		log INFO "Applying /etc/bridgehead/$PROJECT.local.conf"
+		source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
+	fi
+	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
+	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
+	set +a
+
+	OVERRIDE=${OVERRIDE:=""}
+	# minimal contains shared components, so potential overrides must be applied in every project
+	if [ -f "minimal/docker-compose.override.yml" ]; then
+		log INFO "Applying Bridgehead common components override (minimal/docker-compose.override.yml)"
+		OVERRIDE+=" -f ./minimal/docker-compose.override.yml"
+	fi
+	if [ -f "$PROJECT/docker-compose.override.yml" ]; then
+		log INFO "Applying $PROJECT/docker-compose.override.yml"
+		OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
+	fi
+	detectCompose
+	setHostname
+}
 
 case "$ACTION" in
 	start)
+		loadVars
+		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
-		exec docker-compose -f ./$PROJECT/docker-compose.yml up
+		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
+		export LDM_LOGIN=$(getLdmPassword)
+		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
-		exec docker-compose -f ./$PROJECT/docker-compose.yml down
+		loadVars
+		# HACK: This is temporarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
+		$COMPOSE -p bridgehead-$PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		;;
+	is-running)
+		bk_is_running
+		exit $?
 		;;
 	update)
+		loadVars
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
 	install)
-		exec ./lib/setup-bridgehead-units.sh $PROJECT
+		source ./lib/prepare-system.sh NODEV
+		loadVars
+		exec ./lib/install-bridgehead.sh $PROJECT
+		;;
+	dev-install)
+		exec ./lib/prepare-system.sh DEV
+		loadVars
+		exec ./lib/install-bridgehead.sh $PROJECT
 		;;
 	uninstall)
-		exec ./lib/remove-bridgehead-units.sh $PROJECT
+		exec ./lib/uninstall-bridgehead.sh $PROJECT
+		;;
+	enroll)
+		loadVars
+
+		MANUAL_PROXY_ID="${3:-$PROXY_ID}"
+		if [ -z "$MANUAL_PROXY_ID" ]; then
+			log ERROR "No Proxy ID set"
+			exit 1
+		else
+			log INFO "Enrolling Beam Proxy Id $MANUAL_PROXY_ID"
+		fi
+
+		if [ -z "$SUPPORT_EMAIL" ]; then
+			EMAIL_PARAM=""
+		else
+			EMAIL_PARAM="--admin-email $SUPPORT_EMAIL"
+		fi
+			
+		docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $EMAIL_PARAM
+		chmod 600 $PRIVATEKEYFILENAME
+		;;
+	preRun | preUpdate)
+		fixPermissions
+		;;
+	postRun | postUpdate)
 		;;
 	*)
 		printUsage

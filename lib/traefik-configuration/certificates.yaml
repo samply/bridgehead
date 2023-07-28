@@ -1,4 +1,6 @@
 tls:
-  certificates:
-    - certFile: /certs/traefik.crt
-      keyFile: /certs/traefik.key
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /certs/fullchain.pem
+        keyFile: /certs/privkey.pem

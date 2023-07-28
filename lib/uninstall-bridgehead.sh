@@ -7,11 +7,6 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-if [ $1 != "ccp" ] && [ $1 != "nngm" ] && [ $1 != "gbn" ]; then
-    log "ERROR" "Please provide a supported project like ccp, gbn or nngm"
-    exit 1
-fi
-
 export PROJECT=$1
 
 #checkRequirements // not needed when uninstalling

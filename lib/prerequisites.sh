@@ -71,7 +71,7 @@ source /etc/bridgehead/${PROJECT}.conf
 source ${PROJECT}/vars
 
 set +e
-SERVERTIME="$(https_proxy=$HTTPS_PROXY_URL curl -m 5 -s -v $BROKER_URL 2>&1)"
+SERVERTIME="$(https_proxy=$HTTPS_PROXY_URL curl -m 5 -s -I $BROKER_URL 2>&1)"
 RET=$?
 set -e
 if [ $RET -ne 0 ]; then

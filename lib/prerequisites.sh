@@ -62,6 +62,35 @@ if [ -e /etc/bridgehead/vault.conf ]; then
   fi
 fi
 
+log INFO "Checking network access ($BROKER_URL) ..."
+
+source /etc/bridgehead/${PROJECT}.conf
+source ${PROJECT}/vars
+
+set +e
+SERVERTIME="$(https_proxy=$HTTPS_PROXY_URL curl -m 5 -s -I $BROKER_URL 2>&1)"
+RET=$?
+set -e
+if [ $RET -ne 0 ]; then
+	log WARN "Unable to connect to Samply.Beam broker at $BROKER_URL. Please check your proxy settings.\nThe currently configured proxy was \"$HTTPS_PROXY_URL\". This error is normal when using proxy authentication."
+	log WARN "Unable to check clock skew due to previous error."
+else
+	log INFO "Checking clock skew ..."
+
+	SERVERTIME=$(echo -e "$SERVERTIME" | grep Date | sed -e 's/< Date: //')
+	SERVERTIME_AS_TIMESTAMP=$(date --date="$SERVERTIME" +%s)
+	MYTIME=$(date +%s)
+	SKEW=$(($SERVERTIME_AS_TIMESTAMP - $MYTIME))
+	SKEW=$(echo $SKEW | awk -F- '{print $NF}')
+	SYNCTEXT="For example, consider entering a correct NTP server (e.g. your institution's Active Directory Domain Controller in /etc/systemd/timesyncd.conf (option NTP=) and restart systemd-timesyncd."
+	if [ $SKEW -ge 300 ]; then
+		report_error 5 "Your clock is not synchronized (${SKEW}s off). This will cause Samply.Beam's certificate will fail. Please setup time synchronization. $SYNCTEXT"
+		exit 1
+	elif [ $SKEW -ge 60 ]; then
+		log WARN "Your clock is more than a minute off (${SKEW}s). Consider syncing to a time server. $SYNCTEXT"
+	fi
+fi
+
 checkPrivKey() {
   if [ -e /etc/bridgehead/pki/${SITE_ID}.priv.pem ]; then
     log INFO "Success - private key found."
@@ -69,8 +98,6 @@ checkPrivKey() {
     log ERROR "Unable to find private key at /etc/bridgehead/pki/${SITE_ID}.priv.pem. To fix, please run\n  bridgehead enroll ${PROJECT}\nand follow the instructions."
     return 1
   fi
-  log INFO "Success - all prerequisites are met!"
-  hc_send log "Success - all prerequisites are met!"
   return 0
 }
 
@@ -79,5 +106,8 @@ if [[ "$@" =~ "noprivkey" ]]; then
 else
   checkPrivKey || exit 1
 fi
+
+log INFO "Success - all prerequisites are met!"
+hc_send log "Success - all prerequisites are met!"
 
 exit 0

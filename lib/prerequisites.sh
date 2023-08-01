@@ -68,7 +68,7 @@ source /etc/bridgehead/${PROJECT}.conf
 source ${PROJECT}/vars
 
 set +e
-SERVERTIME="$(https_proxy=$HTTPS_PROXY_URL curl -m 5 -s -I $BROKER_URL 2>&1)"
+SERVERTIME="$(https_proxy=$HTTPS_PROXY_URL curl -m 5 -s -I $BROKER_URL 2>&1 | grep -i -e '^Date: ' | sed -e 's/^Date: //i')"
 RET=$?
 set -e
 if [ $RET -ne 0 ]; then
@@ -77,7 +77,6 @@ if [ $RET -ne 0 ]; then
 else
 	log INFO "Checking clock skew ..."
 
-	SERVERTIME=$(echo -e "$SERVERTIME" | grep Date | sed -e 's/< Date: //')
 	SERVERTIME_AS_TIMESTAMP=$(date --date="$SERVERTIME" +%s)
 	MYTIME=$(date +%s)
 	SKEW=$(($SERVERTIME_AS_TIMESTAMP - $MYTIME))

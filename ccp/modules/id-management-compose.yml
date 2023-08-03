@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   id-manager:
     image: docker.verbis.dkfz.de/bridgehead/magicpl

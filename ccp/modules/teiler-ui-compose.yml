@@ -1,0 +1,72 @@
+services:
+
+  teiler-root-config:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-root-config:develop
+    container_name: bridgehead-teiler-root-config
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_root_config_ccp.rule=PathPrefix(`/ccp-teiler`)"
+      - "traefik.http.services.teiler_root_config_ccp.loadbalancer.server.port=9000"
+      - "traefik.http.routers.teiler_root_config_ccp.tls=true"
+      - "traefik.http.middlewares.teiler_root_config_ccp_strip.stripprefix.prefixes=/ccp-teiler"
+      - "traefik.http.routers.teiler_root_config_ccp.middlewares=teiler_root_config_ccp_strip"
+    environment:
+      TEILER_CORE_URL: "https://${HOST}/ccp-teiler-core"
+      TEILER_UI_URL: "https://${HOST}/ccp-teiler-ui"
+      DEFAULT_LANGUAGE: "de"
+      HTTP_RELATIVE_PATH: "/ccp-teiler"
+
+  teiler-ui:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-ui:develop
+    container_name: bridgehead-teiler-ui
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_ui_ccp.rule=PathPrefix(`/ccp-teiler-ui`)"
+      - "traefik.http.services.teiler_ui_ccp.loadbalancer.server.port=80"
+      - "traefik.http.routers.teiler_ui_ccp.tls=true"
+      - "traefik.http.middlewares.teiler_ui_ccp_strip.stripprefix.prefixes=/ccp-teiler-ui"
+      - "traefik.http.routers.teiler_ui_ccp.middlewares=teiler_ui_ccp_strip"
+    environment:
+      DEFAULT_LANGUAGE: "DE"
+      TEILER_CORE_URL: "https://${HOST}/ccp-teiler-core"
+      KEYCLOAK_URL: "https://${HOST}/login"
+      KEYCLOAK_REALM: "teiler-ui"
+      KEYCLOAK_CLIENT_ID: "teiler-ui"
+      TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
+      TEILER_ADMIN_EMAIL: "${OPERATOR_EMAIL}"
+      TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
+      TEILER_PROJECT: "${PROJECT}"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
+      TEILER_ROOT_CONFIG_URL: "https://${HOST}/ccp-teiler"
+      TEILER_UI_HTTP_RELATIVE_PATH: "/ccp-teiler-ui"
+      TEILER_ROOT_CONFIG_HTTP_RELATIVE_PATH: "/ccp-teiler"
+
+  teiler-core:
+    image: docker.verbis.dkfz.de/ccp/dktk-teiler-core:latest
+    container_name: bridgehead-teiler-core
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_core_ccp.rule=PathPrefix(`/ccp-teiler-core`)"
+      - "traefik.http.services.teiler_core_ccp.loadbalancer.server.port=8085"
+      - "traefik.http.routers.teiler_core_ccp.tls=true"
+      - "traefik.http.middlewares.teiler_core_ccp_strip.stripprefix.prefixes=/ccp-teiler-core"
+      - "traefik.http.routers.teiler_core_ccp.middlewares=teiler_core_ccp_strip"
+    environment:
+      LOG_LEVEL: "INFO"
+      APPLICATION_PORT: "8085"
+      APPLICATION_ADDRESS: "${HOST}"
+      DEFAULT_LANGUAGE: "DE"
+      CONFIG_ENV_VAR_PATH: "/run/secrets/ccp.conf"
+      TEILER_CONFIG_UPDATER_CRON: "0 1 * * * *"
+      TEILER_ROOT_CONFIG_HTTP_RELATIVE_PATH: "/ccp-teiler"
+      TEILER_ROOT_CONFIG_URL: "https://${HOST}/ccp-teiler"
+      TEILER_UI_DE_URL: "https://${HOST}/ccp-teiler-ui/de"
+      TEILER_UI_EN_URL: "https://${HOST}/ccp-teiler-ui/en"
+      CENTRAX_URL: "${CENTRAXX_URL}"
+      IS_DKTK_SITE: "${IS_DKTK_SITE}"
+    secrets:
+      - ccp.conf
+
+secrets:
+  ccp.conf:
+    file: /etc/bridgehead/ccp.conf

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -n "$ENABLE_EXPORTER" ]; then
+if [ "$ENABLE_EXPORTER" == true ]; then
   log INFO "Exporter setup detected -- will start Exporter service."
   OVERRIDE+=" -f ./$PROJECT/modules/exporter-compose.yml"
   # TODO: Generate password in another way so that not all passwords are the same?

@@ -3,7 +3,6 @@ services:
   rstudio:
     container_name: bridgehead-rstudio
     image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
-    #TODO: Connect with Keycloak: https://rocker-project.org/images/versioned/rstudio.html
     environment:
       USER: "ruser"
       PASSWORD: "${RSTUDIO_PASSWORD}"

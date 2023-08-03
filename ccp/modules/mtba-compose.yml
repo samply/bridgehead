@@ -1,5 +1,3 @@
-version: "3.7"
-
 services:
   mtba:
     image: docker.verbis.dkfz.de/cache/samply/mtba:develop

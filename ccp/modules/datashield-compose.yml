@@ -63,7 +63,7 @@ services:
 
   opal-rserver:
     container_name: bridgehead-opal-rserver
-    image: docker.verbis.dkfz.de/cache/datashield/rockbase:6.3  # https://datashield.discourse.group/t/ds-aggregate-method-error/416/4
+    image: docker.verbis.dkfz.de/cache/datashield/rock-base:6.3  # https://datashield.discourse.group/t/ds-aggregate-method-error/416/4
 
   beam-connect:
     image: docker.verbis.dkfz.de/cache/samply/beam-connect:no-auth

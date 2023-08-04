@@ -4,7 +4,7 @@ services:
     container_name: bridgehead-rstudio
     image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
     environment:
-      USER: "ruser"
+      USER: "${PROJECT}"
       PASSWORD: "${RSTUDIO_PASSWORD}"
       HTTP_RELATIVE_PATH: "/rstudio"
     labels:
@@ -33,7 +33,7 @@ services:
     environment:
       JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
       # OPAL_ADMINISTRATOR_USER: "administrator" # Please, don't remove this line. It is informative.
-      OPAL_ADMINISTRATOR_PASSWORD: "${OPAL_ADMINISTRATOR_PASSWORD}"
+      OPAL_ADMINISTRATOR_PASSWORD: "${LDM_PASSWORD}"
       POSTGRESDATA_HOST: "opal-db"
       POSTGRESDATA_DATABASE: "opal"
       POSTGRESDATA_USER: "opal"

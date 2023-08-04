@@ -5,7 +5,7 @@ services:
     image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
     environment:
       USER: "${PROJECT}"
-      PASSWORD: "${RSTUDIO_PASSWORD}"
+      PASSWORD: "${LDM_PASSWORD}"
       HTTP_RELATIVE_PATH: "/rstudio"
     labels:
       - "traefik.enable=true"

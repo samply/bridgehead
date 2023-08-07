@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  focus-gbn:
+    image: docker.verbis.dkfz.de/cache/samply/focus:main
+    container_name: bridgehead-focus-gbn
+    environment:
+      API_KEY: ${GBN_FOCUS_BEAM_SECRET_SHORT}
+      BEAM_APP_ID_LONG: focus.${GBN_PROXY_ID}
+      PROXY_ID: ${GBN_PROXY_ID}
+      BLAZE_URL: "http://blaze:8080/fhir/"
+      BEAM_PROXY_URL: http://beam-proxy-gbn:8081
+      RETRY_COUNT: ${FOCUS_RETRY_COUNT}
+    depends_on:
+      - "beam-proxy-gbn"
+      - "blaze"
+
+  beam-proxy-gbn:
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    container_name: bridgehead-beam-proxy-gbn
+    environment:
+      BROKER_URL: ${GBN_BROKER_URL}
+      PROXY_ID: ${GBN_PROXY_ID}
+      APP_focus_KEY: ${GBN_FOCUS_BEAM_SECRET_SHORT}
+      PRIVKEY_FILE: /run/secrets/proxy.pem
+      ALL_PROXY: http://forward_proxy:3128
+      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
+      ROOTCERT_FILE: /conf/root.crt.pem
+    secrets:
+      - proxy.pem
+    depends_on:
+      - "forward_proxy"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+      - /srv/docker/bridgehead/bbmri/modules/gbn.root.crt.pem:/conf/root.crt.pem:ro
+

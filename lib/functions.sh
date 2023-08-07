@@ -180,6 +180,26 @@ function bk_is_running {
 	fi
 }
 
-##Setting Network properties
-# currently not needed
-#export HOSTIP=$(MSYS_NO_PATHCONV=1 docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}');
+function do_enroll_inner {
+	PARAMS=""
+	
+	MANUAL_PROXY_ID="${1:-$PROXY_ID}"
+	if [ -z "$MANUAL_PROXY_ID" ]; then
+		log ERROR "No Proxy ID set"
+		exit 1
+	else
+		log INFO "Enrolling Beam Proxy Id $MANUAL_PROXY_ID"
+	fi
+
+	SUPPORT_EMAIL="${2:-$SUPPORT_EMAIL}"
+	if [ -n "$SUPPORT_EMAIL" ]; then
+		PARAMS+="--admin-email $SUPPORT_EMAIL"
+	fi
+
+	docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $PARAMS
+	chmod 600 $PRIVATEKEYFILENAME
+}
+
+function do_enroll {
+	do_enroll_inner $@
+}

@@ -62,17 +62,17 @@ if [ -e /etc/bridgehead/vault.conf ]; then
   fi
 fi
 
-log INFO "Checking network access ($BROKER_URL) ..."
+log INFO "Checking network access ($BROKER_URL_FOR_PREREQ) ..."
 
 source /etc/bridgehead/${PROJECT}.conf
 source ${PROJECT}/vars
 
 set +e
-SERVERTIME="$(https_proxy=$HTTPS_PROXY_URL curl -m 5 -s -I $BROKER_URL 2>&1 | grep -i -e '^Date: ' | sed -e 's/^Date: //i')"
+SERVERTIME="$(https_proxy=$HTTPS_PROXY_URL curl -m 5 -s -I $BROKER_URL_FOR_PREREQ 2>&1 | grep -i -e '^Date: ' | sed -e 's/^Date: //i')"
 RET=$?
 set -e
 if [ $RET -ne 0 ]; then
-	log WARN "Unable to connect to Samply.Beam broker at $BROKER_URL. Please check your proxy settings.\nThe currently configured proxy was \"$HTTPS_PROXY_URL\". This error is normal when using proxy authentication."
+	log WARN "Unable to connect to Samply.Beam broker at $BROKER_URL_FOR_PREREQ. Please check your proxy settings.\nThe currently configured proxy was \"$HTTPS_PROXY_URL\". This error is normal when using proxy authentication."
 	log WARN "Unable to check clock skew due to previous error."
 else
 	log INFO "Checking clock skew ..."

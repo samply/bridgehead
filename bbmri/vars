@@ -11,7 +11,3 @@ do
     log DEBUG "sourcing $module"
     source $module
 done
-
-# This will load directory-sync setup.
-source $PROJECT/directory-sync.sh
-dirSetup

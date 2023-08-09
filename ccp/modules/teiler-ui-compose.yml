@@ -13,7 +13,7 @@ services:
     environment:
       TEILER_CORE_URL: "https://${HOST}/ccp-teiler-core"
       TEILER_UI_URL: "https://${HOST}/ccp-teiler-ui"
-      DEFAULT_LANGUAGE: "de"
+      DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE_LOWER_CASE}"
       HTTP_RELATIVE_PATH: "/ccp-teiler"
 
   teiler-ui:
@@ -27,7 +27,7 @@ services:
       - "traefik.http.middlewares.teiler_ui_ccp_strip.stripprefix.prefixes=/ccp-teiler-ui"
       - "traefik.http.routers.teiler_ui_ccp.middlewares=teiler_ui_ccp_strip"
     environment:
-      DEFAULT_LANGUAGE: "DE"
+      DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE}"
       TEILER_CORE_URL: "https://${HOST}/ccp-teiler-core"
       KEYCLOAK_URL: "https://${HOST}/login"
       KEYCLOAK_REALM: "teiler-ui"
@@ -55,7 +55,7 @@ services:
       LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"
       APPLICATION_ADDRESS: "${HOST}"
-      DEFAULT_LANGUAGE: "DE"
+      DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE}"
       CONFIG_ENV_VAR_PATH: "/run/secrets/ccp.conf"
       TEILER_ROOT_CONFIG_HTTP_RELATIVE_PATH: "/ccp-teiler"
       TEILER_ROOT_CONFIG_URL: "https://${HOST}/ccp-teiler"

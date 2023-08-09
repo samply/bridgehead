@@ -7,6 +7,8 @@ SUPPORT_EMAIL=support-ccp@dkfz-heidelberg.de
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
 BROKER_URL_FOR_PREREQ=$BROKER_URL
+DEFAULT_LANGUAGE=DE
+DEFAULT_LANGUAGE_LOWER_CASE=${DEFAULT_LANGUAGE,,}
 
 
 for module in $PROJECT/modules/*.sh

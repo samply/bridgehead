@@ -9,10 +9,6 @@ services:
       EXPORTER_DB_USER: "exporter"
       EXPORTER_DB_PASSWORD: "${EXPORTER_DB_PASSWORD}" # Set in exporter-setup.sh
       EXPORTER_DB_URL: "jdbc:postgresql://exporter-db:5432/exporter"
-      CLEAN_TEMP_FILES_CRON_EXPRESSION: "0 0 1 * * *"
-      TEMP_FILES_LIFETIME_IN_DAYS: "1"
-      CLEAN_WRITE_FILES_CRON_EXPRESSION: "0 0 2 * * *"
-      WRITE_FILES_LIFETIME_IN_DAYS: "30"
       HTTP_RELATIVE_PATH: "/ccp-exporter"
       HTTP_SERVLET_REQUEST_SCHEME: "https"
       OPAL_ADMINISTRATOR_PASSWORD: "${LDM_PASSWORD}"

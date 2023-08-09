@@ -4,7 +4,7 @@ services:
     container_name: bridgehead-rstudio
     image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
     environment:
-      USER: "${PROJECT}"
+      #DEFAULT_USER: "rstudio" # Please, don't remove this line. It is informative.
       PASSWORD: "${LDM_PASSWORD}"
       HTTP_RELATIVE_PATH: "/rstudio"
     labels:

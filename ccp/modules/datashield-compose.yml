@@ -55,7 +55,7 @@ services:
     container_name: bridgehead-opal-db
     image: docker.verbis.dkfz.de/cache/postgres:15.1-alpine
     environment:
-      POSTGRES_PASSWORD: "${OPAL_DB_PASSWORD}"
+      POSTGRES_PASSWORD: "${OPAL_DB_PASSWORD}" # Set in datashield-setup.sh
       POSTGRES_USER: "opal"
       POSTGRES_DB: "opal"
   #    volumes:

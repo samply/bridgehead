@@ -1,9 +1,10 @@
-BROKER_ID=broker.bbmri.samply.de
-BROKER_URL=https://${BROKER_ID}
-PROXY_ID=${SITE_ID}.${BROKER_ID}
-FOCUS_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
+# Makes sense for all European Biobanks
+: ${ENABLE_ERIC:=true}
+
+# Makes only sense for German Biobanks
+: ${ENABLE_GBN:=false}
+
 FOCUS_RETRY_COUNT=32
-SUPPORT_EMAIL=bridgehead@helpdesk.bbmri-eric.eu
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
 for module in $PROJECT/modules/*.sh
@@ -12,6 +13,25 @@ do
     source $module
 done
 
-# This will load directory-sync setup.
-source $PROJECT/directory-sync.sh
-dirSetup
+SUPPORT_EMAIL=$ERIC_SUPPORT_EMAIL
+BROKER_URL_FOR_PREREQ=$ERIC_BROKER_URL
+
+if [ -n "$GBN_SUPPORT_EMAIL" ]; then
+    SUPPORT_EMAIL=$GBN_SUPPORT_EMAIL
+fi
+
+function do_enroll {
+    COUNT=0
+    if [ "$ENABLE_ERIC" == "true" ]; then
+        do_enroll_inner $ERIC_PROXY_ID $ERIC_SUPPORT_EMAIL
+        COUNT=$((COUNT+1))
+    fi
+    if [ "$ENABLE_GBN" == "true" ]; then
+        do_enroll_inner $GBN_PROXY_ID $GBN_SUPPORT_EMAIL
+        COUNT=$((COUNT+1))
+    fi
+    if [ $COUNT -ge 2 ]; then
+        echo
+        echo "You just received $COUNT certificate signing requests (CSR). Please send $COUNT e-mails, with 1 CSR each, to the respective e-mail address."
+    fi
+}

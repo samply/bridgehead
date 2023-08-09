@@ -57,7 +57,6 @@ services:
       APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "DE"
       CONFIG_ENV_VAR_PATH: "/run/secrets/ccp.conf"
-      TEILER_CONFIG_UPDATER_CRON: "0 1 * * * *"
       TEILER_ROOT_CONFIG_HTTP_RELATIVE_PATH: "/ccp-teiler"
       TEILER_ROOT_CONFIG_URL: "https://${HOST}/ccp-teiler"
       TEILER_UI_DE_URL: "https://${HOST}/ccp-teiler-ui/de"

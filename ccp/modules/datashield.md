@@ -23,4 +23,6 @@ R-Server to execute R scripts in DataSHIELD.
 
 ## Beam
 ### Beam-Connect
+Beam-Connect is used to route http(s) traffic through beam to enable R-Studio to access data from other bridgeheads that have datashield enabled.
 ### Beam-Proxy
+The usual beam proxy used for communication.

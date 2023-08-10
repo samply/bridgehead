@@ -7,8 +7,10 @@ services:
       POSTGRES_USER: "keycloak"
       POSTGRES_PASSWORD: "${KEYCLOAK_DB_PASSWORD}" # Set in login-setup.sh
       POSTGRES_DB: "keycloak"
-    volumes:
-      - "bridgehead-login-db:/var/lib/postgresql/data"
+# Please leave this volume commented. We are in an early stage of the development and we need to evaluate
+# if the sites need to add local users or if some manual changes are required for any reason.
+#    volumes:
+#      - "bridgehead-login-db:/var/lib/postgresql/data"
 
   login:
     image: docker.verbis.dkfz.de/ccp/dktk-keycloak:latest
@@ -36,6 +38,6 @@ services:
     depends_on:
       - login-db
 
-volumes:
-  bridgehead-login-db:
-    name: "bridgehead-login-db"
+#volumes:
+#  bridgehead-login-db:
+#    name: "bridgehead-login-db"

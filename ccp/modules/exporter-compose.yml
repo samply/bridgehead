@@ -3,7 +3,7 @@ services:
     image: docker.verbis.dkfz.de/ccp/dktk-exporter:latest
     container_name: bridgehead-ccp-exporter
     environment:
-      JAVA_OPTS: "-Xms512m -Xmx1G"
+      JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
       LOG_LEVEL: "INFO"
       EXPORTER_API_KEY: "${EXPORTER_API_KEY}" # Set in exporter-setup.sh
       CROSS_ORIGINS: "https://${HOST}"

@@ -19,9 +19,11 @@ services:
       CSV_DELIMITER: ${MTBA_CSV_DELIMITER}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mtba.rule=PathPrefix(`/mtba`)"
-      - "traefik.http.services.mtba.loadbalancer.server.port=80"
-      - "traefik.http.routers.mtba.tls=true"
+      - "traefik.http.routers.mtba_ccp.rule=PathPrefix(`/mtba`)"
+      - "traefik.http.services.mtba_ccp.loadbalancer.server.port=8480"
+      - "traefik.http.routers.mtba_ccp.tls=true"
+      - "traefik.http.middlewares.mtba_ccp_strip.stripprefix.prefixes=/mtba"
+      - "traefik.http.routers.mtba_ccp.middlewares=mtba_ccp_strip, auth"
     volumes:
       - /tmp/bridgehead/mtba/input:/app/input
       - /tmp/bridgehead/mtba/persist:/app/persist

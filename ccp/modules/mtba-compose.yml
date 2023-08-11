@@ -19,7 +19,7 @@ services:
       CSV_DELIMITER: ${MTBA_CSV_DELIMITER}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mtba.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.mtba.rule=PathPrefix(`/mtba`)"
       - "traefik.http.services.mtba.loadbalancer.server.port=80"
       - "traefik.http.routers.mtba.tls=true"
     volumes:

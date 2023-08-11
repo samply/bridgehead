@@ -21,11 +21,10 @@ services:
       - "traefik.http.middlewares.exporter_ccp_strip.stripprefix.prefixes=/ccp-exporter"
       - "traefik.http.routers.exporter_ccp.middlewares=exporter_ccp_strip"
 
-  # In this initial development state of the bridgehead, we are trying to have so many volumes as possible.
-  # However, in the first executions in the CCP sites, this volume seems to be very important. An export is
-  # a process that can take several hours. There is a risk that the bridgehead restarts, losing the already
-  # created export. This is specially notorious while creating a report.
-      -
+      # In this initial development state of the bridgehead, we are trying to have so many volumes as possible.
+      # However, in the first executions in the CCP sites, this volume seems to be very important. An export is
+      # a process that can take several hours. There is a risk that the bridgehead restarts, losing the already
+      # created export. This is specially notorious while creating a report.
   #    volumes:
   #      - "bridgehead-exporter:/app/exporter-files"
 

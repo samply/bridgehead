@@ -62,6 +62,7 @@ services:
       TEILER_UI_DE_URL: "https://${HOST}/ccp-teiler-ui/de"
       TEILER_UI_EN_URL: "https://${HOST}/ccp-teiler-ui/en"
       CENTRAX_URL: "${CENTRAXX_URL}"
+      HTTP_PROXY: "http://forward_proxy:3128"
     secrets:
       - ccp.conf
 

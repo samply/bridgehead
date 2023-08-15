@@ -139,10 +139,12 @@ else
   log WARN "Automated backups are disabled (variable AUTO_BACKUPS != \"true\")"
 fi
 
+#TODO: the following block can be deleted after successful update at all sites
 if [ ! -z "$LDM_PASSWORD" ]; then
   FILE="/etc/bridgehead/$PROJECT.local.conf"
   log "INFO" "Migrating LDM_PASSWORD to encrypted credentials in $FILE"
   add_basic_auth_user $PROJECT $LDM_PASSWORD "LDM_AUTH" $PROJECT
+  add_basic_auth_user $PROJECT $LDM_PASSWORD "NNGM_AUTH" $PROJECT
   sed -i "/LDM_PASSWORD/{d;}" $FILE
 fi
 

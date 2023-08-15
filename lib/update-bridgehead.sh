@@ -139,6 +139,13 @@ else
   log WARN "Automated backups are disabled (variable AUTO_BACKUPS != \"true\")"
 fi
 
+if [ ! -z "$LDM_PASSWORD" ]; then
+  FILE="/etc/bridgehead/$PROJECT.local.conf"
+  log "INFO" "Migrating LDM_PASSWORD to encrypted credentials in $FILE"
+  add_basic_auth_user $PROJECT $LDM_PASSWORD "LDM_AUTH" $PROJECT
+  sed -i "/LDM_PASSWORD/{d;}" $FILE
+fi
+
 exit 0
 
 # TODO: Print last commit explicit

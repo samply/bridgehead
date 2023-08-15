@@ -35,7 +35,7 @@ if [ -z "$LDM_AUTH" ]; then
   add_basic_auth_user $PROJECT $generated_passwd "LDM_AUTH" $PROJECT
 fi
 
-if [ -z "$NNGM_CTS_APIKEY" ] && [ -z "$NNGM_AUTH" ]; then
+if [ ! -z "$NNGM_CTS_APIKEY" ] && [ -z "$NNGM_AUTH" ]; then
   log "INFO" "Now generating basic auth for nNGM upload API (see addUser in bridgehead for more information). "
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
   add_basic_auth_user "nngm" $generated_passwd "NNGM_AUTH" $PROJECT

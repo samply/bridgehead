@@ -172,24 +172,43 @@ function bk_is_running {
 	fi
 }
 
-##Setting Network properties
-# currently not needed
-#export HOSTIP=$(MSYS_NO_PATHCONV=1 docker run --rm --add-host=host.docker.internal:host-gateway ubuntu cat /etc/hosts | grep 'host.docker.internal' | awk '{print $1}');
+function do_enroll_inner {
+	PARAMS=""
+	
+	MANUAL_PROXY_ID="${1:-$PROXY_ID}"
+	if [ -z "$MANUAL_PROXY_ID" ]; then
+		log ERROR "No Proxy ID set"
+		exit 1
+	else
+		log INFO "Enrolling Beam Proxy Id $MANUAL_PROXY_ID"
+	fi
 
+	SUPPORT_EMAIL="${2:-$SUPPORT_EMAIL}"
+	if [ -n "$SUPPORT_EMAIL" ]; then
+		PARAMS+="--admin-email $SUPPORT_EMAIL"
+	fi
+
+	docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $PARAMS
+	chmod 600 $PRIVATEKEYFILENAME
+}
+
+function do_enroll {
+	do_enroll_inner $@
+}
 
 add_basic_auth_user() {
-  USER="${1}"
-  PASSWORD="${2}"
-  NAME="${3}"
-  PROJECT="${4}"
-  FILE="/etc/bridgehead/${PROJECT}.local.conf"
-  ENCRY_CREDENTIALS="$(docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb $USER $PASSWORD  | tr -d '\n' | tr -d '\r')"
-  if [ -f $FILE ] && grep -R -q "$NAME=" $FILE # if a specific basic auth user already exists:
-  then
-    sed -i "/$NAME/ s|='|='$ENCRY_CREDENTIALS,|" $FILE
-  else
-    echo -e "\n## Basic Authentication Credentials for:\n$NAME='$ENCRY_CREDENTIALS'" >> $FILE;
-  fi
-	log DEBUG "Saving clear text credentials in $FILE. If wanted, delete them manually."
-  sed -i "/^$NAME/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
+   USER="${1}"
+   PASSWORD="${2}"
+   NAME="${3}"
+   PROJECT="${4}"
+   FILE="/etc/bridgehead/${PROJECT}.local.conf"
+   ENCRY_CREDENTIALS="$(docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb $USER $PASSWORD  | tr -d '\n' | tr -d '\r')"
+   if [ -f $FILE ] && grep -R -q "$NAME=" $FILE # if a specific basic auth user already exists:
+   then
+     sed -i "/$NAME/ s|='|='$ENCRY_CREDENTIALS,|" $FILE
+   else
+     echo -e "\n## Basic Authentication Credentials for:\n$NAME='$ENCRY_CREDENTIALS'" >> $FILE;
+   fi
+ 	log DEBUG "Saving clear text credentials in $FILE. If wanted, delete them manually."
+   sed -i "/^$NAME/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
 }

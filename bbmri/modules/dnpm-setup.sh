@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -n "${ENABLE_DNPM}" ]; then
-	log DEBUG "DNPM setup detected (Beam.Connect) -- will start Beam and Beam.Connect for DNPM."
+	log INFO "DNPM setup detected (Beam.Connect) -- will start Beam and Beam.Connect for DNPM."
 	OVERRIDE+=" -f ./$PROJECT/modules/dnpm-compose.yml"
 
 	# Set variables required for Beam-Connect

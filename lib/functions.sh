@@ -26,7 +26,7 @@ checkOwner(){
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|stop|is-running|update|install|uninstall|addUser|enroll PROJECTNAME"
+	echo "Usage: bridgehead start|stop|is-running|update|install|uninstall|adduser|enroll PROJECTNAME"
 	echo "PROJECTNAME should be one of ccp|bbmri"
 }
 

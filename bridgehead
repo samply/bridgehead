@@ -102,7 +102,7 @@ case "$ACTION" in
 	uninstall)
 		exec ./lib/uninstall-bridgehead.sh $PROJECT
 		;;
-	addUser)
+	adduser)
 		loadVars
 		log "INFO" "Adding encrypted credentials in /etc/bridgehead/$PROJECT.local.conf"
     		read -p "Please choose the component (LDM_AUTH|NNGM_AUTH) you want to add a user to : " COMPONENT

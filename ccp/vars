@@ -8,17 +8,13 @@ PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
 BROKER_URL_FOR_PREREQ=$BROKER_URL
 
-# This will load id-management setup. Effective only if id-management configuration is defined.
-source $PROJECT/modules/id-management-setup.sh
-idManagementSetup
-# This will load nngm setup. Effective only if nngm configuration is defined.
-source $PROJECT/nngm-setup.sh
-nngmSetup
-
-mtbaSetup
 
 for module in $PROJECT/modules/*.sh
 do
     log DEBUG "sourcing $module"
     source $module
 done
+
+idManagementSetup
+nngmSetup
+mtbaSetup

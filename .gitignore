@@ -4,3 +4,6 @@ site-config/*
 
 ## Ignore site configuration
 */docker-compose.override.yml
+
+## MAC OS
+.DS_Store

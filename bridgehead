@@ -112,7 +112,6 @@ case "$ACTION" in
 		;;
 	enroll)
 		loadVars
-
 		do_enroll $PROXY_ID
 		;;
 	preRun | preUpdate)

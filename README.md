@@ -8,7 +8,6 @@ This repository is the starting point for any information and tools you will nee
     - [Hardware](#hardware)
     - [Software](#software)
     - [Network](#network)
-    - [Register with the Directory](#register-with-the-directory)
 2. [Deployment](#deployment)
     - [Site name](#site-name)
     - [Projects](#projects)
@@ -22,6 +21,7 @@ This repository is the starting point for any information and tools you will nee
     - [HTTPS Access](#https-access)
     - [TLS terminating proxies](#tls-terminating-proxies)
     - [File structure](#file-structure)
+    - [BBMRI-ERIC Directory](#bbmri-eric-directory)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
     - [Auto-Backups](#auto-backups)
@@ -64,17 +64,9 @@ Additionally, your site might use its own proxy. You should discuss this with yo
 
 Note that git and Docker may also need to be configured to use this proxy. This is a job for your systems administrators.
 
-If there is a site firewall, this needs to be configured so that git and Docker can reach the outside world. Another job for the systems administrators.
+If there is a site firewall, this needs to be configured so that outgoing calls to the following URLs are allowed: *.dkfz.de, github.com, docker.io, *.docker.io, *.samply.de.
 
 Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to conflict with Docker [here](https://github.com/chaifeng/ufw-docker).
-
-### Register with the Directory
-
-If you run a biobank, you should register with the [Directory](https://directory.bbmri-eric.eu), a BBMRI project that catalogs biobanks.
-
-To do this, contact the BBMRI national node for the country where your biobank is based, see [the list of nodes](http://www.bbmri-eric.eu/national-nodes/).
-
-Once you have registered, **you should choose one of your sample collections as a default collection for your biobank**. This is the collection that will be automatically used to label any samples that have not been assigned a collection ID in your ETL process. Make a note of this ID, you will need it later on in the installation process.
 
 ## Deployment
 
@@ -255,9 +247,15 @@ All of the Bridgehead's outgoing connections are secured by transport encryption
 
 Your Bridgehead's actual data is not stored in the above directories, but in named docker volumes, see `docker volume ls` and `docker volume inspect <volume_name>`.
 
-### Directory sync
+### BBMRI-ERIC Directory
 
-This is an optional feature for bbmri projects. It keeps the [BBMRI Directory](https://directory.bbmri-eric.eu/) up to date with your local data eg. number of samples. It also updates the local FHIR store with the latest contact details etc. from the Directory.  You must explicitly set your country specific directory url, username and password to enable this feature.
+If you run a biobank, you should register with the [Directory](https://directory.bbmri-eric.eu), a BBMRI-ERIC project that catalogs biobanks.
+
+To do this, contact the BBMRI-ERIC national node for the country where your biobank is based, see [the list of nodes](http://www.bbmri-eric.eu/national-nodes/).
+
+Once you have registered, **you should choose one of your sample collections as a default collection for your biobank**. This is the collection that will be automatically used to label any samples that have not been assigned a collection ID in your ETL process. Make a note of this ID, you will need it later on in the installation process.
+
+The Bridgehead's **Directory Sync** is an optional feature that keeps the Directory up to date with your local data, e.g. number of samples. Conversely, it also updates the local FHIR store with the latest contact details etc. from the Directory. You must explicitly set your country specific directory url, username and password to enable this feature.
 
 Full details can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
 
@@ -274,7 +272,7 @@ You must contact the Directory for your national node to find the URL, and to re
 
 Additionally, you should choose when you want Directory sync to run. In the example above, this is set to happen at 10 pm every evening. You can modify this to suit your requirements. The timer specification should follow the [cron](https://crontab.guru) convention.
 
-Once you edited the gitlab config. The bridgehead will autoupdate the config with the values and will sync the data.
+Once you edited the gitlab config, the bridgehead will autoupdate the config with the values and will sync the data.
 
 There will be a delay before the effects of Directory sync become visible. First, you will need to wait until the time you have specified in ```TIMER_CRON```. Second, the information will then be synchronized from your national node with the central European Directory. This can take up to 24 hours.
 

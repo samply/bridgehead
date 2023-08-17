@@ -27,7 +27,7 @@ services:
       KC_HOSTNAME_URL: "https://${HOST}/login"
       KC_HOSTNAME_STRICT: "false"
       KC_PROXY_ADDRESS_FORWARDING: "true"
-      TEILER_ROOT_CONFIG_EXTERN_URL: "https://${HOST}/ccp-teiler"
+      TEILER_ORCHESTRATOR_EXTERN_URL: "https://${HOST}/ccp-teiler"
     command:
       - start-dev --import-realm --proxy edge --http-relative-path=/login
     labels:

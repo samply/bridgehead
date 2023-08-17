@@ -29,12 +29,16 @@ bridgehead ALL= NOPASSWD: BRIDGEHEAD${PROJECT^^}
 EOF
 
 # TODO: Determine whether this should be located in setup-bridgehead (triggered through bridgehead install) or in update bridgehead (triggered every hour)
-if [ -z "$LDM_PASSWORD" ]; then
-  log "INFO" "Now generating a password for the local data management. Please save the password for your ETL process!"
+if [ -z "$LDM_AUTH" ]; then
+  log "INFO" "Now generating basic auth for the local data management (see adduser in bridgehead for more information). "
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
+  add_basic_auth_user $PROJECT $generated_passwd "LDM_AUTH" $PROJECT
+fi
 
-  log "INFO" "Your generated credentials are:\n            user: $PROJECT\n            password: $generated_passwd"
-  echo -e "## Local Data Management Basic Authentication\n# User: $PROJECT\nLDM_PASSWORD=$generated_passwd" >> /etc/bridgehead/${PROJECT}.local.conf;
+if [ ! -z "$NNGM_CTS_APIKEY" ] && [ -z "$NNGM_AUTH" ]; then
+  log "INFO" "Now generating basic auth for nNGM upload API (see adduser in bridgehead for more information). "
+  generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
+  add_basic_auth_user "nngm" $generated_passwd "NNGM_AUTH" $PROJECT
 fi
 
 log "INFO" "Registering system units for bridgehead and bridgehead-update"

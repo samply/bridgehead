@@ -73,7 +73,6 @@ case "$ACTION" in
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
-		export LDM_LOGIN=$(getLdmPassword)
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
@@ -103,25 +102,17 @@ case "$ACTION" in
 	uninstall)
 		exec ./lib/uninstall-bridgehead.sh $PROJECT
 		;;
+	adduser)
+		loadVars
+		log "INFO" "Adding encrypted credentials in /etc/bridgehead/$PROJECT.local.conf"
+    		read -p "Please choose the component (LDM_AUTH|NNGM_AUTH) you want to add a user to : " COMPONENT
+    		read -p "Please enter a username: " USER
+    		read -s -p "Please enter a password (will not be echoed): "$'\n' PASSWORD
+    		add_basic_auth_user $USER $PASSWORD $COMPONENT $PROJECT
+		;;
 	enroll)
 		loadVars
-
-		MANUAL_PROXY_ID="${3:-$PROXY_ID}"
-		if [ -z "$MANUAL_PROXY_ID" ]; then
-			log ERROR "No Proxy ID set"
-			exit 1
-		else
-			log INFO "Enrolling Beam Proxy Id $MANUAL_PROXY_ID"
-		fi
-
-		if [ -z "$SUPPORT_EMAIL" ]; then
-			EMAIL_PARAM=""
-		else
-			EMAIL_PARAM="--admin-email $SUPPORT_EMAIL"
-		fi
-			
-		docker run --rm -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $EMAIL_PARAM
-		chmod 600 $PRIVATEKEYFILENAME
+		do_enroll $PROXY_ID
 		;;
 	preRun | preUpdate)
 		fixPermissions

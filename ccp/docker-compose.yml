@@ -7,7 +7,6 @@ services:
     environment:
       BASE_URL: "http://bridgehead-ccp-blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx4g"
-      LOG_LEVEL: "debug"
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
     volumes:
       - "blaze-data:/app/data"

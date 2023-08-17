@@ -18,7 +18,12 @@ services:
       - "traefik.http.middlewares.connector_strip.stripprefix.prefixes=/nngm-connector"
       - "traefik.http.services.connector.loadbalancer.server.port=8080"
       - "traefik.http.routers.connector.tls=true"
-      - "traefik.http.routers.connector.middlewares=connector_strip,auth"
+      - "traefik.http.routers.connector.middlewares=connector_strip,auth-nngm"
     volumes:
       - nngm-rest:/var/log
+
+  traefik:
+    labels:
+      - "traefik.http.middlewares.auth-nngm.basicauth.users=${NNGM_AUTH}"
+
 

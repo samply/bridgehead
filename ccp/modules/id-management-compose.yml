@@ -5,6 +5,7 @@ services:
     container_name: bridgehead-id-manager
     environment:
       TOMCAT_REVERSEPROXY_FQDN: ${HOST}
+      TOMCAT_REVERSEPROXY_SSL: "true"
       MAGICPL_SITE: ${IDMANAGEMENT_FRIENDLY_ID}
       MAGICPL_ALLOWED_ORIGINS: https://${HOST}
       MAGICPL_LOCAL_PATIENTLIST_APIKEY: ${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}

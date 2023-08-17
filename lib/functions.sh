@@ -188,7 +188,7 @@ function do_enroll_inner {
 		PARAMS+="--admin-email $SUPPORT_EMAIL"
 	fi
 
-	docker run --rm -ti -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $PARAMS
+	docker run --rm -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $PARAMS
 	chmod 600 $PRIVATEKEYFILENAME
 }
 

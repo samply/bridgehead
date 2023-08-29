@@ -56,6 +56,8 @@ We recommend to install Docker(-compose) from its official sources as described 
 
 Note for Ubuntu: Please note that snap versions of Docker are not supported.
 
+Note for git and Docker: if you have a local proxy, you will need to adjust your setup appropriately, see [git proxy](https://gist.github.com/evantoli/f8c23a37eb3558ab8765) and [docker proxy](https://docs.docker.com/network/proxy/).
+
 ### Network
 
 A running Bridgehead requires an outgoing HTTPS proxy to communicate with the central components.

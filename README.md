@@ -237,6 +237,21 @@ Even within your internal network, the Bridgehead enforces HTTPS for all service
 
 All of the Bridgehead's outgoing connections are secured by transport encryption (TLS) and a Bridgehead will refuse to connect if certificate verification fails. If your local forward proxy server performs TLS termination, please place its CA certificate in `/etc/bridgehead/trusted-ca-certs` as a `.pem` file, e.g. `/etc/bridgehead/trusted-ca-certs/mylocalca.pem`. Then, all Bridgehead components will pick up this certificate and trust it for outgoing connections.
 
+To find the certificate file, first run the following:
+
+```
+curl -v https://broker.bbmri.samply.de/v1/health
+```
+
+In the output, look out for the line:
+
+
+```
+successfully set certificate verify locations:
+```
+
+Here a file will be mentioned, perhaps in the directory /etc/ssl/certs. The exact location  will depend on your operating system. This is the file that you need to copy.
+
 ### File structure
 
 - `/srv/docker/bridgehead` contains this git repository with the shell scripts and *project-specific configuration*. In here, all files are identical for all sites. You should not make any changes here.

@@ -56,6 +56,8 @@ We recommend to install Docker(-compose) from its official sources as described 
 
 Note for Ubuntu: Please note that snap versions of Docker are not supported.
 
+Note for git and Docker: if you have a local proxy, you will need to adjust your setup appropriately, see [git proxy](https://gist.github.com/evantoli/f8c23a37eb3558ab8765) and [docker proxy](https://docs.docker.com/network/proxy/).
+
 ### Network
 
 A running Bridgehead requires an outgoing HTTPS proxy to communicate with the central components.
@@ -262,28 +264,29 @@ Here a file will be mentioned, perhaps in the directory /etc/ssl/certs. The exac
 
 Your Bridgehead's actual data is not stored in the above directories, but in named docker volumes, see `docker volume ls` and `docker volume inspect <volume_name>`.
 
-### BBMRI-ERIC Directory
+### BBMRI-ERIC Directory entry needed
 
-If you run a biobank, you should register with the [Directory](https://directory.bbmri-eric.eu), a BBMRI-ERIC project that catalogs biobanks.
+If you run a biobank, you should be listed together with your collections with in the [Directory](https://directory.bbmri-eric.eu), a BBMRI-ERIC project that catalogs biobanks.
 
 To do this, contact the BBMRI-ERIC national node for the country where your biobank is based, see [the list of nodes](http://www.bbmri-eric.eu/national-nodes/).
 
-Once you have registered, **you should choose one of your sample collections as a default collection for your biobank**. This is the collection that will be automatically used to label any samples that have not been assigned a collection ID in your ETL process. Make a note of this ID, you will need it later on in the installation process.
+Once you have added your biobank to the Directory you got persistent identifier (PID) for your biobank and unique identifiers (IDs) for your collections. The collection IDs are necessary for the biospecimens assigning to the collections and later in the data flows between BBMRI-ERIC tools. In case you cannot distribute all your biospecimens within collections via assigning the collection IDs, **you should choose one of your sample collections as a default collection for your biobank**. This collection will be automatically used to label any samples that have not been assigned a collection ID in your ETL process. Make a note of this default collection ID, you will need it later on in the installation process.
 
-The Bridgehead's **Directory Sync** is an optional feature that keeps the Directory up to date with your local data, e.g. number of samples. Conversely, it also updates the local FHIR store with the latest contact details etc. from the Directory. You must explicitly set your country specific directory url, username and password to enable this feature.
+### Directory sync tool
+
+The Bridgehead's **Directory Sync** is an optional feature that keeps the Directory up to date with your local data, e.g. number of samples. Conversely, it also updates the local FHIR store with the latest contact details etc. from the Directory. You must explicitly set your country specific directory URL, username and password to enable this feature.
 
 Full details can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
 
 To enable it, you will need to set these variables to the ```bbmri.conf``` file of your GitLab repository. Here is an example config:
 
 ```
-### Directory sync service
 DS_DIRECTORY_URL=https://directory.bbmri-eric.eu
 DS_DIRECTORY_USER_NAME=your_directory_username
 DS_DIRECTORY_USER_PASS=qwdnqwswdvqHBVGFR9887
 DS_TIMER_CRON="0 22 * * *"
 ```
-You must contact the Directory for your national node to find the URL, and to register as a user.
+You must contact the Directory team for your national node to find the URL, and to register as a user.
 
 Additionally, you should choose when you want Directory sync to run. In the example above, this is set to happen at 10 pm every evening. You can modify this to suit your requirements. The timer specification should follow the [cron](https://crontab.guru) convention.
 

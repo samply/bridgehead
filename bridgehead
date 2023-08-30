@@ -73,7 +73,6 @@ case "$ACTION" in
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
-		export LDM_LOGIN=$(getLdmPassword)
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
@@ -103,9 +102,16 @@ case "$ACTION" in
 	uninstall)
 		exec ./lib/uninstall-bridgehead.sh $PROJECT
 		;;
+	adduser)
+		loadVars
+		log "INFO" "Adding encrypted credentials in /etc/bridgehead/$PROJECT.local.conf"
+    		read -p "Please choose the component (LDM_AUTH|NNGM_AUTH) you want to add a user to : " COMPONENT
+    		read -p "Please enter a username: " USER
+    		read -s -p "Please enter a password (will not be echoed): "$'\n' PASSWORD
+    		add_basic_auth_user $USER $PASSWORD $COMPONENT $PROJECT
+		;;
 	enroll)
 		loadVars
-
 		do_enroll $PROXY_ID
 		;;
 	preRun | preUpdate)

@@ -240,7 +240,7 @@ All of the Bridgehead's outgoing connections are secured by transport encryption
 To find the certificate file, first run the following:
 
 ```
-curl -v https://broker.bbmir.samply.de/v1/health
+curl -v https://broker.bbmri.samply.de/v1/health
 ```
 
 In the output, look out for the line:

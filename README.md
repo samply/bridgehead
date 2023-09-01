@@ -21,7 +21,7 @@ This repository is the starting point for any information and tools you will nee
     - [HTTPS Access](#https-access)
     - [TLS terminating proxies](#tls-terminating-proxies)
     - [File structure](#file-structure)
-    - [BBMRI-ERIC Directory](#bbmri-eric-directory)
+    - [BBMRI-ERIC Directory entry needed](#bbmri-eric-directory-entry-needed)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
     - [Auto-Backups](#auto-backups)

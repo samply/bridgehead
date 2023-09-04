@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if [ "$ENABLE_DATASHIELD" == true ]; then
   log INFO "DataSHIELD setup detected -- will start DataSHIELD services."

@@ -13,7 +13,7 @@ services:
       HTTP_RELATIVE_PATH: "/ccp-exporter"
       SITE: "${SITE_ID}"
       HTTP_SERVLET_REQUEST_SCHEME: "https"
-      OPAL_ADMINISTRATOR_PASSWORD: "${LDM_PASSWORD}"
+      OPAL_ADMINISTRATOR_PASSWORD: "${LDM_AUTH}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.exporter_ccp.rule=PathPrefix(`/ccp-exporter`)"

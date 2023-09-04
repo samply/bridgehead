@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 function mtbaSetup() {
   if [ -n "$ENABLE_MTBA" ];then

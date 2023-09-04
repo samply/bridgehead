@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 function mtbaSetup() {
        # TODO: Check if ID-Management Module is activated!

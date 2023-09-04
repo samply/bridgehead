@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if [ "$ENABLE_TEILER" == true ];then
   log INFO "Teiler setup detected -- will start Teiler services."

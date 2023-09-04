@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 function nngmSetup() {
   if [ -n "$NNGM_CTS_APIKEY" ]; then

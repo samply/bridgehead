@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if [ "$ENABLE_EXPORTER" == true ]; then
   log INFO "Exporter setup detected -- will start Exporter service."

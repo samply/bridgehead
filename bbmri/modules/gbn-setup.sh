@@ -5,9 +5,9 @@ if [ "${ENABLE_GBN}" == "true" ]; then
 	OVERRIDE+=" -f ./$PROJECT/modules/gbn-compose.yml"
 
 	# Set required variables
-	GBN_BROKER_ID='#TODO#'
+	GBN_BROKER_ID=broker.bbmri.de
 	GBN_BROKER_URL=https://${GBN_BROKER_ID}
 	GBN_PROXY_ID=${SITE_ID}.${GBN_BROKER_ID}
 	GBN_FOCUS_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
-	GBN_SUPPORT_EMAIL=todo@verbis.dkfz.de
+	GBN_SUPPORT_EMAIL=bridgehead@helpdesk.bbmri-eric.eu
 fi

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 function idManagementSetup() {
 	if [ -n "$IDMANAGER_UPLOAD_APIKEY" ]; then

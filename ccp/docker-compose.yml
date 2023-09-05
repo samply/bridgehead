@@ -40,6 +40,7 @@ services:
       BROKER_URL: ${BROKER_URL}
       PROXY_ID: ${PROXY_ID}
       APP_focus_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      APP_monitoring_KEY: ${MONITORING_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
@@ -51,6 +52,15 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
+  
+  bridgehead-monitoring:
+    image: samply/bridgehead-monitoring:latest
+    environment:
+      - BEAM_ID=monitoring.${PROXY_ID}
+      - BEAM_API_KEY=${MONITORING_BEAM_SECRET_SHORT}
+      - BEAM_PROXY_URL=http://beam-proxy:8081
+    depends_on:
+      - beam-proxy
 
 
 volumes:

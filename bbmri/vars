@@ -6,6 +6,7 @@
 
 FOCUS_RETRY_COUNT=32
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
+MONITORING_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 
 for module in $PROJECT/modules/*.sh
 do

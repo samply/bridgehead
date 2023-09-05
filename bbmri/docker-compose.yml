@@ -20,6 +20,15 @@ services:
       - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
       - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
+  
+  bridgehead-monitoring:
+    image: samply/bridgehead-monitoring:latest
+    environment:
+      - BEAM_ID=monitoring.${PROXY_ID}
+      - BEAM_API_KEY=${MONITORING_BEAM_SECRET_SHORT}
+      - BEAM_PROXY_URL=http://beam-proxy:8081
+    depends_on:
+      - beam-proxy
 
 volumes:
   blaze-data:

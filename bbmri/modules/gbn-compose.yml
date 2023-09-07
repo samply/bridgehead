@@ -22,6 +22,7 @@ services:
       BROKER_URL: ${GBN_BROKER_URL}
       PROXY_ID: ${GBN_PROXY_ID}
       APP_focus_KEY: ${GBN_FOCUS_BEAM_SECRET_SHORT}
+      APP_monitoring_KEY: ${GBN_MONITORING_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
@@ -33,4 +34,14 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/bbmri/modules/gbn.root.crt.pem:/conf/root.crt.pem:ro
+
+  bridgehead-monitoring:
+    image: samply/bridgehead-monitoring:latest
+    container_name: bridgehead-monitoring-gbn
+    environment:
+      - BEAM_ID=monitoring.${GBN_PROXY_ID}
+      - BEAM_API_KEY=${GBN_MONITORING_BEAM_SECRET_SHORT}
+      - BEAM_PROXY_URL=http://beam-proxy-gbn:8081
+    depends_on:
+      - beam-proxy-gbn
 

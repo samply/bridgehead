@@ -1,3 +1,5 @@
+version: "3.7"
+
 services:
   ############################################ DataSHIELD Client (Rocker R-Studio)
   rstudio:

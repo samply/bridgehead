@@ -2,16 +2,58 @@
 {
     "sites": [
         {
-            "id": "$SITE_ID",
-            "name": "$SITE_ID",
-            "virtualhost": "opal-$SITE_ID",
-            "beamconnect": "datashield-connect.$SITE_ID.broker.ccp-it.dktk.dkfz.de"
+            "id": "berlin",
+            "name": "berlin",
+            "virtualhost": "opal-berlin",
+            "beamconnect": "datashield-connect.berlin.broker.ccp-it.dktk.dkfz.de"
         },
         {
-            "id": "$SITE_ID",
-            "name": "$SITE_ID",
-            "virtualhost": "opal-$SITE_ID",
-            "beamconnect": "datashield-connect.$SITE_ID.broker.ccp-it.dktk.dkfz.de"
+            "id": "muenchen-lmu",
+            "name": "muenchen-lmu",
+            "virtualhost": "opal-muenchen-lmu",
+            "beamconnect": "datashield-connect.muenchen-lmu.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "dresden",
+            "name": "dresden",
+            "virtualhost": "opal-dresden",
+            "beamconnect": "datashield-connect.dresden.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "freiburg",
+            "name": "freiburg",
+            "virtualhost": "opal-freiburg",
+            "beamconnect": "datashield-connect.freiburg.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "muenchen-tum",
+            "name": "muenchen-tum",
+            "virtualhost": "opal-muenchen-tum",
+            "beamconnect": "datashield-connect.muenchen-tum.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "tuebingen",
+            "name": "tuebingen",
+            "virtualhost": "opal-tuebingen",
+            "beamconnect": "datashield-connect.tuebingen.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "mainz",
+            "name": "mainz",
+            "virtualhost": "opal-mainz",
+            "beamconnect": "datashield-connect.mainz.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "frankfurt",
+            "name": "frankfurt",
+            "virtualhost": "opal-frankfurt",
+            "beamconnect": "datashield-connect.frankfurt.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "essen",
+            "name": "essen",
+            "virtualhost": "opal-essen",
+            "beamconnect": "datashield-connect.essen.broker.ccp-it.dktk.dkfz.de"
         }
     ]
 }

@@ -24,7 +24,7 @@ services:
       - "traefik.http.middlewares.exporter_ccp_strip.stripprefix.prefixes=/ccp-exporter"
       - "traefik.http.routers.exporter_ccp.middlewares=exporter_ccp_strip"
     volumes:
-      - "/var/cache/bridgehead/exporter-files:/app/exporter-files"
+      - "/var/cache/bridgehead/ccp/exporter-files:/app/exporter-files"
 
   exporter-db:
     image: docker.verbis.dkfz.de/cache/postgres:15.1-alpine
@@ -35,7 +35,7 @@ services:
       POSTGRES_DB: "exporter"
     volumes:
       # Consider removing this volume once we find a solution to save Lens-queries to be executed in the explorer.
-      - "/var/cache/bridgehead/exporter-db:/var/lib/postgresql/data"
+      - "/var/cache/bridgehead/ccp/exporter-db:/var/lib/postgresql/data"
 
   reporter:
     image: docker.verbis.dkfz.de/ccp/dktk-reporter:latest

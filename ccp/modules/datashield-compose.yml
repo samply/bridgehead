@@ -1,12 +1,11 @@
 version: "3.7"
 
 services:
-  ############################################ DataSHIELD Client (Rocker R-Studio)
   rstudio:
     container_name: bridgehead-rstudio
     image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
     environment:
-      #DEFAULT_USER: "rstudio" # Please, don't remove this line. It is informative.
+      #DEFAULT_USER: "rstudio" # This line is kept for informational purposes
       PASSWORD: "${LDM_AUTH}"
       HTTP_RELATIVE_PATH: "/rstudio"
     labels:
@@ -16,11 +15,7 @@ services:
       - "traefik.http.routers.rstudio_ccp.tls=true"
       - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
       - "traefik.http.routers.rstudio_ccp.middlewares=rstudio_ccp_strip"
-      #volumes:
-      #- "bridgehead-rstudio-config:/home/rstudio/.config/rstudio"
-      #- "bridgehead-rstudio-workspace:/home/rstudio/workspace"
 
-  ############################################ DataSHIELD Server (Opal)
   opal:
     container_name: bridgehead-opal
     image: docker.verbis.dkfz.de/ccp/dktk-opal:latest
@@ -34,7 +29,7 @@ services:
       - opal-db
     environment:
       JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
-      # OPAL_ADMINISTRATOR_USER: "administrator" # Please, don't remove this line. It is informative.
+      # OPAL_ADMINISTRATOR_USER: "administrator" # This line is kept for informational purposes
       OPAL_ADMINISTRATOR_PASSWORD: "${LDM_AUTH}"
       POSTGRESDATA_HOST: "opal-db"
       POSTGRESDATA_DATABASE: "opal"
@@ -49,19 +44,13 @@ services:
       - opal-cert.pem
       - opal-key.pem
 
-  #    volumes:
-  #      - "bridgehead-opal:/srv"
-
-
-  opal-db: # Data
+  opal-db:
     container_name: bridgehead-opal-db
     image: docker.verbis.dkfz.de/cache/postgres:15.1-alpine
     environment:
       POSTGRES_PASSWORD: "${OPAL_DB_PASSWORD}" # Set in datashield-setup.sh
       POSTGRES_USER: "opal"
       POSTGRES_DB: "opal"
-  # Please evaluate if this volume makes sense. An import can take several hours. If the bridgehead is restarted,
-  # the data should be reimported again.
     volumes:
       - "/var/cache/bridgehead/opal-db:/var/lib/postgresql/data"
 
@@ -89,16 +78,6 @@ services:
   beam-proxy:
     environment:
       APP_datashield-connect_KEY: ${DATASHIELD_CONNECT_SECRET}
-
-#volumes:
-#  bridgehead-rstudio-config:
-#    name: "bridgehead-rstudio-config"
-#  bridgehead-rstudio-workspace:
-#    name: "bridgehead-rstudio-workspace"
-#  bridgehead-opal-db:
-#    name: "bridgehead-opal-db"
-#  bridgehead-opal:
-#    name: "bridgehead-opal"
 
 secrets:
   opal-cert.pem:

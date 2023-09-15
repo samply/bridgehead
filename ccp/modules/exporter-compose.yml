@@ -34,8 +34,8 @@ services:
       POSTGRES_PASSWORD: "${EXPORTER_DB_PASSWORD}" # Set in exporter-setup.sh
       POSTGRES_DB: "exporter"
     volumes:
-      # Please, do NOT REMOVE this volume until we find a solution to save Lens-queries to be executed in the explorer.
-      - "bridgehead-exporter-db:/var/lib/postgresql/data"
+      # Consider removing this volume once we find a solution to save Lens-queries to be executed in the explorer.
+      - "/var/cache/bridgehead/exporter-db:/var/lib/postgresql/data"
 
   reporter:
     image: docker.verbis.dkfz.de/ccp/dktk-reporter:latest
@@ -65,11 +65,3 @@ services:
       - "traefik.http.routers.reporter_ccp.tls=true"
       - "traefik.http.middlewares.reporter_ccp_strip.stripprefix.prefixes=/ccp-reporter"
       - "traefik.http.routers.reporter_ccp.middlewares=reporter_ccp_strip"
-
-volumes:
-  bridgehead-exporter-db:
-    name: "bridgehead-exporter-db"
-#  bridgehead-exporter:
-#    name: "bridgehead-exporter"
-#  bridgehead-reporter:
-#    name: "bridgehead-reporter"

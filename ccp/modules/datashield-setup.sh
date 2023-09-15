@@ -12,4 +12,12 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
     chown -R bridgehead:docker /tmp/bridgehead/
     chmod g+r /tmp/bridgehead/opal-key.pem
   fi
+  mkdir -p /tmp/bridgehead/opal-map
+  jq -n --argfile input ./$PROJECT/modules/datashield-mappings.json '
+    {
+        "external": "opal-'"$SITE_ID"'",
+        "internal": "opal:8080",
+        "allowed": [$input.sites[].id | "datashield-connect.\(.).broker.ccp-it.dktk.dkfz.de"]
+    }' > /tmp/bridgehead/opal-map/local.json
+  cp ./$PROJECT/modules/datashield-mappings.json /tmp/bridgehead/opal-map/central.json
 fi

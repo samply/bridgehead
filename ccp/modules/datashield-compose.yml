@@ -62,8 +62,8 @@ services:
       POSTGRES_DB: "opal"
   # Please evaluate if this volume makes sense. An import can take several hours. If the bridgehead is restarted,
   # the data should be reimported again.
-  #    volumes:
-  #      - "bridgehead-opal-db:/var/lib/postgresql/data"
+    volumes:
+      - "/var/cache/bridgehead/opal-db:/var/lib/postgresql/data"
 
   opal-rserver:
     container_name: bridgehead-opal-rserver

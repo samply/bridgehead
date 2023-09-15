@@ -84,7 +84,7 @@ services:
     depends_on:
       - beam-proxy
     volumes:
-      - /etc/bridgehead/datashield-connect/:/map:ro
+      - /tmp/bridgehead/opal-map/:/map/:ro
 
   beam-proxy:
     environment:
@@ -102,6 +102,6 @@ services:
 
 secrets:
   opal-cert.pem:
-    file: /etc/bridgehead/trusted-ca-certs/opal-cert.pem
+    file: /tmp/bridgehead/opal-cert.pem
   opal-key.pem:
-    file: /etc/bridgehead/trusted-ca-certs/opal-key.pem
+    file: /tmp/bridgehead/opal-key.pem

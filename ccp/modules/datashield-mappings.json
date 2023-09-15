@@ -1,0 +1,17 @@
+
+{
+    "sites": [
+        {
+            "id": "$SITE_ID",
+            "name": "$SITE_ID",
+            "virtualhost": "opal-$SITE_ID",
+            "beamconnect": "datashield-connect.$SITE_ID.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "$SITE_ID",
+            "name": "$SITE_ID",
+            "virtualhost": "opal-$SITE_ID",
+            "beamconnect": "datashield-connect.$SITE_ID.broker.ccp-it.dktk.dkfz.de"
+        }
+    ]
+}

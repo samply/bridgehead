@@ -52,7 +52,7 @@ services:
       POSTGRES_USER: "opal"
       POSTGRES_DB: "opal"
     volumes:
-      - "/var/cache/bridgehead/opal-db:/var/lib/postgresql/data"
+      - "/var/cache/bridgehead/ccp/opal-db:/var/lib/postgresql/data"
 
   opal-rserver:
     container_name: bridgehead-opal-rserver

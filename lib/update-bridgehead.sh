@@ -30,7 +30,7 @@ source $CONFFILE
 assertVarsNotEmpty SITE_ID || fail_and_report 1 "Update failed: SITE_ID empty"
 export SITE_ID
 
-checkOwner . bridgehead || fail_and_report 1 "Update failed: Wrong permissions in $(pwd)"
+checkOwner /srv/docker/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong permissions in /srv/docker/bridgehead"
 checkOwner /etc/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong permissions in /etc/bridgehead"
 
 CREDHELPER="/srv/docker/bridgehead/lib/gitpassword.sh"
@@ -116,7 +116,7 @@ if [ -n "${BACKUP_DIRECTORY}" ]; then
     mkdir -p "$BACKUP_DIRECTORY"
     chown -R "$BACKUP_DIRECTORY" bridgehead;
   fi
-  checkOwner "$BACKUP_DIRECTORY" bridgehead || fail_and_report 1 "Automatic maintenance failed: Wrong permissions for backup directory $(pwd)"
+  checkOwner "$BACKUP_DIRECTORY" bridgehead || fail_and_report 1 "Automatic maintenance failed: Wrong permissions for backup directory $BACKUP_DIRECTORY"
   # Collect all container names that contain '-db'
   BACKUP_SERVICES="$(docker ps --filter name=-db --format "{{.Names}}" | tr "\n" "\ ")"
   log INFO "Performing automatic maintenance: Creating Backups for $BACKUP_SERVICES";

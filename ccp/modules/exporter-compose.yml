@@ -24,7 +24,7 @@ services:
       - "traefik.http.middlewares.exporter_ccp_strip.stripprefix.prefixes=/ccp-exporter"
       - "traefik.http.routers.exporter_ccp.middlewares=exporter_ccp_strip"
     volumes:
-      - "/var/cache/bridgehead/ccp/exporter-files:/app/exporter-files"
+      - "/var/cache/bridgehead/ccp/exporter-files:/app/exporter-files/output"
 
   exporter-db:
     image: docker.verbis.dkfz.de/cache/postgres:15.4-alpine
@@ -56,8 +56,8 @@ services:
     # a process that can take several hours, because it depends on the exporter.
     # There is a risk that the bridgehead restarts, losing the already created export.
 
-    #    volumes:
-    #      - "bridgehead-reporter:/app/reports"
+    volumes:
+      - "/var/cache/bridgehead/ccp/reporter-files:/app/reports"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.reporter_ccp.rule=PathPrefix(`/ccp-reporter`)"

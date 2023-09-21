@@ -51,6 +51,7 @@ Ensure the following software (or newer) is installed:
 - docker >= 20.10.1
 - docker-compose >= 2.xx (`docker-compose` and `docker compose` are both supported).
 - systemd
+- curl
 
 We recommend to install Docker(-compose) from its official sources as described on the [Docker website](https://docs.docker.com).
 

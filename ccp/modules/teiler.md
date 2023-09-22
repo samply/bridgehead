@@ -11,7 +11,9 @@ This microfrontends can run as single alone but need an extension with Single-SP
 There are also available three templates (Angular, Vue, React) to be directly extended to be used directly in the teiler.
 
 ## Teiler Dashboard
-It consists on the main dashboard and a set of embedded services. 
+It consists on the main dashboard and a set of embedded services.
+### Login
+user and password in ccp.local.conf
 
 ## Teiler Backend
 In this component, the microfrontends are configured.

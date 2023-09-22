@@ -14,7 +14,7 @@ checkOwner /etc/bridgehead bridgehead || exit 1
 
 ## Check if user is a su
 log INFO "Checking if all prerequisites are met ..."
-prerequisites="git docker"
+prerequisites="git docker curl"
 for prerequisite in $prerequisites; do
   $prerequisite --version 2>&1
   is_available=$?

@@ -33,6 +33,10 @@ This repository is the starting point for any information and tools you will nee
 
 ## Requirements
 
+The data protection group at your site will probably want to know exactly what our software does with patient data, and you may need to get their approval before you are allowed to install a Bridgehead. To help you with this, we have provided some data protection concepts:
+
+- [Germany](https://www.bbmri.de/biobanking/it/infrastruktur/datenschutzkonzept/)
+
 ### Hardware
 
 Hardware requirements strongly depend on the specific use-cases of your network as well as on the data it is going to serve. Most use-cases are well-served with the following configuration:
@@ -67,7 +71,7 @@ Additionally, your site might use its own proxy. You should discuss this with yo
 
 Note that git and Docker may also need to be configured to use this proxy. This is a job for your systems administrators.
 
-If there is a site firewall, this needs to be configured so that outgoing calls to the following URLs are allowed: *.dkfz.de, github.com, docker.io, *.docker.io, *.samply.de.
+If there is a site firewall, this needs to be configured so that outgoing calls to the following URLs are allowed: *.dkfz.de, github.com, docker.io, *.docker.io, *.samply.de. GBA sites will also need to allow *.bbmri.de.
 
 Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to conflict with Docker [here](https://github.com/chaifeng/ufw-docker).
 

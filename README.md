@@ -55,15 +55,15 @@ Ensure the following software (or newer) is installed:
 
 We recommend to install Docker(-compose) from its official sources as described on the [Docker website](https://docs.docker.com).
 
-> 📝 Note for Ubuntu: Please note that snap versions of Docker are not supported.
-
-> 📝 Note for git and Docker: if you have a local proxy, you will need to adjust your setup appropriately, see [git proxy](https://gist.github.com/evantoli/f8c23a37eb3558ab8765) and [docker proxy](https://docs.docker.com/network/proxy/).
+> 📝 Note for Ubuntu: Snap versions of Docker are not supported.
 
 ### Network
 
 A Bridgehead communicates to all central components via outgoing HTTPS connections.
 
-Your site might require an outgoing proxy (i.e. HTTPS forward proxy) to connect to external servers; you should discuss this with your local systems administration. In that case, you will need to note down the URL of the proxy. If the proxy requires authentication, you will also need to make a note of its username and password. This information will be used later on during the installation process. TLS terminating proxies are also supported, see [here](#tls-terminating-proxies). The following URLs need to be accessible (prefix with `https://`):
+Your site might require an outgoing proxy (i.e. HTTPS forward proxy) to connect to external servers; you should discuss this with your local systems administration. In that case, you will need to note down the URL of the proxy. If the proxy requires authentication, you will also need to make a note of its username and password. This information will be used later on during the installation process. TLS terminating proxies are also supported, see [here](#tls-terminating-proxies). Apart from the Bridgehead itself, you may also need to configure the proxy server in [git](https://gist.github.com/evantoli/f8c23a37eb3558ab8765) and [docker](https://docs.docker.com/network/proxy/).
+
+The following URLs need to be accessible (prefix with `https://`):
 * To fetch code and configuration from git repositories
   * github.com
   * git.verbis.dkfz.de
@@ -81,9 +81,7 @@ Your site might require an outgoing proxy (i.e. HTTPS forward proxy) to connect 
 
 > 📝 This URL list is subject to change. Instead of the individual names, we highly recommend whitelisting wildcard domains: *.dkfz.de, github.com, *.docker.com, *.docker.io, *.samply.de, *.bbmri.de.
 
-Note that apart from the Bridgehead itself, git and Docker may also need to be configured to use this proxy. This is a job for your systems administrators.
-
-> 📝 Note for Ubuntu: The uncomplicated firewall (ufw) is known to conflict with Docker, more info [here](https://github.com/chaifeng/ufw-docker).
+> 📝 Ubuntu's pre-installed uncomplicated firewall (ufw) is known to conflict with Docker, more info [here](https://github.com/chaifeng/ufw-docker).
 
 ## Deployment
 

@@ -27,8 +27,8 @@ services:
       - "traefik.http.middlewares.mtba_ccp_strip.stripprefix.prefixes=/mtba"
       - "traefik.http.routers.mtba_ccp.middlewares=mtba_ccp_strip, auth"
     volumes:
-      - /tmp/bridgehead/mtba/input:/app/input
-      - /tmp/bridgehead/mtba/persist:/app/persist
+      - /var/cache/bridgehead/ccp/mtba/input:/app/input
+      - /var/cache/bridgehead/ccp/mtba/persist:/app/persist
 
   # TODO: Include CBioPortal in Deployment ...
   # NOTE: CBioPortal can't load data while the system is running. So after import of data bridgehead needs to be restarted!

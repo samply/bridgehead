@@ -69,15 +69,17 @@ The following URLs need to be accessible (prefix with `https://`):
   * git.verbis.dkfz.de
 * To fetch docker images (📝 Docker URLs are subject to change, see [official list](https://docs.docker.com/desktop/allow-list/))
   * docker.verbis.dkfz.de
-  * hub.docker.com
-  * registry-1.docker.io
-  * production.cloudflare.docker.com
+  * Official Docker, Inc. URLs (subject to change, see [official list](https://docs.docker.com/desktop/all))
+    * hub.docker.com
+    * registry-1.docker.io
+    * production.cloudflare.docker.com
 * To report bridgeheads operational status
   * healthchecks.verbis.dkfz.de
 * only for DKTK/CCP
   * broker.ccp-it.dktk.dkfz.de
 * only for BBMRI-ERIC
   * broker.bbmri.samply.de
+  * gitlab.bbmri-eric.eu
 * only for German Biobank Node
   * broker.bbmri.de
 

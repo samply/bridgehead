@@ -67,7 +67,7 @@ The following URLs need to be accessible (prefix with `https://`):
 * To fetch code and configuration from git repositories
   * github.com
   * git.verbis.dkfz.de
-* To fetch docker images (📝 Docker URLs are subject to change, see [official list](https://docs.docker.com/desktop/allow-list/))
+* To fetch docker images
   * docker.verbis.dkfz.de
   * Official Docker, Inc. URLs (subject to change, see [official list](https://docs.docker.com/desktop/all))
     * hub.docker.com

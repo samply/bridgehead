@@ -49,7 +49,7 @@ fetchVarsFromVault() {
 
 	set +e
 
-	PASS=$(BW_MASTERPASS="$BW_MASTERPASS" BW_CLIENTID="$BW_CLIENTID" BW_CLIENTSECRET="$BW_CLIENTSECRET" docker run --rm -e BW_MASTERPASS -e BW_CLIENTID -e BW_CLIENTSECRET -e http_proxy samply/bridgehead-vaultfetcher $@)
+	PASS=$(BW_MASTERPASS="$BW_MASTERPASS" BW_CLIENTID="$BW_CLIENTID" BW_CLIENTSECRET="$BW_CLIENTSECRET" docker run --rm -e BW_MASTERPASS -e BW_CLIENTID -e BW_CLIENTSECRET -e http_proxy docker.verbis.dkfz.de/cache/samply/bridgehead-vaultfetcher:latest $@)
 	RET=$?
 
 	if [ $RET -ne 0 ]; then
@@ -188,7 +188,7 @@ function do_enroll_inner {
 		PARAMS+="--admin-email $SUPPORT_EMAIL"
 	fi
 
-	docker run --rm -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $PARAMS
+	docker run --rm -v /etc/bridgehead/pki:/etc/bridgehead/pki docker.verbis.dkfz.de/cache/samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $PARAMS
 	chmod 600 $PRIVATEKEYFILENAME
 }
 

@@ -72,6 +72,8 @@ The following URLs need to be accessible (prefix with `https://`):
   * hub.docker.com
   * registry-1.docker.io
   * production.cloudflare.docker.com
+* To report bridgeheads operational status
+  * healthchecks.verbis.dkfz.de
 * only for DKTK/CCP
   * broker.ccp-it.dktk.dkfz.de
 * only for BBMRI-ERIC

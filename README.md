@@ -55,21 +55,37 @@ Ensure the following software (or newer) is installed:
 
 We recommend to install Docker(-compose) from its official sources as described on the [Docker website](https://docs.docker.com).
 
-Note for Ubuntu: Please note that snap versions of Docker are not supported.
-
-Note for git and Docker: if you have a local proxy, you will need to adjust your setup appropriately, see [git proxy](https://gist.github.com/evantoli/f8c23a37eb3558ab8765) and [docker proxy](https://docs.docker.com/network/proxy/).
+> 📝 Note for Ubuntu: Snap versions of Docker are not supported.
 
 ### Network
 
-A running Bridgehead requires an outgoing HTTPS proxy to communicate with the central components.
+A Bridgehead communicates to all central components via outgoing HTTPS connections.
 
-Additionally, your site might use its own proxy. You should discuss this with your local systems administration. If a proxy is being used, you will need to note down the URL of the proxy. If it is a secure proxy, then you will also need to make a note of its username and password. This information will be used later on during the installation process.
+Your site might require an outgoing proxy (i.e. HTTPS forward proxy) to connect to external servers; you should discuss this with your local systems administration. In that case, you will need to note down the URL of the proxy. If the proxy requires authentication, you will also need to make a note of its username and password. This information will be used later on during the installation process. TLS terminating proxies are also supported, see [here](#tls-terminating-proxies). Apart from the Bridgehead itself, you may also need to configure the proxy server in [git](https://gist.github.com/evantoli/f8c23a37eb3558ab8765) and [docker](https://docs.docker.com/network/proxy/).
 
-Note that git and Docker may also need to be configured to use this proxy. This is a job for your systems administrators.
+The following URLs need to be accessible (prefix with `https://`):
+* To fetch code and configuration from git repositories
+  * github.com
+  * git.verbis.dkfz.de
+* To fetch docker images
+  * docker.verbis.dkfz.de
+  * Official Docker, Inc. URLs (subject to change, see [official list](https://docs.docker.com/desktop/all))
+    * hub.docker.com
+    * registry-1.docker.io
+    * production.cloudflare.docker.com
+* To report bridgeheads operational status
+  * healthchecks.verbis.dkfz.de
+* only for DKTK/CCP
+  * broker.ccp-it.dktk.dkfz.de
+* only for BBMRI-ERIC
+  * broker.bbmri.samply.de
+  * gitlab.bbmri-eric.eu
+* only for German Biobank Node
+  * broker.bbmri.de
 
-If there is a site firewall, this needs to be configured so that outgoing calls to the following URLs are allowed: *.dkfz.de, github.com, docker.io, *.docker.io, *.samply.de.
+> 📝 This URL list is subject to change. Instead of the individual names, we highly recommend whitelisting wildcard domains: *.dkfz.de, github.com, *.docker.com, *.docker.io, *.samply.de, *.bbmri.de.
 
-Note for Ubuntu: Please note that the uncomplicated firewall (ufw) is known to conflict with Docker [here](https://github.com/chaifeng/ufw-docker).
+> 📝 Ubuntu's pre-installed uncomplicated firewall (ufw) is known to conflict with Docker, more info [here](https://github.com/chaifeng/ufw-docker).
 
 ## Deployment
 

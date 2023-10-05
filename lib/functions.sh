@@ -9,6 +9,17 @@ detectCompose() {
 	fi
 }
 
+setupProxy() {
+	if [[ ! -z "$HTTP_PROXY_USERNAME" && ! -z "$HTTP_PROXY_PASSWORD" ]]; then
+		log "INFO" "Detected proxy user and password"
+		PROTO="$(echo $HTTP_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+		URL="$(echo ${HTTP_PROXY_URL/$PROTO/})"
+		PROXY="$(echo $PROTO$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$URL)"
+	else
+		PROXY=$HTTP_PROXY_URL
+	fi
+}
+
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
     log "ERROR" "Please run as root"

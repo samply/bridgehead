@@ -65,6 +65,7 @@ loadVars() {
 	fi
 	detectCompose
 	setHostname
+	setupProxy
 }
 
 case "$ACTION" in

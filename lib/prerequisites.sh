@@ -68,7 +68,7 @@ source /etc/bridgehead/${PROJECT}.conf
 source ${PROJECT}/vars
 
 set +e
-SERVERTIME="$(https_proxy=$PROXY curl -m 5 -s -I $BROKER_URL_FOR_PREREQ 2>&1 | grep -i -e '^Date: ' | sed -e 's/^Date: //i')"
+SERVERTIME="$(https_proxy=$SECURE_PROXY curl -m 5 -s -I $BROKER_URL_FOR_PREREQ 2>&1 | grep -i -e '^Date: ' | sed -e 's/^Date: //i')"
 RET=$?
 set -e
 if [ $RET -ne 0 ]; then

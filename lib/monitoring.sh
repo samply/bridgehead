@@ -47,8 +47,8 @@ function hc_send(){
 
     if [ -n "$2" ]; then
         MSG="$2\n\nDocker stats:\n$UPTIME"
-        echo -e "$MSG" | https_proxy=$SECURE_PROXY curl --max-time 5 -A "$USER_AGENT" -s -o /dev/null -X POST --data-binary @- "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
+        echo -e "$MSG" | https_proxy=$HTTPS_PROXY_FULL_URL curl --max-time 5 -A "$USER_AGENT" -s -o /dev/null -X POST --data-binary @- "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
     else
-        https_proxy=$SECURE_PROXY curl --max-time 5 -A "$USER_AGENT" -s -o /dev/null "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
+        https_proxy=$HTTPS_PROXY_FULL_URL curl --max-time 5 -A "$USER_AGENT" -s -o /dev/null "$HCURL"/"$1" || log WARN "Monitoring failed: Unable to send data to $HCURL/$1"
     fi
 }

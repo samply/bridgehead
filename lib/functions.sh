@@ -3,7 +3,7 @@
 detectCompose() {
 	if [[ "$(docker compose version 2>/dev/null)" == *"Docker Compose version"* ]]; then
 		COMPOSE="docker compose"
-	e
+	else
 		COMPOSE="docker-compose"
 		# This is intended to fail on startup in the next prereq check.
 	fi
@@ -12,16 +12,16 @@ detectCompose() {
 setupProxy() {
 	if [[ ! -z "$HTTP_PROXY_USERNAME" && ! -z "$HTTP_PROXY_PASSWORD" ]]; then
 		log "INFO" "Detected proxy user and password"
-		PROTO="$(echo $HTTP_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
-		URL="$(echo ${HTTP_PROXY_URL/$PROTO/})"
-		PROXY="$(echo $PROTO$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$URL)"
+		HTTP_PROXY_PROTOCOL="$(echo $HTTP_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+		HTTP_PROXY_FQDN="$(echo ${HTTP_PROXY_URL/$HTTP_PROXY_PROTOCOL/})"
+		HTTP_PROXY_FULL_URL="$(echo $HTTP_PROXY_PROTOCOL$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$HTTP_PROXY_FQDN)"
 
-		SECURE_PROTO="$(echo $HTTPS_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
-		SECURE_URL="$(echo ${HTTPS_PROXY_URL/$SECURE_PROTO/})"
-		SECURE_PROXY="$(echo $SECURE_PROTO$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$SECURE_URL)"
+		HTTPS_PROXY_PROTOCOL="$(echo $HTTPS_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+		HTTPS_PROXY_FQDN="$(echo ${HTTPS_PROXY_URL/$HTTPS_PROXY_PROTOCOL/})"
+		HTTPS_PROXY_FULL_URL="$(echo $HTTPS_PROXY_PROTOCOL$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$HTTPS_PROXY_FQDN)"
 	else
-		PROXY=$HTTP_PROXY_URL
-		SECURE_PROXY=$HTTPS_PROXY_URL
+		HTTP_PROXY_FULL_URL=$HTTP_PROXY_URL
+		HTTPS_PROXY_FULL_URL=$HTTPS_PROXY_URL
 	fi
 }
 

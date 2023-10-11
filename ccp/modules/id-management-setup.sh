@@ -39,6 +39,7 @@ function applySpecialCases() {
 	result="$1";
 	result="${result/Lmu/LMU}";
 	result="${result/Tum/TUM}";
+	result="${result/Dktk Test/Teststandort}";
 	echo "$result";
 }
 

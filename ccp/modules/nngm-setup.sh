@@ -5,4 +5,4 @@ function nngmSetup() {
 		log INFO "nNGM setup detected -- will start nNGM Connector."
 		OVERRIDE+=" -f ./$PROJECT/modules/nngm-compose.yml"
 	fi
-	}
+}

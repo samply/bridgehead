@@ -354,22 +354,22 @@ Installation under WSL ought to work, but we have not tested this.
 
 ### Docker Daemon Proxy Configuration
 
-Docker has a background daemon, responsible for downloading images and starting them. Sometimes, proxy configuration from your system won't carry over and it will fail to download images. In that case, you'll need to configure the proxy inside the system unit of docker by creating the file `/etc/systemd/system/docker.service.d/proxy.conf` with following content
+Docker has a background daemon, responsible for downloading images and starting them. Sometimes, proxy configuration from your system won't carry over and it will fail to download images. In that case, you'll need to configure the proxy inside the system unit of docker by creating the file `/etc/systemd/system/docker.service.d/proxy.conf` with the following content:
 
 ``` ini
 [Service]
 Environment="HTTP_PROXY=http://proxy.example.com:3128"
-Environment="HTTPS_PROXY=https://proxy.example.com:3129"
-Environment="NO_PROXY=localhost,127.0.0.1,docker-registry.example.com,.corp"
+Environment="HTTPS_PROXY=https://proxy.example.com:3128"
+Environment="NO_PROXY=localhost,127.0.0.1,some-local-docker-registry.example.com,.corp"
 ```
 
-After saving the configuration file, you'll need to reload the system daemon for the changes to take effect 
+After saving the configuration file, you'll need to reload the system daemon for the changes to take effect:
 
 ``` shell
 sudo systemctl daemon-reload
 ```
 
-and restart the docker daemon 
+and restart the docker daemon:
 
 ``` shell
 sudo systemctl restart docker

@@ -50,8 +50,7 @@ for DIR in /etc/bridgehead $(pwd); do
     git -C $DIR config credential.helper "$CREDHELPER"
   fi
   old_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
-  if [ -z "$HTTP_PROXY_URL" ]; then
-    log "INFO" "Git is using no proxy!"
+  if [ -z "$HTTP_PROXY_FULL_URL" ]; then
     OUT=$(retry 5 git -C $DIR fetch 2>&1 && retry 5 git -C $DIR pull 2>&1)
   else
     log "INFO" "Git is using proxy ${HTTP_PROXY_URL} from ${CONFFILE}"

@@ -10,19 +10,34 @@ detectCompose() {
 }
 
 setupProxy() {
-	if [[ ! -z "$HTTP_PROXY_USERNAME" && ! -z "$HTTP_PROXY_PASSWORD" ]]; then
-		log "INFO" "Detected proxy user and password"
-		HTTP_PROXY_PROTOCOL="$(echo $HTTP_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
-		HTTP_PROXY_FQDN="$(echo ${HTTP_PROXY_URL/$HTTP_PROXY_PROTOCOL/})"
-		HTTP_PROXY_FULL_URL="$(echo $HTTP_PROXY_PROTOCOL$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$HTTP_PROXY_FQDN)"
-
-		HTTPS_PROXY_PROTOCOL="$(echo $HTTPS_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
-		HTTPS_PROXY_FQDN="$(echo ${HTTPS_PROXY_URL/$HTTPS_PROXY_PROTOCOL/})"
-		HTTPS_PROXY_FULL_URL="$(echo $HTTPS_PROXY_PROTOCOL$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$HTTPS_PROXY_FQDN)"
-	else
-		HTTP_PROXY_FULL_URL=$HTTP_PROXY_URL
-		HTTPS_PROXY_FULL_URL=$HTTPS_PROXY_URL
+	http="no"
+	if [ $HTTP_PROXY_URL ]; then
+		if [[ ! -z "$HTTP_PROXY_USERNAME" && ! -z "$HTTP_PROXY_PASSWORD" ]]; then
+			proto="$(echo $HTTP_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+			fqdn="$(echo ${HTTP_PROXY_URL/$proto/})"
+			HTTP_PROXY_FULL_URL="$(echo $proto$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$fqdn)"
+			http="authenticated"
+		else
+			HTTP_PROXY_FULL_URL=$HTTP_PROXY_URL
+			http="unauthenticated"
+		fi
 	fi
+
+	https="no"
+	if [ $HTTPS_PROXY_URL ]; then
+		if [[ ! -z "$HTTPS_PROXY_USERNAME" && ! -z "$HTTPS_PROXY_PASSWORD" ]]; then
+			proto="$(echo $HTTPS_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+			fqdn="$(echo ${HTTPS_PROXY_URL/$proto/})"
+			HTTPS_PROXY_FULL_URL="$(echo $proto$HTTPS_PROXY_USERNAME:$HTTPS_PROXY_PASSWORD@$fqdn)"
+			https="authenticated"
+		else
+			HTTPS_PROXY_FULL_URL=$HTTPS_PROXY_URL
+			https="unauthenticated"
+		fi
+	fi
+
+	log INFO "Configuring proxy servers: $http http proxy, $https https proxy"
+	unset http https fqdn proto
 }
 
 exitIfNotRoot() {

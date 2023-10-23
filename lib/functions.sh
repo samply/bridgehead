@@ -10,18 +10,21 @@ detectCompose() {
 }
 
 setupProxy() {
+	### Note: As the current data protection concepts do not allow communication via HTTP, this
+	### handling of a proxy for HTTP requests is commented out and will not be used
+	#
 	http="no"
-	if [ $HTTP_PROXY_URL ]; then
-		if [[ ! -z "$HTTP_PROXY_USERNAME" && ! -z "$HTTP_PROXY_PASSWORD" ]]; then
-			proto="$(echo $HTTP_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
-			fqdn="$(echo ${HTTP_PROXY_URL/$proto/})"
-			HTTP_PROXY_FULL_URL="$(echo $proto$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$fqdn)"
-			http="authenticated"
-		else
-			HTTP_PROXY_FULL_URL=$HTTP_PROXY_URL
-			http="unauthenticated"
-		fi
-	fi
+	# if [ $HTTP_PROXY_URL ]; then
+	# 	if [[ ! -z "$HTTP_PROXY_USERNAME" && ! -z "$HTTP_PROXY_PASSWORD" ]]; then
+	# 		proto="$(echo $HTTP_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+	# 		fqdn="$(echo ${HTTP_PROXY_URL/$proto/})"
+	# 		HTTP_PROXY_FULL_URL="$(echo $proto$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$fqdn)"
+	# 		http="authenticated"
+	# 	else
+	# 		HTTP_PROXY_FULL_URL=$HTTP_PROXY_URL
+	# 		http="unauthenticated"
+	# 	fi
+	# fi
 
 	https="no"
 	if [ $HTTPS_PROXY_URL ]; then

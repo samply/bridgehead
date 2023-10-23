@@ -54,8 +54,8 @@ for DIR in /etc/bridgehead $(pwd); do
     log "INFO" "Git is using no proxy!"
     OUT=$(retry 5 git -C $DIR fetch 2>&1 && retry 5 git -C $DIR pull 2>&1)
   else
-    log "INFO" "Git is using proxy ${HTTP_PROXY_URL} from ${CONFFILE}"
-    OUT=$(retry 5 git -c http.proxy=$HTTP_PROXY_FULL_URL -c https.proxy=$HTTPS_PROXY_FULL_URL -C $DIR fetch 2>&1 && retry 5 git -c http.proxy=$HTTP_PROXY_FULL_URL -c https.proxy=$HTTPS_PROXY_FULL_URL -C $DIR pull 2>&1)
+    log "INFO" "Git is using proxy ${HTTPS_PROXY_URL} from ${CONFFILE}"
+    OUT=$(retry 5 git -c https.proxy=$HTTPS_PROXY_FULL_URL -C $DIR fetch 2>&1 && retry 5 git-c https.proxy=$HTTPS_PROXY_FULL_URL -C $DIR pull 2>&1)
   fi
   if [ $? -ne 0 ]; then
     report_error log "Unable to update git $DIR: $OUT"

@@ -59,7 +59,7 @@ services:
     image: docker.verbis.dkfz.de/cache/datashield/rock-base:6.3  # https://datashield.discourse.group/t/ds-aggregate-method-error/416/4
 
   beam-connect:
-    image: docker.verbis.dkfz.de/cache/samply/beam-connect:no-auth
+    image: docker.verbis.dkfz.de/cache/samply/beam-connect:develop
     container_name: bridgehead-datashield-connect
     environment:
       PROXY_URL: "http://beam-proxy:8081"
@@ -68,6 +68,7 @@ services:
       PROXY_APIKEY: ${DATASHIELD_CONNECT_SECRET}
       DISCOVERY_URL: "./map/central.json"
       LOCAL_TARGETS_FILE: "./map/local.json"
+      NO_AUTH: "true"
     secrets:
       - opal-cert.pem
     depends_on:

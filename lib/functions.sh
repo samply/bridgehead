@@ -16,11 +16,11 @@ setupProxy() {
 	local http="no"
 	local https="no"
 	if [ $HTTPS_PROXY_URL ]; then
-		local hostport=$(echo $HTTPS_PROXY_URL | sed -e s,$proto,,g | cut -d/ -f1)
+		local hostport=$(echo $HTTPS_PROXY_URL | sed -e "s,$proto,,g" | cut -d/ -f1)
 		HTTPS_PROXY_HOST="$(echo $hostport | sed -e 's,:.*,,g')"
 		HTTPS_PROXY_PORT="$(echo $hostport | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
 		if [[ ! -z "$HTTPS_PROXY_USERNAME" && ! -z "$HTTPS_PROXY_PASSWORD" ]]; then
-			local proto="$(echo $HTTPS_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+			local proto="$(echo $HTTPS_PROXY_URL | grep :// | sed -e 's,^\(.*://\).*,\1,g')"
 			local fqdn="$(echo ${HTTPS_PROXY_URL/$proto/})"
 			HTTPS_PROXY_FULL_URL="$(echo $proto$HTTPS_PROXY_USERNAME:$HTTPS_PROXY_PASSWORD@$fqdn)"
 

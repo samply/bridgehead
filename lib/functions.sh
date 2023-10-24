@@ -10,28 +10,21 @@ detectCompose() {
 }
 
 setupProxy() {
-	### Note: As the current data protection concepts do not allow communication via HTTP, this
-	### handling of a proxy for HTTP requests is commented out and will not be used
-	#
-	http="no"
-	# if [ $HTTP_PROXY_URL ]; then
-	# 	if [[ ! -z "$HTTP_PROXY_USERNAME" && ! -z "$HTTP_PROXY_PASSWORD" ]]; then
-	# 		proto="$(echo $HTTP_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
-	# 		fqdn="$(echo ${HTTP_PROXY_URL/$proto/})"
-	# 		HTTP_PROXY_FULL_URL="$(echo $proto$HTTP_PROXY_USERNAME:$HTTP_PROXY_PASSWORD@$fqdn)"
-	# 		http="authenticated"
-	# 	else
-	# 		HTTP_PROXY_FULL_URL=$HTTP_PROXY_URL
-	# 		http="unauthenticated"
-	# 	fi
-	# fi
+	### Note: As the current data protection concepts do not allow communication via HTTP,
+	### we are not setting a proxy for HTTP requests.
 
-	https="no"
+	local http="no"
+	local https="no"
 	if [ $HTTPS_PROXY_URL ]; then
 		if [[ ! -z "$HTTPS_PROXY_USERNAME" && ! -z "$HTTPS_PROXY_PASSWORD" ]]; then
-			proto="$(echo $HTTPS_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
-			fqdn="$(echo ${HTTPS_PROXY_URL/$proto/})"
+			local proto="$(echo $HTTPS_PROXY_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+			local fqdn="$(echo ${HTTPS_PROXY_URL/$proto/})"
 			HTTPS_PROXY_FULL_URL="$(echo $proto$HTTPS_PROXY_USERNAME:$HTTPS_PROXY_PASSWORD@$fqdn)"
+
+			local hostport=$(echo $HTTPS_PROXY_URL | sed -e s,$proto,,g | cut -d/ -f1)
+			HTTPS_PROXY_HOST="$(echo $hostport | sed -e 's,:.*,,g')"
+			HTTPS_PROXY_PORT="$(echo $hostport | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
+
 			https="authenticated"
 		else
 			HTTPS_PROXY_FULL_URL=$HTTPS_PROXY_URL
@@ -39,8 +32,7 @@ setupProxy() {
 		fi
 	fi
 
-	log INFO "Configuring proxy servers: $http http proxy, $https https proxy"
-	unset http https fqdn proto
+	log INFO "Configuring proxy servers: $http http proxy (we're not supporting unencrypted comms), $https https proxy"
 }
 
 exitIfNotRoot() {

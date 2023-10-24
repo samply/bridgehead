@@ -28,7 +28,7 @@ services:
       - opal-rserver
       - opal-db
     environment:
-      JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
+      JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC -Dhttps.proxyHost=${HTTPS_PROXY_HOST} -Dhttps.proxyPort=${HTTPS_PROXY_PORT} -Dhttps.proxyUser=${HTTPS_PROXY_USERNAME} -Dhttps.proxyPassword=${HTTPS_PROXY_PASSWORD}"
       # OPAL_ADMINISTRATOR_USER: "administrator" # This line is kept for informational purposes
       OPAL_ADMINISTRATOR_PASSWORD: "${LDM_AUTH}"
       POSTGRESDATA_HOST: "opal-db"

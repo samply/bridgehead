@@ -35,8 +35,8 @@ services:
     image: docker.verbis.dkfz.de/cache/samply/bridgehead-forward-proxy:latest
     environment:
       HTTPS_PROXY: ${HTTPS_PROXY_URL}
-      USERNAME: ${HTTPS_PROXY_USERNAME}
-      PASSWORD: ${HTTPS_PROXY_PASSWORD}
+      HTTPS_PROXY_USERNAME: ${HTTPS_PROXY_USERNAME}
+      HTTPS_PROXY_PASSWORD: ${HTTPS_PROXY_PASSWORD}
     tmpfs:
       - /var/log/squid
       - /var/spool/squid

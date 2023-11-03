@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  dnpm-backend:
+    image: ghcr.io/kohlbacherlab/bwhc-backend:1.0-snapshot-broker-connector
+    container_name: bridgehead-dnpm-backend
+    environment:
+      - ZPM_SITE=${ZPM_SITE}
+    volumes:
+      - /etc/dnpm/config:/bwhc_config
+      - ${DNPM_DATA_DIR}:/bwhc_data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bwhc-backend.rule=PathPrefix(`/bwhc`)"
+      - "traefik.http.services.bwhc-backend.loadbalancer.server.port=9000"
+      - "traefik.http.routers.bwhc-backend.tls=true"
+
+  dnpm-frontend:
+    image: ghcr.io/kohlbacherlab/bwhc-frontend:2209
+    container_name: bridgehead-dnpm-frontend
+    links:
+      - dnpm-backend
+    environment:
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=8080
+      - BACKEND_PROTOCOL=https
+      - BACKEND_HOSTNAME=$HOST
+      - BACKEND_PORT=443
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bwhc-frontend.rule=PathPrefix(`/`)"
+#      - "traefik.http.middlewares.bwhc-frontend-strip.stripprefix.prefixes=/bwhc-frontend"
+#      - "traefik.http.routers.bwhc-frontend.middlewares=bwhc-frontend-strip"
+      - "traefik.http.services.bwhc-frontend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.bwhc-frontend.tls=true"
+

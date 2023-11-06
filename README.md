@@ -323,14 +323,13 @@ https://<Name of your server>/bbmri-localdatamanagement/fhir
 ```
 The name of your server will generally be the full name of the VM that the Bridgehead runs on. You can alternatively supply an IP address.
 
-The FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/bbmri.local.conf`.
+The FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/<project>.local.conf`.
 
 Note that if you don't have a DNS certificate for the Bridgehead, you will need to allow an insecure connection. E.g. with curl, use the `-k` flag.
 
 #### ETL for BBMRI and GBA
 
-Normally, you will need to build your own ETL to feed the Bridgehead. However, there are two cases where a short cut might be available:
-- If you are a German biobank and you already feed your data into a Data Integration Center (DIZ). In this case, you can use the [TransFAIR tool](https://github.com/samply/transFAIR) with the `bbmri2mii` profile to pull data from the DIZ and load it into the Bridgehead's FHIR store. You will need to discuss this with your local DIZ management before proceeding with this approach.
+Normally, you will need to build your own ETL to feed the Bridgehead. However, there is one case where a short cut might be available:
 - If you are using CentraXX as a BIMS and you have a FHIR-Export License, then you can employ standard mapping scripts that access the CentraXX-internal data structures and map the data onto the BBMRI FHIR profile. It may be necessary to adjust a few parameters, but this is nonetheless significantly easier than writing your own ETL.
 
 You can find the profiles for generating FHIR in [Simplifier](https://simplifier.net/bbmri.de/~resources?category=Profile).

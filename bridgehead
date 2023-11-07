@@ -82,6 +82,7 @@ loadVars() {
 			export FOCUS_TAG=main
 			;;
 	esac
+    sync_secrets
 }
 
 case "$ACTION" in

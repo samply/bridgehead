@@ -9,6 +9,33 @@ detectCompose() {
 	fi
 }
 
+setupProxy() {
+	### Note: As the current data protection concepts do not allow communication via HTTP,
+	### we are not setting a proxy for HTTP requests.
+
+	local http="no"
+	local https="no"
+	if [ $HTTPS_PROXY_URL ]; then
+		local proto="$(echo $HTTPS_PROXY_URL | grep :// | sed -e 's,^\(.*://\).*,\1,g')"
+		local fqdn="$(echo ${HTTPS_PROXY_URL/$proto/})"
+		local hostport=$(echo $HTTPS_PROXY_URL | sed -e "s,$proto,,g" | cut -d/ -f1)
+		HTTPS_PROXY_HOST="$(echo $hostport | sed -e 's,:.*,,g')"
+		HTTPS_PROXY_PORT="$(echo $hostport | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
+		if [[ ! -z "$HTTPS_PROXY_USERNAME" && ! -z "$HTTPS_PROXY_PASSWORD" ]]; then
+			local proto="$(echo $HTTPS_PROXY_URL | grep :// | sed -e 's,^\(.*://\).*,\1,g')"
+			local fqdn="$(echo ${HTTPS_PROXY_URL/$proto/})"
+			HTTPS_PROXY_FULL_URL="$(echo $proto$HTTPS_PROXY_USERNAME:$HTTPS_PROXY_PASSWORD@$fqdn)"
+			https="authenticated"
+		else
+			HTTPS_PROXY_FULL_URL=$HTTPS_PROXY_URL
+			https="unauthenticated"
+		fi
+	fi
+
+	log INFO "Configuring proxy servers: $http http proxy (we're not supporting unencrypted comms), $https https proxy"
+	export HTTPS_PROXY_HOST HTTPS_PROXY_PORT HTTPS_PROXY_FULL_URL
+}
+
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
     log "ERROR" "Please run as root"
@@ -49,7 +76,7 @@ fetchVarsFromVault() {
 
 	set +e
 
-	PASS=$(BW_MASTERPASS="$BW_MASTERPASS" BW_CLIENTID="$BW_CLIENTID" BW_CLIENTSECRET="$BW_CLIENTSECRET" docker run --rm -e BW_MASTERPASS -e BW_CLIENTID -e BW_CLIENTSECRET -e http_proxy samply/bridgehead-vaultfetcher $@)
+	PASS=$(BW_MASTERPASS="$BW_MASTERPASS" BW_CLIENTID="$BW_CLIENTID" BW_CLIENTSECRET="$BW_CLIENTSECRET" docker run --rm -e BW_MASTERPASS -e BW_CLIENTID -e BW_CLIENTSECRET -e http_proxy docker.verbis.dkfz.de/cache/samply/bridgehead-vaultfetcher:latest $@)
 	RET=$?
 
 	if [ $RET -ne 0 ]; then
@@ -188,7 +215,7 @@ function do_enroll_inner {
 		PARAMS+="--admin-email $SUPPORT_EMAIL"
 	fi
 
-	docker run --rm -v /etc/bridgehead/pki:/etc/bridgehead/pki samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $PARAMS
+	docker run --rm -v /etc/bridgehead/pki:/etc/bridgehead/pki docker.verbis.dkfz.de/cache/samply/beam-enroll:latest --output-file $PRIVATEKEYFILENAME --proxy-id $MANUAL_PROXY_ID $PARAMS
 	chmod 600 $PRIVATEKEYFILENAME
 }
 

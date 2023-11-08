@@ -119,7 +119,7 @@ Mention:
 We will set the repository up for you. We will then send you:
 
 - A Repository Short Name (RSN). Beware: this is distinct from your site name.
-- Repository URL containing the acces token eg. https://BH_Dummy:dummy_token@git.verbis.dkfz.de/bbmri-bridgehead-configs/dummy.git
+- Repository URL containing the acces token eg. https://BH_Dummy:dummy_token@git.verbis.dkfz.de/<project>-bridgehead-configs/dummy.git
 
 During the installation, your Bridgehead will download your site's configuration from GitLab and you can review the details provided to us by email.
 

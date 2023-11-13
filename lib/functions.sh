@@ -241,14 +241,27 @@ add_basic_auth_user() {
 }
 
 SECRET_SYNC_ARGS=${SECRET_SYNC_ARGS:-""}
-# First argument is the variable name that will be generated.
+# First argument is the variable name that will be generated it will not have a value.
 # Second argument is a comma seperated list of allowed redirect urls for the oidc client.
-function generate_oidc_client() {
+# The resulting client id will be $SITE_ID-public
+function generate_public_oidc_client() {
     local delimiter=$'\x1E'
     if [[ $SECRET_SYNC_ARGS == "" ]]; then
-        SECRET_SYNC_ARGS+="OIDC:$1:$2"
+        SECRET_SYNC_ARGS+="OIDC:$1:public;$2"
     else 
-        SECRET_SYNC_ARGS+="${delimiter}OIDC:$1:$2"
+        SECRET_SYNC_ARGS+="${delimiter}OIDC:$1:public;$2"
+    fi
+}
+
+# First argument is the variable name that the client secret will be avalible at.
+# Second argument is a comma seperated list of allowed redirect urls for the oidc client.
+# The resulting client id will be $SITE_ID-private
+function generate_private_oidc_client() {
+    local delimiter=$'\x1E'
+    if [[ $SECRET_SYNC_ARGS == "" ]]; then
+        SECRET_SYNC_ARGS+="OIDC:$1:private;$2"
+    else 
+        SECRET_SYNC_ARGS+="${delimiter}OIDC:$1:private;$2"
     fi
 }
 

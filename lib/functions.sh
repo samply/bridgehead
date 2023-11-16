@@ -269,9 +269,11 @@ function sync_secrets() {
     if [[ $SECRET_SYNC_ARGS == "" ]]; then
         return
     fi
+    mkdir -p /var/cache/bridgehead/secrets/
+    touch /var/cache/bridgehead/secrets/oidc
     # The oidc provider will need to be switched based on the project at some point I guess
     docker run --rm \
-        -v /var/cache/bridgehead/secrets:/usr/local/cache \
+        -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \
         -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
         -v ./$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
         -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
@@ -279,7 +281,7 @@ function sync_secrets() {
         -e HTTPS_PROXY=$HTTPS_PROXY_FULL_URL \
         -e PROXY_ID=$PROXY_ID \
         -e BROKER_URL=$BROKER_URL \
-        -e OIDC_PROVIDER=secret-sync.central.$BROKER_ID \
+        -e OIDC_PROVIDER=secret-sync-central.oidc.$BROKER_ID \
         -e SECRET_DEFINITIONS=$SECRET_SYNC_ARGS \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
     source /var/cache/bridgehead/secrets/*

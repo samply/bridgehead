@@ -50,6 +50,7 @@ loadVars() {
 		source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
 	fi
 	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
+	setHostname
 	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 	set +a
 
@@ -64,7 +65,6 @@ loadVars() {
 		OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
 	fi
 	detectCompose
-	setHostname
 	setupProxy
 
 	# Set some project-independent default values

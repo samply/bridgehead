@@ -28,7 +28,7 @@ services:
       BLAZE_URL: "http://bridgehead-ccp-blaze:8080/fhir/"
       BEAM_PROXY_URL: http://beam-proxy:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
-      OBFUSCATE: "no"
+      EPSILON: 0.28
     depends_on:
       - "beam-proxy"
       - "blaze"

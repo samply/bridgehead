@@ -275,14 +275,20 @@ function sync_secrets() {
     docker run --rm \
         -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \
         -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
-        -v ./$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
+        -v /srv/docker/bridgehead/$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
         -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
         -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
         -e HTTPS_PROXY=$HTTPS_PROXY_FULL_URL \
         -e PROXY_ID=$PROXY_ID \
         -e BROKER_URL=$BROKER_URL \
-        -e OIDC_PROVIDER=secret-sync-central.oidc.$BROKER_ID \
+        -e OIDC_PROVIDER=secret-sync-central.dev-jan.$BROKER_ID \
         -e SECRET_DEFINITIONS=$SECRET_SYNC_ARGS \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
     source /var/cache/bridgehead/secrets/*
+}
+
+capitalize_first_letter() {
+    input="$1"
+    capitalized="$(tr '[:lower:]' '[:upper:]' <<< ${input:0:1})${input:1}"
+    echo "$capitalized"
 }

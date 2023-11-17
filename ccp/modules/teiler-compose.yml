@@ -31,9 +31,10 @@ services:
     environment:
       DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE}"
       TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
-      KEYCLOAK_URL: "https://${HOST}/login"
-      KEYCLOAK_REALM: "teiler"
-      KEYCLOAK_CLIENT_ID: "teiler"
+      KEYCLOAK_URL: "https://login.verbis.dkfz.de"
+      KEYCLOAK_REALM: "test-realm-01"
+      KEYCLOAK_CLIENT_ID: "${SITE_ID}-public"
+      KEYCLOAK_TOKEN_GROUP: "groups"
       TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
       TEILER_ADMIN_EMAIL: "${OPERATOR_EMAIL}"
       TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
@@ -42,8 +43,8 @@ services:
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
       TEILER_DASHBOARD_HTTP_RELATIVE_PATH: "/ccp-teiler-dashboard"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
-      TEILER_USER: "TEILER_USER"
-      TEILER_ADMIN: "TEILER_ADMIN"
+      TEILER_USER: "${KEYCLOAK_USER_GROUP}"
+      TEILER_ADMIN: "${KEYCLOAK_ADMIN_GROUP}"
 
   teiler-backend:
     image: docker.verbis.dkfz.de/ccp/dktk-teiler-backend:latest

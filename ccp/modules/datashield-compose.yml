@@ -96,7 +96,7 @@ services:
     networks:
       - default
       - rstudio
-  
+
   traefik:
     networks:
       - default

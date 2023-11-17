@@ -6,7 +6,8 @@ services:
     image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
     environment:
       #DEFAULT_USER: "rstudio" # This line is kept for informational purposes
-      PASSWORD: "${LDM_AUTH}"
+      #PASSWORD: "${LDM_AUTH}"
+      DISABLE_AUTH: "true" # TODO: Connect R-Studio with central Keycloak. Currently using Traefik authentication.
       HTTP_RELATIVE_PATH: "/rstudio"
     labels:
       - "traefik.enable=true"
@@ -14,7 +15,7 @@ services:
       - "traefik.http.services.rstudio_ccp.loadbalancer.server.port=8787"
       - "traefik.http.routers.rstudio_ccp.tls=true"
       - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
-      - "traefik.http.routers.rstudio_ccp.middlewares=rstudio_ccp_strip"
+      - "traefik.http.routers.rstudio_ccp.middlewares=rstudio_ccp_strip,auth"
 
   opal:
     container_name: bridgehead-opal
@@ -30,7 +31,7 @@ services:
     environment:
       JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC -Dhttps.proxyHost=forward_proxy -Dhttps.proxyPort=3128"
       # OPAL_ADMINISTRATOR_USER: "administrator" # This line is kept for informational purposes
-      OPAL_ADMINISTRATOR_PASSWORD: "${LDM_AUTH}"
+      OPAL_ADMINISTRATOR_PASSWORD: "${OPAL_ADMIN_PASSWORD}"
       POSTGRESDATA_HOST: "opal-db"
       POSTGRESDATA_DATABASE: "opal"
       POSTGRESDATA_USER: "opal"
@@ -40,6 +41,13 @@ services:
       APP_CONTEXT_PATH: "/opal"
       OPAL_PRIVATE_KEY: "/run/secrets/opal-key.pem"
       OPAL_CERTIFICATE: "/run/secrets/opal-cert.pem"
+      KEYCLOAK_URL: "https://login.verbis.dkfz.de"
+      KEYCLOAK_REALM: "test-realm-01"
+      KEYCLOAK_CLIENT_ID: "${SITE_ID}-private"
+      KEYCLOAK_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
+      KEYCLOAK_ADMIN_GROUP: "${KEYCLOAK_ADMIN_GROUP}"
+      TOKEN_MANAGER_PASSWORD: "${TOKEN_MANAGER_OPAL_PASSWORD}"
+      EXPORTER_PASSWORD: "${EXPORTER_OPAL_PASSWORD}"
     secrets:
       - opal-cert.pem
       - opal-key.pem

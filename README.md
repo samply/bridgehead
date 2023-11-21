@@ -22,6 +22,7 @@ This repository is the starting point for any information and tools you will nee
     - [TLS terminating proxies](#tls-terminating-proxies)
     - [File structure](#file-structure)
     - [BBMRI-ERIC Directory entry needed](#bbmri-eric-directory-entry-needed)
+    - [Loading data](#loading-data)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
     - [Auto-Backups](#auto-backups)
@@ -118,7 +119,7 @@ Mention:
 We will set the repository up for you. We will then send you:
 
 - A Repository Short Name (RSN). Beware: this is distinct from your site name.
-- Repository URL containing the acces token eg. https://BH_Dummy:dummy_token@git.verbis.dkfz.de/bbmri-bridgehead-configs/dummy.git
+- Repository URL containing the acces token eg. https://BH_Dummy:dummy_token@git.verbis.dkfz.de/<project>-bridgehead-configs/dummy.git
 
 During the installation, your Bridgehead will download your site's configuration from GitLab and you can review the details provided to us by email.
 
@@ -310,6 +311,28 @@ Additionally, you should choose when you want Directory sync to run. In the exam
 Once you edited the gitlab config, the bridgehead will autoupdate the config with the values and will sync the data.
 
 There will be a delay before the effects of Directory sync become visible. First, you will need to wait until the time you have specified in ```TIMER_CRON```. Second, the information will then be synchronized from your national node with the central European Directory. This can take up to 24 hours.
+
+### Loading data
+
+The data accessed by the federated search is held in the Bridgehead in a FHIR store (we use Blaze).
+
+You can load data into this store by using its FHIR API:
+
+```
+https://<Name of your server>/bbmri-localdatamanagement/fhir
+```
+The name of your server will generally be the full name of the VM that the Bridgehead runs on. You can alternatively supply an IP address.
+
+The FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/<project>.local.conf`.
+
+Note that if you don't have a DNS certificate for the Bridgehead, you will need to allow an insecure connection. E.g. with curl, use the `-k` flag.
+
+#### ETL for BBMRI and GBA
+
+Normally, you will need to build your own ETL to feed the Bridgehead. However, there is one case where a short cut might be available:
+- If you are using CentraXX as a BIMS and you have a FHIR-Export License, then you can employ standard mapping scripts that access the CentraXX-internal data structures and map the data onto the BBMRI FHIR profile. It may be necessary to adjust a few parameters, but this is nonetheless significantly easier than writing your own ETL.
+
+You can find the profiles for generating FHIR in [Simplifier](https://simplifier.net/bbmri.de/~resources?category=Profile).
 
 ## Things you should know
 

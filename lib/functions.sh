@@ -281,7 +281,7 @@ function sync_secrets() {
         -e HTTPS_PROXY=$HTTPS_PROXY_FULL_URL \
         -e PROXY_ID=$PROXY_ID \
         -e BROKER_URL=$BROKER_URL \
-        -e OIDC_PROVIDER=secret-sync-central.dev-jan.$BROKER_ID \
+        -e OIDC_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
         -e SECRET_DEFINITIONS=$SECRET_SYNC_ARGS \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
     source /var/cache/bridgehead/secrets/*

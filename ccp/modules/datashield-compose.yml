@@ -6,7 +6,7 @@ services:
     image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
     environment:
       #DEFAULT_USER: "rstudio" # This line is kept for informational purposes
-      #PASSWORD: "${LDM_AUTH}"
+      PASSWORD: "${RSTUDIO_ADMIN_PASSWORD}"
       DISABLE_AUTH: "true" # TODO: Connect R-Studio with central Keycloak. Currently using Traefik authentication.
       HTTP_RELATIVE_PATH: "/rstudio"
     labels:
@@ -15,7 +15,7 @@ services:
       - "traefik.http.services.rstudio_ccp.loadbalancer.server.port=8787"
       - "traefik.http.routers.rstudio_ccp.tls=true"
       - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
-      - "traefik.http.routers.rstudio_ccp.middlewares=rstudio_ccp_strip,auth"
+      - "traefik.http.routers.rstudio_ccp.middlewares=rstudio_ccp_strip"
 
   opal:
     container_name: bridgehead-opal

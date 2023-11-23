@@ -284,7 +284,9 @@ function sync_secrets() {
         -e OIDC_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
         -e SECRET_DEFINITIONS=$SECRET_SYNC_ARGS \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
+    set -a # Export variables as environment variables
     source /var/cache/bridgehead/secrets/*
+    set +a # Export variables in the regular way
 }
 
 capitalize_first_letter() {

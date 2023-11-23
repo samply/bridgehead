@@ -307,3 +307,16 @@ generate_redirect_urls(){
     fi
     echo "$redirect_urls"
 }
+
+generate_password(){
+  local seed_text="$1"
+  local random_digit=$(openssl rand -hex 1 | head -c 1)
+  local random_upper=$(openssl rand -base64 3 | tr -dc 'A-Z' | head -c 1)
+  local random_lower=$(openssl rand -base64 3 | tr -dc 'a-z' | head -c 1)
+  local random_special=$(echo '@#$%^&+=' | fold -w1 | shuf -n1)
+
+  local combined_text="This is a salt string to generate one consistent password for ${seed_text}. It is not required to be secret."
+  local main_password=$(echo "${combined_text}" | openssl rsautl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" | base64 | head -c 26)
+
+  echo "${main_password}${random_digit}${random_upper}${random_lower}${random_special}"
+}

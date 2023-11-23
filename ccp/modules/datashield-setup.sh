@@ -23,5 +23,5 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
     }]' > /tmp/bridgehead/opal-map/local.json
   cp -f ./$PROJECT/modules/datashield-mappings.json /tmp/bridgehead/opal-map/central.json
   chown -R bridgehead:docker /tmp/bridgehead/
-  generate_private_oidc_client "OIDC_CLIENT_SECRET" "https://${HOST}/opal/*"
+  generate_private_oidc_client "OIDC_CLIENT_SECRET" "$(generate_redirect_urls '/opal/*')"
 fi

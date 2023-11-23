@@ -296,12 +296,6 @@ capitalize_first_letter() {
 generate_redirect_urls(){
     local redirect_urls="https://${HOST}$1"
     local host_without_proxy="$(echo "$HOST" | cut -d '.' -f1)"
-    local port="$(echo "$HOST" | rev | cut -d ':' -f1 | rev)"
-    if [ -z "${port}" ]; then
-      port=""
-    else
-      port=":$port"
-    fi
     if [[ "$HOST" != "$host_without_proxy" ]]; then
       redirect_urls+=",https://$host_without_proxy$port$1"
     fi

@@ -7,6 +7,7 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
   TOKEN_MANAGER_OPAL_PASSWORD="$(generate_password \"Token Manager in Opal\")"
   OPAL_DB_PASSWORD="$(echo \"This is a salt string to generate one consistent password for Opal. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
   OPAL_ADMIN_PASSWORD="$(generate_password \"admin password for Opal\")"
+  RSTUDIO_ADMIN_PASSWORD="$(generate_password \"admin password for R-Studio\")"
   DATASHIELD_CONNECT_SECRET="$(echo \"This is a salt string to generate one consistent password as the DataShield Connect secret. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
   if [ ! -e /tmp/bridgehead/opal-cert.pem ]; then
     mkdir -p /tmp/bridgehead/

@@ -242,7 +242,7 @@ add_basic_auth_user() {
 
 SECRET_SYNC_ARGS=${SECRET_SYNC_ARGS:-""}
 # First argument is the variable name that will be generated it will not have a value.
-# Second argument is a comma seperated list of allowed redirect urls for the oidc client.
+# Second argument is a comma separated list of allowed redirect urls for the oidc client.
 # The resulting client id will be $SITE_ID-public
 function generate_public_oidc_client() {
     local delimiter=$'\x1E'
@@ -253,8 +253,8 @@ function generate_public_oidc_client() {
     fi
 }
 
-# First argument is the variable name that the client secret will be avalible at.
-# Second argument is a comma seperated list of allowed redirect urls for the oidc client.
+# First argument is the variable name that the client secret will be available at.
+# Second argument is a comma separated list of allowed redirect urls for the oidc client.
 # The resulting client id will be $SITE_ID-private
 function generate_private_oidc_client() {
     local delimiter=$'\x1E'
@@ -293,11 +293,15 @@ capitalize_first_letter() {
     echo "$capitalized"
 }
 
+# Generate a string of ',' separated string of redirect urls relative to $HOST.
+# $1 will be appended to the url
+# If the host looks like dev-jan.inet.dkfz-heidelberg.de it will generate urls with dev-jan and the original $HOST as url Authorities
 generate_redirect_urls(){
     local redirect_urls="https://${HOST}$1"
     local host_without_proxy="$(echo "$HOST" | cut -d '.' -f1)"
-    if [[ "$HOST" != "$host_without_proxy" ]]; then
-      redirect_urls+=",https://$host_without_proxy$port$1"
+    # Only append second url if its different and the host is not an ip address
+    if [[ "$HOST" != "$host_without_proxy" && ! "$HOST" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        redirect_urls+=",https://$host_without_proxy$1"
     fi
     echo "$redirect_urls"
 }

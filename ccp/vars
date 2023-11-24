@@ -15,6 +15,12 @@ ENABLE_TEILER=true
 
 KEYCLOAK_USER_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})"
 KEYCLOAK_ADMIN_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})_Verwalter"
+KEYCLOAK_PRIVATE_CLIENT_ID=${SITE_ID}-private
+KEYCLOAK_PUBLIC_CLIENT_ID=${SITE_ID}-public
+# TODO: Change Keycloak Realm to productive. "test-realm-01" is only for testing
+KEYCLOAK_REALM="test-realm-01"
+KEYCLOAK_URL="https://login.verbis.dkfz.de"
+KEYCLOAK_TOKEN_GROUP="groups"
 POSTGRES_TAG=15.6-alpine
 
 for module in $PROJECT/modules/*.sh

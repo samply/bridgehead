@@ -7,8 +7,10 @@ services:
     environment:
       #DEFAULT_USER: "rstudio" # This line is kept for informational purposes
       PASSWORD: "${RSTUDIO_ADMIN_PASSWORD}"
-      DISABLE_AUTH: "true" # TODO: Connect R-Studio with central Keycloak. Currently using Traefik authentication.
+      DISABLE_AUTH: "true" # https://rocker-project.org/images/versioned/rstudio.html#how-to-use
+      # TODO: Connect R-Studio with central Keycloak. Currently using Traefik authentication.
       HTTP_RELATIVE_PATH: "/rstudio"
+      ALL_PROXY: "http://forward_proxy:3128" # https://rocker-project.org/use/networking.html
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rstudio_ccp.rule=PathPrefix(`/rstudio`)"

@@ -52,6 +52,50 @@ services:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
 
+  traefik:
+    labels:
+      - "traefik.http.middlewares.oidcAuth.forwardAuth.address=http://oauth2_proxy:4180/"
+      - "traefik.http.middlewares.oidcAuth.forwardAuth.trustForwardHeader=true"
+      - "traefik.http.middlewares.oidcAuth.forwardAuth.authResponseHeaders=X-Auth-Request-Access-Token,Authorization"
+
+
+  oauth2_proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy
+    container_name: bridgehead_oauth2_proxy
+    command: >-
+      --allowed-group=/${KEYCLOAK_USER_GROUP}
+      --oidc-groups-claim=${KEYCLOAK_GROUP_CLAIM}
+      --auth-logging=true
+      --whitelist-domain=${HOST}
+      --http-address="0.0.0.0:4180"
+      --reverse-proxy=true
+      --upstream="static://202"
+      --email-domain="*"
+      --cookie-name="_BRIDGEHEAD_oauth2"
+      --cookie-secret="${OAUTH2_PROXY_SECRET}"
+      --cookie-expire="12h"
+      --cookie-secure="true"
+      --cookie-httponly="true"
+      #OIDC settings
+      --provider="keycloak-oidc"
+      --provider-display-name="VerbIS Login"
+      --client-id="${KEYCLOAK_PRIVATE_CLIENT_ID}"
+      --client-secret="${OIDC_CLIENT_SECRET}"
+      --redirect-url="https://${HOST}/oauth2/callback"
+      --oidc-issuer-url="${KEYCLOAK_ISSUER_URL}"
+      --scope="openid email profile"
+      --code-challenge-method="S256"
+      --skip-provider-button=true
+      #X-Forwarded-Header settings - true/false depending on your needs
+      --pass-basic-auth=true
+      --pass-user-headers=false
+      --pass-access-token=false
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.oauth2_proxy.rule=Host(`${HOST}`) && PathPrefix(`/oauth2`, `/oauth2/callback`)"
+      - "traefik.http.services.oauth2_proxy.loadbalancer.server.port=4180"
+      - "traefik.http.routers.oauth2_proxy.tls=true"
+
 
 volumes:
   blaze-data:

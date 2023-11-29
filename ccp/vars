@@ -20,7 +20,8 @@ KEYCLOAK_PUBLIC_CLIENT_ID=${SITE_ID}-public
 # TODO: Change Keycloak Realm to productive. "test-realm-01" is only for testing
 KEYCLOAK_REALM="${KEYCLOAK_REALM:-test-realm-01}"
 KEYCLOAK_URL="https://login.verbis.dkfz.de"
-KEYCLOAK_TOKEN_GROUP="groups"
+KEYCLOAK_ISSUER_URL="${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}"
+KEYCLOAK_GROUP_CLAIM="groups"
 POSTGRES_TAG=15.6-alpine
 
 for module in $PROJECT/modules/*.sh

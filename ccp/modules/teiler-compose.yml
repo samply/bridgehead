@@ -42,6 +42,8 @@ services:
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
       TEILER_DASHBOARD_HTTP_RELATIVE_PATH: "/ccp-teiler-dashboard"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
+      TEILER_USER: "TEILER_USER"
+      TEILER_ADMIN: "TEILER_ADMIN"
 
   teiler-backend:
     image: docker.verbis.dkfz.de/ccp/dktk-teiler-backend:latest

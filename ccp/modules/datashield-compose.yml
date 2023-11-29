@@ -8,12 +8,14 @@ services:
       #DEFAULT_USER: "rstudio" # This line is kept for informational purposes
       PASSWORD: "${RSTUDIO_ADMIN_PASSWORD}" # It is required, even if the authentication is disabled
       DISABLE_AUTH: "true" # https://rocker-project.org/images/versioned/rstudio.html#how-to-use
+      # TODO: Connect R-Studio with central Keycloak. Currently using Traefik authentication.
       HTTP_RELATIVE_PATH: "/rstudio"
       ALL_PROXY: "http://forward_proxy:3128" # https://rocker-project.org/use/networking.html
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rstudio_ccp.rule=PathPrefix(`/rstudio`)"
       - "traefik.http.services.rstudio_ccp.loadbalancer.server.port=8787"
+      - "traefik.http.routers.rstudio_ccp.tls=true"
       - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
       - "traefik.http.routers.rstudio_ccp.tls=true"
       - "traefik.http.routers.rstudio_ccp.middlewares=oidcAuth,rstudio_ccp_strip"

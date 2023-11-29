@@ -1,0 +1,56 @@
+version: '3.7'
+
+services:
+  cbioportal:
+    #image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
+    image: dktk-cbioportal
+    container_name: bridgehead-cbioportal
+    environment:
+      generate_password: ${MYSQL_PASSWORD}
+    depends_on:
+     - cbioportal-database
+     - cbioportal-session
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cbioportal.rule=PathPrefix(`/cbioportal`)"
+      - "traefik.http.services.cbioportal.loadbalancer.server.port=8080"
+      - "traefik.http.routers.cbioportal.tls=true"
+      - "traefik.http.routers.cbioportal-update.rule=PathPrefix(`/cbioportal-update`)"
+      - "traefik.http.services.cbioportal-update.loadbalancer.server.port=8001"
+      - "traefik.http.routers.cbioportal-update.tls=true"
+
+  cbioportal-database:
+    image: mysql:5.7
+    container_name: bridgehead-cbioportal-database
+    environment:
+      MYSQL_DATABASE: cbioportal
+      MYSQL_USER: cbio_user
+      generate_password: ${MYSQL_PASSWORD}
+      generate_root_password: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+# TODO: Move sql files to image. Are they really necessary?    
+     - ./cbioportal-cgds.sql:/docker-entrypoint-initdb.d/cgds.sql:ro
+     - ./cbioportal-seed.sql.gz:/docker-entrypoint-initdb.d/seed.sql.gz:ro
+     - /var/cache/bridgehead/ccp/cbioportal_mysql_data:/var/lib/mysql
+
+  cbioportal-session:
+    image: cbioportal/session-service:0.6.1
+    container_name: bridgehead-cbioportal-session
+    environment:
+      SERVER_PORT: 5000
+      JAVA_OPTS: -Dspring.data.mongodb.uri=mongodb://cbioportal-session-database:27017/session-service
+    depends_on:
+      - cbioportal-session-database
+
+  cbioportal-session-database:
+    image: mongo:4.2
+    container_name: bridgehead-cbioportal-session-database
+    environment:
+      MONGO_INITDB_DATABASE: session_service
+    volumes:
+      - /var/cache/bridgehead/ccp/cbioportal_mongo_data:/data/db
+
+  
+volumes:
+  cbioportal_mysql_data:
+  cbioportal_mongo_data:

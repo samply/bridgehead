@@ -2,11 +2,10 @@ version: '3.7'
 
 services:
   cbioportal:
-    #image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
-    image: dktk-cbioportal
+    image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
     container_name: bridgehead-cbioportal
     environment:
-      generate_password: ${MYSQL_PASSWORD}
+      DB_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}
     depends_on:
      - cbioportal-database
      - cbioportal-session
@@ -25,13 +24,13 @@ services:
     environment:
       MYSQL_DATABASE: cbioportal
       MYSQL_USER: cbio_user
-      generate_password: ${MYSQL_PASSWORD}
-      generate_root_password: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${CBIOPORTAL_DB_ROOT_PASSWORD}
     volumes:
+      - /var/cache/bridgehead/ccp/cbioportal_mysql_data:/var/lib/mysql
 # TODO: Move sql files to image. Are they really necessary?    
-     - ./cbioportal-cgds.sql:/docker-entrypoint-initdb.d/cgds.sql:ro
-     - ./cbioportal-seed.sql.gz:/docker-entrypoint-initdb.d/seed.sql.gz:ro
-     - /var/cache/bridgehead/ccp/cbioportal_mysql_data:/var/lib/mysql
+      - ./cbioportal-cgds.sql:/docker-entrypoint-initdb.d/cgds.sql:ro
+      - ./cbioportal-seed.sql.gz:/docker-entrypoint-initdb.d/seed.sql.gz:ro
 
   cbioportal-session:
     image: cbioportal/session-service:0.6.1

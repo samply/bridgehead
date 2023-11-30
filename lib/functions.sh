@@ -240,33 +240,41 @@ add_basic_auth_user() {
    sed -i "/^$NAME/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
 }
 
-SECRET_SYNC_ARGS=${SECRET_SYNC_ARGS:-""}
-# First argument is the variable name that will be generated it will not have a value.
-# Second argument is a comma separated list of allowed redirect urls for the oidc client.
-# The resulting client id will be $SITE_ID-public
-function generate_public_oidc_client() {
-    local delimiter=$'\x1E'
-    if [[ $SECRET_SYNC_ARGS == "" ]]; then
-        SECRET_SYNC_ARGS+="OIDC:$1:public;$2"
+OIDC_PUBLIC_REDIRECT_URLS=${OIDC_PUBLIC_REDIRECT_URLS:-""}
+OIDC_PRIVATE_REDIRECT_URLS=${OIDC_PRIVATE_REDIRECT_URLS:-""}
+
+# Add a redirect url to the public oidc client of the bridgehead
+function add_public_oidc_redirect_url() {
+    if [[ $OIDC_PUBLIC_REDIRECT_URLS == "" ]]; then
+        OIDC_PUBLIC_REDIRECT_URLS+="$(generate_redirect_urls $1)"
     else 
-        SECRET_SYNC_ARGS+="${delimiter}OIDC:$1:public;$2"
+        OIDC_PUBLIC_REDIRECT_URLS+=",$(generate_redirect_urls $1)"
     fi
 }
 
-# First argument is the variable name that the client secret will be available at.
-# Second argument is a comma separated list of allowed redirect urls for the oidc client.
-# The resulting client id will be $SITE_ID-private
-function generate_private_oidc_client() {
-    local delimiter=$'\x1E'
-    if [[ $SECRET_SYNC_ARGS == "" ]]; then
-        SECRET_SYNC_ARGS+="OIDC:$1:private;$2"
+# Add a redirect url to the private oidc client of the bridgehead
+function add_private_oidc_redirect_url() {
+    if [[ $OIDC_PRIVATE_REDIRECT_URLS == "" ]]; then
+        OIDC_PRIVATE_REDIRECT_URLS+="$(generate_redirect_urls $1)"
     else 
-        SECRET_SYNC_ARGS+="${delimiter}OIDC:$1:private;$2"
+        OIDC_PRIVATE_REDIRECT_URLS+=",$(generate_redirect_urls $1)"
     fi
 }
 
 function sync_secrets() {
-    if [[ $SECRET_SYNC_ARGS == "" ]]; then
+    local delimiter=$'\x1E'
+    local secret_sync_args=""
+    if [[ $OIDC_PRIVATE_REDIRECT_URLS != "" ]]; then
+        secret_sync_args="OIDC:OIDC_CLIENT_SECRET:private;$OIDC_PRIVATE_REDIRECT_URLS"
+    fi
+    if [[ $OIDC_PRIVATE_REDIRECT_URLS != "" ]]; then
+        if [[ $secret_sync_args == "" ]]; then
+            secret_sync_args="OIDC:OIDC_PUBLIC:public;$OIDC_PUBLIC_REDIRECT_URLS"
+        else 
+            secret_sync_args+="${delimiter}OIDC:$1:public;$OIDC_PUBLIC_REDIRECT_URLS"
+        fi
+    fi
+    if [[ $secret_sync_args == "" ]]; then
         return
     fi
     mkdir -p /var/cache/bridgehead/secrets/
@@ -282,7 +290,7 @@ function sync_secrets() {
         -e PROXY_ID=$PROXY_ID \
         -e BROKER_URL=$BROKER_URL \
         -e OIDC_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
-        -e SECRET_DEFINITIONS=$SECRET_SYNC_ARGS \
+        -e SECRET_DEFINITIONS=$secret_sync_args \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
     set -a # Export variables as environment variables
     source /var/cache/bridgehead/secrets/*
@@ -298,7 +306,7 @@ capitalize_first_letter() {
 # Generate a string of ',' separated string of redirect urls relative to $HOST.
 # $1 will be appended to the url
 # If the host looks like dev-jan.inet.dkfz-heidelberg.de it will generate urls with dev-jan and the original $HOST as url Authorities
-generate_redirect_urls(){
+function generate_redirect_urls(){
     local redirect_urls="https://${HOST}$1"
     local host_without_proxy="$(echo "$HOST" | cut -d '.' -f1)"
     # Only append second url if its different and the host is not an ip address

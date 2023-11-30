@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   mtba:
-    image: docker.verbis.dkfz.de/cache/samply/mtba:1.0.0
+    image: docker.verbis.dkfz.de/cache/samply/mtba:develop
     container_name: bridgehead-mtba
     environment:
       BLAZE_STORE_URL: http://blaze:8080
@@ -32,8 +32,6 @@ services:
       - "traefik.http.services.mtba_ccp.loadbalancer.server.port=8480"
       - "traefik.http.routers.mtba_ccp.tls=true"
 
-      - "traefik.http.middlewares.mtba_ccp_strip.stripprefix.prefixes=/mtba"
-      - "traefik.http.routers.mtba_ccp.middlewares=mtba_ccp_strip, auth"
     volumes:
       - /var/cache/bridgehead/ccp/mtba/input:/app/input
       - /var/cache/bridgehead/ccp/mtba/persist:/app/persist

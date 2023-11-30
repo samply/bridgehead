@@ -81,7 +81,7 @@ services:
       --provider-display-name="VerbIS Login"
       --client-id="${KEYCLOAK_PRIVATE_CLIENT_ID}"
       --client-secret="${OIDC_CLIENT_SECRET}"
-      --redirect-url="https://${HOST}/oauth2/callback"
+      --redirect-url="https://${HOST}${OAUTH2_CALLBACK}"
       --oidc-issuer-url="${KEYCLOAK_ISSUER_URL}"
       --scope="openid email profile"
       --code-challenge-method="S256"

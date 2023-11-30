@@ -22,7 +22,9 @@ KEYCLOAK_REALM="${KEYCLOAK_REALM:-test-realm-01}"
 KEYCLOAK_URL="https://login.verbis.dkfz.de"
 KEYCLOAK_ISSUER_URL="${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}"
 KEYCLOAK_GROUP_CLAIM="groups"
+OAUTH2_CALLBACK=/oauth2/callback
 
+add_private_oidc_redirect_url "${OAUTH2_CALLBACK}"
 
 for module in $PROJECT/modules/*.sh
 do

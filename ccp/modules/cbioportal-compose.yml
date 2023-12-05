@@ -1,25 +1,26 @@
 version: '3.7'
 
 services:
-  cbioportal:
-    image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
-    container_name: bridgehead-cbioportal
-    environment:
-      DB_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}
-    depends_on:
-     - cbioportal-database
-     - cbioportal-session
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cbioportal.rule=PathPrefix(`/cbioportal`)"
-      - "traefik.http.services.cbioportal.loadbalancer.server.port=8080"
-      - "traefik.http.routers.cbioportal.tls=true"
-      - "traefik.http.routers.cbioportal-update.rule=PathPrefix(`/cbioportal-update`)"
-      - "traefik.http.services.cbioportal-update.loadbalancer.server.port=8001"
-      - "traefik.http.routers.cbioportal-update.tls=true"
+#  cbioportal:
+#    image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
+#    container_name: bridgehead-cbioportal
+#    environment:
+#      DB_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}
+#    depends_on:
+#     - cbioportal-database
+#     - cbioportal-session
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.cbioportal.rule=PathPrefix(`/cbioportal`)"
+#      - "traefik.http.services.cbioportal.loadbalancer.server.port=8080"
+#      - "traefik.http.routers.cbioportal.tls=true"
+#      - "traefik.http.routers.cbioportal-update.rule=PathPrefix(`/cbioportal-update`)"
+#      - "traefik.http.services.cbioportal-update.loadbalancer.server.port=8001"
+#      - "traefik.http.routers.cbioportal-update.tls=true"
 
   cbioportal-database:
-    image: mysql:5.7
+    #image: docker.verbis.dkfz.de/ccp/dktk-cbioportal-database:latest
+    image: dktk-cbioportal-database
     container_name: bridgehead-cbioportal-database
     environment:
       MYSQL_DATABASE: cbioportal
@@ -27,10 +28,7 @@ services:
       MYSQL_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${CBIOPORTAL_DB_ROOT_PASSWORD}
     volumes:
-      - /var/cache/bridgehead/ccp/cbioportal_mysql_data:/var/lib/mysql
-# TODO: Move sql files to image. Are they really necessary?    
-      - ./cbioportal-cgds.sql:/docker-entrypoint-initdb.d/cgds.sql:ro
-      - ./cbioportal-seed.sql.gz:/docker-entrypoint-initdb.d/seed.sql.gz:ro
+      - /var/cache/bridgehead/ccp/cbioportal_db_data:/var/lib/mysql
 
   cbioportal-session:
     image: cbioportal/session-service:0.6.1
@@ -47,9 +45,4 @@ services:
     environment:
       MONGO_INITDB_DATABASE: session_service
     volumes:
-      - /var/cache/bridgehead/ccp/cbioportal_mongo_data:/data/db
-
-  
-volumes:
-  cbioportal_mysql_data:
-  cbioportal_mongo_data:
+      - /var/cache/bridgehead/ccp/cbioportal_session_db_data:/data/db

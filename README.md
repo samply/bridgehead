@@ -327,10 +327,8 @@ The FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/<
 
 Note that if you don't have a DNS certificate for the Bridgehead, you will need to allow an insecure connection. E.g. with curl, use the `-k` flag.
 
-The storage space on your hard drive will depend on the number of FHIR resources that you intend to generate. As a general rule of thumb:
-```
-Disk space (kilobytes) = 2 * (5 * <number of patients> + <number of samples>)
-```
+The storage space on your hard drive will depend on the number of FHIR resources that you intend to generate. This will be the sum of the number of patients/subjects, the number of samples, the number of conditions/diseases and the number of observations. As a general rule of thumb, you can assume that each resource will consume about 2 kilobytes of disk space.
+
 For more information on Blaze performance, please refer to [import performance](https://github.com/samply/blaze/blob/master/docs/performance/import.md).
 
 #### ETL for BBMRI and GBA

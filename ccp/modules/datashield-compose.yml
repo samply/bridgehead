@@ -17,6 +17,8 @@ services:
       - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
       - "traefik.http.routers.rstudio_ccp.tls=true"
       - "traefik.http.routers.rstudio_ccp.middlewares=oidcAuth,rstudio_ccp_strip"
+    networks:
+      - rstudio
 
   opal:
     container_name: bridgehead-opal
@@ -88,6 +90,18 @@ services:
       - beam-proxy
     volumes:
       - /tmp/bridgehead/opal-map/:/map/:ro
+    networks:
+      - default
+      - rstudio
+  
+  traefik:
+    networks:
+      - default
+      - rstudio
+  forward_proxy:
+    networks:
+      - default
+      - rstudio
 
   beam-proxy:
     environment:
@@ -98,3 +112,6 @@ secrets:
     file: /tmp/bridgehead/opal-cert.pem
   opal-key.pem:
     file: /tmp/bridgehead/opal-key.pem
+
+networks:
+  rstudio:

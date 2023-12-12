@@ -51,6 +51,8 @@ services:
       KEYCLOAK_ADMIN_GROUP: "${KEYCLOAK_ADMIN_GROUP}"
       TOKEN_MANAGER_PASSWORD: "${TOKEN_MANAGER_OPAL_PASSWORD}"
       EXPORTER_PASSWORD: "${EXPORTER_OPAL_PASSWORD}"
+      BEAM_APP_ID: token-manager.${PROXY_ID}
+      BEAM_SECRET: ${TOKEN_MANAGER_SECRET}
     secrets:
       - opal-cert.pem
       - opal-key.pem
@@ -106,6 +108,7 @@ services:
   beam-proxy:
     environment:
       APP_datashield-connect_KEY: ${DATASHIELD_CONNECT_SECRET}
+      APP_token-manager_KEY: ${TOKEN_MANAGER_SECRET}
 
 secrets:
   opal-cert.pem:

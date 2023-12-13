@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   teiler-orchestrator:
-    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:develop
+    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:latest
     container_name: bridgehead-teiler-orchestrator
     labels:
       - "traefik.enable=true"
@@ -19,7 +19,7 @@ services:
       HTTP_RELATIVE_PATH: "/ccp-teiler"
 
   teiler-dashboard:
-    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:latest
     container_name: bridgehead-teiler-dashboard
     labels:
       - "traefik.enable=true"

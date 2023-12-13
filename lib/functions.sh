@@ -133,8 +133,8 @@ fixPermissions() {
 	CHOWN=$(which chown)
 	sudo $CHOWN -R bridgehead /etc/bridgehead /srv/docker/bridgehead
     set +e
-    sudo $CHOWN -R --silent /var/cache/bridgehead
-    sudo $CHOWN -R --silent /tmp/bridgehead
+    sudo $CHOWN -R --silent bridgehead /var/cache/bridgehead
+    sudo $CHOWN -R --silent bridgehead /tmp/bridgehead
     set -e
 }
 

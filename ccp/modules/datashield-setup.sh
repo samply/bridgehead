@@ -13,7 +13,7 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
   if [ ! -e /tmp/bridgehead/opal-cert.pem ]; then
     mkdir -p /tmp/bridgehead/
     chown -R bridgehead:docker /tmp/bridgehead/
-    openssl req -x509 -newkey rsa:4096 -nodes -keyout /tmp/bridgehead/opal-key.pem -out /tmp/bridgehead/opal-cert.pem -days 3650 -subj "/CN=${HOST:-opal}/C=DE"
+    openssl req -x509 -newkey rsa:4096 -nodes -keyout /tmp/bridgehead/opal-key.pem -out /tmp/bridgehead/opal-cert.pem -days 3650 -subj "/CN=opal/C=DE"
     chmod g+r /tmp/bridgehead/opal-key.pem
   fi
   mkdir -p /tmp/bridgehead/opal-map
@@ -25,7 +25,7 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
   })}' ./$PROJECT/modules/datashield-mappings.json > /tmp/bridgehead/opal-map/central.json
   jq -n '[{
     "external": "'"$SITE_ID"':443",
-    "internal": "opal:8080",
+    "internal": "opal:8443",
     "allowed": input | map("datashield-connect.\(.).'"$BROKER_ID"'")
   }]' ./$PROJECT/modules/datashield-mappings.json > /tmp/bridgehead/opal-map/local.json
   chown -R bridgehead:docker /tmp/bridgehead/

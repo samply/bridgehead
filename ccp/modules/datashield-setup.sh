@@ -20,11 +20,11 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
   jq -n '{"sites": input | map({
     "name": .,
     "id": .,
-    "virtualhost": "opal-\(.):443",
+    "virtualhost": "\(.):443",
     "beamconnect": "datashield-connect.\(.).'"$BROKER_ID"'"
   })}' ./$PROJECT/modules/datashield-mappings.json > /tmp/bridgehead/opal-map/central.json
   jq -n '[{
-    "external": "'"$SITE_ID"'",
+    "external": "'"$SITE_ID"':443",
     "internal": "opal:8080",
     "allowed": input | map("datashield-connect.\(.).'"$BROKER_ID"'")
   }]' ./$PROJECT/modules/datashield-mappings.json > /tmp/bridgehead/opal-map/local.json

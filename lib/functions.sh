@@ -283,7 +283,7 @@ function sync_secrets() {
     fi
     mkdir -p /var/cache/bridgehead/secrets/
     touch /var/cache/bridgehead/secrets/oidc
-    chown -R bridgehead:docker /var/cache/bridgehead
+    chown -R bridgehead:docker /var/cache/bridgehead/secrets
     # The oidc provider will need to be switched based on the project at some point I guess
     docker run --rm \
         -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \

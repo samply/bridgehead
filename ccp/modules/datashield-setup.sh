@@ -17,13 +17,17 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
     chmod g+r /tmp/bridgehead/opal-key.pem
   fi
   mkdir -p /tmp/bridgehead/opal-map
-  jq -n --argfile input ./$PROJECT/modules/datashield-mappings.json '
-    [{
-        "external": "opal-'"$SITE_ID"'",
-        "internal": "opal:8080",
-        "allowed": [$input.sites[].id | "datashield-connect.\(.).broker.ccp-it.dktk.dkfz.de"]
-    }]' >/tmp/bridgehead/opal-map/local.json
-  cp -f ./$PROJECT/modules/datashield-mappings.json /tmp/bridgehead/opal-map/central.json
+  jq -n '{"sites": input | map({
+    "name": .,
+    "id": .,
+    "virtualhost": "opal-\(.):443",
+    "beamconnect": "datashield-connect.\(.).'"$BROKER_ID"'"
+  })}' ./$PROJECT/modules/datashield-mappings.json > /tmp/bridgehead/opal-map/central.json
+  jq -n '[{
+    "external": "'"$SITE_ID"'",
+    "internal": "opal:8080",
+    "allowed": input | map("datashield-connect.\(.).'"$BROKER_ID"'")
+  }]' ./$PROJECT/modules/datashield-mappings.json > /tmp/bridgehead/opal-map/local.json
   chown -R bridgehead:docker /tmp/bridgehead/
   add_private_oidc_redirect_url "/opal/*"
 fi

@@ -71,6 +71,8 @@ services:
       TEILER_DASHBOARD_EN_URL: "https://${HOST}/ccp-teiler-dashboard/en"
       CENTRAX_URL: "${CENTRAXX_URL}"
       HTTP_PROXY: "http://forward_proxy:3128"
+      ENABLE_MTBA: "${ENABLE_MTBA}"
+      ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
     secrets:
       - ccp.conf
 

@@ -1,22 +1,29 @@
 version: '3.7'
 
 services:
-#  cbioportal:
-#    image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
-#    container_name: bridgehead-cbioportal
-#    environment:
-#      DB_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}
-#    depends_on:
-#     - cbioportal-database
-#     - cbioportal-session
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.cbioportal.rule=PathPrefix(`/cbioportal`)"
-#      - "traefik.http.services.cbioportal.loadbalancer.server.port=8080"
-#      - "traefik.http.routers.cbioportal.tls=true"
-#      - "traefik.http.routers.cbioportal-update.rule=PathPrefix(`/cbioportal-update`)"
-#      - "traefik.http.services.cbioportal-update.loadbalancer.server.port=8001"
-#      - "traefik.http.routers.cbioportal-update.tls=true"
+  cbioportal:
+    #image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
+    image: dktk-cbioportal
+    container_name: bridgehead-cbioportal
+    environment:
+      DB_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}
+      HTTP_RELATIVE_PATH: "/cbioportal"
+      UPLOAD_HTTP_RELATIVE_PATH: "/cbioportal-upload"
+    depends_on:
+      - cbioportal-database
+      - cbioportal-session
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cbioportal.rule=PathPrefix(`/cbioportal`)"
+      - "traefik.http.routers.cbioportal.service=cbioportal
+      - "traefik.http.services.cbioportal.loadbalancer.server.port=8080"
+      - "traefik.http.routers.cbioportal.tls=true"
+      - "traefik.http.routers.cbioportal-upload.rule=PathPrefix(`/cbioportal-upload`)"    
+      - "traefik.http.routers.cbioportal-upload.service=cbioportal-upload
+      - "traefik.http.routers.cbioportal-upload.tls=true"
+      - "traefik.http.services.cbioportal-upload.loadbalancer.server.port=8001" 
+      
+      
 
   cbioportal-database:
     #image: docker.verbis.dkfz.de/ccp/dktk-cbioportal-database:latest

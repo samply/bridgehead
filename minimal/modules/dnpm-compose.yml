@@ -18,7 +18,7 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/ccp/root-new.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
 
   dnpm-beam-connect:
     depends_on: [ dnpm-beam-proxy ]
@@ -32,9 +32,11 @@ services:
       LOCAL_TARGETS_FILE: "./conf/connect_targets.json"
       HTTP_PROXY: http://forward_proxy:3128
       HTTPS_PROXY: http://forward_proxy:3128
-      NO_PROXY: dnpm-beam-proxy,dnpm-backend
+      NO_PROXY: dnpm-beam-proxy,dnpm-backend, host.docker.internal
       RUST_LOG: ${RUST_LOG:-info}
       NO_AUTH: "true"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - /etc/bridgehead/dnpm/local_targets.json:/conf/connect_targets.json:ro
       - /etc/bridgehead/dnpm/central_targets.json:/conf/central_targets.json:ro

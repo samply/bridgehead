@@ -53,6 +53,7 @@ services:
       EXPORTER_PASSWORD: "${EXPORTER_OPAL_PASSWORD}"
       BEAM_APP_ID: token-manager.${PROXY_ID}
       BEAM_SECRET: ${TOKEN_MANAGER_SECRET}
+      BEAM_DATASHIELD_PROXY: request-manager
     secrets:
       - opal-cert.pem
       - opal-key.pem

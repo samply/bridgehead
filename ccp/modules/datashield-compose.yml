@@ -59,8 +59,6 @@ services:
     secrets:
       - opal-cert.pem
       - opal-key.pem
-    tmpfs:
-      - /srv
 
   opal-db:
     container_name: bridgehead-opal-db

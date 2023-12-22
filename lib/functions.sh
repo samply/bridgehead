@@ -334,7 +334,7 @@ generate_password(){
   local random_special=${special:$n:1}
 
   local combined_text="This is a salt string to generate one consistent password for ${seed_text}. It is not required to be secret."
-  local main_password=$(echo "${combined_text}" | openssl rsautl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" 2> /dev/null | base64 | head -c 26)
+  local main_password=$(echo "${combined_text}" | openssl rsautl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" 2> /dev/null | base64 | head -c 26 | sed 's/\//A/g')
 
   echo "${main_password}${random_digit}${random_upper}${random_lower}${random_special}"
 }

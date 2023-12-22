@@ -3,8 +3,8 @@
 if [ "$ENABLE_DATASHIELD" == true ]; then
   log INFO "DataSHIELD setup detected -- will start DataSHIELD services."
   OVERRIDE+=" -f ./$PROJECT/modules/datashield-compose.yml"
-  EXPORTER_OPAL_PASSWORD="$(generate_simple_password \"exporter in Opal\")"
-  TOKEN_MANAGER_OPAL_PASSWORD="$(generate_simple_password \"Token Manager in Opal\")"
+  EXPORTER_OPAL_PASSWORD="$(generate_password \"exporter in Opal\")"
+  TOKEN_MANAGER_OPAL_PASSWORD="$(generate_password \"Token Manager in Opal\")"
   OPAL_DB_PASSWORD="$(echo \"Opal DB\" | generate_simple_password)"
   OPAL_ADMIN_PASSWORD="$(generate_password \"admin password for Opal\")"
   RSTUDIO_ADMIN_PASSWORD="$(generate_password \"admin password for R-Studio\")"

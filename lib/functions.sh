@@ -317,15 +317,31 @@ function generate_redirect_urls(){
     echo "$redirect_urls"
 }
 
+# This password contains at least one special char, a random number and a random upper and lower case letter
 generate_password(){
   local seed_text="$1"
-  local random_digit=$(openssl rand -hex 1 | head -c 1)
-  local random_upper=$(openssl rand -base64 3 | tr -dc 'A-Z' | head -c 1)
-  local random_lower=$(openssl rand -base64 3 | tr -dc 'a-z' | head -c 1)
-  local random_special=$(echo '@#$%^&+=' | fold -w1 | shuf -n1)
+  local seed_num=$(awk 'BEGIN{FS=""} NR==1{print $10}' /etc/bridgehead/pki/${SITE_ID}.priv.pem | od -An -tuC)
+  local nums="1234567890"
+  local n=$(echo "$seed_num" | awk '{print $1 % 10}')
+  local random_digit=${nums:$n:1}
+  local n=$(echo "$seed_num" | awk '{print $1 % 26}')
+  local upper="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  local lower="abcdefghijklmnopqrstuvwxyz"
+  local random_upper=${upper:$n:1}
+  local random_lower=${lower:$n:1}
+  local n=$(echo "$seed_num" | awk '{print $1 % 8}')
+  local special='@#$%^&+='
+  local random_special=${special:$n:1}
 
   local combined_text="This is a salt string to generate one consistent password for ${seed_text}. It is not required to be secret."
-  local main_password=$(echo "${combined_text}" | openssl rsautl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" | base64 | head -c 26)
+  local main_password=$(echo "${combined_text}" | openssl rsautl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" 2> /dev/null | base64 | head -c 26)
 
   echo "${main_password}${random_digit}${random_upper}${random_lower}${random_special}"
+}
+
+# This password only contains alphanumeric characters
+generate_simple_password(){
+  local seed_text="$1"
+  local combined_text="This is a salt string to generate one consistent password for ${seed_text}. It is not required to be secret."
+  echo "${combined_text}" | openssl rsautl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" 2> /dev/null | base64 | head -c 26 | sed 's/[+\/]/A/g'
 }

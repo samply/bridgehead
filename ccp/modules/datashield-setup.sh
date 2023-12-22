@@ -3,13 +3,13 @@
 if [ "$ENABLE_DATASHIELD" == true ]; then
   log INFO "DataSHIELD setup detected -- will start DataSHIELD services."
   OVERRIDE+=" -f ./$PROJECT/modules/datashield-compose.yml"
-  EXPORTER_OPAL_PASSWORD="$(generate_password \"exporter in Opal\")"
-  TOKEN_MANAGER_OPAL_PASSWORD="$(generate_password \"Token Manager in Opal\")"
-  OPAL_DB_PASSWORD="$(echo \"This is a salt string to generate one consistent password for Opal. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
+  EXPORTER_OPAL_PASSWORD="$(generate_simple_password \"exporter in Opal\")"
+  TOKEN_MANAGER_OPAL_PASSWORD="$(generate_simple_password \"Token Manager in Opal\")"
+  OPAL_DB_PASSWORD="$(echo \"Opal DB\" | generate_simple_password)"
   OPAL_ADMIN_PASSWORD="$(generate_password \"admin password for Opal\")"
   RSTUDIO_ADMIN_PASSWORD="$(generate_password \"admin password for R-Studio\")"
-  DATASHIELD_CONNECT_SECRET="$(echo \"This is a salt string to generate one consistent password as the DataShield Connect secret. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
-  TOKEN_MANAGER_SECRET="$(echo \"This is a salt string to generate one consistent password as the Token Manger secret. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
+  DATASHIELD_CONNECT_SECRET="$(echo \"DataShield Connect\" | generate_simple_password)"
+  TOKEN_MANAGER_SECRET="$(echo \"Token Manager\" | generate_simple_password)"
   if [ ! -e /tmp/bridgehead/opal-cert.pem ]; then
     mkdir -p /tmp/bridgehead/
     chown -R bridgehead:docker /tmp/bridgehead/

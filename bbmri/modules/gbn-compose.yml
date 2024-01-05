@@ -32,5 +32,5 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/bbmri/modules/gbn.root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/bbmri/modules/${GBN_ROOT_CERT}.root.crt.pem:/conf/root.crt.pem:ro
 

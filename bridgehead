@@ -66,6 +66,9 @@ loadVars() {
 	detectCompose
 	setHostname
 	setupProxy
+
+	# Set some project-independent default values
+	: ${ENVIRONMENT:=production}
 }
 
 case "$ACTION" in

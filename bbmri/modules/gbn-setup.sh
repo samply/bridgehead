@@ -7,16 +7,16 @@ if [ "${ENABLE_GBN}" == "true" ]; then
 	# The environment needs to be defined in /etc/bridgehead
 	case "$ENVIRONMENT" in
 		"production")
-			GBN_BROKER_ID=broker.bbmri.samply.de
+			GBN_BROKER_ID=broker.bbmri.de
 			GBN_ROOT_CERT=gbn
 			;;
 		"test")
-			GBN_BROKER_ID=broker-test.bbmri-test.samply.de
+			GBN_BROKER_ID=broker-test.bbmri.de
 			GBN_ROOT_CERT=gbn.test
 			;;
 		*)
 			report_error 6 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
-			GBN_BROKER_ID=broker.bbmri.samply.de
+			GBN_BROKER_ID=broker.bbmri.de
 			GBN_ROOT_CERT=gbn
 			;;
 	esac

@@ -11,7 +11,7 @@ if [ "${ENABLE_GBN}" == "true" ]; then
 			GBN_ROOT_CERT=gbn
 			;;
 		"test")
-			GBN_BROKER_ID=broker-test.bbmri.de
+			GBN_BROKER_ID=broker.test.bbmri.de
 			GBN_ROOT_CERT=gbn.test
 			;;
 		*)

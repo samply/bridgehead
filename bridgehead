@@ -72,14 +72,14 @@ loadVars() {
 
 	case "$ENVIRONMENT" in
 		"production")
-			FOCUS_TAG=main
+			export FOCUS_TAG=main
 			;;
 		"test")
-			FOCUS_TAG=develop
+			export FOCUS_TAG=develop
 			;;
 		*)
 			report_error 7 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
-			FOCUS_TAG=main
+			export FOCUS_TAG=main
 			;;
 	esac
 }

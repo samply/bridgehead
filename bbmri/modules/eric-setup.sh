@@ -7,17 +7,17 @@ if [ "${ENABLE_ERIC}" == "true" ]; then
 	# The environment needs to be defined in /etc/bridgehead
 	case "$ENVIRONMENT" in
 		"production")
-			ERIC_BROKER_ID=broker.bbmri.samply.de
-			ERIC_ROOT_CERT=eric
+			export ERIC_BROKER_ID=broker.bbmri.samply.de
+			export ERIC_ROOT_CERT=eric
 			;;
 		"test")
-			ERIC_BROKER_ID=broker-test.bbmri-test.samply.de
-			ERIC_ROOT_CERT=eric.test
+			export ERIC_BROKER_ID=broker-test.bbmri-test.samply.de
+			export ERIC_ROOT_CERT=eric.test
 			;;
 		*)
 			report_error 6 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
-			ERIC_BROKER_ID=broker.bbmri.samply.de
-			ERIC_ROOT_CERT=eric
+			export ERIC_BROKER_ID=broker.bbmri.samply.de
+			export ERIC_ROOT_CERT=eric
 			;;
 	esac
 

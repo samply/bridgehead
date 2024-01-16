@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   focus-gbn:
-    image: docker.verbis.dkfz.de/cache/samply/focus:main
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
     container_name: bridgehead-focus-gbn
     environment:
       API_KEY: ${GBN_FOCUS_BEAM_SECRET_SHORT}
@@ -32,5 +32,5 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/bbmri/modules/gbn.root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/bbmri/modules/${GBN_ROOT_CERT}.root.crt.pem:/conf/root.crt.pem:ro
 

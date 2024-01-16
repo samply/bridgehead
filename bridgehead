@@ -66,6 +66,22 @@ loadVars() {
 	detectCompose
 	setHostname
 	setupProxy
+
+	# Set some project-independent default values
+	: ${ENVIRONMENT:=production}
+
+	case "$ENVIRONMENT" in
+		"production")
+			export FOCUS_TAG=main
+			;;
+		"test")
+			export FOCUS_TAG=develop
+			;;
+		*)
+			report_error 7 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
+			export FOCUS_TAG=main
+			;;
+	esac
 }
 
 case "$ACTION" in

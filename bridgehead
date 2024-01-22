@@ -83,7 +83,6 @@ loadVars() {
 			export FOCUS_TAG=main
 			;;
 	esac
-    sync_secrets
 }
 
 case "$ACTION" in
@@ -91,6 +90,7 @@ case "$ACTION" in
 		loadVars
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
+        sync_secrets
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;

@@ -34,6 +34,10 @@ This repository is the starting point for any information and tools you will nee
 
 ## Requirements
 
+The data protection group at your site will probably want to know exactly what our software does with patient data, and you may need to get their approval before you are allowed to install a Bridgehead. To help you with this, we have provided some data protection concepts:
+
+- [Germany](https://www.bbmri.de/biobanking/it/infrastruktur/datenschutzkonzept/)
+
 ### Hardware
 
 Hardware requirements strongly depend on the specific use-cases of your network as well as on the data it is going to serve. Most use-cases are well-served with the following configuration:

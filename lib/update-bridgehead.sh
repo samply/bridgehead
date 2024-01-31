@@ -86,7 +86,7 @@ done
 # Check docker updates
 log "INFO" "Checking for updates to running docker images ..."
 docker_updated="false"
-for IMAGE in $($COMPOSE -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE config --images); do
+for IMAGE in $($COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE config --images); do
   log "INFO" "Checking for Updates of Image: $IMAGE"
   if docker pull $IMAGE | grep "Downloaded newer image"; then
     CHANGE="Image $IMAGE updated."

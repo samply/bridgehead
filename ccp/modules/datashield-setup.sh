@@ -12,9 +12,7 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
   TOKEN_MANAGER_SECRET="$(echo \"Token Manager\" | generate_simple_password)"
   if [ ! -e /tmp/bridgehead/opal-cert.pem ]; then
     mkdir -p /tmp/bridgehead/
-    chown -R bridgehead:docker /tmp/bridgehead/
     openssl req -x509 -newkey rsa:4096 -nodes -keyout /tmp/bridgehead/opal-key.pem -out /tmp/bridgehead/opal-cert.pem -days 3650 -subj "/CN=opal/C=DE"
-    chmod g+r /tmp/bridgehead/opal-key.pem
   fi
   mkdir -p /tmp/bridgehead/opal-map
   sites="$(cat ./$PROJECT/modules/datashield-mappings.json)"
@@ -29,6 +27,10 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
     "internal": "opal:8443",
     "allowed": input | map("datashield-connect.\(.).'"$BROKER_ID"'")
   }]' > /tmp/bridgehead/opal-map/local.json
-  chown -R bridgehead:docker /tmp/bridgehead/*
+  if [ "$USER" == "root" ]; then
+    chown -R bridgehead:docker /tmp/bridgehead
+    chmod g+wr /tmp/bridgehead/opal-map/*
+    chmod g+r /tmp/bridgehead/opal-key.pem
+  fi
   add_private_oidc_redirect_url "/opal/*"
 fi

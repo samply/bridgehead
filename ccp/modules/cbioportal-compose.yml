@@ -2,8 +2,8 @@ version: '3.7'
 
 services:
   cbioportal:
-    image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
-    # image: dktk-cbioportal
+    # image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
+    image: dktk-cbioportal
     container_name: bridgehead-cbioportal
     environment:
       DB_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}

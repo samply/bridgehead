@@ -50,7 +50,8 @@ services:
 
 
   teiler-backend:
-    image: docker.verbis.dkfz.de/ccp/dktk-teiler-backend:latest
+    # image: docker.verbis.dkfz.de/ccp/dktk-teiler-backend:latest
+    image: dktk-teiler-backend
     container_name: bridgehead-teiler-backend
     labels:
       - "traefik.enable=true"

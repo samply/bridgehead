@@ -279,19 +279,23 @@ function sync_secrets() {
     fi
     mkdir -p /var/cache/bridgehead/secrets/
     touch /var/cache/bridgehead/secrets/oidc
+    $COMPOSE -p secret_sync -f ./minimal/docker-compose.yml up -d forward_proxy
     # The oidc provider will need to be switched based on the project at some point I guess
     docker run --rm \
+        --network secret_sync_default \
         -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \
         -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
         -v /srv/docker/bridgehead/$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
         -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
         -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
-        -e HTTPS_PROXY=$HTTPS_PROXY_FULL_URL \
+        -e NO_PROXY=localhost,127.0.0.1 \
+        -e ALL_PROXY=http://forward_proxy:3128 \
         -e PROXY_ID=$PROXY_ID \
         -e BROKER_URL=$BROKER_URL \
         -e OIDC_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
         -e SECRET_DEFINITIONS=$secret_sync_args \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
+    $COMPOSE -p secret_sync -f ./minimal/docker-compose.yml down forward_proxy
     set -a # Export variables as environment variables
     source /var/cache/bridgehead/secrets/*
     set +a # Export variables in the regular way

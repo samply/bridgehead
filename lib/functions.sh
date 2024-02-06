@@ -346,5 +346,5 @@ generate_simple_password(){
 }
 
 docker_jq() {
-    docker run --rm -i docker.verbis.dkfz.de/cache/jqlang/jq:1.7 "$@"
+    docker run --rm -i docker.verbis.dkfz.de/cache/jqlang/jq:latest "$@"
 }

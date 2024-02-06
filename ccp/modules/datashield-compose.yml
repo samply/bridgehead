@@ -112,7 +112,7 @@ services:
       APP_token-manager_KEY: ${TOKEN_MANAGER_SECRET}
 
   # TODO: Allow users of group /DataSHIELD and KEYCLOAK_USER_GROUP at the same time:
-  # Maybe a solution would be (https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview/):
+  # Maybe a solution would be (https://oauth2-proxy.github.io/oauth2-proxy/configuration/oauth_provider):
   # --allowed-groups=/DataSHIELD,KEYCLOAK_USER_GROUP
   oauth2_proxy:
     image: quay.io/oauth2-proxy/oauth2-proxy
@@ -150,6 +150,9 @@ services:
       - "traefik.http.routers.oauth2_proxy.rule=Host(`${HOST}`) && PathPrefix(`/oauth2`, `/oauth2/callback`)"
       - "traefik.http.services.oauth2_proxy.loadbalancer.server.port=4180"
       - "traefik.http.routers.oauth2_proxy.tls=true"
+    environment:
+      http_proxy: "http://forward_proxy:3128"
+      https_proxy: "http://forward_proxy:3128"
 
 secrets:
   opal-cert.pem:

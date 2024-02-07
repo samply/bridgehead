@@ -279,7 +279,11 @@ function sync_secrets() {
     fi
     mkdir -p /var/cache/bridgehead/secrets/
     touch /var/cache/bridgehead/secrets/oidc
-    $COMPOSE -p secret_sync -f ./minimal/docker-compose.yml up -d forward_proxy
+    local override=""
+	if [ -f "minimal/docker-compose.override.yml" ]; then
+		override+=" -f ./minimal/docker-compose.override.yml"
+	fi
+    $COMPOSE -p secret_sync -f ./minimal/docker-compose.yml $override up -d forward_proxy
     # The oidc provider will need to be switched based on the project at some point I guess
     docker run --rm \
         --network secret_sync_default \

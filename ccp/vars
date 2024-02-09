@@ -14,6 +14,7 @@ ENABLE_LOGIN=true
 ENABLE_TEILER=true
 #ENABLE_DATASHIELD=true
 
+POSTGRES_TAG=15.6-alpine
 
 for module in $PROJECT/modules/*.sh
 do

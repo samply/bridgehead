@@ -108,6 +108,8 @@ Site names should adhere to the following conventions:
 
 ### GitLab repository
 
+You can skip this section if you are doing an ECDC/EHDS2 installation.
+
 In order to be able to install, you will need to have your own repository in GitLab for your site's configuration settings. This allows automated updates of the Bridgehead software.
 
 To request a new repository, please contact your research network administration or send an email to one of the project specific addresses:
@@ -130,7 +132,20 @@ During the installation, your Bridgehead will download your site's configuration
 
 ### Base Installation
 
-First, download your site specific configuration repository:
+Clone the bridgehead repository:
+```shell
+sudo mkdir -p /srv/docker/
+sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
+```
+
+If this is ECDC/EHDS2 installation, copy the configuration file to the required location:
+```shell
+sudo mkdir -p /etc/bridgehead/
+sudo cp bbmri/modules/bbmri.conf /etc/bridgehead/
+sudo chown -R bridgehead:root /etc/bridgehead
+```
+
+If this is not an ECDC/EHDS2 installation, then download your site specific configuration repository:
 ```shell
 sudo mkdir -p /etc/bridgehead/
 sudo git clone <REPO_URL_FROM_EMAIL> /etc/bridgehead/
@@ -148,12 +163,6 @@ Pay special attention to:
 - OPERATOR_FIRST_NAME
 - OPERATOR_LAST_NAME
 - OPERATOR_EMAIL
-
-Clone the bridgehead repository:
-```shell
-sudo mkdir -p /srv/docker/
-sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
-```
 
 Then, run the installation script:
 

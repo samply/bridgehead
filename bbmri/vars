@@ -4,6 +4,9 @@
 # Makes only sense for German Biobanks
 : ${ENABLE_GBN:=false}
 
+# Makes only sense for EHDS2 project
+: ${ENABLE_EHDS2:=false}
+
 FOCUS_RETRY_COUNT=32
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
@@ -20,6 +23,10 @@ if [ -n "$GBN_SUPPORT_EMAIL" ]; then
     SUPPORT_EMAIL=$GBN_SUPPORT_EMAIL
 fi
 
+if [ -n "$EHDS2_SUPPORT_EMAIL" ]; then
+    SUPPORT_EMAIL=$EHDS2_SUPPORT_EMAIL
+fi
+
 function do_enroll {
     COUNT=0
     if [ "$ENABLE_ERIC" == "true" ]; then
@@ -28,6 +35,10 @@ function do_enroll {
     fi
     if [ "$ENABLE_GBN" == "true" ]; then
         do_enroll_inner $GBN_PROXY_ID $GBN_SUPPORT_EMAIL
+        COUNT=$((COUNT+1))
+    fi
+    if [ "$ENABLE_EHDS2" == "true" ]; then
+        do_enroll_inner $EHDS2_PROXY_ID $EHDS2_SUPPORT_EMAIL
         COUNT=$((COUNT+1))
     fi
     if [ $COUNT -ge 2 ]; then

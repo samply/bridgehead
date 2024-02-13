@@ -138,11 +138,13 @@ sudo mkdir -p /srv/docker/
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
 ```
 
-If this is ECDC/EHDS2 installation, copy the configuration file to the required location:
+If this is an ECDC/EHDS2 installation, switch to the ```ehds2``` branch and copy the configuration file to the required location:
 ```shell
+cd /srv/docker/bridgehead
+sudo git checkout ehds2
 sudo mkdir -p /etc/bridgehead/
 sudo cp bbmri/modules/bbmri.conf /etc/bridgehead/
-sudo chown -R bridgehead:root /etc/bridgehead
+sudo chown -R bridgehead:root . /etc/bridgehead
 ```
 
 If this is not an ECDC/EHDS2 installation, then download your site specific configuration repository:

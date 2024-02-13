@@ -120,7 +120,7 @@ services:
     image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:latest
     container_name: bridgehead_oauth2_proxy
     command: >-
-      --allowed-group=/DataSHIELD
+      --allowed-group=DataSHIELD
       --oidc-groups-claim=${KEYCLOAK_GROUP_CLAIM}
       --auth-logging=true
       --whitelist-domain=${HOST}

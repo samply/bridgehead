@@ -282,7 +282,7 @@ function sync_secrets() {
     docker run --rm \
         -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \
         -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
-        -v ./$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
+        -v /srv/docker/bridgehead/$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
         -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
         -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
         -e NO_PROXY=localhost,127.0.0.1 \

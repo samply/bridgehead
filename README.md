@@ -142,11 +142,14 @@ If this is an ECDC/EHDS2 installation, switch to the ```ehds2``` branch and copy
 ```shell
 cd /srv/docker/bridgehead
 sudo git checkout ehds2
+mkdir test data
 sudo mkdir -p /etc/bridgehead/
 sudo cp bbmri/modules/bbmri.conf /etc/bridgehead/
 sudo chown -R bridgehead:root . /etc/bridgehead
 sudo vi /etc/bridgehead/bbmri.conf # Modify to include national node name and admin contact details
 ```
+
+For an ECDC/EHDS2 installation, you will also need to copy your data in a ```.csv``` file to ```/srv/docker/bridgehead/data```.
 
 If this is not an ECDC/EHDS2 installation, then download your site specific configuration repository:
 ```shell

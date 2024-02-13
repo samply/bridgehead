@@ -46,8 +46,8 @@ services:
     restart: on-failure
     command: sh -c "sleep 60 && rm -rf /app/test/* && java -jar transFAIR.jar && tail -f /dev/null"
     volumes:
-      - /home/gerhard/Projects/EHDS2/PrototypeSpring2024/test/:/app/test/
-      - /home/gerhard/Projects/EHDS2/PrototypeSpring2024/Data/:/app/data/
+      - ./test/:/app/test/
+      - ./data/:/app/data/
 
   # Report on the data pushed to Blaze by TransFAIR
   blazectl:

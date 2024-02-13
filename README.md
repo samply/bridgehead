@@ -145,6 +145,7 @@ sudo git checkout ehds2
 sudo mkdir -p /etc/bridgehead/
 sudo cp bbmri/modules/bbmri.conf /etc/bridgehead/
 sudo chown -R bridgehead:root . /etc/bridgehead
+sudo vi /etc/bridgehead/bbmri.conf # Modify to include national node name and admin contact details
 ```
 
 If this is not an ECDC/EHDS2 installation, then download your site specific configuration repository:
@@ -187,7 +188,7 @@ sudo ./bridgehead enroll <PROJECT>
 Note: if you are doing an ECDC/EHDS2 installation, you will need to perform the Beam certificate signing yourself. Do not send an email to either of the email addreesses suggested by the bridgehead enroll procedure. Instead, log on to the VM where Beam is running and perform the following (you will need root permissions):
 ```shell
 cd /srv/docker/beam-broker
-sudo vi csr/ecdc-bridgehead-<national node name>.csr
+sudo vi csr/ecdc-bridgehead-<national node name>.csr # Copy and paste the certificate printed during the enroll
 sudo pki-scripts/managepki sign --csr-file csr/ecdc-bridgehead-<national node name>.csr --common-name=ecdc-bridgehead-<national node name>.broker.bbmri.samply.de
 ```
 

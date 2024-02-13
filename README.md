@@ -149,7 +149,7 @@ sudo chown -R bridgehead:root . /etc/bridgehead
 sudo vi /etc/bridgehead/bbmri.conf # Modify to include national node name and admin contact details
 ```
 
-For an ECDC/EHDS2 installation, you will also need to copy your data in a ```.csv``` file to ```/srv/docker/bridgehead/data```.
+For an ECDC/EHDS2 installation, you will also need to copy your data in a ```.csv``` formatted file to ```/srv/docker/bridgehead/data```. Make sure it is readable by all.
 
 If this is not an ECDC/EHDS2 installation, then download your site specific configuration repository:
 ```shell

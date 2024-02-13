@@ -40,13 +40,11 @@ services:
     image: samply/transfair
     environment:
       FHIR_INPUT_URL: "http://source_blaze:8080/fhir"
-      FHIR_OUTPUT_URL: "http://bridgehead-bbmri-blaze:8080/fhir"
+      FHIR_OUTPUT_URL: "http://blaze:8080/fhir"
       PROFILE: "amr2fhir"
-      #WRITE_BUNDLES_TO_FILE: "true"
       AMR_FILE_PATH: "/app/data"
     restart: on-failure
     command: sh -c "sleep 60 && rm -rf /app/test/* && java -jar transFAIR.jar && tail -f /dev/null"
-    #command: sh -c "rm -rf /app/test/* && java -jar transFAIR.jar"
     volumes:
       - /home/gerhard/Projects/EHDS2/PrototypeSpring2024/test/:/app/test/
       - /home/gerhard/Projects/EHDS2/PrototypeSpring2024/Data/:/app/data/
@@ -55,5 +53,5 @@ services:
   blazectl:
     container_name: blazectl
     image: samply/blazectl
-    command: sh -c "sleep 300 && echo Source store && blazectl --server http://bridgehead-bbmri-blaze:8080/fhir count-resources && tail -f /dev/null"
+    command: sh -c "sleep 300 && echo Source store && blazectl --server http://blaze:8080/fhir count-resources && tail -f /dev/null"
 

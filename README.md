@@ -182,6 +182,19 @@ sudo ./bridgehead enroll <PROJECT>
 
 ... and follow the instructions on the screen. Please send your default Collection ID and the display name of your site together with the certificate request when you enroll. You should then be prompted to do the next step:
 
+Note: if you are doing an ECDC/EHDS2 installation, you will need to perform the Beam certificate signing yourself. Do not send an email to either of the email addreesses suggested by the bridgehead enroll procedure. Instead, log on to the VM where Beam is running and perform the following (you will need root permissions):
+```shell
+cd /srv/docker/beam-broker
+sudo vi csr/ecdc-bridgehead-<national node name>.csr
+sudo pki-scripts/managepki sign --csr-file csr/ecdc-bridgehead-<national node name>.csr --common-name=ecdc-bridgehead-<national node name>.broker.bbmri.samply.de
+```
+
+You can check that the Bridgehead has connected to Beam with the following command:
+```shell
+curl -v https://ecdc-vm-ehds-test1.swedencentral.cloudapp.azure.com/v1/health/proxies
+
+```
+
 ### Starting and stopping your Bridgehead
 
 If you followed the above steps, your Bridgehead should already be configured to autostart (via systemd). If you would like to start/stop manually:

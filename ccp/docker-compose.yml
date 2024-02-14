@@ -54,8 +54,8 @@ services:
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
   
   bridgehead-monitoring:
-    image: samply/bridgehead-monitoring:latest
-    container_name: bridgehead-monitoring
+    image: docker.verbis.dkfz.de/cache/samply/bridgehead-monitoring:latest
+    container_name: bridgehead-monitoring-ccp
     environment:
       - BEAM_ID=monitoring.${PROXY_ID}
       - BEAM_API_KEY=${MONITORING_BEAM_SECRET_SHORT}

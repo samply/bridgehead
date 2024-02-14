@@ -36,7 +36,7 @@ services:
       - /srv/docker/bridgehead/bbmri/modules/eric.root.crt.pem:/conf/root.crt.pem:ro
 
   bridgehead-monitoring:
-    image: samply/bridgehead-monitoring:latest
+    image: docker.verbis.dkfz.de/cache/samply/bridgehead-monitoring:latest
     container_name: bridgehead-monitoring-eric
     environment:
       - BEAM_ID=monitoring.${ERIC_PROXY_ID}

@@ -49,9 +49,3 @@ services:
       - ./test/:/app/test/
       - ./data/:/app/data/
 
-  # Report on the data pushed to Blaze by TransFAIR
-  blazectl:
-    container_name: blazectl
-    image: samply/blazectl
-    command: sh -c "sleep 300 && echo Source store && blazectl --server http://blaze:8080/fhir count-resources && tail -f /dev/null"
-

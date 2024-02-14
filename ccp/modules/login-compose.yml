@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   login-db:
-    image: docker.verbis.dkfz.de/cache/postgres:15.4-alpine
+    image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
     container_name: bridgehead-login-db
     environment:
       POSTGRES_USER: "keycloak"

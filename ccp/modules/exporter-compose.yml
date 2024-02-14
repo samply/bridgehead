@@ -27,7 +27,7 @@ services:
       - "/var/cache/bridgehead/ccp/exporter-files:/app/exporter-files/output"
 
   exporter-db:
-    image: docker.verbis.dkfz.de/cache/postgres:15.4-alpine
+    image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
     container_name: bridgehead-ccp-exporter-db
     environment:
       POSTGRES_USER: "exporter"

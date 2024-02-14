@@ -102,6 +102,11 @@ case "$ACTION" in
 		bk_is_running
 		exit $?
 		;;
+	logs)
+		loadVars
+		shift 2
+		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE logs -f $@
+		;;
 	update)
 		loadVars
 		exec ./lib/update-bridgehead.sh $PROJECT

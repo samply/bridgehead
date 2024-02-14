@@ -145,7 +145,6 @@ sudo git checkout ehds2
 sudo mkdir test data
 sudo mkdir -p /etc/bridgehead/
 sudo cp bbmri/modules/bbmri.conf /etc/bridgehead/
-sudo chown -R bridgehead:root . /etc/bridgehead
 sudo vi /etc/bridgehead/bbmri.conf # Modify to include national node name and admin contact details
 ```
 

@@ -154,7 +154,8 @@ services:
       http_proxy: "http://forward_proxy:3128"
       https_proxy: "http://forward_proxy:3128"
     depends_on:
-      - forward_proxy
+      forward_proxy:
+        condition: service_healthy
 
 secrets:
   opal-cert.pem:

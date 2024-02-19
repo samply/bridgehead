@@ -15,7 +15,7 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
     openssl req -x509 -newkey rsa:4096 -nodes -keyout /tmp/bridgehead/opal-key.pem -out /tmp/bridgehead/opal-cert.pem -days 3650 -subj "/CN=opal/C=DE"
   fi
   mkdir -p /tmp/bridgehead/opal-map
-  sites="$(cat ./$PROJECT/modules/datashield-mappings.json)"
+  sites="$(cat ./$PROJECT/modules/datashield-sites.json)"
   echo "$sites" | docker_jq -n --args '{"sites": input | map({
     "name": .,
     "id": .,

@@ -31,3 +31,7 @@ services:
       - "traefik.http.routers.dnpm-connect.middlewares=dnpm-connect-strip"
       - "traefik.http.services.dnpm-connect.loadbalancer.server.port=8062"
       - "traefik.http.routers.dnpm-connect.tls=true"
+
+  dnpm-echo:
+    image: docker.verbis.dkfz.de/cache/samply/bridgehead-echo:latest
+    container_name: bridgehead-dnpm-echo

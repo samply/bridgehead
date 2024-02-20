@@ -50,6 +50,7 @@ loadVars() {
 		source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
 	fi
 	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
+	setBlazeMemoryCap
 	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 	set +a
 

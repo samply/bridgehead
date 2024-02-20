@@ -155,6 +155,16 @@ setHostname() {
 	fi
 }
 
+# blaze memory cap should be approximately a quarter of the system memory
+# the memory cap will be applied to both the java heap size and db clock cache
+setBlazeMemoryCap() {
+	if [ -z "$BLAZE_MEMORY_CAP" ]; then
+	   system_memory=$(grep MemTotal /proc/meminfo | grep -Po '\d+');
+	   system_memory_in_mb=$(("$system_memory"/1024));
+	   export BLAZE_MEMORY_CAP=$(("$system_memory_in_mb"/4));
+	fi
+}
+
 # Takes 1) The Backup Directory Path 2) The name of the Service to be backuped
 # Creates 3 Backups: 1) For the past seven days 2) For the current month and 3) for each calendar week
 createEncryptedPostgresBackup(){

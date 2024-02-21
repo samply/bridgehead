@@ -13,4 +13,10 @@ if [ -n "${ENABLE_DNPM}" ]; then
 		log DEBUG "No Broker for clock check set; using $DNPM_BROKER_URL"
 	fi
 	DNPM_PROXY_ID="${SITE_ID}.${DNPM_BROKER_ID}"
+	# If the DNPM_NO_PROXY variable is set, prefix it with a comma (as it gets added to a comma separated list)
+	if [ -n "${DNPM_NO_PROXY}" ]; then
+		DNPM_ADDITIONAL_NO_PROXY=",${DNPM_NO_PROXY}"
+	else
+		DNPM_ADDITIONAL_NO_PROXY=""
+	fi
 fi

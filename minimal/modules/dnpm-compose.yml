@@ -35,9 +35,11 @@ services:
       NO_PROXY: dnpm-beam-proxy,dnpm-backend, host.docker.internal
       RUST_LOG: ${RUST_LOG:-info}
       NO_AUTH: "true"
+      TLS_CA_CERTIFICATES_DIR: ./conf/trusted-ca-certs
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /etc/bridgehead/dnpm/local_targets.json:/conf/connect_targets.json:ro
       - /etc/bridgehead/dnpm/central_targets.json:/conf/central_targets.json:ro
     labels:

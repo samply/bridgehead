@@ -159,8 +159,7 @@ setHostname() {
 # the memory cap will be applied to both the java heap size and db clock cache
 setBlazeMemoryCap() {
 	if [ -z "$BLAZE_MEMORY_CAP" ]; then
-	   system_memory=$(grep MemTotal /proc/meminfo | grep -Po '\d+');
-	   system_memory_in_mb=$(("$system_memory"/1024));
+	   system_memory_in_mb=$(free -m | grep 'Mem:' | awk '{print $2}');
 	   export BLAZE_MEMORY_CAP=$(("$system_memory_in_mb"/4));
 	fi
 }

@@ -6,6 +6,7 @@ services:
     container_name: bridgehead-dnpm-backend
     environment:
       - ZPM_SITE=${ZPM_SITE}
+      - N_RANDOM_FILES=${DNPM_SYNTH_NUM}
     volumes:
       - /etc/bridgehead/dnpm:/bwhc_config:ro
       - ${DNPM_DATA_DIR}:/bwhc_data

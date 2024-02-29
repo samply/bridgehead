@@ -14,14 +14,15 @@ if [ -n "${ENABLE_DNPM_NODE}" ]; then
 		log ERROR "Mandatory variable DNPM_DATA_DIR not defined!"
 		exit 1
 	fi
-			if grep -q 'traefik.http.routers.landing.rule=PathPrefix(`/landing`)' /srv/docker/bridgehead/minimal/docker-compose.override.yml 2>/dev/null; then
-				echo "Override of landing page url already in place"
-			else
-				echo "Adding override of landing page url"
-				if [ -f /srv/docker/bridgehead/minimal/docker-compose.override.yml ]; then
-					echo -e '  landing:\n    labels:\n      - "traefik.http.routers.landing.rule=PathPrefix(`/landing`)"' >> /srv/docker/bridgehead/minimal/docker-compose.override.yml
-				else
-					echo -e 'version: "3.7"\nservices:\n  landing:\n    labels:\n      - "traefik.http.routers.landing.rule=PathPrefix(`/landing`)"' >> /srv/docker/bridgehead/minimal/docker-compose.override.yml
-				fi
-			fi
+	DNPM_SYNTH_NUM=${DNPM_SYNTH_NUM:-0}
+	if grep -q 'traefik.http.routers.landing.rule=PathPrefix(`/landing`)' /srv/docker/bridgehead/minimal/docker-compose.override.yml 2>/dev/null; then
+		echo "Override of landing page url already in place"
+	else
+		echo "Adding override of landing page url"
+		if [ -f /srv/docker/bridgehead/minimal/docker-compose.override.yml ]; then
+			echo -e '  landing:\n    labels:\n      - "traefik.http.routers.landing.rule=PathPrefix(`/landing`)"' >> /srv/docker/bridgehead/minimal/docker-compose.override.yml
+		else
+			echo -e 'version: "3.7"\nservices:\n  landing:\n    labels:\n      - "traefik.http.routers.landing.rule=PathPrefix(`/landing`)"' >> /srv/docker/bridgehead/minimal/docker-compose.override.yml
+		fi
+	fi
 fi

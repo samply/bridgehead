@@ -67,29 +67,30 @@ log INFO "Checking network access ($BROKER_URL_FOR_PREREQ) ..."
 source /etc/bridgehead/${PROJECT}.conf
 source ${PROJECT}/vars
 
-set +e
-SERVERTIME="$(https_proxy=$HTTPS_PROXY_FULL_URL curl -m 5 -s -I $BROKER_URL_FOR_PREREQ 2>&1 | grep -i -e '^Date: ' | sed -e 's/^Date: //i')"
-RET=$?
-set -e
-if [ $RET -ne 0 ]; then
-	log WARN "Unable to connect to Samply.Beam broker at $BROKER_URL_FOR_PREREQ. Please check your proxy settings.\nThe currently configured proxy was \"$HTTPS_PROXY_URL\". This error is normal when using proxy authentication."
-	log WARN "Unable to check clock skew due to previous error."
-else
-	log INFO "Checking clock skew ..."
+if [ "${PROJECT}" != "minimal" ]; then
+  set +e
+  SERVERTIME="$(https_proxy=$HTTPS_PROXY_FULL_URL curl -m 5 -s -I $BROKER_URL_FOR_PREREQ 2>&1 | grep -i -e '^Date: ' | sed -e 's/^Date: //i')"
+  RET=$?
+  set -e
+  if [ $RET -ne 0 ]; then
+	  log WARN "Unable to connect to Samply.Beam broker at $BROKER_URL_FOR_PREREQ. Please check your proxy settings.\nThe currently configured proxy was \"$HTTPS_PROXY_URL\". This error is normal when using proxy authentication."
+  	log WARN "Unable to check clock skew due to previous error."
+  else
+	  log INFO "Checking clock skew ..."
 
-	SERVERTIME_AS_TIMESTAMP=$(date --date="$SERVERTIME" +%s)
-	MYTIME=$(date +%s)
-	SKEW=$(($SERVERTIME_AS_TIMESTAMP - $MYTIME))
-	SKEW=$(echo $SKEW | awk -F- '{print $NF}')
-	SYNCTEXT="For example, consider entering a correct NTP server (e.g. your institution's Active Directory Domain Controller in /etc/systemd/timesyncd.conf (option NTP=) and restart systemd-timesyncd."
-	if [ $SKEW -ge 300 ]; then
-		report_error 5 "Your clock is not synchronized (${SKEW}s off). This will cause Samply.Beam's certificate will fail. Please setup time synchronization. $SYNCTEXT"
-		exit 1
-	elif [ $SKEW -ge 60 ]; then
-		log WARN "Your clock is more than a minute off (${SKEW}s). Consider syncing to a time server. $SYNCTEXT"
-	fi
+    SERVERTIME_AS_TIMESTAMP=$(date --date="$SERVERTIME" +%s)
+	  MYTIME=$(date +%s)
+	  SKEW=$(($SERVERTIME_AS_TIMESTAMP - $MYTIME))
+	  SKEW=$(echo $SKEW | awk -F- '{print $NF}')
+	  SYNCTEXT="For example, consider entering a correct NTP server (e.g. your institution's Active Directory Domain Controller in /etc/systemd/timesyncd.conf (option NTP=) and restart systemd-timesyncd."
+	  if [ $SKEW -ge 300 ]; then
+		  report_error 5 "Your clock is not synchronized (${SKEW}s off). This will cause Samply.Beam's certificate will fail. Please setup time synchronization. $SYNCTEXT"
+		  exit 1
+	  elif [ $SKEW -ge 60 ]; then
+		  log WARN "Your clock is more than a minute off (${SKEW}s). Consider syncing to a time server. $SYNCTEXT"
+	  fi
+  fi
 fi
-
 checkPrivKey() {
   if [ -e /etc/bridgehead/pki/${SITE_ID}.priv.pem ]; then
     log INFO "Success - private key found."
@@ -100,7 +101,7 @@ checkPrivKey() {
   return 0
 }
 
-if [[ "$@" =~ "noprivkey" ]]; then
+if [[ "$@" =~ "noprivkey" ||  "${PROJECT}" != "minimal" ]]; then
   log INFO "Skipping check for private key for now."
 else
   checkPrivKey || exit 1

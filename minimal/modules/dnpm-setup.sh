@@ -6,7 +6,7 @@ if [ -n "${ENABLE_DNPM}" ]; then
 
 	# Set variables required for Beam-Connect
 	DNPM_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
-	DNPM_BROKER_ID="broker.ccp-it.dktk.dkfz.de"
+	DNPM_BROKER_ID="dnpm-aachen-broker.samply.de"
 	DNPM_BROKER_URL="https://${DNPM_BROKER_ID}"
 	if [ -z ${BROKER_URL_FOR_PREREQ+x} ]; then
 		BROKER_URL_FOR_PREREQ=$DNPM_BROKER_URL

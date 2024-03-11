@@ -133,11 +133,11 @@ fixPermissions() {
 	CHOWN=$(which chown)
 	sudo $CHOWN -R bridgehead /etc/bridgehead /srv/docker/bridgehead
 	if [ -d "/tmp/bridgehead" ]; then # Used by datashield
-		sudo chown -R bridgehead:docker "/tmp/bridgehead"
-    fi
+		sudo $CHOWN -R bridgehead:docker "/tmp/bridgehead"
+	fi
 	if [ -d "/var/cache/bridgehead" ]; then # Used by the teiler
-		sudo chown -R bridgehead:docker "/var/cache/bridgehead"
-    fi
+		sudo $CHOWN -R bridgehead:docker "/var/cache/bridgehead"
+	fi
 }
 
 source lib/monitoring.sh

@@ -52,12 +52,6 @@ services:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
 
-  traefik:
-    labels:
-      - "traefik.http.middlewares.oidcAuth.forwardAuth.address=http://oauth2_proxy:4180/"
-      - "traefik.http.middlewares.oidcAuth.forwardAuth.trustForwardHeader=true"
-      - "traefik.http.middlewares.oidcAuth.forwardAuth.authResponseHeaders=X-Auth-Request-Access-Token,Authorization"
-
 
 volumes:
   blaze-data:

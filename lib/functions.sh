@@ -155,12 +155,25 @@ setHostname() {
 	fi
 }
 
-# blaze memory cap should be approximately a quarter of the system memory
-# the memory cap will be applied to both the java heap size and db clock cache
-setBlazeMemoryCap() {
+# This function optimizes the usage of memory through blaze, according to the official performance tuning guide:
+#   https://github.com/samply/blaze/blob/master/docs/tuning-guide.md
+# Short summary of the adjustments made:
+# - set blaze memory cap to a quarter of the system memory
+# - set db block cache size to a quarter of the system memory
+# - limit resource count allowed in blaze to 1,25M per 4GB available system memory
+optimizeBlazeMemoryUsage() {
 	if [ -z "$BLAZE_MEMORY_CAP" ]; then
 	   system_memory_in_mb=$(free -m | grep 'Mem:' | awk '{print $2}');
 	   export BLAZE_MEMORY_CAP=$(("$system_memory_in_mb"/4));
+	fi
+	if [ -z "$BLAZE_RESOURCE_CACHE_CAP" ]; then
+		available_system_memory_chuncks=$((BLAZE_MEMORY_CAP / 1000))
+		if [ $available_system_memory_chuncks -eq 0 ]; then
+			log WARN "Only ${BLAZE_MEMORY_CAP} system memory available for Blaze. If your Blaze stores more than 128000 fhir ressources it will run significally slower."
+			export BLAZE_RESOURCE_CACHE_CAP=128000;
+		else
+			export BLAZE_RESOURCE_CACHE_CAP=$((available_system_memory_chuncks * 312500))
+		fi
 	fi
 }
 

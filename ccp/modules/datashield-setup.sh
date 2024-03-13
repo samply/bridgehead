@@ -1,6 +1,9 @@
 #!/bin/bash -e
 
 if [ "$ENABLE_DATASHIELD" == true ]; then
+  # HACK: This only works because exporter-setup.sh and teiler-setup.sh are sourced after datashield-setup.sh
+  ENABLE_EXPORTER=true
+  ENABLE_TEILER=true
   log INFO "DataSHIELD setup detected -- will start DataSHIELD services."
   OVERRIDE+=" -f ./$PROJECT/modules/datashield-compose.yml"
   EXPORTER_OPAL_PASSWORD="$(generate_password \"exporter in Opal\")"

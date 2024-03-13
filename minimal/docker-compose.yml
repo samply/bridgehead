@@ -42,6 +42,8 @@ services:
       - /var/spool/squid
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/docker/custom-certs/:ro
+    healthcheck:
+      test: ["CMD", "sleep", "1"]
 
   landing:
     container_name: bridgehead-landingpage
@@ -55,5 +57,3 @@ services:
       HOST: ${HOST}
       PROJECT: ${PROJECT}
       SITE_NAME: ${SITE_NAME}
-
-

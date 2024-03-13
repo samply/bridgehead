@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   teiler-orchestrator:
-    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:develop
+    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:latest
     container_name: bridgehead-teiler-orchestrator
     labels:
       - "traefik.enable=true"
@@ -31,9 +31,10 @@ services:
     environment:
       DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE}"
       TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
-      KEYCLOAK_URL: "https://${HOST}/login"
-      KEYCLOAK_REALM: "teiler"
-      KEYCLOAK_CLIENT_ID: "teiler"
+      OIDC_URL: "${OIDC_URL}"
+      OIDC_REALM: "${OIDC_REALM}"
+      OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
+      OIDC_TOKEN_GROUP: "${OIDC_GROUP_CLAIM}"
       TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
       TEILER_ADMIN_EMAIL: "${OPERATOR_EMAIL}"
       TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
@@ -42,8 +43,11 @@ services:
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
       TEILER_DASHBOARD_HTTP_RELATIVE_PATH: "/ccp-teiler-dashboard"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
-      TEILER_USER: "TEILER_USER"
-      TEILER_ADMIN: "TEILER_ADMIN"
+      TEILER_USER: "${OIDC_USER_GROUP}"
+      TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
+      REPORTER_DEFAULT_TEMPLATE_ID: "ccp-qb"
+      EXPORTER_DEFAULT_TEMPLATE_ID: "ccp"
+
 
   teiler-backend:
     image: docker.verbis.dkfz.de/ccp/dktk-teiler-backend:latest
@@ -67,6 +71,8 @@ services:
       TEILER_DASHBOARD_EN_URL: "https://${HOST}/ccp-teiler-dashboard/en"
       CENTRAX_URL: "${CENTRAXX_URL}"
       HTTP_PROXY: "http://forward_proxy:3128"
+      ENABLE_MTBA: "${ENABLE_MTBA}"
+      ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
     secrets:
       - ccp.conf
 

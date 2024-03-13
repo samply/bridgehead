@@ -41,6 +41,7 @@ case "$PROJECT" in
 		;;
 esac
 
+# TODO: Please add proper documentation for variable priorities (1. secrets, 2. vars, 3. PROJECT.local.conf, 4. PROJECT.conf, 5. ???
 loadVars() {
 	# Load variables from /etc/bridgehead and /srv/docker/bridgehead
 	set -a
@@ -50,6 +51,7 @@ loadVars() {
 		source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
 	fi
 	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
+	setHostname
 	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 	set +a
 
@@ -64,7 +66,6 @@ loadVars() {
 		OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
 	fi
 	detectCompose
-	setHostname
 	setupProxy
 
 	# Set some project-independent default values
@@ -89,6 +90,7 @@ case "$ACTION" in
 		loadVars
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
+		sync_secrets
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;

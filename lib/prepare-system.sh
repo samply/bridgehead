@@ -89,6 +89,9 @@ elif [[ "$DEV_MODE" == "DEV" ]]; then
 fi
 
 chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead
+mkdir -p /tmp/bridgehead /var/cache/bridgehead
+chown -R bridgehead:docker /tmp/bridgehead /var/cache/bridgehead
+chmod -R g+wr /var/cache/bridgehead /tmp/bridgehead
 
 log INFO "System preparation is completed and configuration is present."
 

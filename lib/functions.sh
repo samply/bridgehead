@@ -132,12 +132,6 @@ assertVarsNotEmpty() {
 fixPermissions() {
 	CHOWN=$(which chown)
 	sudo $CHOWN -R bridgehead /etc/bridgehead /srv/docker/bridgehead
-	if [ -d "/tmp/bridgehead" ]; then # Used by datashield
-		sudo $CHOWN -R bridgehead:docker "/tmp/bridgehead"
-	fi
-	if [ -d "/var/cache/bridgehead" ]; then # Used by the teiler
-		sudo $CHOWN -R bridgehead:docker "/var/cache/bridgehead"
-	fi
 }
 
 source lib/monitoring.sh
@@ -283,7 +277,7 @@ function sync_secrets() {
     if [[ $secret_sync_args == "" ]]; then
         return
     fi
-    mkdir -p /var/cache/bridgehead/secrets/
+    mkdir -p /var/cache/bridgehead/secrets/ || fail_and_report 1 "Failed to create '/var/cache/bridgehead/secrets/'. Please run sudo './bridgehead install $PROJECT' again."
     touch /var/cache/bridgehead/secrets/oidc
     docker run --rm \
         -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \

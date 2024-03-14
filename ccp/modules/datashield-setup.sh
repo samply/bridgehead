@@ -4,6 +4,11 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
   # HACK: This only works because exporter-setup.sh and teiler-setup.sh are sourced after datashield-setup.sh
   ENABLE_EXPORTER=true
   ENABLE_TEILER=true
+
+  OAUTH2_CALLBACK=/oauth2/callback
+  OAUTH2_PROXY_SECRET="$(echo \"This is a salt string to generate one consistent encryption key for the oauth2_proxy. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 32)"
+  add_private_oidc_redirect_url "${OAUTH2_CALLBACK}"
+
   log INFO "DataSHIELD setup detected -- will start DataSHIELD services."
   OVERRIDE+=" -f ./$PROJECT/modules/datashield-compose.yml"
   EXPORTER_OPAL_PASSWORD="$(generate_password \"exporter in Opal\")"

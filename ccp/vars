@@ -17,10 +17,7 @@ OIDC_REALM="${OIDC_REALM:-master}"
 OIDC_URL="https://login.verbis.dkfz.de"
 OIDC_ISSUER_URL="${OIDC_URL}/realms/${OIDC_REALM}"
 OIDC_GROUP_CLAIM="groups"
-OAUTH2_CALLBACK=/oauth2/callback
-OAUTH2_PROXY_SECRET="$(echo \"This is a salt string to generate one consistent encryption key for the oauth2_proxy. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 32)"
 
-add_private_oidc_redirect_url "${OAUTH2_CALLBACK}"
 POSTGRES_TAG=15.6-alpine
 
 for module in $PROJECT/modules/*.sh

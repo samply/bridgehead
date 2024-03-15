@@ -163,7 +163,7 @@ setHostname() {
 # - limit resource count allowed in blaze to 1,25M per 4GB available system memory
 optimizeBlazeMemoryUsage() {
 	if [ -z "$BLAZE_MEMORY_CAP" ]; then
-	   system_memory_in_mb=$(free -m | grep 'Mem:' | awk '{print $2}');
+	   system_memory_in_mb=$(LC_ALL=C free -m | grep 'Mem:' | awk '{print $2}');
 	   export BLAZE_MEMORY_CAP=$(("$system_memory_in_mb"/4));
 	fi
 	if [ -z "$BLAZE_RESOURCE_CACHE_CAP" ]; then

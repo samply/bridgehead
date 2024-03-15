@@ -1,0 +1,60 @@
+version: "3.7"
+
+services:
+  focus-ehds2:
+    #image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
+    image: samply/focus
+    container_name: bridgehead-focus-ehds2
+    environment:
+      API_KEY: ${EHDS2_FOCUS_BEAM_SECRET_SHORT}
+      BEAM_APP_ID_LONG: focus.${EHDS2_PROXY_ID}
+      PROXY_ID: ${EHDS2_PROXY_ID}
+      BLAZE_URL: "http://blaze:8080/fhir/"
+      BEAM_PROXY_URL: http://beam-proxy-ehds2:8081
+      RETRY_COUNT: ${FOCUS_RETRY_COUNT}
+    depends_on:
+      - "beam-proxy-ehds2"
+      - "blaze"
+
+  beam-proxy-ehds2:
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    container_name: bridgehead-beam-proxy-ehds2
+    environment:
+      BROKER_URL: ${EHDS2_BROKER_URL}
+      PROXY_ID: ${EHDS2_PROXY_ID}
+      APP_focus_KEY: ${EHDS2_FOCUS_BEAM_SECRET_SHORT}
+      PRIVKEY_FILE: /run/secrets/proxy.pem
+      ALL_PROXY: http://forward_proxy:3128
+      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
+      ROOTCERT_FILE: /conf/root.crt.pem
+    secrets:
+      - proxy.pem
+    depends_on:
+      - "forward_proxy"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+      - /srv/docker/bridgehead/bbmri/modules/${EHDS2_ROOT_CERT}.root.crt.pem:/conf/root.crt.pem:ro
+
+  # Convert ECDC CSV file into FHIR and push to Blaze
+  transfair:
+    container_name: transfair
+    image: samply/transfair
+    environment:
+      FHIR_INPUT_URL: "http://source_blaze:8080/fhir"
+      FHIR_OUTPUT_URL: "http://bridgehead-bbmri-blaze:8080/fhir"
+      PROFILE: "amr2fhir"
+      #WRITE_BUNDLES_TO_FILE: "true"
+      AMR_FILE_PATH: "/app/data"
+    restart: on-failure
+    command: sh -c "sleep 60 && rm -rf /app/test/* && java -jar transFAIR.jar && tail -f /dev/null"
+    #command: sh -c "rm -rf /app/test/* && java -jar transFAIR.jar"
+    volumes:
+      - /home/gerhard/Projects/EHDS2/PrototypeSpring2024/test/:/app/test/
+      - /home/gerhard/Projects/EHDS2/PrototypeSpring2024/Data/:/app/data/
+
+  # Report on the data pushed to Blaze by TransFAIR
+  blazectl:
+    container_name: blazectl
+    image: samply/blazectl
+    command: sh -c "sleep 300 && echo Source store && blazectl --server http://bridgehead-bbmri-blaze:8080/fhir count-resources && tail -f /dev/null"
+

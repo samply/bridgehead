@@ -1,6 +1,6 @@
 version: "3.7"
 
-# This includes only the shared persistence for BBMRI-ERIC and GBN. Federation components are included as modules, see vars.
+# This includes only the shared persistence for BBMRI-ERIC and GBN and EHDS2. Federation components are included as modules, see vars.
 
 services:
   blaze:
@@ -20,6 +20,8 @@ services:
       - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
       - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
+    ports:
+      - "8081:8080"
 
 volumes:
   blaze-data:

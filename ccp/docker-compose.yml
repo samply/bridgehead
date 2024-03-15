@@ -6,7 +6,9 @@ services:
     container_name: bridgehead-ccp-blaze
     environment:
       BASE_URL: "http://bridgehead-ccp-blaze:8080"
-      JAVA_TOOL_OPTIONS: "-Xmx4g"
+      JAVA_TOOL_OPTIONS: "-Xmx${BLAZE_MEMORY_CAP:-4096}m"
+      DB_RESOURCE_CACHE_SIZE: ${BLAZE_RESOURCE_CACHE_CAP:-2500000}
+      DB_BLOCK_CACHE_SIZE: $BLAZE_MEMORY_CAP
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
     volumes:
       - "blaze-data:/app/data"

@@ -8,15 +8,18 @@ if [ "${ENABLE_EHDS2}" == "true" ]; then
 	case "$ENVIRONMENT" in
 		"production")
 			export EHDS2_BROKER_ID=broker.bbmri.samply.de
+			#export EHDS2_BROKER_ID=ecdc-vm-ehds-test1.swedencentral.cloudapp.azure.com
 			export EHDS2_ROOT_CERT=ehds2
 			;;
 		"test")
 			export EHDS2_BROKER_ID=broker.test.bbmri.samply.de
+			#export EHDS2_BROKER_ID=ecdc-vm-ehds-test1.swedencentral.cloudapp.azure.com
 			export EHDS2_ROOT_CERT=ehds2.test
 			;;
 		*)
 			report_error 6 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
 			export EHDS2_BROKER_ID=broker.bbmri.samply.de
+			#export EHDS2_BROKER_ID=ecdc-vm-ehds-test1.swedencentral.cloudapp.azure.com
 			export EHDS2_ROOT_CERT=ehds2
 			;;
 	esac

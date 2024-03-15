@@ -108,6 +108,8 @@ Site names should adhere to the following conventions:
 
 ### GitLab repository
 
+You can skip this section if you are doing an ECDC/EHDS2 installation.
+
 In order to be able to install, you will need to have your own repository in GitLab for your site's configuration settings. This allows automated updates of the Bridgehead software.
 
 To request a new repository, please contact your research network administration or send an email to one of the project specific addresses:
@@ -130,7 +132,29 @@ During the installation, your Bridgehead will download your site's configuration
 
 ### Base Installation
 
-First, download your site specific configuration repository:
+Clone the bridgehead repository:
+```shell
+sudo mkdir -p /srv/docker/
+sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
+```
+
+If this is an ECDC/EHDS2 installation, switch to the ```ehds2``` branch and copy the configuration file to the required location:
+```shell
+cd
+git clone https://github.com/samply/transFAIR.git
+cd transFAIR
+docker build -t samply/transfair --no-cache .
+cd /srv/docker/bridgehead
+sudo git checkout ehds2
+sudo mkdir test data
+sudo mkdir -p /etc/bridgehead/
+sudo cp bbmri/modules/bbmri.conf /etc/bridgehead/
+sudo vi /etc/bridgehead/bbmri.conf # Modify to include national node name and admin contact details
+```
+
+For an ECDC/EHDS2 installation, you will also need to copy your data in a comma-separated value (CSV) formatted file to ```/srv/docker/bridgehead/data```. Make sure it is readable by all. Only files with the ending ```.csv``` will be read in, all other files will be ignored.
+
+If this is not an ECDC/EHDS2 installation, then download your site specific configuration repository:
 ```shell
 sudo mkdir -p /etc/bridgehead/
 sudo git clone <REPO_URL_FROM_EMAIL> /etc/bridgehead/
@@ -149,12 +173,6 @@ Pay special attention to:
 - OPERATOR_LAST_NAME
 - OPERATOR_EMAIL
 
-Clone the bridgehead repository:
-```shell
-sudo mkdir -p /srv/docker/
-sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
-```
-
 Then, run the installation script:
 
 ```shell
@@ -172,6 +190,20 @@ sudo ./bridgehead enroll <PROJECT>
 ```
 
 ... and follow the instructions on the screen. Please send your default Collection ID and the display name of your site together with the certificate request when you enroll. You should then be prompted to do the next step:
+
+Note: if you are doing an ECDC/EHDS2 installation, you will need to perform the Beam certificate signing yourself. Do not send an email to either of the email addreesses suggested by the bridgehead enroll procedure. Instead, log on to the VM where Beam is running and perform the following (you will need root permissions):
+```shell
+cd /srv/docker/beam-broker
+sudo mkdir -p csr
+sudo vi csr/ecdc-bridgehead-<national node name>.csr # Copy and paste the certificate printed during the enroll
+sudo pki-scripts/managepki sign --csr-file csr/ecdc-bridgehead-<national node name>.csr --common-name=ecdc-bridgehead-<national node name>.broker.bbmri.samply.de
+```
+
+You can check that the Bridgehead has connected to Beam with the following command:
+```shell
+pki-scripts/managepki list
+
+```
 
 ### Starting and stopping your Bridgehead
 

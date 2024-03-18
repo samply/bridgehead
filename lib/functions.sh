@@ -239,3 +239,63 @@ add_basic_auth_user() {
  	log DEBUG "Saving clear text credentials in $FILE. If wanted, delete them manually."
    sed -i "/^$NAME/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
 }
+
+function clone_repo_if_nonexistent() {
+    local repo_url="$1"  # First argument: Repository URL
+    local target_dir="$2"  # Second argument: Target directory
+    local branch_name="$3"  # Third argument: Branch name
+
+    echo Repo directory: $target_dir
+
+    # Check if the target directory exists
+    if [ ! -d "$target_dir" ]; then
+        echo "Directory '$target_dir' does not exist. Cloning the repository..."
+        # Clone the repository
+        git clone "$repo_url" "$target_dir"
+    fi
+
+    # Change to the cloned directory
+    cd "$target_dir"
+
+    # Checkout the specified branch
+    git checkout "$branch_name"
+    echo "Checked out branch '$branch_name'."
+
+    cd -
+}
+
+function clone_transfair_if_nonexistent() {
+    local base_dir="$1"
+
+    clone_repo_if_nonexistent https://github.com/samply/transFAIR.git $base_dir/transfair main_ecdc_amt_prototype
+}
+
+function clone_focus_if_nonexistent() {
+    local base_dir="$1"
+
+    clone_repo_if_nonexistent https://github.com/samply/focus.git $base_dir/focus ehds2
+}
+
+
+function build_transfair() {
+    local base_dir="$1"
+
+    # We only take the touble to build transfair if:
+    #
+    # 1. There is no data lock file (which means that no ETL has yet been run) and
+    # 2. There is data available.
+    if [ ! -f "../ecdc/data/lock" ] && [ ! -z "$(ls -A ../ecdc/data)" ]; then
+        cd $base_dir/transfair
+        docker build --progress=plain -t samply/transfair --no-cache .
+        cd -
+    fi
+}
+
+function build_focus() {
+    local base_dir="$1"
+
+    cd $base_dir/focus
+    docker build --progress=plain -f DockerfileWithBuild -t samply/focus --no-cache .
+    cd -
+}
+

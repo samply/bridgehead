@@ -89,6 +89,15 @@ case "$ACTION" in
 		loadVars
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
+                # Local versions of focus and transfair are needed by EHDS2
+                clone_focus_if_nonexistent ${BASE}/..
+                build_focus ${BASE}/..
+                clone_transfair_if_nonexistent ${BASE}/..
+                build_transfair ${BASE}/..
+                # Location for input data and results for EHDS2
+                mkdir -p ${BASE}/../ecdc/test
+                mkdir -p ${BASE}/../ecdc/data
+                chown -R bridgehead ${BASE}/../ecdc
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;

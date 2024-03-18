@@ -8,6 +8,7 @@ This repository is the starting point for any information and tools you will nee
     - [Hardware](#hardware)
     - [Software](#software)
     - [Network](#network)
+    - [EHDS2/ECDC](#ehds2-ecdc)
 2. [Deployment](#deployment)
     - [Site name](#site-name)
     - [Projects](#projects)
@@ -91,6 +92,24 @@ The following URLs need to be accessible (prefix with `https://`):
 > 📝 This URL list is subject to change. Instead of the individual names, we highly recommend whitelisting wildcard domains: *.dkfz.de, github.com, *.docker.com, *.docker.io, *.samply.de, *.bbmri.de.
 
 > 📝 Ubuntu's pre-installed uncomplicated firewall (ufw) is known to conflict with Docker, more info [here](https://github.com/chaifeng/ufw-docker).
+
+### EHDS2/ECDC
+
+ECDC data should be provided as a CSV file and placed in the directory /srv/docker/ecdc/data. The Bridgehead can be started without data, but obviously, any searches run from a Locator will return zero results for this site if you do that. Note that an empty data directory will automatically be inserted on the first start of the Bridgehead if you don't set one up yourself.
+
+To get the right Beam certificate for your setup, you will need to edit the following files and comment/uncomment as appropriate:
+
+- bbmri/modules/ehds2.root.crt.pem
+- bbmri/modules/ehds2.test.root.crt.pem
+
+When you first start the Bridgehead, it will clone two extra repositories into /srv/docker, namely, focus and transfair. It will automatically build local images of these repositories for you. These components have the following functionality that has been customized for ECDC:
+
+- *focus.* This component is responsible for completing the CQL that is used for running queries against the Blaze FHIR store. It uses a set of templates for doing this. Extra templates have been written for the ECDC use case.
+- *transfair.* This is an ETL component. It takes the CSV data that you provide, converts it to FHIR, and loads it to Blaze.
+
+These images will normally be rebuilt every time you restart the Bridgehead. This is a workaround to fix a bug: if you don't rebuild these images for every start, then legacy versions will be used and you will lose the new ECDC functionality. The reason for this is still under investigation.
+
+Note that the /srv/docker/ecdc/data directory is also used as the home for a "lock" file, which will be created if your data has been successfully converted to FHIR by transfair. As long as this file exists, transfair will not be run again when you restart the Bridgehead. Hence, if you add or modify data, you will need to delete this file by hand before restarting the Bridgehead.
 
 ## Deployment
 

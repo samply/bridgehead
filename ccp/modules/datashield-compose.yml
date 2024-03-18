@@ -99,7 +99,7 @@ services:
 
   traefik:
     labels:
-      - "traefik.http.middlewares.oidcAuth.forwardAuth.address=http://oauth2_proxy:4180/"
+      - "traefik.http.middlewares.oidcAuth.forwardAuth.address=http://oauth2-proxy:4180/"
       - "traefik.http.middlewares.oidcAuth.forwardAuth.trustForwardHeader=true"
       - "traefik.http.middlewares.oidcAuth.forwardAuth.authResponseHeaders=X-Auth-Request-Access-Token,Authorization"
     networks:
@@ -118,9 +118,9 @@ services:
   # TODO: Allow users of group /DataSHIELD and OIDC_USER_GROUP at the same time:
   # Maybe a solution would be (https://oauth2-proxy.github.io/oauth2-proxy/configuration/oauth_provider):
   # --allowed-groups=/DataSHIELD,OIDC_USER_GROUP
-  oauth2_proxy:
+  oauth2-proxy:
     image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:latest
-    container_name: bridgehead_oauth2_proxy
+    container_name: bridgehead-oauth2proxy
     command: >-
       --allowed-group=DataSHIELD
       --oidc-groups-claim=${OIDC_GROUP_CLAIM}

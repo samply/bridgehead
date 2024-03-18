@@ -41,7 +41,6 @@ case "$PROJECT" in
 		;;
 esac
 
-# TODO: Please add proper documentation for variable priorities (1. secrets, 2. vars, 3. PROJECT.local.conf, 4. PROJECT.conf, 5. ???
 loadVars() {
 	# Load variables from /etc/bridgehead and /srv/docker/bridgehead
 	set -a

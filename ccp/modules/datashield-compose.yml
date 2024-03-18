@@ -149,7 +149,6 @@ services:
       --pass-basic-auth=true
       --pass-user-headers=false
       --pass-access-token=false
-
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.oauth2_proxy.rule=Host(`${HOST}`) && PathPrefix(`/oauth2`, `/oauth2/callback`)"

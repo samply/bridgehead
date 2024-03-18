@@ -343,7 +343,7 @@ generate_password(){
 generate_simple_password(){
   local seed_text="$1"
   local combined_text="This is a salt string to generate one consistent password for ${seed_text}. It is not required to be secret."
-  echo "${combined_text}" | openssl rsautl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" 2> /dev/null | base64 | head -c 26 | sed 's/[+\/]/A/g'
+  echo "${combined_text}" | sha1sum | openssl pkeyutl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" 2> /dev/null | base64 | head -c 26 | sed 's/[+\/]/A/g'
 }
 
 docker_jq() {

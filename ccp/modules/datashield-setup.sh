@@ -6,7 +6,7 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
     echo "The ENABLE_EXPORTER variable is either not set or not set to 'true'."
   fi
   OAUTH2_CALLBACK=/oauth2/callback
-  OAUTH2_PROXY_SECRET="$(echo \"This is a salt string to generate one consistent encryption key for the oauth2_proxy. It is not required to be secret.\" | openssl rsautl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 32)"
+  OAUTH2_PROXY_SECRET="$(echo \"This is a salt string to generate one consistent encryption key for the oauth2_proxy. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 32)"
   add_private_oidc_redirect_url "${OAUTH2_CALLBACK}"
 
   log INFO "DataSHIELD setup detected -- will start DataSHIELD services."

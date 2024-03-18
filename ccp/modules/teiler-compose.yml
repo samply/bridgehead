@@ -15,7 +15,7 @@ services:
     environment:
       TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
       TEILER_DASHBOARD_URL: "https://${HOST}/ccp-teiler-dashboard"
-      DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE_LOWER_CASE}"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
       HTTP_RELATIVE_PATH: "/ccp-teiler"
 
   teiler-dashboard:
@@ -29,7 +29,7 @@ services:
       - "traefik.http.middlewares.teiler_dashboard_ccp_strip.stripprefix.prefixes=/ccp-teiler-dashboard"
       - "traefik.http.routers.teiler_dashboard_ccp.middlewares=teiler_dashboard_ccp_strip"
     environment:
-      DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE}"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
       TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
       OIDC_URL: "${OIDC_URL}"
       OIDC_REALM: "${OIDC_REALM}"
@@ -63,7 +63,7 @@ services:
       LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"
       APPLICATION_ADDRESS: "${HOST}"
-      DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE}"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
       CONFIG_ENV_VAR_PATH: "/run/secrets/ccp.conf"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"

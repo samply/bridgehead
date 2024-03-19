@@ -284,7 +284,7 @@ function build_transfair() {
     #
     # 1. There is no data lock file (which means that no ETL has yet been run) and
     # 2. There is data available.
-    if [ ! -f "../ecdc/data/lock" ] && [ ! -z "$(ls -A ../ecdc/data)" ]; then
+    if [ -f ../ecdc/data/*.[cC][sS][vV] ] && [ ! -f ../ecdc/data/lock ]; then
         cd $base_dir/transfair
         docker build --progress=plain -t samply/transfair --no-cache .
         cd -

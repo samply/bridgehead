@@ -48,7 +48,18 @@ services:
     restart: on-failure
     #command: sh -c "sleep 60 && rm -rf /app/test/* && ([ ! -f "/app/lock" && ] && java -jar transFAIR.jar && touch "/app/lock) && tail -f /dev/null"
     #command: sh -c "sleep 60 && rm -rf /app/test/* && java -jar transFAIR.jar && tail -f /dev/null"
-    command: sh -c "echo listing /app/data && ls -la /app/data && /app/launch.sh"
+    #command: sh -c "echo listing /app/data && ls -la /app/data && /app/launch.sh"
+    #command: sh -c "echo listing /app/data && ls -la /app/data && [ "$(ls -A /app/data)" ] && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
+    #command: sh -c "echo listing /app/data && ls -la /app/data && [ ! -z "$(ls -A /app/data)" ] && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
+    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -z "$(ls -A /app/data)" ] && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
+    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
+    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -z "$(find /app/data -mindepth 1 -maxdepth 1)" ] && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
+    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -z $(ls -A /app/data) ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null"
+    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null" # works!
+    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -z `ls -A /app/data` ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null"
+    #command: bash -c "echo listing /app/data && ls -la /app/data && [ -f /app/data/*.csv ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null" # works!
+    command: bash -c "echo listing /app/data && ls -la /app/data && [ -f /app/data/*.[cC][sS][vV] ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null"
+    #command: sh -c "echo listing /app/data && ls -la /app/data && [ ! -z $(ls -A /app/data) ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null"
     #command: sh -c "rm -rf /app/test/* && java -jar transFAIR.jar"
     volumes:
       #- /home/gerhard/Projects/EHDS2/PrototypeSpring2024/test/:/app/test/

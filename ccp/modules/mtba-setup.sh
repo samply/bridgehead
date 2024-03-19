@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 function mtbaSetup() {
   if [ -n "$ENABLE_MTBA" ];then
@@ -8,5 +8,6 @@ function mtbaSetup() {
       exit 1;
     fi
     OVERRIDE+=" -f ./$PROJECT/modules/mtba-compose.yml"
+    add_private_oidc_redirect_url "/mtba/*"
   fi
 }

@@ -42,6 +42,9 @@ services:
       - /var/spool/squid
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/docker/custom-certs/:ro
+    healthcheck:
+      # Wait 1s before marking this service healthy. Required for the oauth2-proxy to talk to the OIDC provider on startup which will fail if the forward proxy is not started yet.
+      test: ["CMD", "sleep", "1"]
 
   landing:
     container_name: bridgehead-landingpage
@@ -55,5 +58,3 @@ services:
       HOST: ${HOST}
       PROJECT: ${PROJECT}
       SITE_NAME: ${SITE_NAME}
-
-

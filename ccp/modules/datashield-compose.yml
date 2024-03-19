@@ -1,0 +1,171 @@
+version: "3.7"
+
+services:
+  rstudio:
+    container_name: bridgehead-rstudio
+    image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
+    environment:
+      #DEFAULT_USER: "rstudio" # This line is kept for informational purposes
+      PASSWORD: "${RSTUDIO_ADMIN_PASSWORD}" # It is required, even if the authentication is disabled
+      DISABLE_AUTH: "true" # https://rocker-project.org/images/versioned/rstudio.html#how-to-use
+      HTTP_RELATIVE_PATH: "/rstudio"
+      ALL_PROXY: "http://forward_proxy:3128" # https://rocker-project.org/use/networking.html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rstudio_ccp.rule=PathPrefix(`/rstudio`)"
+      - "traefik.http.services.rstudio_ccp.loadbalancer.server.port=8787"
+      - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
+      - "traefik.http.routers.rstudio_ccp.tls=true"
+      - "traefik.http.routers.rstudio_ccp.middlewares=oidcAuth,rstudio_ccp_strip"
+    networks:
+      - rstudio
+
+  opal:
+    container_name: bridgehead-opal
+    image: docker.verbis.dkfz.de/ccp/dktk-opal:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.opal_ccp.rule=PathPrefix(`/opal`)"
+      - "traefik.http.services.opal_ccp.loadbalancer.server.port=8080"
+      - "traefik.http.routers.opal_ccp.tls=true"
+    links:
+      - opal-rserver
+      - opal-db
+    environment:
+      JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC -Dhttps.proxyHost=forward_proxy -Dhttps.proxyPort=3128"
+      # OPAL_ADMINISTRATOR_USER: "administrator" # This line is kept for informational purposes
+      OPAL_ADMINISTRATOR_PASSWORD: "${OPAL_ADMIN_PASSWORD}"
+      POSTGRESDATA_HOST: "opal-db"
+      POSTGRESDATA_DATABASE: "opal"
+      POSTGRESDATA_USER: "opal"
+      POSTGRESDATA_PASSWORD: "${OPAL_DB_PASSWORD}"
+      ROCK_HOSTS: "opal-rserver:8085"
+      APP_URL: "https://${HOST}/opal"
+      APP_CONTEXT_PATH: "/opal"
+      OPAL_PRIVATE_KEY: "/run/secrets/opal-key.pem"
+      OPAL_CERTIFICATE: "/run/secrets/opal-cert.pem"
+      OIDC_URL: "${OIDC_URL}"
+      OIDC_REALM: "${OIDC_REALM}"
+      OIDC_CLIENT_ID: "${OIDC_PRIVATE_CLIENT_ID}"
+      OIDC_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
+      OIDC_ADMIN_GROUP: "${OIDC_ADMIN_GROUP}"
+      TOKEN_MANAGER_PASSWORD: "${TOKEN_MANAGER_OPAL_PASSWORD}"
+      EXPORTER_PASSWORD: "${EXPORTER_OPAL_PASSWORD}"
+      BEAM_APP_ID: token-manager.${PROXY_ID}
+      BEAM_SECRET: ${TOKEN_MANAGER_SECRET}
+      BEAM_DATASHIELD_PROXY: request-manager
+    volumes:
+      - "/var/cache/bridgehead/ccp/opal-metadata-db:/srv" # Opal metadata
+    secrets:
+      - opal-cert.pem
+      - opal-key.pem
+
+  opal-db:
+    container_name: bridgehead-opal-db
+    image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
+    environment:
+      POSTGRES_PASSWORD: "${OPAL_DB_PASSWORD}" # Set in datashield-setup.sh
+      POSTGRES_USER: "opal"
+      POSTGRES_DB: "opal"
+    volumes:
+      - "/var/cache/bridgehead/ccp/opal-db:/var/lib/postgresql/data" # Opal project data (imported from exporter)
+
+  opal-rserver:
+    container_name: bridgehead-opal-rserver
+    image: docker.verbis.dkfz.de/ccp/dktk-rserver # datashield/rock-base + dsCCPhos
+    tmpfs:
+      - /srv
+
+  beam-connect:
+    image: docker.verbis.dkfz.de/cache/samply/beam-connect:develop
+    container_name: bridgehead-datashield-connect
+    environment:
+      PROXY_URL: "http://beam-proxy:8081"
+      TLS_CA_CERTIFICATES_DIR: /run/secrets
+      APP_ID: datashield-connect.${SITE_ID}.${BROKER_ID}
+      PROXY_APIKEY: ${DATASHIELD_CONNECT_SECRET}
+      DISCOVERY_URL: "./map/central.json"
+      LOCAL_TARGETS_FILE: "./map/local.json"
+      NO_AUTH: "true"
+    secrets:
+      - opal-cert.pem
+    depends_on:
+      - beam-proxy
+    volumes:
+      - /tmp/bridgehead/opal-map/:/map/:ro
+    networks:
+      - default
+      - rstudio
+
+  traefik:
+    labels:
+      - "traefik.http.middlewares.oidcAuth.forwardAuth.address=http://oauth2-proxy:4180/"
+      - "traefik.http.middlewares.oidcAuth.forwardAuth.trustForwardHeader=true"
+      - "traefik.http.middlewares.oidcAuth.forwardAuth.authResponseHeaders=X-Auth-Request-Access-Token,Authorization"
+    networks:
+      - default
+      - rstudio
+  forward_proxy:
+    networks:
+      - default
+      - rstudio
+
+  beam-proxy:
+    environment:
+      APP_datashield-connect_KEY: ${DATASHIELD_CONNECT_SECRET}
+      APP_token-manager_KEY: ${TOKEN_MANAGER_SECRET}
+
+  # TODO: Allow users of group /DataSHIELD and OIDC_USER_GROUP at the same time:
+  # Maybe a solution would be (https://oauth2-proxy.github.io/oauth2-proxy/configuration/oauth_provider):
+  # --allowed-groups=/DataSHIELD,OIDC_USER_GROUP
+  oauth2-proxy:
+    image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:latest
+    container_name: bridgehead-oauth2proxy
+    command: >-
+      --allowed-group=DataSHIELD
+      --oidc-groups-claim=${OIDC_GROUP_CLAIM}
+      --auth-logging=true
+      --whitelist-domain=${HOST}
+      --http-address="0.0.0.0:4180"
+      --reverse-proxy=true
+      --upstream="static://202"
+      --email-domain="*"
+      --cookie-name="_BRIDGEHEAD_oauth2"
+      --cookie-secret="${OAUTH2_PROXY_SECRET}"
+      --cookie-expire="12h"
+      --cookie-secure="true"
+      --cookie-httponly="true"
+      #OIDC settings
+      --provider="keycloak-oidc"
+      --provider-display-name="VerbIS Login"
+      --client-id="${OIDC_PRIVATE_CLIENT_ID}"
+      --client-secret="${OIDC_CLIENT_SECRET}"
+      --redirect-url="https://${HOST}${OAUTH2_CALLBACK}"
+      --oidc-issuer-url="${OIDC_ISSUER_URL}"
+      --scope="openid email profile"
+      --code-challenge-method="S256"
+      --skip-provider-button=true
+      #X-Forwarded-Header settings - true/false depending on your needs
+      --pass-basic-auth=true
+      --pass-user-headers=false
+      --pass-access-token=false
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.oauth2_proxy.rule=Host(`${HOST}`) && PathPrefix(`/oauth2`, `/oauth2/callback`)"
+      - "traefik.http.services.oauth2_proxy.loadbalancer.server.port=4180"
+      - "traefik.http.routers.oauth2_proxy.tls=true"
+    environment:
+      http_proxy: "http://forward_proxy:3128"
+      https_proxy: "http://forward_proxy:3128"
+    depends_on:
+      forward_proxy:
+        condition: service_healthy
+
+secrets:
+  opal-cert.pem:
+    file: /tmp/bridgehead/opal-cert.pem
+  opal-key.pem:
+    file: /tmp/bridgehead/opal-key.pem
+
+networks:
+  rstudio:

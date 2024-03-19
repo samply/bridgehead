@@ -1,4 +1,5 @@
 version: "3.7"
+
 services:
   id-manager:
     image: docker.verbis.dkfz.de/bridgehead/magicpl
@@ -43,7 +44,7 @@ services:
       - patientlist-db
 
   patientlist-db:
-    image: docker.verbis.dkfz.de/cache/postgres:15.6-alpine
+    image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
     container_name: bridgehead-patientlist-db
     environment:
       POSTGRES_USER: "mainzelliste"

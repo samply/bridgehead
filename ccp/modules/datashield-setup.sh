@@ -3,7 +3,7 @@
 if [ "$ENABLE_DATASHIELD" == true ]; then
   # HACK: This only works because exporter-setup.sh and teiler-setup.sh are sourced after datashield-setup.sh
   if [ -z "${ENABLE_EXPORTER}" ] || [ "${ENABLE_EXPORTER}" != "true" ]; then
-    echo "The ENABLE_EXPORTER variable is either not set or not set to 'true'."
+    log warn "The ENABLE_EXPORTER variable is either not set or not set to 'true'."
   fi
   OAUTH2_CALLBACK=/oauth2/callback
   OAUTH2_PROXY_SECRET="$(echo \"This is a salt string to generate one consistent encryption key for the oauth2_proxy. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 32)"

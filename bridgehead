@@ -51,6 +51,7 @@ loadVars() {
 	fi
 	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
 	setHostname
+	optimizeBlazeMemoryUsage
 	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 	set +a
 

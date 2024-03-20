@@ -70,8 +70,8 @@ services:
       - ../../ecdc/data:/app/data/
 
   # Report on the data pushed to Blaze by TransFAIR
-  blazectl:
-    container_name: blazectl
-    image: samply/blazectl
-    command: sh -c "sleep 300 && echo Source store && blazectl --server http://bridgehead-bbmri-blaze:8080/fhir count-resources && tail -f /dev/null"
+  test-data-loader:
+    container_name: test-data-loader
+    image: samply/test-data-loader
+    command: sh -c "sleep 300 && echo Listing all resources in FHIR store && blazectl --server http://bridgehead-bbmri-blaze:8080/fhir count-resources && tail -f /dev/null"
 

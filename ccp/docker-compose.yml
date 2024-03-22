@@ -21,7 +21,7 @@ services:
       - "traefik.http.routers.blaze_ccp.tls=true"
 
   focus:
-    image: docker.verbis.dkfz.de/cache/samply/focus:0.4.1
+    image: docker.verbis.dkfz.de/cache/samply/focus:0.4.2
     container_name: bridgehead-focus
     environment:
       API_KEY: ${FOCUS_BEAM_SECRET_SHORT}

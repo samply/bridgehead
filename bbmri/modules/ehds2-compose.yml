@@ -46,26 +46,30 @@ services:
       #WRITE_BUNDLES_TO_FILE: "true"
       AMR_FILE_PATH: "/app/data"
     restart: on-failure
-    #command: sh -c "sleep 60 && rm -rf /app/test/* && ([ ! -f "/app/lock" && ] && java -jar transFAIR.jar && touch "/app/lock) && tail -f /dev/null"
-    #command: sh -c "sleep 60 && rm -rf /app/test/* && java -jar transFAIR.jar && tail -f /dev/null"
-    #command: sh -c "echo listing /app/data && ls -la /app/data && /app/launch.sh"
-    #command: sh -c "echo listing /app/data && ls -la /app/data && [ "$(ls -A /app/data)" ] && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
-    #command: sh -c "echo listing /app/data && ls -la /app/data && [ ! -z "$(ls -A /app/data)" ] && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
-    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -z "$(ls -A /app/data)" ] && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
-    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
-    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -z "$(find /app/data -mindepth 1 -maxdepth 1)" ] && [ ! -f "/app/data/lock" ] && /app/launch.sh & tail -f /dev/null"
-    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -z $(ls -A /app/data) ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null"
-    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null" # works!
-    #command: bash -c "echo listing /app/data && ls -la /app/data && [ ! -z `ls -A /app/data` ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null"
-    #command: bash -c "echo listing /app/data && ls -la /app/data && [ -f /app/data/*.csv ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null" # works!
-    command: bash -c "echo listing /app/data && ls -la /app/data && [ -f /app/data/*.[cC][sS][vV] ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null"
-    #command: sh -c "echo listing /app/data && ls -la /app/data && [ ! -z $(ls -A /app/data) ] && [ ! -f /app/data/lock ] && /app/launch.sh & tail -f /dev/null"
-    #command: sh -c "rm -rf /app/test/* && java -jar transFAIR.jar"
+    # The start up logic for TransFAIR is kind of complicated for the ECDC/EHDS2
+    # pilot. This is because we only want to run it if 1. there are source data
+    # files to be transformed and 2. if there is no lock file. We also need to
+    # wait for Blaze to start, TransFAIR does not check for this. And finally,
+    # once TransFAIR has finished loading data, a lock file is created, to stop
+    # a time-consuming repeat run.
+    command: bash -c " \
+             echo listing /app/data && \
+             ls -la /app/data && \
+             [ -f /app/data/*.[cC][sS][vV] ] && \
+             [ ! -f /app/data/lock ] && \
+             ( \
+                 echo 'Wait for Blaze to finish initializing' ; \
+                 sleep 60 ; \
+                 echo 'Remove old output files' ; \
+                 rm -rf /app/test/* ; \
+                 cd /app ; \
+                 echo 'Run TransFAIR' ; \
+                 java -jar transFAIR.jar ; \
+                 echo 'Touching lock file' ; \
+                 touch /app/data/lock \
+             ) & tail -f /dev/null"
+    # If you put .csv files into ./../ecdc/data, TransFAIR will try to process them.
     volumes:
-      #- /home/gerhard/Projects/EHDS2/PrototypeSpring2024/test/:/app/test/
-      #- /home/gerhard/Projects/EHDS2/PrototypeSpring2024/Data/:/app/data/
-      #- ../ecdc/test:/app/test/
-      #- ../ecdc/data:/app/data/
       - ../../ecdc/test:/app/test/
       - ../../ecdc/data:/app/data/
 

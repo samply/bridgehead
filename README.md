@@ -102,6 +102,12 @@ To get the right Beam certificate for your setup, you will need to edit the foll
 - bbmri/modules/ehds2.root.crt.pem
 - bbmri/modules/ehds2.test.root.crt.pem
 
+You will also need to edit:
+
+./bbmri/modules/ehds2-setup.sh
+
+and set the broker address correctly for your site.
+
 When you first start the Bridgehead, it will clone two extra repositories into /srv/docker, namely, focus and transfair. It will automatically build local images of these repositories for you. These components have the following functionality that has been customized for ECDC:
 
 - *focus.* This component is responsible for completing the CQL that is used for running queries against the Blaze FHIR store. It uses a set of templates for doing this. Extra templates have been written for the ECDC use case.

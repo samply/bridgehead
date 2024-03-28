@@ -12,6 +12,7 @@ services:
       BLAZE_URL: "http://blaze:8080/fhir/"
       BEAM_PROXY_URL: http://beam-proxy-ehds2:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
+      OBFUSCATE: "no"
     depends_on:
       - "beam-proxy-ehds2"
       - "blaze"

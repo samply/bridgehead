@@ -164,7 +164,7 @@ setHostname() {
 optimizeBlazeMemoryUsage() {
 	if [ -z "$BLAZE_MEMORY_CAP" ]; then
 	   system_memory_in_mb=$(LC_ALL=C free -m | grep 'Mem:' | awk '{print $2}');
-	   export BLAZE_MEMORY_CAP=$(("$system_memory_in_mb"/4));
+	   export BLAZE_MEMORY_CAP=$(($system_memory_in_mb/4));
 	fi
 	if [ -z "$BLAZE_RESOURCE_CACHE_CAP" ]; then
 		available_system_memory_chuncks=$((BLAZE_MEMORY_CAP / 1000))

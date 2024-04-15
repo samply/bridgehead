@@ -2,7 +2,7 @@
 
 if [ "${ENABLE_GBN}" == "true" ]; then
 	log INFO "GBN setup detected -- will start services for German Biobank Node."
-	OVERRIDE+=" -f ./$PROJECT/modules/gbn-compose.yml"
+	# OVERRIDE+=" -f ./$PROJECT/modules/gbn-compose.yml"
 
 	# The environment needs to be defined in /etc/bridgehead
 	case "$ENVIRONMENT" in

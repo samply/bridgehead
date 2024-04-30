@@ -45,8 +45,8 @@ services:
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
       TEILER_USER: "${OIDC_USER_GROUP}"
       TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
-      REPORTER_DEFAULT_TEMPLATE_ID: "ccp-qb"
-      EXPORTER_DEFAULT_TEMPLATE_ID: "ccp"
+      REPORTER_DEFAULT_TEMPLATE_ID: "bbmri-qb"
+      EXPORTER_DEFAULT_TEMPLATE_ID: "bbmri"
 
 
   teiler-backend:

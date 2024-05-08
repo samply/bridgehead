@@ -28,6 +28,8 @@ fi
 case "$PROJECT" in
 	ccp)
 		#nothing extra to do
+	leme)
+		#nothing extra to do
 		;;
 	bbmri)
 		#nothing extra to do

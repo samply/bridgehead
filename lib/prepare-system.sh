@@ -49,6 +49,9 @@ case "$PROJECT" in
 	ccp)
 		site_configuration_repository_middle="git.verbis.dkfz.de/bridgehead-configurations/bridgehead-config-"
 		;;
+    leme)
+		site_configuration_repository_middle="git.verbis.dkfz.de/bridgehead-configurations/bridgehead-config-"
+		;;
 	bbmri)
 		site_configuration_repository_middle="git.verbis.dkfz.de/bbmri-bridgehead-configs/"
 		;;

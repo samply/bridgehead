@@ -46,15 +46,15 @@ services:
       # Wait 1s before marking this service healthy. Required for the oauth2-proxy to talk to the OIDC provider on startup which will fail if the forward proxy is not started yet.
       test: ["CMD", "sleep", "1"]
 
-  landing:
-    container_name: bridgehead-landingpage
-    image: docker.verbis.dkfz.de/cache/samply/bridgehead-landingpage:main
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
-      - "traefik.http.services.landing.loadbalancer.server.port=80"
-      - "traefik.http.routers.landing.tls=true"
-    environment:
-      HOST: ${HOST}
-      PROJECT: ${PROJECT}
-      SITE_NAME: ${SITE_NAME}
+  # landing:
+  #   container_name: bridgehead-landingpage
+  #   image: docker.verbis.dkfz.de/cache/samply/bridgehead-landingpage:main
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
+  #     - "traefik.http.services.landing.loadbalancer.server.port=80"
+  #     - "traefik.http.routers.landing.tls=true"
+  #   environment:
+  #     HOST: ${HOST}
+  #     PROJECT: ${PROJECT}
+  #     SITE_NAME: ${SITE_NAME}

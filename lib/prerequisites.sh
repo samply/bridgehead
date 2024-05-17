@@ -84,7 +84,7 @@ else
 	SYNCTEXT="For example, consider entering a correct NTP server (e.g. your institution's Active Directory Domain Controller in /etc/systemd/timesyncd.conf (option NTP=) and restart systemd-timesyncd."
 	if [ $SKEW -ge 300 ]; then
 		report_error 5 "Your clock is not synchronized (${SKEW}s off). This will cause Samply.Beam's certificate will fail. Please setup time synchronization. $SYNCTEXT"
-		exit 1
+		log WARN "Server Time Error"
 	elif [ $SKEW -ge 60 ]; then
 		log WARN "Your clock is more than a minute off (${SKEW}s). Consider syncing to a time server. $SYNCTEXT"
 	fi

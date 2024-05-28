@@ -19,6 +19,27 @@ services:
       - "traefik.http.services.blaze_ccp.loadbalancer.server.port=8080"
       - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
+    
+  frontend:
+    image: "samply/blaze-frontend:latest"
+    environment:
+      ORIGIN: "https://${HOST}/ccp-blaze-frontend"
+      BACKEND_BASE_URL: "https://${HOST}/ccp-localdatamanagement"
+      AUTH_CLIENT_ID: "${OIDC_PRIVATE_CLIENT_ID}"
+      AUTH_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
+      AUTH_ISSUER: "${OIDC_URL}"
+      AUTH_SECRET: "666df42c74ce1f4728fe2ffe99b146e0f2e4b4f9810594fcf68c0330495bca0f" # TODO: Generate
+      PROTOCOL_HEADER: "x-forwarded-proto"
+      HOST_HEADER: "x-forwarded-host"
+    depends_on:
+      - blaze
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blaze_frontend.rule=PathPrefix(`/ccp-blaze-frontend`)"
+      - "traefik.http.middlewares.ccp_blaze_frontend_strip.stripprefix.prefixes=/ccp-blaze-frontend"
+      - "traefik.http.routers.blaze_ccp.middlewares=ccp_blaze_frontend_strip"
+      - "traefik.http.services.blaze_frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.blaze_frontend.tls=true"
 
   focus:
     image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}

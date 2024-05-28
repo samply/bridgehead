@@ -17,6 +17,7 @@ OIDC_REALM="${OIDC_REALM:-master}"
 OIDC_URL="https://login.verbis.dkfz.de"
 OIDC_ISSUER_URL="${OIDC_URL}/realms/${OIDC_REALM}"
 OIDC_GROUP_CLAIM="groups"
+add_private_oidc_redirect_url "/ccp-localdatamanagement"
 
 POSTGRES_TAG=15.6-alpine
 

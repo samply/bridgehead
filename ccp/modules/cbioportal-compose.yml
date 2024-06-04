@@ -2,12 +2,16 @@ version: '3.7'
 
 services:
   cbioportal:
-    image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
+    # image: docker.verbis.dkfz.de/ccp/dktk-cbioportal:latest
+    image: bridgehead-cbioportal
     container_name: bridgehead-cbioportal
     environment:
       DB_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}
+      # DB_PASSWORD: "password1234"
       HTTP_RELATIVE_PATH: "/cbioportal"
       UPLOAD_HTTP_RELATIVE_PATH: "/cbioportal-upload"
+      UPLOAD_FOLDER: "/app/uploads"
+      EXTRACTED_FOLDER: "/app/study"
     depends_on:
       - cbioportal-database
       - cbioportal-session
@@ -22,19 +26,21 @@ services:
       - "traefik.http.routers.cbioportal-upload.tls=true"
       - "traefik.http.services.cbioportal-upload.loadbalancer.server.port=8001" 
       
-      
-
   cbioportal-database:
-    image: docker.verbis.dkfz.de/ccp/dktk-cbioportal-database:latest
+    restart: unless-stopped
+    # image: docker.verbis.dkfz.de/ccp/dktk-cbioportal-database:latest
+    image: bridgehead-cbioportal-database
     container_name: bridgehead-cbioportal-database
     environment:
-      MYSQL_DATABASE: cbioportal
-      MYSQL_USER: cbio_user
+      MYSQL_DATABASE: "cbioportal"
+      MYSQL_USER: "cbio_user"
       MYSQL_PASSWORD: ${CBIOPORTAL_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${CBIOPORTAL_DB_ROOT_PASSWORD}
+      # MYSQL_PASSWORD: "password1234"
+      # MYSQL_ROOT_PASSWORD: "password12"
     volumes:
-      - /var/cache/bridgehead/ccp/cbioportal_db_data:/var/lib/mysql
-
+     - /var/cache/bridgehead/ccp/cbioportal_db_data:/var/lib/mysql
+ 
   cbioportal-session:
     image: cbioportal/session-service:0.6.1
     container_name: bridgehead-cbioportal-session

@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+
+ENABLE_CBIOPORTAL=true
  if [ "$ENABLE_CBIOPORTAL" == true ]; then
   log INFO "cBioPortal setup detected -- will start cBioPortal service."
   OVERRIDE+=" -f ./$PROJECT/modules/cbioportal-compose.yml"

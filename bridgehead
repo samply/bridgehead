@@ -109,6 +109,11 @@ case "$ACTION" in
 	logs)
 		loadVars
 		shift 2
+		exec journalctl -u bridgehead@$PROJECT -u bridgehead-update@$PROJECT -a $@
+		;;
+	docker-logs)
+		loadVars
+		shift 2
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE logs -f $@
 		;;
 	update)

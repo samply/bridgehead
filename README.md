@@ -236,7 +236,7 @@ You can either do this in a browser or with curl. If you visit the URL in the br
 curl -k https://localhost
 ```
 
-If you get errors when you do this, you can inspect the logs of your landing page container in order to determine what is going wrong. To do this you can use `./bridgehead docker-logs <Project> landing -f` to follow the logs of the container. This transaltes to a docker compose logs command meaning all the ususal docker logs flags work.
+Should the landing page not show anything, you can inspect the logs of the containers to determine what is going wrong. To do this you can use `./bridgehead docker-logs <Project> -f` to follow the logs of the container. This transaltes to a docker compose logs command meaning all the ususal docker logs flags work.
 
 If you have chosen to take part in our monitoring program (by setting the ```MONITOR_APIKEY``` variable in the configuration), you will be informed by email when problems are detected in your Bridgehead.
 

@@ -200,7 +200,7 @@ sudo systemctl [enable|disable] bridgehead@<PROJECT>.service
 After starting the Bridgehead, you can watch the initialization process with the following command:
 
 ```shell
-./bridghead logs <project> -f
+/srv/docker/bridgehead/bridgehead logs <project> -f
 ```
 
 if this exits with something similar to the following:
@@ -220,7 +220,7 @@ docker ps
 There should be 6 - 10 Docker proceses. If there are fewer, then you know that something has gone wrong. To see what is going on, run:
 
 ```shell
-./bridghead logs <Project> -f
+/srv/docker/bridgehead/bridgehead logs <Project> -f
 ```
 This translates to a journalctl command so all the regular journalctl flags can be used.
 

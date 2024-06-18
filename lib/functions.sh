@@ -267,7 +267,7 @@ function clone_repo_if_nonexistent() {
 function clone_transfair_if_nonexistent() {
     local base_dir="$1"
 
-    clone_repo_if_nonexistent https://github.com/samply/transFAIR.git $base_dir/transfair ehds2
+    clone_repo_if_nonexistent https://github.com/samply/transFAIR.git $base_dir/transfair ehds2_develop
 }
 
 function clone_focus_if_nonexistent() {

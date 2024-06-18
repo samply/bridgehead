@@ -56,11 +56,11 @@ services:
     command: bash -c " \
              echo listing /app/data && \
              ls -la /app/data && \
-             [ -f /app/data/*.[cC][sS][vV] ] && \
+             ls /app/data/*.[cC][sS][vV] 1> /dev/null 2>&1 && \
              [ ! -f /app/data/lock ] && \
              ( \
                  echo 'Wait for Blaze to finish initializing' ; \
-                 sleep 60 ; \
+                 sleep 300 ; \
                  echo 'Remove old output files' ; \
                  rm -rf /app/test/* ; \
                  cd /app ; \
@@ -78,5 +78,5 @@ services:
   test-data-loader:
     container_name: test-data-loader
     image: samply/test-data-loader
-    command: sh -c "sleep 300 && echo Listing all resources in FHIR store && blazectl --server http://bridgehead-bbmri-blaze:8080/fhir count-resources && tail -f /dev/null"
+    command: sh -c "sleep 400 && echo Listing all resources in FHIR store && blazectl --server http://bridgehead-bbmri-blaze:8080/fhir count-resources && tail -f /dev/null"
 

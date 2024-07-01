@@ -28,4 +28,4 @@ done
 
 idManagementSetup
 mtbaSetup
-adt2fhirRestSetup
+obds2fhirRestSetup

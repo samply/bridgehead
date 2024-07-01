@@ -1,13 +1,13 @@
 #!/bin/bash
 
-function adt2fhirRestSetup() {
-  if [ -n "$ENABLE_ADT2FHIR_REST" ]; then
-    log INFO "ADT2FHIR-REST setup detected -- will start adt2fhir-rest API."
+function obds2fhirRestSetup() {
+  if [ -n "$ENABLE_OBDS2FHIR_REST" ]; then
+    log INFO "oBDS2FHIR-REST setup detected -- will start obds2fhir-rest module."
     if [ ! -n "$IDMANAGER_LOCAL_PATIENTLIST_APIKEY" ]; then
       log ERROR "Missing ID-Management Module! Fix this by setting up ID Management:"
-      exit 1;
+      PATIENTLIST_URL=" "
     fi
-    OVERRIDE+=" -f ./$PROJECT/modules/adt2fhir-rest-compose.yml"
+    OVERRIDE+=" -f ./$PROJECT/modules/obds2fhir-rest-compose.yml"
     LOCAL_SALT="$(echo \"local-random-salt\" | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
   fi
 }

@@ -9,13 +9,9 @@ services:
     environment:
       BLAZE_BASE_URL: "http://blaze:8080/fhir/"
       PG_HOST: "dashboard-db"
-      PG_PORT: 5432
       PG_USERNAME: "dashboard"
       PG_PASSWORD: "${DASHBOARD_DB_PASSWORD}" # Set in exporter-setup.sh
       PG_DBNAME: "dashboard"
-      # TODO: Remove the following, replace with defaults in app
-      BLAZE_PAGE_RESOURCE_COUNT: 10000
-      PG_BATCH_SIZE: 10000
 
   dashboard-db:
     image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}

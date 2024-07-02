@@ -7,7 +7,7 @@
 # Makes only sense for EHDS2 project
 : ${ENABLE_EHDS2:=false}
 
-FOCUS_RETRY_COUNT=32
+FOCUS_RETRY_COUNT=128
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
 for module in $PROJECT/modules/*.sh

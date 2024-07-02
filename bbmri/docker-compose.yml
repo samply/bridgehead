@@ -4,7 +4,11 @@ version: "3.7"
 
 services:
   blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:latest
+    #image: docker.verbis.dkfz.de/cache/samply/blaze:latest
+    #image: samply/blaze:latest
+    # Blaze versions 0.26 and 0.27 do not return anything when you run a
+    # CQL query, so I am pinning the version at 0.25.
+    image: samply/blaze:0.25
     container_name: bridgehead-bbmri-blaze
     environment:
       BASE_URL: "http://bridgehead-bbmri-blaze:8080"

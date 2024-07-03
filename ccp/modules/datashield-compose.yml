@@ -151,7 +151,7 @@ services:
       --pass-access-token=false
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.oauth2_proxy.rule=Host(`${HOST}`) && PathPrefix(`/oauth2`, `/oauth2/callback`)"
+      - "traefik.http.routers.oauth2_proxy.rule=Host(`${HOST}`) && PathPrefix(`/oauth2`)"
       - "traefik.http.services.oauth2_proxy.loadbalancer.server.port=4180"
       - "traefik.http.routers.oauth2_proxy.tls=true"
     environment:

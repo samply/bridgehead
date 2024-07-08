@@ -3,7 +3,7 @@
 function obds2fhirRestSetup() {
   if [ -n "$ENABLE_OBDS2FHIR_REST" ]; then
     log INFO "oBDS2FHIR-REST setup detected -- will start obds2fhir-rest module."
-    if [ ! -n "$IDMANAGER_LOCAL_PATIENTLIST_APIKEY" ]; then
+    if [ ! -n "$IDMANAGER_UPLOAD_APIKEY" ]; then
       log ERROR "Missing ID-Management Module! Fix this by setting up ID Management:"
       PATIENTLIST_URL=" "
     fi

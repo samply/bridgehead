@@ -244,6 +244,24 @@ pki-scripts/managepki list
 
 ### Starting and stopping your Bridgehead
 
+For an ECDC/EHDS2 installation, you need to start and stop the Bridgehead manually.
+
+To start:
+
+```shell
+cd /srv/docker/bridgehead
+sudo nohup ./bridgehead start bbmri >& ~/bridgehead.log &
+```
+
+To stop:
+
+```shell
+cd /srv/docker/bridgehead
+sudo ./bridgehead stop bbmri
+```
+
+For regular installations, read on.
+
 If you followed the above steps, your Bridgehead should already be configured to autostart (via systemd). If you would like to start/stop manually:
 
 To start, run

@@ -171,19 +171,25 @@ sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
 
 If this is an ECDC/EHDS2 installation, switch to the ```ehds2``` branch and copy the configuration file to the required location:
 ```shell
-cd
+sudo mkdir -p /srv/docker/ecdc/data
+cd /srv/docker
 git clone https://github.com/samply/transFAIR.git
-cd transFAIR
+cd /srv/docker/transFAIR
+sudo git checkout ehds2
 docker build -t samply/transfair --no-cache .
+cd /srv/docker
+git clone https://github.com/samply/focus.git
+cd /srv/docker/focus
+sudo git checkout ehds2
+docker build -t samply/focus --no-cache .
 cd /srv/docker/bridgehead
 sudo git checkout ehds2
-sudo mkdir test data
 sudo mkdir -p /etc/bridgehead/
 sudo cp bbmri/modules/bbmri.conf /etc/bridgehead/
 sudo vi /etc/bridgehead/bbmri.conf # Modify to include national node name and admin contact details
 ```
 
-For an ECDC/EHDS2 installation, you will also need to copy your data in a comma-separated value (CSV) formatted file to ```/srv/docker/bridgehead/data```. Make sure it is readable by all. Only files with the ending ```.csv``` will be read in, all other files will be ignored.
+For an ECDC/EHDS2 installation, you will also need to copy your data in a comma-separated value (CSV) formatted file to ```/srv/docker/ecdc/data```. Make sure it is readable by all. Only files with the ending ```.csv``` will be read in, all other files will be ignored.
 
 If this is not an ECDC/EHDS2 installation, then download your site specific configuration repository:
 ```shell

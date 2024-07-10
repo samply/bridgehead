@@ -250,7 +250,7 @@ To start:
 
 ```shell
 cd /srv/docker/bridgehead
-sudo ./bridgehead start bbmri
+sudo nohup ./bridgehead start bbmri >& ~/bridgehead.log &
 ```
 
 To stop:

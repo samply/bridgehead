@@ -89,6 +89,8 @@ case "$ACTION" in
 		loadVars
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
+		# Note: changes to "bridgehead" script will only take effect after next start.
+		git pull
                 # Local versions of focus and transfair are needed by EHDS2
                 clone_focus_if_nonexistent ${BASE}/..
                 build_focus ${BASE}/..

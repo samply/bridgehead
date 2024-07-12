@@ -282,10 +282,11 @@ function build_transfair() {
 
     # We only take the touble to build transfair if:
     #
-    # 1. There is no data lock file (which means that no ETL has yet been run) and
-    # 2. There is data available.
-    if [ -f ../ecdc/data/*.[cC][sS][vV] ] && [ ! -f ../ecdc/data/lock ]; then
+    # 1. There is data available (any CSV files) and
+    # 2. There is no data lock file (which means that no ETL has yet been run).
+    if ls ../ecdc/data/*.[cC][sS][vV] 1> /dev/null 2>&1 && [ ! -f ../ecdc/data/lock ]; then
         cd $base_dir/transfair
+        git pull
         docker build --progress=plain -t samply/transfair --no-cache .
         cd -
     fi
@@ -295,6 +296,7 @@ function build_focus() {
     local base_dir="$1"
 
     cd $base_dir/focus
+    git pull
     docker build --progress=plain -f DockerfileWithBuild -t samply/focus --no-cache .
     cd -
 }

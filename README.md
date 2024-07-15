@@ -116,8 +116,6 @@ Now edit ```/etc/bridgehead/bbmri.conf``` and customize the following variables 
 
 If you run a proxy at your site, you will also need to give values to the ```HTTP*_PROXY*``` variables.
 
-ECDC data should be provided as a CSV file and placed in the directory /srv/docker/ecdc/data. The Bridgehead can be started without data, but obviously, any searches run from the Explorer will return zero results for your site if you do that. Note that an empty data directory will automatically be inserted on the first start of the Bridgehead if you don't set one up yourself.
-
 When you first start the Bridgehead, it will clone two extra repositories into /srv/docker, namely, ```focus``` and ```transfair```. It will automatically build local images of these repositories for you. These components have the following functionality that has been customized for ECDC:
 
 - *focus.* This component is responsible for completing the CQL that is used for running queries against the Blaze FHIR store. It uses a set of templates for doing this. Extra templates have been written for the ECDC use case. They can be found in /srv/docker/focus/resources/cql/EHDS2*.
@@ -233,21 +231,19 @@ pki-scripts/managepki list
 
 ### Starting and stopping your Bridgehead
 
-For an ECDC/EHDS2 installation, you need to start and stop the Bridgehead manually.
+For an ECDC/EHDS2 installation, you need to stop and start the Bridgehead manually.
 
-To stop:
+To stop the Bridgehead:
 
 ```shell
 cd /srv/docker/bridgehead
 sudo ./bridgehead stop bbmri
 ```
-To get the most up-to-date Bridgehead:
+If you wish to get the most up-to-date Bridgehead run ```sudo git pull``` now.
 
-```shell
-sudo git pull
-```
+If you have new data that you want to add to your Bridgehead, then you will need to remove the lock file at this point, see  [Non-Linux OS](#loading-date) for more details.
 
-To start:
+To start the Bridgehead:
 
 ```shell
 cd /srv/docker/bridgehead
@@ -400,6 +396,21 @@ There will be a delay before the effects of Directory sync become visible. First
 ### Loading data
 
 The data accessed by the federated search is held in the Bridgehead in a FHIR store (we use Blaze).
+
+For an ECDC/EHDS2 installation, you need to provide your data as a table in a CSV (comma-separated value) file and place it in the directory /srv/docker/ecdc/data.
+
+In order for this new data to be loaded, you will need to proceed as follows:
+
+- Stop the Bridgehead, see [this section](#starting-and-stopping-your-bridgehead)
+- If you want to read all data in from scratch, remove the Blaze Docker volume: ```docker volume rm bbmri_blaze-data```
+- Remove the lock file: ```sudo rm /srv/docker/ecdc/data/lock```
+- Start the Bridgehead again, see [this section](#starting-and-stopping-your-bridgehead)
+
+After the restart, the new data will be read into the Bridgehead. If you don't remove the Blaze volume, then any data already read in previously will remain there, preserving the date used for statistics.
+
+The Bridgehead can be started without data, but obviously, any searches run from the Explorer will return zero results for your site if you do that. Note that an empty data directory will automatically be inserted on the first start of the Bridgehead if you don't set one up yourself.
+
+For non-ECDC setups, read on.
 
 You can load data into this store by using its FHIR API:
 

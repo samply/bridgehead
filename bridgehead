@@ -88,9 +88,11 @@ case "$ACTION" in
 	start)
 		loadVars
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
+		chown -R bridgehead ${BASE}
 		checkRequirements
 		# Note: changes to "bridgehead" script will only take effect after next start.
-		git pull
+		su bridgehead -c "git pull"
+		chown -R bridgehead ${BASE}
                 # Local versions of focus and transfair are needed by EHDS2
                 clone_focus_if_nonexistent ${BASE}/..
                 build_focus ${BASE}/..

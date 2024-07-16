@@ -60,7 +60,7 @@ services:
              [ ! -f /app/data/lock ] && \
              ( \
                  echo 'Wait for Blaze to finish initializing' ; \
-                 sleep 300 ; \
+                 sleep 360 ; \
                  echo 'Remove old output files' ; \
                  rm -rf /app/test/* ; \
                  cd /app ; \
@@ -78,5 +78,5 @@ services:
   test-data-loader:
     container_name: test-data-loader
     image: samply/test-data-loader
-    command: sh -c "sleep 400 && echo Listing all resources in FHIR store && blazectl --server http://bridgehead-bbmri-blaze:8080/fhir count-resources && tail -f /dev/null"
+    command: sh -c "sleep 420 && echo Listing all resources in FHIR store && blazectl --server http://bridgehead-bbmri-blaze:8080/fhir count-resources && tail -f /dev/null"
 

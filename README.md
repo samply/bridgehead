@@ -231,23 +231,18 @@ pki-scripts/managepki list
 
 ### Starting and stopping your Bridgehead
 
-For an ECDC/EHDS2 installation, you need to stop and start the Bridgehead manually.
+For an ECDC/EHDS2 installation, this is done with the help of specialized scripts:
 
-To stop the Bridgehead:
+To start:
 
 ```shell
-cd /srv/docker/bridgehead
-sudo ./bridgehead stop bbmri
+sudo /srv/docker/bridgehead/run.sh
 ```
-If you wish to get the most up-to-date Bridgehead run ```sudo git pull``` now.
 
-If you have new data that you want to add to your Bridgehead, then you will need to remove the lock file at this point, see  [Non-Linux OS](#loading-date) for more details.
-
-To start the Bridgehead:
+To stop (you generally won't need to do this):
 
 ```shell
-cd /srv/docker/bridgehead
-sudo nohup ./bridgehead start bbmri >& ~/bridgehead.log &
+sudo /srv/docker/bridgehead/stop.sh
 ```
 
 For regular installations, read on.
@@ -397,16 +392,14 @@ There will be a delay before the effects of Directory sync become visible. First
 
 The data accessed by the federated search is held in the Bridgehead in a FHIR store (we use Blaze).
 
-For an ECDC/EHDS2 installation, you need to provide your data as a table in a CSV (comma-separated value) file and place it in the directory /srv/docker/ecdc/data.
+For an ECDC/EHDS2 installation, you need to provide your data as a table in a CSV (comma-separated value) files and place it in the directory /srv/docker/ecdc/data. You can provide as many data files as you like, and you can add new files incrementally over time.
 
-In order for this new data to be loaded, you will need to proceed as follows:
+In order for this new data to be loaded, you will need to execute the ```run.sh``` script with the appropriate arguments:
 
-- Stop the Bridgehead, see [this section](#starting-and-stopping-your-bridgehead)
-- If you want to read all data in from scratch, remove the Blaze Docker volume: ```docker volume rm bbmri_blaze-data```
-- Remove the lock file: ```sudo rm /srv/docker/ecdc/data/lock```
-- Start the Bridgehead again, see [this section](#starting-and-stopping-your-bridgehead)
+- To read just the most recently added data files: ```/srv/docker/bridgehead run.sh --upload```.
+- To read in all data from scratch: ```/srv/docker/bridgehead run.sh --upload-all```.
 
-After the restart, the new data will be read into the Bridgehead. If you don't remove the Blaze volume, then any data already read in previously will remain there, preserving the date used for statistics.
+These two variants give you the choice between uploading data in an incremental way that preserves the date used for statistics or as a single upload that date stamps everything with the current date.
 
 The Bridgehead can be started without data, but obviously, any searches run from the Explorer will return zero results for your site if you do that. Note that an empty data directory will automatically be inserted on the first start of the Bridgehead if you don't set one up yourself.
 

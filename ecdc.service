@@ -1,0 +1,14 @@
+[Unit]
+Description=Start ECDC Bridgehead
+
+[Service]
+Type=simple
+ExecStart=/srv/docker/bridgehead/restart_service.sh
+ExecStop=/srv/docker/bridgehead/shutdown_service.sh
+Restart=on-failure
+RestartSec=36000
+KillMode=mixed
+
+[Install]
+WantedBy=multi.user.target
+

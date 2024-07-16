@@ -171,17 +171,6 @@ sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
 
 If this is an ECDC/EHDS2 installation, switch to the ```ehds2``` branch and copy the configuration file to the required location:
 ```shell
-sudo mkdir -p /srv/docker/ecdc/data
-cd /srv/docker
-git clone https://github.com/samply/transFAIR.git
-cd /srv/docker/transFAIR
-sudo git checkout ehds2
-docker build -t samply/transfair --no-cache .
-cd /srv/docker
-git clone https://github.com/samply/focus.git
-cd /srv/docker/focus
-sudo git checkout ehds2
-docker build -t samply/focus --no-cache .
 cd /srv/docker/bridgehead
 sudo git checkout ehds2
 sudo mkdir -p /etc/bridgehead/
@@ -244,20 +233,18 @@ pki-scripts/managepki list
 
 ### Starting and stopping your Bridgehead
 
-For an ECDC/EHDS2 installation, you need to start and stop the Bridgehead manually.
+For an ECDC/EHDS2 installation, this is done with the help of specialized scripts:
 
 To start:
 
 ```shell
-cd /srv/docker/bridgehead
-sudo nohup ./bridgehead start bbmri >& ~/bridgehead.log &
+sudo /srv/docker/bridgehead/run.sh
 ```
 
-To stop:
+To stop (you generally won't need to do this):
 
 ```shell
-cd /srv/docker/bridgehead
-sudo ./bridgehead stop bbmri
+sudo /srv/docker/bridgehead/stop.sh
 ```
 
 For regular installations, read on.

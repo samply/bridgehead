@@ -116,8 +116,6 @@ Now edit ```/etc/bridgehead/bbmri.conf``` and customize the following variables 
 
 If you run a proxy at your site, you will also need to give values to the ```HTTP*_PROXY*``` variables.
 
-ECDC data should be provided as a CSV file and placed in the directory /srv/docker/ecdc/data. The Bridgehead can be started without data, but obviously, any searches run from the Explorer will return zero results for your site if you do that. Note that an empty data directory will automatically be inserted on the first start of the Bridgehead if you don't set one up yourself.
-
 When you first start the Bridgehead, it will clone two extra repositories into /srv/docker, namely, ```focus``` and ```transfair```. It will automatically build local images of these repositories for you. These components have the following functionality that has been customized for ECDC:
 
 - *focus.* This component is responsible for completing the CQL that is used for running queries against the Blaze FHIR store. It uses a set of templates for doing this. Extra templates have been written for the ECDC use case. They can be found in /srv/docker/focus/resources/cql/EHDS2*.
@@ -393,6 +391,19 @@ There will be a delay before the effects of Directory sync become visible. First
 ### Loading data
 
 The data accessed by the federated search is held in the Bridgehead in a FHIR store (we use Blaze).
+
+For an ECDC/EHDS2 installation, you need to provide your data as a table in a CSV (comma-separated value) files and place it in the directory /srv/docker/ecdc/data. You can provide as many data files as you like, and you can add new files incrementally over time.
+
+In order for this new data to be loaded, you will need to execute the ```run.sh``` script with the appropriate arguments:
+
+- To read just the most recently added data files: ```/srv/docker/bridgehead run.sh --upload```.
+- To read in all data from scratch: ```/srv/docker/bridgehead run.sh --upload-all```.
+
+These two variants give you the choice between uploading data in an incremental way that preserves the date used for statistics or as a single upload that date stamps everything with the current date.
+
+The Bridgehead can be started without data, but obviously, any searches run from the Explorer will return zero results for your site if you do that. Note that an empty data directory will automatically be inserted on the first start of the Bridgehead if you don't set one up yourself.
+
+For non-ECDC setups, read on.
 
 You can load data into this store by using its FHIR API:
 

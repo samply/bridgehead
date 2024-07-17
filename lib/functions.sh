@@ -260,7 +260,6 @@ function clone_repo_if_nonexistent() {
     # Checkout the specified branch
     chown -R bridgehead .
     su bridgehead -c "git checkout $branch_name"
-    echo "Checked out branch '$branch_name'."
 
     cd -
 }
@@ -287,7 +286,7 @@ function build_transfair() {
     # 2. There is no data lock file (which means that no ETL has yet been run).
     if ls ../ecdc/data/*.[cC][sS][vV] 1> /dev/null 2>&1 && [ ! -f ../ecdc/data/lock ]; then
         cd $base_dir/transfair
-	su bridgehead -c "git pull"
+        su bridgehead -c "git pull"
         docker build --progress=plain -t samply/transfair --no-cache .
         chown -R bridgehead .
         cd -

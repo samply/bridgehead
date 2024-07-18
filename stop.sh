@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Shut down a running Bridgehead and disable auto restart.
+# Shut down a running Bridgehead.
 # Behind the scenes we use systemctl to do the work.
 
 # Function to print usage
 print_usage() {
-    echo "Stop the running Bridgehead, disable auto-restart"
+    echo "Stop the running Bridgehead"
     echo "Usage: $0 [--help | -h]"
     echo "Options:"
     echo "  --help, -h     Display this help message."
@@ -34,6 +34,10 @@ systemctl daemon-reload
 systemctl enable ecdc.service
 
 # Use systemctl to stop the Bridgehead if it is running
-sudo systemctl disable ecdc.service
 sudo systemctl stop ecdc.service
+
+# Show status of Bridgehead service
+sleep 20
+systemctl status ecdc.service
+docker ps
 

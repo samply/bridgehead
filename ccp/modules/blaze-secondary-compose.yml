@@ -19,9 +19,14 @@ services:
       - "traefik.http.services.blaze-secondary_ccp.loadbalancer.server.port=8080"
       - "traefik.http.routers.blaze-secondary_ccp.middlewares=ccp_b-secondary_strip,auth"
       - "traefik.http.routers.blaze-secondary_ccp.tls=true"
+
   obds2fhir-rest:
     environment:
       STORE_PATH: ${STORE_PATH:-http://blaze:8080/fhir}
+
+  exporter:
+    environment:
+      BLAZE_HOST: "blaze-secondary"
 
 volumes:
   blaze-secondary-data:

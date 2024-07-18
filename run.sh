@@ -48,12 +48,12 @@ if [ "$UPLOAD" = true ] && [ "$UPLOAD_ALL" = true ]; then
 fi
 
 # Disable/stop standard Bridgehead systemctl services, if present
-sudo systemctl disable bridgehead@bbmri.service
-sudo systemctl disable system-bridgehead.slice
-sudo systemctl disable bridgehead-update@bbmri.timer
-sudo systemctl stop bridgehead@bbmri.service
-sudo systemctl stop system-bridgehead.slice
-sudo systemctl stop bridgehead-update@bbmri.timer
+sudo systemctl disable bridgehead@bbmri.service >& /dev/null
+sudo systemctl disable system-bridgehead.slice >& /dev/null
+sudo systemctl disable bridgehead-update@bbmri.timer >& /dev/null
+sudo systemctl stop bridgehead@bbmri.service >& /dev/null
+sudo systemctl stop system-bridgehead.slice >& /dev/null
+sudo systemctl stop bridgehead-update@bbmri.timer >& /dev/null
 
 # Set up systemctl for EHDS2/ECDC if necessary
 cp /srv/docker/bridgehead/ecdc.service /etc/systemd/system
@@ -77,3 +77,6 @@ fi
 # Start up the Bridgehead
 sudo systemctl start ecdc.service
 
+# Show status of Bridgehead service
+sleep 10
+systemctl status ecdc.service

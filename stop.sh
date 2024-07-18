@@ -34,6 +34,10 @@ systemctl daemon-reload
 systemctl enable ecdc.service
 
 # Use systemctl to stop the Bridgehead if it is running
-sudo systemctl disable ecdc.service
 sudo systemctl stop ecdc.service
+
+# Show status of Bridgehead service
+sleep 20
+systemctl status ecdc.service
+docker ps
 

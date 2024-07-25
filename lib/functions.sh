@@ -53,7 +53,7 @@ checkOwner(){
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|stop|logs|is-running|update|install|uninstall|adduser|enroll PROJECTNAME"
+	echo "Usage: bridgehead start|stop|logs|docker-logs|is-running|update|install|uninstall|adduser|enroll PROJECTNAME"
 	echo "PROJECTNAME should be one of ccp|bbmri"
 }
 
@@ -155,6 +155,28 @@ setHostname() {
 	fi
 }
 
+# This function optimizes the usage of memory through blaze, according to the official performance tuning guide:
+#   https://github.com/samply/blaze/blob/master/docs/tuning-guide.md
+# Short summary of the adjustments made:
+# - set blaze memory cap to a quarter of the system memory
+# - set db block cache size to a quarter of the system memory
+# - limit resource count allowed in blaze to 1,25M per 4GB available system memory
+optimizeBlazeMemoryUsage() {
+	if [ -z "$BLAZE_MEMORY_CAP" ]; then
+	   system_memory_in_mb=$(LC_ALL=C free -m | grep 'Mem:' | awk '{print $2}');
+	   export BLAZE_MEMORY_CAP=$(($system_memory_in_mb/4));
+	fi
+	if [ -z "$BLAZE_RESOURCE_CACHE_CAP" ]; then
+		available_system_memory_chunks=$((BLAZE_MEMORY_CAP / 1000))
+		if [ $available_system_memory_chunks -eq 0 ]; then
+			log WARN "Only ${BLAZE_MEMORY_CAP} system memory available for Blaze. If your Blaze stores more than 128000 fhir ressources it will run significally slower."
+			export BLAZE_RESOURCE_CACHE_CAP=128000;
+		else
+			export BLAZE_RESOURCE_CACHE_CAP=$((available_system_memory_chunks * 312500))
+		fi
+	fi
+}
+
 # Takes 1) The Backup Directory Path 2) The name of the Service to be backuped
 # Creates 3 Backups: 1) For the past seven days 2) For the current month and 3) for each calendar week
 createEncryptedPostgresBackup(){
@@ -238,4 +260,114 @@ add_basic_auth_user() {
    fi
  	log DEBUG "Saving clear text credentials in $FILE. If wanted, delete them manually."
    sed -i "/^$NAME/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
+}
+
+OIDC_PUBLIC_REDIRECT_URLS=${OIDC_PUBLIC_REDIRECT_URLS:-""}
+OIDC_PRIVATE_REDIRECT_URLS=${OIDC_PRIVATE_REDIRECT_URLS:-""}
+
+# Add a redirect url to the public oidc client of the bridgehead
+function add_public_oidc_redirect_url() {
+    if [[ $OIDC_PUBLIC_REDIRECT_URLS == "" ]]; then
+        OIDC_PUBLIC_REDIRECT_URLS+="$(generate_redirect_urls $1)"
+    else 
+        OIDC_PUBLIC_REDIRECT_URLS+=",$(generate_redirect_urls $1)"
+    fi
+}
+
+# Add a redirect url to the private oidc client of the bridgehead
+function add_private_oidc_redirect_url() {
+    if [[ $OIDC_PRIVATE_REDIRECT_URLS == "" ]]; then
+        OIDC_PRIVATE_REDIRECT_URLS+="$(generate_redirect_urls $1)"
+    else 
+        OIDC_PRIVATE_REDIRECT_URLS+=",$(generate_redirect_urls $1)"
+    fi
+}
+
+function sync_secrets() {
+    local delimiter=$'\x1E'
+    local secret_sync_args=""
+    if [[ $OIDC_PRIVATE_REDIRECT_URLS != "" ]]; then
+        secret_sync_args="OIDC:OIDC_CLIENT_SECRET:private;$OIDC_PRIVATE_REDIRECT_URLS"
+    fi
+    if [[ $OIDC_PUBLIC_REDIRECT_URLS != "" ]]; then
+        if [[ $secret_sync_args == "" ]]; then
+            secret_sync_args="OIDC:OIDC_PUBLIC:public;$OIDC_PUBLIC_REDIRECT_URLS"
+        else
+            secret_sync_args+="${delimiter}OIDC:OIDC_PUBLIC:public;$OIDC_PUBLIC_REDIRECT_URLS"
+        fi
+    fi
+    if [[ $secret_sync_args == "" ]]; then
+        return
+    fi
+    mkdir -p /var/cache/bridgehead/secrets/ || fail_and_report 1 "Failed to create '/var/cache/bridgehead/secrets/'. Please run sudo './bridgehead install $PROJECT' again."
+    touch /var/cache/bridgehead/secrets/oidc
+    docker run --rm \
+        -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \
+        -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
+        -v /srv/docker/bridgehead/$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
+        -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
+        -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
+        -e NO_PROXY=localhost,127.0.0.1 \
+        -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
+        -e PROXY_ID=$PROXY_ID \
+        -e BROKER_URL=$BROKER_URL \
+        -e OIDC_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
+        -e SECRET_DEFINITIONS=$secret_sync_args \
+        docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
+
+    set -a # Export variables as environment variables
+    source /var/cache/bridgehead/secrets/*
+    set +a # Export variables in the regular way
+}
+
+capitalize_first_letter() {
+    input="$1"
+    capitalized="$(tr '[:lower:]' '[:upper:]' <<< ${input:0:1})${input:1}"
+    echo "$capitalized"
+}
+
+# Generate a string of ',' separated string of redirect urls relative to $HOST.
+# $1 will be appended to the url
+# If the host looks like dev-jan.inet.dkfz-heidelberg.de it will generate urls with dev-jan and the original $HOST as url Authorities
+function generate_redirect_urls(){
+    local redirect_urls="https://${HOST}$1"
+    local host_without_proxy="$(echo "$HOST" | cut -d '.' -f1)"
+    # Only append second url if its different and the host is not an ip address
+    if [[ "$HOST" != "$host_without_proxy" && ! "$HOST" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        redirect_urls+=",https://$host_without_proxy$1"
+    fi
+    echo "$redirect_urls"
+}
+
+# This password contains at least one special char, a random number and a random upper and lower case letter
+generate_password(){
+  local seed_text="$1"
+  local seed_num=$(awk 'BEGIN{FS=""} NR==1{print $10}' /etc/bridgehead/pki/${SITE_ID}.priv.pem | od -An -tuC)
+  local nums="1234567890"
+  local n=$(echo "$seed_num" | awk '{print $1 % 10}')
+  local random_digit=${nums:$n:1}
+  local n=$(echo "$seed_num" | awk '{print $1 % 26}')
+  local upper="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  local lower="abcdefghijklmnopqrstuvwxyz"
+  local random_upper=${upper:$n:1}
+  local random_lower=${lower:$n:1}
+  local n=$(echo "$seed_num" | awk '{print $1 % 8}')
+  local special='@#$%^&+='
+  local random_special=${special:$n:1}
+
+  local combined_text="This is a salt string to generate one consistent password for ${seed_text}. It is not required to be secret."
+  local main_password=$(echo "${combined_text}" | sha1sum | openssl pkeyutl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" 2> /dev/null | base64 | head -c 26 | sed 's/\//A/g')
+
+  echo "${main_password}${random_digit}${random_upper}${random_lower}${random_special}"
+}
+
+# This password only contains alphanumeric characters
+generate_simple_password(){
+  local seed_text="$1"
+  local combined_text="This is a salt string to generate one consistent password for ${seed_text}. It is not required to be secret."
+  echo "${combined_text}" | sha1sum | openssl pkeyutl -sign -inkey "/etc/bridgehead/pki/${SITE_ID}.priv.pem" 2> /dev/null | base64 | head -c 26 | sed 's/[+\/]/A/g'
+}
+
+docker_jq() {
+    docker run --rm -i docker.verbis.dkfz.de/cache/jqlang/jq:latest "$@"
 }

@@ -1,4 +1,5 @@
 version: "3.7"
+
 services:
   id-manager:
     image: docker.verbis.dkfz.de/bridgehead/magicpl
@@ -28,6 +29,7 @@ services:
     container_name: bridgehead-patientlist
     environment:
       - TOMCAT_REVERSEPROXY_FQDN=${HOST}
+      - TOMCAT_REVERSEPROXY_SSL=true
       - ML_SITE=${IDMANAGEMENT_FRIENDLY_ID}
       - ML_DB_PASS=${PATIENTLIST_POSTGRES_PASSWORD}
       - ML_API_KEY=${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
@@ -43,7 +45,7 @@ services:
       - patientlist-db
 
   patientlist-db:
-    image: docker.verbis.dkfz.de/cache/postgres:15.6-alpine
+    image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
     container_name: bridgehead-patientlist-db
     environment:
       POSTGRES_USER: "mainzelliste"

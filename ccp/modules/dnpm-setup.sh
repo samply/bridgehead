@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if [ -n "${ENABLE_DNPM}" ]; then
 	log INFO "DNPM setup detected (Beam.Connect) -- will start Beam.Connect for DNPM."

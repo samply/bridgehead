@@ -50,6 +50,8 @@ loadVars() {
 		source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
 	fi
 	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
+	setHostname
+	optimizeBlazeMemoryUsage
 	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 	set +a
 
@@ -64,7 +66,6 @@ loadVars() {
 		OVERRIDE+=" -f ./$PROJECT/docker-compose.override.yml"
 	fi
 	detectCompose
-	setHostname
 	setupProxy
 
 	# Set some project-independent default values
@@ -89,11 +90,14 @@ case "$ACTION" in
 		loadVars
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
+		sync_secrets
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
 		loadVars
+		# Kill stale secret-sync instances if present
+		docker kill $(docker ps -q --filter ancestor=docker.verbis.dkfz.de/cache/samply/secret-sync-local) 2>/dev/null || true
 		# HACK: This is temporarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
 		$COMPOSE -p bridgehead-$PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
@@ -103,6 +107,11 @@ case "$ACTION" in
 		exit $?
 		;;
 	logs)
+		loadVars
+		shift 2
+		exec journalctl -u bridgehead@$PROJECT -u bridgehead-update@$PROJECT -a $@
+		;;
+	docker-logs)
 		loadVars
 		shift 2
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE logs -f $@

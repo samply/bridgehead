@@ -200,7 +200,7 @@ sudo systemctl [enable|disable] bridgehead@<PROJECT>.service
 After starting the Bridgehead, you can watch the initialization process with the following command:
 
 ```shell
-journalctl -u bridgehead@bbmri -f
+/srv/docker/bridgehead/bridgehead logs <project> -f
 ```
 
 if this exits with something similar to the following:
@@ -220,8 +220,9 @@ docker ps
 There should be 6 - 10 Docker proceses. If there are fewer, then you know that something has gone wrong. To see what is going on, run:
 
 ```shell
-journalctl -u bridgehead@bbmri -f
+/srv/docker/bridgehead/bridgehead logs <Project> -f
 ```
+This translates to a journalctl command so all the regular journalctl flags can be used.
 
 Once the Bridgehead has passed these checks, take a look at the landing page:
 
@@ -235,7 +236,7 @@ You can either do this in a browser or with curl. If you visit the URL in the br
 curl -k https://localhost
 ```
 
-If you get errors when you do this, you need to use ```docker logs``` to examine your landing page container in order to determine what is going wrong.
+Should the landing page not show anything, you can inspect the logs of the containers to determine what is going wrong. To do this you can use `./bridgehead docker-logs <Project> -f` to follow the logs of the container. This transaltes to a docker compose logs command meaning all the ususal docker logs flags work.
 
 If you have chosen to take part in our monitoring program (by setting the ```MONITOR_APIKEY``` variable in the configuration), you will be informed by email when problems are detected in your Bridgehead.
 

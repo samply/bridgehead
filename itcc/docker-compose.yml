@@ -1,0 +1,63 @@
+version: "3.7"
+
+services:
+  blaze:
+    image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
+    container_name: bridgehead-itcc-blaze
+    environment:
+      BASE_URL: "http://bridgehead-itcc-blaze:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx${BLAZE_MEMORY_CAP:-4096}m"
+      DB_RESOURCE_CACHE_SIZE: ${BLAZE_RESOURCE_CACHE_CAP:-2500000}
+      DB_BLOCK_CACHE_SIZE: $BLAZE_MEMORY_CAP
+      ENFORCE_REFERENTIAL_INTEGRITY: "false"
+    volumes:
+      - "blaze-data:/app/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blaze_itcc.rule=PathPrefix(`/itcc-localdatamanagement`)"
+      - "traefik.http.middlewares.itcc_b_strip.stripprefix.prefixes=/itcc-localdatamanagement"
+      - "traefik.http.services.blaze_itcc.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_itcc.middlewares=itcc_b_strip,auth"
+      - "traefik.http.routers.blaze_itcc.tls=true"
+
+  focus:
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
+    container_name: bridgehead-focus
+    environment:
+      API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      BEAM_APP_ID_LONG: focus.${PROXY_ID}
+      PROXY_ID: ${PROXY_ID}
+      BLAZE_URL: "http://bridgehead-itcc-blaze:8080/fhir/"
+      BEAM_PROXY_URL: http://beam-proxy:8081
+      RETRY_COUNT: ${FOCUS_RETRY_COUNT}
+      EPSILON: 0.28
+    depends_on:
+      - "beam-proxy"
+      - "blaze"
+
+  beam-proxy:
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    container_name: bridgehead-beam-proxy
+    environment:
+      BROKER_URL: ${BROKER_URL}
+      PROXY_ID: ${PROXY_ID}
+      APP_focus_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      PRIVKEY_FILE: /run/secrets/proxy.pem
+      ALL_PROXY: http://forward_proxy:3128
+      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
+      ROOTCERT_FILE: /conf/root.crt.pem
+    secrets:
+      - proxy.pem
+    depends_on:
+      - "forward_proxy"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+      - /srv/docker/bridgehead/itcc/root.crt.pem:/conf/root.crt.pem:ro
+
+
+volumes:
+  blaze-data:
+
+secrets:
+  proxy.pem:
+    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

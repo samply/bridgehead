@@ -52,6 +52,12 @@ case "$PROJECT" in
 	bbmri)
 		site_configuration_repository_middle="git.verbis.dkfz.de/bbmri-bridgehead-configs/"
 		;;
+	cce)
+		site_configuration_repository_middle="git.verbis.dkfz.de/cce-sites/"
+		;;
+	itcc)
+		site_configuration_repository_middle="git.verbis.dkfz.de/itcc-sites/"
+		;;
 	minimal)
 		site_configuration_repository_middle="git.verbis.dkfz.de/minimal-bridgehead-configs/"
 		;;

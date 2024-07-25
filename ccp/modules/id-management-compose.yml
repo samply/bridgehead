@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   id-manager:
-    image: docker.verbis.dkfz.de/bridgehead/magicpl
+    image: docker.verbis.dkfz.de/bridgehead/magicpl:fix-authconnection
     container_name: bridgehead-id-manager
     environment:
       TOMCAT_REVERSEPROXY_FQDN: ${HOST}
@@ -14,8 +14,6 @@ services:
       MAGICPL_CONNECTOR_APIKEY: ${IDMANAGER_READ_APIKEY}
       MAGICPL_CENTRAL_PATIENTLIST_APIKEY: ${IDMANAGER_CENTRAL_PATIENTLIST_APIKEY}
       MAGICPL_CONTROLNUMBERGENERATOR_APIKEY: ${IDMANAGER_CONTROLNUMBERGENERATOR_APIKEY}
-      MAGICPL_OIDC_CLIENT_ID: ${IDMANAGER_AUTH_CLIENT_ID}
-      MAGICPL_OIDC_CLIENT_SECRET: ${IDMANAGER_AUTH_CLIENT_SECRET}
     depends_on:
       - patientlist
     labels:
@@ -23,6 +21,7 @@ services:
       - "traefik.http.routers.id-manager.rule=PathPrefix(`/id-manager`)"
       - "traefik.http.services.id-manager.loadbalancer.server.port=8080"
       - "traefik.http.routers.id-manager.tls=true"
+      - "traefik.http.routers.id-manager.middlewares=traefik-forward-auth-idm"
 
   patientlist:
     image: docker.verbis.dkfz.de/bridgehead/mainzelliste

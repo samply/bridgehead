@@ -54,6 +54,42 @@ services:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
 
+  traefik-forward-auth:
+    image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:v7.6.0
+    environment:
+      - http_proxy=http://bridgehead-forward-proxy:3128
+      - https_proxy=http://bridgehead-forward-proxy:3128
+      - OAUTH2_PROXY_PROVIDER=oidc
+      - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
+      - OAUTH2_PROXY_OIDC_ISSUER_URL=https://login.verbis.dkfz.de/realms/master
+      - OAUTH2_PROXY_CLIENT_ID=bridgehead-${SITE_ID}
+      - OAUTH2_PROXY_CLIENT_SECRET=${CCP_AUTH_CLIENT_SECRET}
+      - OAUTH2_PROXY_COOKIE_NAME=_BRIDGEHEAD_oauth2
+      - OAUTH2_PROXY_COOKIE_SECRET=${CCP_AUTH_COOKIE_SECRET}
+      - OAUTH2_PROXY_COOKIE_DOMAINS=.${HOST}
+      - OAUTH2_PROXY_HTTP_ADDRESS=:4180
+      - OAUTH2_PROXY_REVERSE_PROXY=true
+      - OAUTH2_PROXY_WHITELIST_DOMAINS=.${HOST}
+      - OAUTH2_PROXY_UPSTREAMS=static://202
+      - OAUTH2_PROXY_EMAIL_DOMAINS=*
+      - OAUTH2_PROXY_SCOPE=openid profile email
+      # Pass Authorization Header and some user information to backend services
+      - OAUTH2_PROXY_SET_AUTHORIZATION_HEADER=true
+      - OAUTH2_PROXY_SET_XAUTHREQUEST=true
+      # Keycloak has an expiration time of 60s therefore oauth2-proxy needs to refresh after that
+      - OAUTH2_PROXY_COOKIE_REFRESH=60s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4180"
+      - "traefik.http.routers.oauth2.rule=PathPrefix(`/oauth2/`)"
+      - "traefik.http.routers.oauth2.tls=true"
+      # This is the special middleware for id-management
+      - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180/oauth2/auth?allowed_groups=DKTK-CCP-PPSN"
+      - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.authResponseHeaders=Authorization"
+      - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardauth.address=http://traefik-forward-auth:4180/oauth2/auth?allowed_groups=DataSHIELD"
+      - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardauth.authResponseHeaders=Authorization"
+      - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardAuth.trustForwardHeader=true"
+
 
 volumes:
   blaze-data:

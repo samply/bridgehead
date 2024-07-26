@@ -88,6 +88,8 @@ The following URLs need to be accessible (prefix with `https://`):
   * gitlab.bbmri-eric.eu
 * only for German Biobank Node
   * broker.bbmri.de
+* only for EHDS2/ECDC
+  * ecdc-vm-ehds-test1.swedencentral.cloudapp.azure.com
 
 > 📝 This URL list is subject to change. Instead of the individual names, we highly recommend whitelisting wildcard domains: *.dkfz.de, github.com, *.docker.com, *.docker.io, *.samply.de, *.bbmri.de.
 

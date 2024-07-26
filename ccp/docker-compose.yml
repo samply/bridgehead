@@ -84,8 +84,8 @@ services:
       - "traefik.http.routers.oauth2.rule=PathPrefix(`/oauth2/`)"
       - "traefik.http.routers.oauth2.tls=true"
       # This is the special middleware for id-management
-      # - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180/oauth2/auth?allowed_groups=DKTK-CCP-PPSN"
-      - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180"
+      - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180/oauth2/auth?allowed_groups=DKTK-CCP-PPSN"
+      # - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180"
       - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.authResponseHeaders=Authorization"
       - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardauth.address=http://traefik-forward-auth:4180/oauth2/auth?allowed_groups=DataSHIELD"
       - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardauth.authResponseHeaders=Authorization"

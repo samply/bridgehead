@@ -57,8 +57,8 @@ services:
   traefik-forward-auth:
     image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:v7.6.0
     environment:
-      - http_proxy=http://bridgehead-forward-proxy:3128
-      - https_proxy=http://bridgehead-forward-proxy:3128
+      - http_proxy=http://forward_proxy:3128
+      - https_proxy=http://forward_proxy:3128
       - OAUTH2_PROXY_PROVIDER=oidc
       - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
       - OAUTH2_PROXY_OIDC_ISSUER_URL=https://login.verbis.dkfz.de/realms/master

@@ -64,7 +64,6 @@ services:
       - OAUTH2_PROXY_OIDC_ISSUER_URL=https://login.verbis.dkfz.de/realms/master
       - OAUTH2_PROXY_CLIENT_ID=bridgehead-${SITE_ID}
       - OAUTH2_PROXY_CLIENT_SECRET=${CCP_AUTH_CLIENT_SECRET}
-      - OAUTH2_PROXY_COOKIE_NAME=_BRIDGEHEAD_oauth2
       - OAUTH2_PROXY_COOKIE_SECRET=${CCP_AUTH_COOKIE_SECRET}
       - OAUTH2_PROXY_COOKIE_DOMAINS=.${HOST}
       - OAUTH2_PROXY_HTTP_ADDRESS=:4180
@@ -78,13 +77,15 @@ services:
       - OAUTH2_PROXY_SET_XAUTHREQUEST=true
       # Keycloak has an expiration time of 60s therefore oauth2-proxy needs to refresh after that
       - OAUTH2_PROXY_COOKIE_REFRESH=60s
+      # - OAUTH2_PROXY_COOKIE_NAME=_BRIDGEHEAD_oauth2
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4180"
       - "traefik.http.routers.oauth2.rule=PathPrefix(`/oauth2/`)"
       - "traefik.http.routers.oauth2.tls=true"
       # This is the special middleware for id-management
-      - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180/oauth2/auth?allowed_groups=DKTK-CCP-PPSN"
+      # - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180/oauth2/auth?allowed_groups=DKTK-CCP-PPSN"
+      - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180"
       - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.authResponseHeaders=Authorization"
       - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardauth.address=http://traefik-forward-auth:4180/oauth2/auth?allowed_groups=DataSHIELD"
       - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardauth.authResponseHeaders=Authorization"

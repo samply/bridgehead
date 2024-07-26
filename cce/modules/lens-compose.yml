@@ -3,6 +3,11 @@ services:
   landing:
     container_name: lens_federated-search
     image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
+      - "traefik.http.services.landing.loadbalancer.server.port=80"
+      - "traefik.http.routers.landing.tls=true"
 
   spot:
     image: docker.verbis.dkfz.de/ccp-private/central-spot

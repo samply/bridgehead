@@ -8,4 +8,5 @@ services:
       DS_DIRECTORY_USER_NAME: ${DS_DIRECTORY_USER_NAME}
       DS_DIRECTORY_PASS_CODE: ${DS_DIRECTORY_PASS_CODE}
       DS_TIMER_CRON: ${DS_TIMER_CRON}
+      # It is recommended to check the enabling of this flag with your local data protection group
       DS_DIRECTORY_ALLOW_STAR_MODEL: ${DS_DIRECTORY_ALLOW_STAR_MODEL}

@@ -89,7 +89,9 @@ services:
       - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardauth.address=http://traefik-forward-auth:4180/oauth2/auth?allowed_groups=DataSHIELD"
       - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardauth.authResponseHeaders=Authorization"
       - "traefik.http.middlewares.traefik-forward-auth-datashield.forwardAuth.trustForwardHeader=true"
-
+    depends_on:
+      forward_proxy:
+        condition: service_healthy
 
 volumes:
   blaze-data:

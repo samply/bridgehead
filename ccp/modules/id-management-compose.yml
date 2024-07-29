@@ -79,7 +79,7 @@ services:
       # Keycloak has an expiration time of 60s therefore oauth2-proxy needs to refresh after that
       - OAUTH2_PROXY_COOKIE_REFRESH=60s
       - OAUTH2_PROXY_ALLOWED_GROUPS=DKTK-CCP-PPSN
-      - OAUTH2_PROXY_PROXY_PREFIX="/oauth2-idm"
+      - OAUTH2_PROXY_PROXY_PREFIX=/oauth2-idm
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4180"

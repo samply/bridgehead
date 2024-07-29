@@ -10,7 +10,7 @@ services:
       BLAZE_BASE_URL: "http://blaze:8080/fhir/"
       PG_HOST: "dashboard-db"
       PG_USERNAME: "dashboard"
-      PG_PASSWORD: "${DASHBOARD_DB_PASSWORD}" # Set in exporter-setup.sh
+      PG_PASSWORD: "${DASHBOARD_DB_PASSWORD}" # Set in dashboard-setup.sh
       PG_DBNAME: "dashboard"
 
   dashboard-db:
@@ -18,7 +18,7 @@ services:
     container_name: bridgehead-ccp-dashboard-db
     environment:
       POSTGRES_USER: "dashboard"
-      POSTGRES_PASSWORD: "${DASHBOARD_DB_PASSWORD}" # Set in exporter-setup.sh
+      POSTGRES_PASSWORD: "${DASHBOARD_DB_PASSWORD}" # Set in dashboard-setup.sh
       POSTGRES_DB: "dashboard"
     volumes:
       - "/var/cache/bridgehead/ccp/dashboard-db:/var/lib/postgresql/data"

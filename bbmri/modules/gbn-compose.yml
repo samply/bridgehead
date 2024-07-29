@@ -16,7 +16,7 @@ services:
       - "blaze"
 
   beam-proxy-gbn:
-    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:${BEAM_TAG}
     container_name: bridgehead-beam-proxy-gbn
     environment:
       BROKER_URL: ${GBN_BROKER_URL}

@@ -4,7 +4,7 @@ services:
   fhir2sql:
     depends_on:
       - "dashboard-db"
-      - [ blaze ]
+      - "blaze"
     image: docker.verbis.dkfz.de/cache/samply/fhir2sql:latest
     container_name: bridgehead-ccp-dashboard-fhir2sql
     environment:

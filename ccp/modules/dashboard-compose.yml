@@ -4,10 +4,11 @@ services:
   fhir2sql:
     depends_on:
       - "dashboard-db"
+      - [ blaze ]
     image: docker.verbis.dkfz.de/cache/samply/fhir2sql:latest
     container_name: bridgehead-ccp-dashboard-fhir2sql
     environment:
-      BLAZE_BASE_URL: "http://blaze:8080/fhir/"
+      BLAZE_BASE_URL: "http://bridgehead-ccp-blaze:8080"
       PG_HOST: "dashboard-db"
       PG_USERNAME: "dashboard"
       PG_PASSWORD: "${DASHBOARD_DB_PASSWORD}" # Set in dashboard-setup.sh

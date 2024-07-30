@@ -33,4 +33,4 @@ The volume used by dashboard-db can be removed safely and should be restored to 
 
 
 ### Setup
-To enable the Dashboard module, set the ENABLE_DASHBOARD environment variable to true. The dashboard-setup.sh script will then start the fhir2sql and dashboard-db services, using the environment variables and volumes defined above.
+To enable the Dashboard module, set the ENABLE_FHIR2SQL environment variable to true. The dashboard-setup.sh script will then start the fhir2sql and dashboard-db services, using the environment variables and volumes defined above.

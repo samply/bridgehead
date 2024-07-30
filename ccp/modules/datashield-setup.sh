@@ -33,7 +33,7 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
   echo "$sites" | docker_jq -n --args '[{
     "external": "'"$SITE_ID"':443",
     "internal": "opal:8443",
-    "allowed": input | map("datashield-connect.\(.).'"$BROKER_ID"'")
+    "allowed": input | map("\(.).'"$BROKER_ID"'")
   }]' >/tmp/bridgehead/opal-map/local.json
   if [ "$USER" == "root" ]; then
     chown -R bridgehead:docker /tmp/bridgehead

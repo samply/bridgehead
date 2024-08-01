@@ -1,5 +1,5 @@
 [Unit]
-Description=Hourly Updates of Bridgehead (%i)
+Description=Daily Updates at 6am of Bridgehead (%i)
 
 [Timer]
 OnCalendar=*-*-* 6:00:00

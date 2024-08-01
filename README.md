@@ -46,6 +46,8 @@ Hardware requirements strongly depend on the specific use-cases of your network 
 - 32 GB RAM
 - 160GB Hard Drive, SSD recommended
 
+We recommend using a dedicated VM for the Bridgehead, with no other applications running on it. While the Bridgehead can, in principle, run on a shared VM, you might run into surprising problems such as resource conflicts (e.g., two apps using tcp port 443).
+
 ### Software
 
 You are strongly recommended to install the Bridgehead under a Linux operating system (but see the section [Non-Linux OS](#non-linux-os)). You will need root (administrator) priveleges on this machine in order to perform the deployment. We recommend the newest Ubuntu LTS server release.

@@ -34,10 +34,6 @@ This repository is the starting point for any information and tools you will nee
 
 ## Requirements
 
-To guarantee a smooth operation of the Bridgehead, we recommend a dedicated VM for the Bridgehead, with no other applications running on it.
-
-It may to be possible to run other apps on the same server, if they don't share common ports with the Bridgehead, and if they do not take up resources that the Bridgehead needs, like RAM. The Bridgehead may also run into issues if other applications need incompatible versions of git, Docker, curl, or other dependencies.
-
 The data protection group at your site will probably want to know exactly what our software does with patient data, and you may need to get their approval before you are allowed to install a Bridgehead. To help you with this, we have provided some data protection concepts:
 
 - [Germany](https://www.bbmri.de/biobanking/it/infrastruktur/datenschutzkonzept/)
@@ -49,6 +45,8 @@ Hardware requirements strongly depend on the specific use-cases of your network 
 - 4 CPU cores
 - 32 GB RAM
 - 160GB Hard Drive, SSD recommended
+
+We recommend using a dedicated VM for the Bridgehead, with no other applications running on it. While the Bridgehead can, in principle, run on a shared VM, you might run into surprising problems such as resource conflicts (e.g., two apps using tcp port 443).
 
 ### Software
 

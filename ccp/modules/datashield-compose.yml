@@ -105,6 +105,7 @@ services:
     networks:
       - default
       - rstudio
+
   forward_proxy:
     networks:
       - default
@@ -114,7 +115,6 @@ services:
     environment:
       APP_datashield-connect_KEY: ${DATASHIELD_CONNECT_SECRET}
       APP_token-manager_KEY: ${TOKEN_MANAGER_SECRET}
-
   # TODO: Allow users of group /DataSHIELD and OIDC_USER_GROUP at the same time:
   # Maybe a solution would be (https://oauth2-proxy.github.io/oauth2-proxy/configuration/oauth_provider):
   # --allowed-groups=/DataSHIELD,OIDC_USER_GROUP

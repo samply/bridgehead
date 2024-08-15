@@ -4,12 +4,12 @@ services:
   directory_sync_service:
     image: "docker.verbis.dkfz.de/cache/samply/directory_sync_service"
     environment:
-      DS_DIRECTORY_URL: ${DS_DIRECTORY_URL}
+      DS_DIRECTORY_URL: ${DS_DIRECTORY_URL:-https://directory.bbmri-eric.eu}
       DS_DIRECTORY_USER_NAME: ${DS_DIRECTORY_USER_NAME}
       DS_DIRECTORY_USER_PASS: ${DS_DIRECTORY_USER_PASS}
-      DS_TIMER_CRON: ${DS_TIMER_CRON}
+      DS_TIMER_CRON: ${DS_TIMER_CRON:-0 22 * * *}
       # It is recommended to check the enabling of this flag with your local data protection group
-      DS_DIRECTORY_ALLOW_STAR_MODEL: ${DS_DIRECTORY_ALLOW_STAR_MODEL}
+      DS_DIRECTORY_ALLOW_STAR_MODEL: ${DS_DIRECTORY_ALLOW_STAR_MODEL:-true}
       DS_DIRECTORY_MOCK: ${DS_DIRECTORY_MOCK}
       DS_DIRECTORY_DEFAULT_COLLECTION_ID: ${DS_DIRECTORY_DEFAULT_COLLECTION_ID}
       DS_DIRECTORY_COUNTRY: ${DS_DIRECTORY_COUNTRY}

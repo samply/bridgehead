@@ -306,15 +306,12 @@ Full details can be found in [directory_sync_service](https://github.com/samply/
 To enable it, you will need to set these variables to the ```bbmri.conf``` file of your GitLab repository. Here is an example config:
 
 ```
-DS_DIRECTORY_URL=https://directory.bbmri-eric.eu
 DS_DIRECTORY_USER_NAME=your_directory_username
-DS_DIRECTORY_USER_PASS=qwdnqwswdvqHBVGFR9887
-DS_DIRECTORY_ALLOW_STAR_MODEL=true
-DS_TIMER_CRON="0 22 * * *"
+DS_DIRECTORY_USER_PASS=your_directory_password
 ```
-You must contact the Directory team for your national node to find the URL, and to register as a user.
+Please contact your National Node to obtain this information.
 
-Additionally, you should choose when you want Directory sync to run. In the example above, this is set to happen at 10 pm every evening. You can modify this to suit your requirements. The timer specification should follow the [cron](https://crontab.guru) convention.
+Optionally, you **may** change when you want Directory sync to run by specifying a [cron](https://crontab.guru) expression, e.g. `DS_TIMER_CRON="0 22 * * *"` for 10 pm every evening.
 
 Once you edited the gitlab config, the bridgehead will autoupdate the config with the values and will sync the data.
 

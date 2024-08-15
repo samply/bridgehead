@@ -6,7 +6,11 @@ services:
     environment:
       DS_DIRECTORY_URL: ${DS_DIRECTORY_URL}
       DS_DIRECTORY_USER_NAME: ${DS_DIRECTORY_USER_NAME}
-      DS_DIRECTORY_PASS_CODE: ${DS_DIRECTORY_PASS_CODE}
+      DS_DIRECTORY_USER_PASS: ${DS_DIRECTORY_USER_PASS}
       DS_TIMER_CRON: ${DS_TIMER_CRON}
       # It is recommended to check the enabling of this flag with your local data protection group
       DS_DIRECTORY_ALLOW_STAR_MODEL: ${DS_DIRECTORY_ALLOW_STAR_MODEL}
+      DS_DIRECTORY_MOCK: ${DS_DIRECTORY_MOCK}
+      DS_DIRECTORY_DEFAULT_COLLECTION_ID: ${DS_DIRECTORY_DEFAULT_COLLECTION_ID}
+      DS_DIRECTORY_COUNTRY: ${DS_DIRECTORY_COUNTRY}
+    command: sh -c "sleep 90 && java -jar directory_sync_service.jar" # Wait for Blaze before start

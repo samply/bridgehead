@@ -32,6 +32,9 @@ case "$PROJECT" in
 	bbmri)
 		#nothing extra to do
 		;;
+	dhki)
+		#nothing extra to do
+		;;
 	minimal)
 		#nothing extra to do
 		;;

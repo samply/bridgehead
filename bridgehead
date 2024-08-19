@@ -70,22 +70,18 @@ loadVars() {
 
 	# Set some project-independent default values
 	: ${ENVIRONMENT:=production}
+	export ENVIRONMENT
 
 	case "$ENVIRONMENT" in
 		"production")
 			export FOCUS_TAG=main
-			export ENVIRONMENT="production"
 			;;
 		"test")
 			export FOCUS_TAG=develop
-			export ENVIRONMENT="test"
-
 			;;
 		*)
 			report_error 7 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
 			export FOCUS_TAG=main
-			export ENVIRONMENT="production"
-
 			;;
 	esac
 }

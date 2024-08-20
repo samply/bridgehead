@@ -84,8 +84,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4180"
-      - "traefik.http.routers.oauth2.rule=PathPrefix(`/oauth2-idm/`)"
-      - "traefik.http.routers.oauth2.tls=true"
+      - "traefik.http.routers.traefik-forward-auth.rule=Host(`${HOST}`) && PathPrefix(`/oauth2-idm`)"
+      - "traefik.http.routers.traefik-forward-auth.tls=true"
       - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180"
       - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.authResponseHeaders=Authorization"
     depends_on:

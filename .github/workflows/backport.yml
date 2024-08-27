@@ -21,7 +21,7 @@ jobs:
           #branches: 'feature/pilot-projects, another-branch'
           title: 'Automated Backport from main'
           labels: 'backport'
-          body: 'This PR automatically backports changes from the main branch to this feature branch after a PR was merged into main'
+          body: 'This PR automatically backports changes from the main branch to this feature branch after a PR was merged into main.'
           reviewers : 'PierreDelpy'
 
       - name: Info log

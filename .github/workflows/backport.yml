@@ -27,4 +27,4 @@ jobs:
           labels: 'backport'           # Optional: Add a label to the PR
           assignees: 'PierreDelpy'  # Optional: Assign the PR to yourself or a team member
           title: 'Automated Backport from test/backport-main to test/backport-pilots'
-          body: 'This PR automatically backports changes from the test/backport-main branch to the test/backport-pilots branch after a PR was merged into main.'
+          body: 'This PR automatically backports changes from the test/backport-main branch to the test/backport-pilots branch after a PR was merged into main'

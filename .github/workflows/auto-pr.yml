@@ -1,0 +1,25 @@
+name: Automatically generate  Pull Request for test/backport-pilots
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  create_pr:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Create Pull Request to test/backport-pilots branch
+        run: |
+          git config --local user.name "github_workflow_verbis_auto-pr"
+          git checkout -b test/backport-pilots
+          git push origin test/backport-pilots
+          gh pr create --base main --head test/backport-pilots --title "Auto PR from main" --body "This PR was created automatically after merging into main."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

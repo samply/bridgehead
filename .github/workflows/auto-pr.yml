@@ -1,0 +1,21 @@
+name: Automatically generate Pull Requests for feature/pilot-projects
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  create_pr:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Create Pull Request to feature/pilot-projects branch
+        run: gh pr create -B feature/pilot-projects -H main --title 'Create Pull Request to feature/pilot-projects branch' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

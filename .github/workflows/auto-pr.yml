@@ -13,14 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Create Pull Request to test/backport-pilots branch
-        run: |
-          git config --local user.name "github_workflow_verbis_auto-pr"
-          git checkout -b test/backport-autopullrequest
-          git push origin test/backport-pilots
-          gh pr create --base main --head test/backport-pilots --title "Auto PR from main" --body "This PR was created automatically after merging into main."
+        run: gh pr create -B test/backport-pilots -H test/backport-main --title 'Merge test/backport-pilots into test/backport-main' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

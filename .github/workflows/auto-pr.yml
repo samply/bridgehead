@@ -21,6 +21,6 @@ jobs:
           git config --local user.name "github_workflow_verbis_auto-pr"
           git checkout -b test/backport-pilots
           git push origin test/backport-pilots
-          gh pr create --base main --head test/backport-pilots --title "Auto PR from main" --body "This PR was created automatically after merging into main"
+          gh pr create --base main --head test/backport-pilots --title "Auto PR from main" --body "This PR was created automatically after merging into main."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

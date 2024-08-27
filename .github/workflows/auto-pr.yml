@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Create Pull Request to test/backport-pilots branch
         run: gh pr create -B test/backport-pilots -H test/backport-main --title 'Merge test/backport-pilots into test/backport-main' --body 'Created by Github action'
         env:

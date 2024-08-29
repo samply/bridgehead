@@ -45,7 +45,7 @@ services:
 
   landing:
     container_name: bridgehead-landingpage
-    image: docker.verbis.dkfz.de/cache/samply/bridgehead-landingpage:main
+    image: docker.verbis.dkfz.de/cache/samply/bridgehead-landingpage:master
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"

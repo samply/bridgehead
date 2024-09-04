@@ -3,9 +3,9 @@ version: "3.7"
 services:
   blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
-    container_name: bridgehead-cce-blaze
+    container_name: bridgehead-kr-blaze
     environment:
-      BASE_URL: "http://bridgehead-cce-blaze:8080"
+      BASE_URL: "http://bridgehead-kr-blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx${BLAZE_MEMORY_CAP:-4096}m"
       DB_RESOURCE_CACHE_SIZE: ${BLAZE_RESOURCE_CACHE_CAP:-2500000}
       DB_BLOCK_CACHE_SIZE: $BLAZE_MEMORY_CAP
@@ -14,11 +14,11 @@ services:
       - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.blaze_cce.rule=PathPrefix(`/cce-localdatamanagement`)"
-      - "traefik.http.middlewares.cce_b_strip.stripprefix.prefixes=/cce-localdatamanagement"
-      - "traefik.http.services.blaze_cce.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_cce.middlewares=cce_b_strip,auth"
-      - "traefik.http.routers.blaze_cce.tls=true"
+      - "traefik.http.routers.blaze_kr.rule=PathPrefix(`/kr-localdatamanagement`)"
+      - "traefik.http.middlewares.kr_b_strip.stripprefix.prefixes=/kr-localdatamanagement"
+      - "traefik.http.services.blaze_kr.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_kr.middlewares=kr_b_strip,auth"
+      - "traefik.http.routers.blaze_kr.tls=true"
 
   focus:
     image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
@@ -27,7 +27,7 @@ services:
       API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
       BEAM_APP_ID_LONG: focus.${PROXY_ID}
       PROXY_ID: ${PROXY_ID}
-      BLAZE_URL: "http://bridgehead-cce-blaze:8080/fhir/"
+      BLAZE_URL: "http://bridgehead-kr-blaze:8080/fhir/"
       BEAM_PROXY_URL: http://beam-proxy:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
       EPSILON: 0.28
@@ -52,7 +52,7 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/cce/root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/kr/root.crt.pem:/conf/root.crt.pem:ro
 
 
 volumes:

@@ -1,0 +1,96 @@
+version: "3.7"
+
+services:
+  id-manager:
+    image: docker.verbis.dkfz.de/bridgehead/magicpl
+    container_name: bridgehead-id-manager
+    environment:
+      TOMCAT_REVERSEPROXY_FQDN: ${HOST}
+      TOMCAT_REVERSEPROXY_SSL: "true"
+      MAGICPL_SITE: ${IDMANAGEMENT_FRIENDLY_ID}
+      MAGICPL_ALLOWED_ORIGINS: https://${HOST}
+      MAGICPL_LOCAL_PATIENTLIST_APIKEY: ${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
+      MAGICPL_CENTRAXX_APIKEY: ${IDMANAGER_UPLOAD_APIKEY}
+      MAGICPL_CONNECTOR_APIKEY: ${IDMANAGER_READ_APIKEY}
+      MAGICPL_CENTRAL_PATIENTLIST_APIKEY: ${IDMANAGER_CENTRAL_PATIENTLIST_APIKEY}
+      MAGICPL_CONTROLNUMBERGENERATOR_APIKEY: ${IDMANAGER_CONTROLNUMBERGENERATOR_APIKEY}
+    depends_on:
+      - patientlist
+      - traefik-forward-auth
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.id-manager.rule=PathPrefix(`/id-manager`)"
+      - "traefik.http.services.id-manager.loadbalancer.server.port=8080"
+      - "traefik.http.routers.id-manager.tls=true"
+      - "traefik.http.routers.id-manager.middlewares=traefik-forward-auth-idm"
+
+  patientlist:
+    image: docker.verbis.dkfz.de/bridgehead/mainzelliste
+    container_name: bridgehead-patientlist
+    environment:
+      - TOMCAT_REVERSEPROXY_FQDN=${HOST}
+      - TOMCAT_REVERSEPROXY_SSL=true
+      - ML_SITE=${IDMANAGEMENT_FRIENDLY_ID}
+      - ML_DB_PASS=${PATIENTLIST_POSTGRES_PASSWORD}
+      - ML_API_KEY=${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
+      - ML_UPLOAD_API_KEY=${IDMANAGER_UPLOAD_APIKEY}
+      # Add Variables from /etc/patientlist-id-generators.env
+      - PATIENTLIST_SEEDS_TRANSFORMED
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.patientlist.rule=PathPrefix(`/patientlist`)"
+      - "traefik.http.services.patientlist.loadbalancer.server.port=8080"
+      - "traefik.http.routers.patientlist.tls=true"
+    depends_on:
+      - patientlist-db
+
+  patientlist-db:
+    image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
+    container_name: bridgehead-patientlist-db
+    environment:
+      POSTGRES_USER: "mainzelliste"
+      POSTGRES_DB: "mainzelliste"
+      POSTGRES_PASSWORD: ${PATIENTLIST_POSTGRES_PASSWORD}
+    volumes:
+      - "patientlist-db-data:/var/lib/postgresql/data"
+      # NOTE: Add backups here. This is only imported if /var/lib/bridgehead/data/patientlist/ is empty!!!
+      - "/tmp/bridgehead/patientlist/:/docker-entrypoint-initdb.d/"
+
+  traefik-forward-auth:
+    image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:v7.6.0
+    environment:
+      - http_proxy=http://forward_proxy:3128
+      - https_proxy=http://forward_proxy:3128
+      - OAUTH2_PROXY_PROVIDER=oidc
+      - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
+      - OAUTH2_PROXY_OIDC_ISSUER_URL=https://login.verbis.dkfz.de/realms/master
+      - OAUTH2_PROXY_CLIENT_ID=bridgehead-${SITE_ID}
+      - OAUTH2_PROXY_CLIENT_SECRET=${IDMANAGER_AUTH_CLIENT_SECRET}
+      - OAUTH2_PROXY_COOKIE_SECRET=${IDMANAGER_AUTH_COOKIE_SECRET}
+      - OAUTH2_PROXY_COOKIE_DOMAINS=.${HOST}
+      - OAUTH2_PROXY_HTTP_ADDRESS=:4180
+      - OAUTH2_PROXY_REVERSE_PROXY=true
+      - OAUTH2_PROXY_WHITELIST_DOMAINS=.${HOST}
+      - OAUTH2_PROXY_UPSTREAMS=static://202
+      - OAUTH2_PROXY_EMAIL_DOMAINS=*
+      - OAUTH2_PROXY_SCOPE=openid profile email
+      # Pass Authorization Header and some user information to backend services
+      - OAUTH2_PROXY_SET_AUTHORIZATION_HEADER=true
+      - OAUTH2_PROXY_SET_XAUTHREQUEST=true
+      # Keycloak has an expiration time of 60s therefore oauth2-proxy needs to refresh after that
+      - OAUTH2_PROXY_COOKIE_REFRESH=60s
+      - OAUTH2_PROXY_ALLOWED_GROUPS=DKTK-CCP-PPSN
+      - OAUTH2_PROXY_PROXY_PREFIX=/oauth2-idm
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4180"
+      - "traefik.http.routers.traefik-forward-auth.rule=Host(`${HOST}`) && PathPrefix(`/oauth2-idm`)"
+      - "traefik.http.routers.traefik-forward-auth.tls=true"
+      - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.address=http://traefik-forward-auth:4180"
+      - "traefik.http.middlewares.traefik-forward-auth-idm.forwardauth.authResponseHeaders=Authorization"
+    depends_on:
+      forward_proxy:
+        condition: service_healthy
+
+volumes:
+  patientlist-db-data:

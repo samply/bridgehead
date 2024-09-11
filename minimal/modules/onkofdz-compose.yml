@@ -11,6 +11,7 @@ services:
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
       ROOTCERT_FILE: /conf/root.crt.pem
+      app_beamsel_key: ${BEAMSEL_SECRET}
     secrets:
       - proxy.pem
     depends_on:
@@ -18,7 +19,69 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/minimal/modules/onko.root.crt.pem:/conf/root.crt.pem:ro
-
+  postgres:
+    image: postgres:9.5-alpine
+    environment:
+      POSTGRES_DB: mainzelliste-sel
+      POSTGRES_USER: mainzelliste-sel
+      POSTGRES_PASSWORD: ${MAINZELLISTE_DB_PASSWORD}
+    volumes:
+      # - ./postgres-logs:/var/log/postgresql
+      - ml-data:/var/lib/postgresql/data
+    depends_on:
+      - secureepilinker
+  mainzelliste:
+    image: medicalinformatics/mainzelliste:secureepilinker-alpha
+    environment:
+      ML_API_KEY: ${LOCAL_SEL_API_KEY}
+      ML_DB_HOST: postgres
+      ML_DB_PORT: 5432
+      ML_DB_USER: mainzelliste-sel
+      ML_DB_NAME: mainzelliste-sel
+      ML_DB_PASS: ${MAINZELLISTE_DB_PASSWORD}
+      ML_LOCAL_ID: ${SITE_ID}
+      ML_LOCAL_SEL_URL: http://secureepilinker:8161
+      ML_LOCAL_CALLBACK_LINK_URL: http://mainzelliste:8080/Communicator/linkCallback
+      ML_LOCAL_CALLBACK_MATCH_URL: http://mainzelliste:8080/Communicator/matchCallback/${REMOTE_SEL_SITE}
+      ML_LOCAL_DATA_SERVICE_URL: http://mainzelliste:8080/Communicator/getAllRecords
+      ML_LOCAL_AUTHENTICATION_TYPE: apiKey
+      ML_LOCAL_API_KEY: ${LOCAL_SEL_API_KEY}
+      ML_SERVER_0_REMOTEID: ${REMOTE_SEL_SITE}
+      ML_SERVER_0_IDTYPE: link-${SITE_ID}-${REMOTE_SEL_SITE}
+      ML_SERVER_0_REMOTE_SEL_URL: http://beamsel:8080
+      ML_SERVER_0_APIKEY: ${REMOTE_SEL_API_KEY}
+      ### Linkage Service not used for matching
+      ML_SERVER_0_LINKAGE_SERVICE_BASE_URL: ${LS_SEL_URL}
+      ML_SERVER_0_LINKAGE_SERVICE_AUTH_TYPE: apiKey
+      ML_SERVER_0_LINKAGE_SERVICE_SHARED_KEY: ${LS_SEL_SHARED_KEY}
+      ML_LOG_MODE: stdout #stdout=stdout everything else =logging in mainzelliste.log
+      ML_LOG_LEVEL: INFO
+      no_proxy: "localhost,secureepilinker"
+    volumes:
+      # - ./logs:/usr/local/tomcat/logs/
+      - /etc/bridgehead/onkofdz/config/mainzelliste.conf.docker:/run/secrets/mainzelliste.docker.conf
+      - /etc/bridgehead/onkofdz/config/sel.conf.docker:/run/secrets/sel.docker.conf
+    depends_on:
+      - postgres
+      - secureepilinker
+  secureepilinker:
+    image: docker.verbis.dkfz.de/onkofdz/secureepilinker:beamsel
+    environment:
+      no_proxy: "mainzelliste,beamsel"
+    volumes:
+      - "/etc/bridgehead/onkofdz/config/epilinker.serverconf.json:/data/serverconf.json"
+    command: '-vvvv'
+  beamsel:
+    image: docker.verbis.dkfz.de/onkofdz/beam-sel
+    environment:
+      BEAM_URL: "http://beam-proxy:8081"
+      BEAM_SECRET: ${BEAMSEL_SECRET}
+      BEAM_ID: beamsel.${PROXY_ID}
+      SEL_ADDR: "secureepilinker:8161"
+    depends_on:
+      - secureepilinker
+volumes:
+  ml-data:
 secrets:
   proxy.pem:
     file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

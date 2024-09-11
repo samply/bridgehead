@@ -18,7 +18,7 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/minimal/modules/onko.root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/minimal/modules/onko.root.pem:/conf/root.crt.pem:ro
   postgres:
     image: postgres:9.5-alpine
     environment:

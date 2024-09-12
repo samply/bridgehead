@@ -10,7 +10,7 @@ BROKER_URL_FOR_PREREQ=$BROKER_URL
 
 POSTGRES_TAG=15.6-alpine
 
-for module in $PROJECT/modules/*.sh
+for module in ccp/modules/*.sh
 do
     log DEBUG "sourcing $module"
     source $module

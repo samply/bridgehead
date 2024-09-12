@@ -3,7 +3,7 @@
 function idManagementSetup() {
 	if [ -n "$IDMANAGER_UPLOAD_APIKEY" ]; then
 		log INFO "id-management setup detected -- will start id-management (mainzelliste & magicpl)."
-		OVERRIDE+=" -f ./ccp/modules/id-management-compose.yml"
+		OVERRIDE+=" -f ./$PROJECT/modules/id-management-compose.yml"
 
 		# Auto Generate local Passwords
 		PATIENTLIST_POSTGRES_PASSWORD="$(echo \"id-management-module-db-password-salt\" | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"

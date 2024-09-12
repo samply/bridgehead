@@ -57,9 +57,6 @@ case "$PROJECT" in
 		;;
 	itcc)
 		site_configuration_repository_middle="git.verbis.dkfz.de/itcc-sites/"
-        ;;
-    dhki)
-        site_configuration_repository_middle="git.verbis.dkfz.de/dhki/"
 		;;
 	minimal)
 		site_configuration_repository_middle="git.verbis.dkfz.de/minimal-bridgehead-configs/"

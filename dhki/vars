@@ -9,3 +9,12 @@ PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 BROKER_URL_FOR_PREREQ=$BROKER_URL
 
 POSTGRES_TAG=15.6-alpine
+
+for module in $PROJECT/modules/*.sh
+do
+    log DEBUG "sourcing $module"
+    source $module
+done
+
+idManagementSetup
+obds2fhirRestSetup

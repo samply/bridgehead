@@ -10,7 +10,6 @@ if [ "$AUTO_HOUSEKEEPING" == "true" ]; then
 		docker system prune -a -f
 	else
 		A="$A Not cleaning docker images since BK is not running."
-		docker system prune -f
 	fi
 	hc_send log "$A"
 	log INFO "$A"

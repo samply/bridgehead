@@ -31,6 +31,9 @@ services:
       BEAM_PROXY_URL: http://beam-proxy:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
       EPSILON: 0.28
+      QUERIES_TO_CACHE: '/queries_to_cache.conf'
+    volumes:
+      - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf
     depends_on:
       - "beam-proxy"
       - "blaze"

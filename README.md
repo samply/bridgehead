@@ -301,19 +301,19 @@ Once you have added your biobank to the Directory you got persistent identifier 
 
 The Bridgehead's **Directory Sync** is an optional feature that keeps the Directory up to date with your local data, e.g. number of samples. Conversely, it also updates the local FHIR store with the latest contact details etc. from the Directory. You must explicitly set your country specific directory URL, username and password to enable this feature.
 
+You should talk with your local data protection group regarding the information that is published by Directory sync.
+
 Full details can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
 
 To enable it, you will need to set these variables to the ```bbmri.conf``` file of your GitLab repository. Here is an example config:
 
 ```
-DS_DIRECTORY_URL=https://directory.bbmri-eric.eu
 DS_DIRECTORY_USER_NAME=your_directory_username
-DS_DIRECTORY_USER_PASS=qwdnqwswdvqHBVGFR9887
-DS_TIMER_CRON="0 22 * * *"
+DS_DIRECTORY_USER_PASS=your_directory_password
 ```
-You must contact the Directory team for your national node to find the URL, and to register as a user.
+Please contact your National Node to obtain this information.
 
-Additionally, you should choose when you want Directory sync to run. In the example above, this is set to happen at 10 pm every evening. You can modify this to suit your requirements. The timer specification should follow the [cron](https://crontab.guru) convention.
+Optionally, you **may** change when you want Directory sync to run by specifying a [cron](https://crontab.guru) expression, e.g. `DS_TIMER_CRON="0 22 * * *"` for 10 pm every evening.
 
 Once you edited the gitlab config, the bridgehead will autoupdate the config with the values and will sync the data.
 

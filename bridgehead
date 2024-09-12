@@ -76,6 +76,7 @@ loadVars() {
 
 	# Set some project-independent default values
 	: ${ENVIRONMENT:=production}
+	export ENVIRONMENT
 
 	case "$ENVIRONMENT" in
 		"production")

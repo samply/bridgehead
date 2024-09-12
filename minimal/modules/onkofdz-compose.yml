@@ -21,6 +21,7 @@ services:
       - /srv/docker/bridgehead/minimal/modules/onko.root.pem:/conf/root.crt.pem:ro
   postgres:
     image: postgres:9.5-alpine
+    container_name: bridgehead-onkofdz-postgres
     environment:
       POSTGRES_DB: mainzelliste-sel
       POSTGRES_USER: mainzelliste-sel
@@ -32,6 +33,7 @@ services:
       - secureepilinker
   mainzelliste:
     image: medicalinformatics/mainzelliste:secureepilinker-alpha
+    container_name: bridgehead-onkofdz-mainzelliste
     environment:
       ML_API_KEY: ${LOCAL_SEL_API_KEY}
       ML_DB_HOST: postgres
@@ -66,6 +68,7 @@ services:
       - secureepilinker
   secureepilinker:
     image: docker.verbis.dkfz.de/onkofdz/secureepilinker:beamsel
+    container_name: bridgehead-onkofdz-secureepilinker
     environment:
       no_proxy: "mainzelliste,beamsel"
     volumes:
@@ -73,6 +76,7 @@ services:
     command: '-vvvv'
   beamsel:
     image: docker.verbis.dkfz.de/onkofdz/beam-sel
+    container_name: bridgehead-onkofdz-beamsel
     environment:
       BEAM_URL: "http://beam-proxy:8081"
       BEAM_SECRET: ${BEAMSEL_SECRET}

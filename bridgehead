@@ -41,6 +41,9 @@ case "$PROJECT" in
 	kr)
 		#nothing extra to do
 		;;
+	dhki)
+		#nothing extra to do
+		;;
 	minimal)
 		#nothing extra to do
 		;;

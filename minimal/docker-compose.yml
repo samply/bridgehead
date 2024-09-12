@@ -55,5 +55,6 @@ services:
       HOST: ${HOST}
       PROJECT: ${PROJECT}
       SITE_NAME: ${SITE_NAME}
+      ENVIRONMENT: "production"
 
 

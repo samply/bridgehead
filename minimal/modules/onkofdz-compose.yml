@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   beam-proxy:
-    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    image: samply/beam-proxy:feat-rework-sockets-sockets
     container_name: bridgehead-beam-proxy
     environment:
       BROKER_URL: ${BROKER_URL}

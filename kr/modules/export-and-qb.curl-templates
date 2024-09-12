@@ -1,0 +1,6 @@
+# Full Excel Export
+curl --location --request POST 'https://${HOST}/ccp-exporter/request?query=Patient&query-format=FHIR_PATH&template-id=ccp&output-format=EXCEL' \
+--header 'x-api-key: ${EXPORT_API_KEY}'
+
+# QB
+curl --location --request POST 'https://${HOST}/ccp-reporter/generate?template-id=ccp'

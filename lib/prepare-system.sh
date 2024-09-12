@@ -61,6 +61,12 @@ case "$PROJECT" in
     dhki)
         site_configuration_repository_middle="git.verbis.dkfz.de/dhki/"
 		;;
+	kr)
+		site_configuration_repository_middle="git.verbis.dkfz.de/krebsregister-sites/"
+		;;
+	dhki)
+		site_configuration_repository_middle="git.verbis.dkfz.de/dhki/"
+		;;
 	minimal)
 		site_configuration_repository_middle="git.verbis.dkfz.de/minimal-bridgehead-configs/"
 		;;

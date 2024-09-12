@@ -38,6 +38,9 @@ case "$PROJECT" in
 	itcc)
 		#nothing extra to do
 		;;
+	kr)
+		#nothing extra to do
+		;;
 	dhki)
 		#nothing extra to do
 		;;

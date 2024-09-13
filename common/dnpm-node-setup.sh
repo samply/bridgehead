@@ -2,7 +2,7 @@
 
 if [ -n "${ENABLE_DNPM_NODE}" ]; then
 	log INFO "DNPM setup detected (BwHC Node) -- will start BwHC node."
-	OVERRIDE+=" -f ./$PROJECT/modules/dnpm-node-compose.yml"
+	OVERRIDE+=" -f ./common/dnpm-node-compose.yml"
 
 	# Set variables required for BwHC Node. ZPM_SITE is assumed to be set in /etc/bridgehead/<project>.conf
 	DNPM_APPLICATION_SECRET="$(echo \"This is a salt string to generate one consistent password for DNPM. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"

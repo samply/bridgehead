@@ -7,7 +7,7 @@ function obds2fhirRestSetup() {
       log ERROR "Missing ID-Management Module! Fix this by setting up ID Management:"
       PATIENTLIST_URL=" "
     fi
-    OVERRIDE+=" -f ./ccp/modules/obds2fhir-rest-compose.yml"
+    OVERRIDE+=" -f ./common/obds2fhir-rest-compose.yml"
     LOCAL_SALT="$(echo \"local-random-salt\" | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
   fi
 }

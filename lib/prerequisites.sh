@@ -3,16 +3,16 @@
 source lib/functions.sh
 
 detectCompose
-configDirectory="/etc/bridgehead/"
-componentDirectory="/srv/docker/bridgehead/"
+CONFIG_DIR="/etc/bridgehead/"
+COMPONENT_DIR="/srv/docker/bridgehead/"
 
 if ! id "bridgehead" &>/dev/null; then
   log ERROR "User bridgehead does not exist. Please run bridgehead install $PROJECT"
   exit 1
 fi
 
-checkOwner ${configDirectory} bridgehead || exit 1
-checkOwner ${componentDirectory} bridgehead || exit 1
+checkOwner "${CONFIG_DIR}" bridgehead || exit 1
+checkOwner "${COMPONENT_DIR}" bridgehead || exit 1
 
 ## Check if user is a su
 log INFO "Checking if all prerequisites are met ..."
@@ -34,31 +34,31 @@ fi
 log INFO "Checking configuration ..."
 
 ## Download submodule
-if [ ! -d ${configDirectory} ]; then
-  fail_and_report 1 "Please set up the config folder at ${configDirectory}. Instruction are in the readme."
+if [ ! -d "${CONFIG_DIR}" ]; then
+  fail_and_report 1 "Please set up the config folder at ${CONFIG_DIR}. Instruction are in the readme."
 fi
 
 # TODO: Check all required variables here in a generic loop
 
 #check if project env is present
-if [ -d "${configDirectory}${PROJECT}.conf" ]; then
-   fail_and_report 1 "Project config not found. Please copy the template from ${PROJECT} and put it under ${configDirectory}${PROJECT}.conf."
+if [ -d "${CONFIG_DIR}${PROJECT}.conf" ]; then
+   fail_and_report 1 "Project config not found. Please copy the template from ${PROJECT} and put it under ${CONFIG_DIR}${PROJECT}.conf."
 fi
 
 # TODO: Make sure you're in the right directory, or, even better, be independent from the working directory.
 
 log INFO "Checking ssl cert for accessing bridgehead via https"
 
-if [ ! -d "${configDirectory}traefik-tls" ]; then
+if [ ! -d "${CONFIG_DIR}traefik-tls" ]; then
   log WARN "TLS certs for accessing bridgehead via https missing, we'll now create a self-signed one. Please consider getting an officially signed one (e.g. via Let's Encrypt ...) and put into /etc/bridgehead/traefik-tls"
   mkdir -p /etc/bridgehead/traefik-tls
 fi
 
-if [ ! -e "${configDirectory}traefik-tls/fullchain.pem" ]; then
+if [ ! -e "${CONFIG_DIR}traefik-tls/fullchain.pem" ]; then
   openssl req -x509 -newkey rsa:4096 -nodes -keyout /etc/bridgehead/traefik-tls/privkey.pem -out /etc/bridgehead/traefik-tls/fullchain.pem -days 3650 -subj "/CN=$HOST"
 fi
 
-if [ -e $configDirectory}vault.conf ]; then
+if [ -e "${CONFIG_DIR}"vault.conf ]; then
   if [ "$(stat -c "%a %U" /etc/bridgehead/vault.conf)" != "600 bridgehead" ]; then
     fail_and_report 1 "/etc/bridgehead/vault.conf has wrong owner/permissions. To correct this issue, run chmod 600 /etc/bridgehead/vault.conf && chown bridgehead /etc/bridgehead/vault.conf."
   fi
@@ -66,7 +66,7 @@ fi
 
 log INFO "Checking network access ($BROKER_URL_FOR_PREREQ) ..."
 
-source ${configDirectory}${PROJECT}.conf
+source "${CONFIG_DIR}${PROJECT}".conf
 source ${PROJECT}/vars
 
 if [ "${PROJECT}" != "minimal" ]; then
@@ -94,10 +94,10 @@ if [ "${PROJECT}" != "minimal" ]; then
   fi
 fi
 checkPrivKey() {
-  if [ -e ${configDirectory}pki/${SITE_ID}.priv.pem ]; then
+  if [ -e "${CONFIG_DIR}"pki/"${SITE_ID}".priv.pem ]; then
     log INFO "Success - private key found."
   else
-    log ERROR "Unable to find private key at ${configDirectory}pki/${SITE_ID}.priv.pem. To fix, please run\n  bridgehead enroll ${PROJECT}\nand follow the instructions."
+    log ERROR "Unable to find private key at ${CONFIG_DIR}pki/${SITE_ID}.priv.pem. To fix, please run\n  bridgehead enroll ${PROJECT}\nand follow the instructions."
     return 1
   fi
   return 0
@@ -108,6 +108,11 @@ if [[ "$@" =~ "noprivkey" ||  "${PROJECT}" != "minimal" ]]; then
 else
   checkPrivKey || exit 1
 fi
+
+for dir in  "${CONFIG_DIR}" "${COMPONENT_DIR}"; do
+  log INFO "Checking branch: $(cd $dir && echo "$dir $(git branch --show-current)")"
+  hc_send log "Checking branch: $(cd $dir && echo "$dir $(git branch --show-current)")"
+done
 
 log INFO "Success - all prerequisites are met!"
 hc_send log "Success - all prerequisites are met!"

@@ -19,10 +19,18 @@ services:
       - traefik-forward-auth
     labels:
       - "traefik.enable=true"
+      # Router with Authentication
       - "traefik.http.routers.id-manager.rule=PathPrefix(`/id-manager`)"
-      - "traefik.http.services.id-manager.loadbalancer.server.port=8080"
       - "traefik.http.routers.id-manager.tls=true"
       - "traefik.http.routers.id-manager.middlewares=traefik-forward-auth-idm"
+      - "traefik.http.routers.id-manager.service=id-manager-service"
+      # Router without Authentication
+      - "traefik.http.routers.id-manager-compatibility.rule=PathPrefix(`/id-manager/paths/translator/getIds`)"
+      - "traefik.http.routers.id-manager-compatibility.tls=true"
+      - "traefik.http.routers.id-manager-compatibility.service=id-manager-service"
+      # Definition of Service
+      - "traefik.http.services.id-manager-service.loadbalancer.server.port=8080"
+      - "traefik.http.services.id-manager-service.loadbalancer.server.scheme=http"
 
   patientlist:
     image: docker.verbis.dkfz.de/bridgehead/mainzelliste
@@ -57,7 +65,7 @@ services:
       - "/tmp/bridgehead/patientlist/:/docker-entrypoint-initdb.d/"
 
   traefik-forward-auth:
-    image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:v7.6.0
+    image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:latest
     environment:
       - http_proxy=http://forward_proxy:3128
       - https_proxy=http://forward_proxy:3128
@@ -67,6 +75,7 @@ services:
       - OAUTH2_PROXY_CLIENT_ID=bridgehead-${SITE_ID}
       - OAUTH2_PROXY_CLIENT_SECRET=${IDMANAGER_AUTH_CLIENT_SECRET}
       - OAUTH2_PROXY_COOKIE_SECRET=${IDMANAGER_AUTH_COOKIE_SECRET}
+      - OAUTH2_PROXY_COOKIE_NAME=_BRIDGEHEAD_oauth2_idm
       - OAUTH2_PROXY_COOKIE_DOMAINS=.${HOST}
       - OAUTH2_PROXY_HTTP_ADDRESS=:4180
       - OAUTH2_PROXY_REVERSE_PROXY=true

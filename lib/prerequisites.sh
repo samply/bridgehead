@@ -94,7 +94,7 @@ if [ "${PROJECT}" != "minimal" ]; then
   fi
 fi
 checkPrivKey() {
-  if [ -e "${CONFIG_DIR}"pki/"${SITE_ID}".priv.pem ]; then
+  if [ -e "${CONFIG_DIR}pki/${SITE_ID}.priv.pem" ]; then
     log INFO "Success - private key found."
   else
     log ERROR "Unable to find private key at ${CONFIG_DIR}pki/${SITE_ID}.priv.pem. To fix, please run\n  bridgehead enroll ${PROJECT}\nand follow the instructions."

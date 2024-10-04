@@ -6,7 +6,7 @@ function mtbaSetup() {
     if [ ! -n "$IDMANAGER_UPLOAD_APIKEY" ]; then
       log ERROR "Missing ID-Management Module! Fix this by setting up ID Management:"
     fi
-    OVERRIDE+=" -f ./$PROJECT/modules/mtba-compose.yml"
+    OVERRIDE+=" -f ./common/mtba-compose.yml"
     add_private_oidc_redirect_url "/mtba/*"
   fi
 }

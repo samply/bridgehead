@@ -7,7 +7,7 @@ SUPPORT_EMAIL=arturo.macias@dkfz-heidelberg.de
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 BROKER_URL_FOR_PREREQ=$BROKER_URL
 
-for module in $PROJECT/modules/*.sh
+for module in common/*.sh
 do
     log DEBUG "sourcing $module"
     source $module

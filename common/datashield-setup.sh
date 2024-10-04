@@ -10,7 +10,7 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
   add_private_oidc_redirect_url "${OAUTH2_CALLBACK}"
 
   log INFO "DataSHIELD setup detected -- will start DataSHIELD services."
-  OVERRIDE+=" -f ./$PROJECT/modules/datashield-compose.yml"
+  OVERRIDE+=" -f ./common/datashield-compose.yml"
   EXPORTER_OPAL_PASSWORD="$(generate_password \"exporter in Opal\")"
   TOKEN_MANAGER_OPAL_PASSWORD="$(generate_password \"Token Manager in Opal\")"
   OPAL_DB_PASSWORD="$(echo \"Opal DB\" | generate_simple_password)"
@@ -23,7 +23,7 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
     openssl req -x509 -newkey rsa:4096 -nodes -keyout /tmp/bridgehead/opal-key.pem -out /tmp/bridgehead/opal-cert.pem -days 3650 -subj "/CN=opal/C=DE"
   fi
   mkdir -p /tmp/bridgehead/opal-map
-  sites="$(cat ./$PROJECT/modules/datashield-sites.json)"
+  sites="$(cat ./common/datashield-sites.json)"
   echo "$sites" | docker_jq -n --args '{"sites": input | map({
     "name": .,
     "id": .,

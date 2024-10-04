@@ -20,7 +20,7 @@ OIDC_GROUP_CLAIM="groups"
 
 POSTGRES_TAG=15.6-alpine
 
-for module in $PROJECT/modules/*.sh
+for module in common/*.sh
 do
     log DEBUG "sourcing $module"
     source $module

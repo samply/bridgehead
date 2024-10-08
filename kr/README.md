@@ -7,7 +7,7 @@ This project integrates several key modules to enable secure, scalable, and flex
 
 - Blaze FHIR Server: For managing FHIR-based medical data.
 - Focus: A tool for executing federated queries.
-- Beam Client: To connect the registry to the federated network.
+- Beam Proxy: To securely connect the registry to the federated network.
 - oBDS2FHIR: For automated ETL (Extract, Transform, Load) of oBDS data into FHIR-compatible formats.
 
 ## Modules in Use

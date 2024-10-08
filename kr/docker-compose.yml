@@ -2,8 +2,8 @@ version: "3.7"
 
 services:
   landing:
-    profiles:
-      - deactivated
+    deploy:
+      replicas: 0 #deactivate landing page
 
   blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:0.28

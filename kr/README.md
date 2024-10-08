@@ -24,7 +24,7 @@ To install the **Krebsregister** project bridgehead, use the following command (
 ./bridgehead install kr
 ```
 This command will interactively guide you through the installation process and set up the required modules, including Blaze, Focus, Beam Client, and oBDS2FHIR, with all the necessary configuration in place.
-Running the Project
+## Running the Project
 
 Once installed, start the Krebsregister services with the following command:
 

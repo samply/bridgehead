@@ -1,7 +1,7 @@
 # Krebsregister
 ## Overview
 
-The **Krebsregister** project is designed to connect cancer registries across Germany by providing an overview of federated data. This allows for efficient querying and aggregation of data from multiple sources, empowering cancer research and healthcare analysis at a federal state level.
+The **Krebsregister** project is designed to pilot the connection between cancer registries across Germany by providing a federated overview of the available data. This allows for efficient querying and aggregation of data from multiple sources, empowering cancer research and healthcare analysis at a federal state level while ensuring privacy, data minimization, and data sovereignty.
 
 This project integrates several key modules to enable secure, scalable, and flexible data querying across federated registries. The core components used in this setup are:
 

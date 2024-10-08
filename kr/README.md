@@ -5,16 +5,10 @@ The **Krebsregister** project is designed to pilot the connection between cancer
 
 This project integrates several key modules to enable secure, scalable, and flexible data querying across federated registries. The core components used in this setup are:
 
-- Blaze FHIR Server: For managing FHIR-based medical data.
-- Focus: A tool for executing federated queries.
-- Beam Proxy: To securely connect the registry to the federated network.
-- oBDS2FHIR: For automated ETL (Extract, Transform, Load) of oBDS data into FHIR-compatible formats.
-
-## Modules in Use
-- Blaze FHIR Server
-- Focus
-- Beam Client
-- oBDS2FHIR-REST
+- [Blaze FHIR Server](https://github.com/samply/blaze.git): For managing FHIR-based medical data.
+- [Focus](https://github.com/samply/focus.git): A tool for executing federated queries.
+- [Beam Proxy](https://github.com/samply/beam.git): To securely connect the registry to the federated network.
+- [oBDS2FHIR](https://github.com/samply/obds2fhir.git): For automated ETL (Extract, Transform, Load) of oBDS data into FHIR-compatible formats.
 
 ## Installation
 

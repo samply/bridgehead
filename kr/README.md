@@ -18,7 +18,7 @@ This project integrates several key modules to enable secure, scalable, and flex
 
 ## Installation
 
-To install the **Krebsregister** project, use the following command (in the directory ```/srv/docker/bridgehead```):
+To install the **Krebsregister** project bridgehead, use the following command (in the directory ```/srv/docker/bridgehead```):
 ```bash
 
 ./bridgehead install kr

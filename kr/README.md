@@ -16,6 +16,7 @@ To install the **Krebsregister** project bridgehead, use the following command (
 ```bash
 
 ./bridgehead install kr
+
 ```
 This command will interactively guide you through the installation process and set up the required modules, including Blaze, Focus, Beam Client, and oBDS2FHIR, with all the necessary configuration in place.
 
@@ -26,6 +27,7 @@ Once installed, start the Krebsregister services with the following command:
 ```bash
 
 systemctl start bridgehead@kr
+
 ```
 This will activate the preconfigured modules and establish connections to the federated cancer registry network.
 

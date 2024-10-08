@@ -28,4 +28,4 @@ systemctl start bridgehead@kr
 ```
 This will activate the preconfigured modules and establish connections to the federated cancer registry network.
 
-For a deatiled overview see main [README.md](../README.md)
+For a detailed overview see main [README.md](../README.md)

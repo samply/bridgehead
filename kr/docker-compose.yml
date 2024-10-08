@@ -1,6 +1,10 @@
 version: "3.7"
 
 services:
+  landing:
+    profiles:
+      - deactivated
+
   blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
     container_name: bridgehead-kr-blaze

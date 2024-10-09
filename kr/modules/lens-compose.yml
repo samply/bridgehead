@@ -1,6 +1,8 @@
 version: "3.7"
 services:
   landing:
+    deploy:
+      replicas: 1 #reactivate if lens is in use
     container_name: lens_federated-search
     image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
     labels:

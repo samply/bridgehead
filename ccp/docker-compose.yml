@@ -57,6 +57,11 @@ services:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
 
+  ccp-patient-project-identificator:
+    image: samply/ccp-patient-project-identificator
+    environment:
+      MAINZELLISTE_APIKEY: ${MAINZELLISTE_APIKEY}
+      SITE_NAME: ${SITE_NAME}
 
 volumes:
   blaze-data:

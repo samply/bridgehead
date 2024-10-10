@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   dnpm-beam-proxy:
-    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:${BEAM_TAG}
     container_name: bridgehead-dnpm-beam-proxy
     environment:
       BROKER_URL: ${DNPM_BROKER_URL}

@@ -32,6 +32,18 @@ case "$PROJECT" in
 	bbmri)
 		#nothing extra to do
 		;;
+	cce)
+		#nothing extra to do
+		;;
+	itcc)
+		#nothing extra to do
+		;;
+	kr)
+		#nothing extra to do
+		;;
+	dhki)
+		#nothing extra to do
+		;;
 	minimal)
 		#nothing extra to do
 		;;
@@ -75,13 +87,16 @@ loadVars() {
 	case "$ENVIRONMENT" in
 		"production")
 			export FOCUS_TAG=main
+			export BEAM_TAG=main
 			;;
 		"test")
 			export FOCUS_TAG=develop
+			export BEAM_TAG=develop
 			;;
 		*)
 			report_error 7 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
 			export FOCUS_TAG=main
+			export BEAM_TAG=main
 			;;
 	esac
 }

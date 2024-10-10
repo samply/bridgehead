@@ -59,8 +59,9 @@ services:
 
   ccp-patient-project-identificator:
     image: samply/ccp-patient-project-identificator
+    container_name: bridgehead-ccp-patient-project-identificator
     environment:
-      MAINZELLISTE_APIKEY: ${MAINZELLISTE_APIKEY}
+      MAINZELLISTE_APIKEY: ${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
       SITE_NAME: ${SITE_NAME}
 
 volumes:

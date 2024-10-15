@@ -8,8 +8,7 @@ PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
 BROKER_URL_FOR_PREREQ=$BROKER_URL
 
-POSTGRES_TAG=15.6-alpine
-
+source versions
 for module in ccp/modules/*.sh
 do
     log DEBUG "sourcing $module"

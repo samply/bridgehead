@@ -1,5 +1,5 @@
 
-source vars
+source versions
 for module in $PROJECT/modules/*.sh
 do
     log DEBUG "sourcing $module"

@@ -18,7 +18,7 @@ OIDC_URL="https://login.verbis.dkfz.de"
 OIDC_ISSUER_URL="${OIDC_URL}/realms/${OIDC_REALM}"
 OIDC_GROUP_CLAIM="groups"
 
-source vars
+source versions
 for module in $PROJECT/modules/*.sh
 do
     log DEBUG "sourcing $module"

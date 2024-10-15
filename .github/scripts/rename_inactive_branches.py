@@ -30,4 +30,4 @@ def is_inactive(commit_url):
 for branch in get_branches():
     if is_inactive(branch['commit']['url']):
         #rename_branch(branch['name'], f"archived/{branch['name']}")
-        print(f"[LOG] Branch '{branch['name']}' is inactive and would be renamed to archived/'{branch['name']}'")
+        print(f"[LOG] Branch '{branch['name']}' is inactive and would be renamed to 'archived/{branch['name']}'")

@@ -1,0 +1,33 @@
+version: "3.7"
+services:
+  landing:
+    container_name: lens_federated-search
+    image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
+      - "traefik.http.services.landing.loadbalancer.server.port=80"
+      - "traefik.http.routers.landing.tls=true"
+
+  spot:
+    image: docker.verbis.dkfz.de/ccp-private/central-spot
+    environment:
+      BEAM_SECRET: "${FOCUS_BEAM_SECRET_SHORT}"
+      BEAM_URL: http://beam-proxy:8081
+      BEAM_PROXY_ID: ${SITE_ID}
+      BEAM_BROKER_ID: ${BROKER_ID}
+      BEAM_APP_ID: "focus"
+      PROJECT_METADATA: "dktk_supervisors"
+    depends_on:
+      - "beam-proxy"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.spot.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolalloworiginlist=https://${HOST}"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolmaxage=-1"
+      - "traefik.http.routers.spot.rule=Host(`${HOST}`) && PathPrefix(`/backend`)"
+      - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/backend"
+      - "traefik.http.routers.spot.tls=true"
+      - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot"

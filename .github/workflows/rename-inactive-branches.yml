@@ -3,10 +3,7 @@ name: Cleanup - Rename Inactive Branches
 on:
   schedule:
     - cron: '0 0 * * 0'  # Runs every Sunday at midnight
-  #todo delete; only trigger for testing
-  pull_request:
-    branches:
-      - develop
+
 jobs:
   archive-stale-branches:
     runs-on: ubuntu-latest

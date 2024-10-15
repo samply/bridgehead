@@ -57,9 +57,9 @@ case "$PROJECT" in
 		;;
 	itcc)
 		site_configuration_repository_middle="git.verbis.dkfz.de/itcc-sites/"
-        ;;
-    dhki)
-        site_configuration_repository_middle="git.verbis.dkfz.de/dhki/"
+    ;;
+  dhki)
+    site_configuration_repository_middle="git.verbis.dkfz.de/dhki/"
 		;;
 	kr)
 		site_configuration_repository_middle="git.verbis.dkfz.de/krebsregister-sites/"

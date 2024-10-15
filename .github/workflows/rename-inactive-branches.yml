@@ -1,0 +1,30 @@
+name: Cleanup - Rename Inactive Branches
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Runs every Sunday at midnight
+  #todo delete; only trigger for testing
+  pull_request:
+    branches:
+      - develop
+jobs:
+  cleanup-rename-branches:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install Libraries
+        run: pip install requests
+
+      - name: Run Script to Rename Inactive Branches
+        run: |
+          python .github/scripts/rename_inactive_branches.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

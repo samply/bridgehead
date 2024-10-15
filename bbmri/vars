@@ -7,6 +7,7 @@
 FOCUS_RETRY_COUNT=${FOCUS_RETRY_COUNT:-64}
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
+source vars
 for module in $PROJECT/modules/*.sh
 do
     log DEBUG "sourcing $module"

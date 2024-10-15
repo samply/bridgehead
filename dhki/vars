@@ -8,6 +8,7 @@ PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
 BROKER_URL_FOR_PREREQ=$BROKER_URL
 
+source vars
 for module in ccp/modules/*.sh
 do
     log DEBUG "sourcing $module"

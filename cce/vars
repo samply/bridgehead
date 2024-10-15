@@ -7,6 +7,7 @@ SUPPORT_EMAIL=manoj.waikar@dkfz-heidelberg.de
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 BROKER_URL_FOR_PREREQ=$BROKER_URL
 
+source vars
 for module in $PROJECT/modules/*.sh
 do
     log DEBUG "sourcing $module"

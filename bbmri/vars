@@ -13,6 +13,13 @@ do
     source $module
 done
 
+log DEBUG "sourcing ccp/modules/exporter-setup.sh"
+source ccp/modules/exporter-setup.sh
+
+log DEBUG "sourcing ccp/modules/teiler-setup.sh"
+source ccp/modules/teiler-setup.sh
+
+
 SUPPORT_EMAIL=$ERIC_SUPPORT_EMAIL
 BROKER_URL_FOR_PREREQ="${ERIC_BROKER_URL:-$GBN_BROKER_URL}"
 

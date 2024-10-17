@@ -64,7 +64,7 @@ services:
       APPLICATION_PORT: "8085"
       APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
-      CONFIG_ENV_VAR_PATH: "/run/secrets/${PROJECT}.conf"
+      CONFIG_ENV_VAR_PATH: "/run/secrets/project-conf"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
       TEILER_DASHBOARD_DE_URL: "https://${HOST}/ccp-teiler-dashboard/de"

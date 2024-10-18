@@ -20,6 +20,9 @@ services:
       - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
 
+# Modification needed for running in a test mode
+# Commented out so that the Bridgehead can run without Beam.
+
 #  focus:
 #    image: docker.verbis.dkfz.de/cache/samply/focus:0.4.4
 #    container_name: bridgehead-focus
@@ -34,6 +37,9 @@ services:
 #    depends_on:
 ##      - "beam-proxy"
 #      - "blaze"
+
+# Modification needed for running in a test mode
+# Commented out so that the Bridgehead can run without Beam.
 
 #  beam-proxy:
 #    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop

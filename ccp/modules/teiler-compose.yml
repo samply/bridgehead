@@ -47,6 +47,10 @@ services:
       TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
       REPORTER_DEFAULT_TEMPLATE_ID: "ccp-qb"
       EXPORTER_DEFAULT_TEMPLATE_ID: "ccp"
+      APPLICATION_PORT: "8080"
+      CONFIG_ENV_VAR_PATH: "/run/secrets/ccp.conf"
+    secrets:
+      - ccp.conf
 
 
   teiler-backend:

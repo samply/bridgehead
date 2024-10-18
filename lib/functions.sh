@@ -308,7 +308,7 @@ function sync_secrets() {
         BROKER_ROOT_CERT=/srv/docker/bridgehead/bbmri/$GBN_ROOT_CERT.crt.pem
         PROXY_ID=$GBN_PROXY_ID
         BROKER_ID=$GBN_BROKER_ID
-    elif [ "${PROJECT}" == "ccp"]; then
+    elif [ "${PROJECT}" == "ccp" ]; then
         BROKER_ROOT_CERT=/srv/docker/bridgehead/ccp/root.crt.pem
     else
         fail_and_report 1 "Could not start secret sync as the configuration does not seem to use beam"
@@ -316,19 +316,19 @@ function sync_secrets() {
     local broker_url="https://$BROKER_ID"
     mkdir -p /var/cache/bridgehead/secrets/ || fail_and_report 1 "Failed to create '/var/cache/bridgehead/secrets/'. Please run sudo './bridgehead install $PROJECT' again."
     touch /var/cache/bridgehead/secrets/oidc
-    docker run --rm \
-        -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \
-        -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
-        -v $BROKER_ROOT_CERT:/run/secrets/root.crt.pem:ro \
-        -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
-        -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
-        -e NO_PROXY=localhost,127.0.0.1 \
-        -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
-        -e PROXY_ID=$PROXY_ID \
-        -e BROKER_URL=$broker_url \
-        -e OIDC_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
-        -e SECRET_DEFINITIONS=$secret_sync_args \
-        docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
+#    docker run --rm \
+#        -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \
+#        -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
+#        -v $BROKER_ROOT_CERT:/run/secrets/root.crt.pem:ro \
+#        -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
+#        -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
+#        -e NO_PROXY=localhost,127.0.0.1 \
+#        -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
+#        -e PROXY_ID=$PROXY_ID \
+#        -e BROKER_URL=$broker_url \
+#        -e OIDC_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
+#        -e SECRET_DEFINITIONS=$secret_sync_args \
+#        docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
 
     set -a # Export variables as environment variables
     source /var/cache/bridgehead/secrets/*

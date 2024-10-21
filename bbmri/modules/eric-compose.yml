@@ -16,7 +16,7 @@ services:
       - "blaze"
 
   beam-proxy-eric:
-    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:${BEAM_TAG}
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:${BEAM_TAG}-bbmri
     container_name: bridgehead-beam-proxy-eric
     environment:
       BROKER_URL: ${ERIC_BROKER_URL}

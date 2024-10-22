@@ -1,0 +1,2 @@
+BLAZE_TAG=0.28
+POSTGRES_TAG=15.6-alpine

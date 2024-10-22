@@ -170,11 +170,11 @@ optimizeBlazeMemoryUsage() {
 		available_system_memory_chunks=$((BLAZE_MEMORY_CAP / 1000))
 		if [ $available_system_memory_chunks -eq 0 ]; then
 			log WARN "Only ${BLAZE_MEMORY_CAP} system memory available for Blaze. If your Blaze stores more than 128000 fhir ressources it will run significally slower."
-			export BLAZE_RESOURCE_CACHE_CAP=128000;
-			export BLAZE_CQL_CACHE_CAP=32;
+			export BLAZE_RESOURCE_CACHE_CAP=128000
+			export BLAZE_CQL_CACHE_CAP=32
 		else
 			export BLAZE_RESOURCE_CACHE_CAP=$((available_system_memory_chunks * 312500))
-			export BLAZE_CQL_CACHE_CAP=$((($system_memory_in_mb/4)/16));
+			export BLAZE_CQL_CACHE_CAP=$((($system_memory_in_mb/4)/16))
 		fi
 	fi
 }

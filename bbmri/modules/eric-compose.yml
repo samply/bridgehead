@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   focus-eric:
-    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-bbmri
     container_name: bridgehead-focus-eric
     environment:
       API_KEY: ${ERIC_FOCUS_BEAM_SECRET_SHORT}

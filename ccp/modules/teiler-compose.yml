@@ -7,31 +7,31 @@ services:
     container_name: bridgehead-teiler-orchestrator
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.teiler_orchestrator_ccp.rule=PathPrefix(`/ccp-teiler`)"
-      - "traefik.http.services.teiler_orchestrator_ccp.loadbalancer.server.port=9000"
-      - "traefik.http.routers.teiler_orchestrator_ccp.tls=true"
-      - "traefik.http.middlewares.teiler_orchestrator_ccp_strip.stripprefix.prefixes=/ccp-teiler"
-      - "traefik.http.routers.teiler_orchestrator_ccp.middlewares=teiler_orchestrator_ccp_strip"
+      - "traefik.http.routers.teiler_orchestrator_${PLATFORM}.rule=PathPrefix(`/${PLATFORM}-teiler`)"
+      - "traefik.http.services.teiler_orchestrator_${PLATFORM}.loadbalancer.server.port=9000"
+      - "traefik.http.routers.teiler_orchestrator_${PLATFORM}.tls=true"
+      - "traefik.http.middlewares.teiler_orchestrator_${PLATFORM}_strip.stripprefix.prefixes=/${PLATFORM}-teiler"
+      - "traefik.http.routers.teiler_orchestrator_${PLATFORM}.middlewares=teiler_orchestrator_${PLATFORM}_strip"
     environment:
-      TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
-      TEILER_DASHBOARD_URL: "https://${HOST}/ccp-teiler-dashboard"
+      TEILER_BACKEND_URL: "https://${HOST}/${PLATFORM}-teiler-backend"
+      TEILER_DASHBOARD_URL: "https://${HOST}/${PLATFORM}-teiler-dashboard"
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
-      HTTP_RELATIVE_PATH: "/ccp-teiler"
+      HTTP_RELATIVE_PATH: "/${PLATFORM}-teiler"
 
   teiler-dashboard:
     image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
     container_name: bridgehead-teiler-dashboard
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.teiler_dashboard_ccp.rule=PathPrefix(`/ccp-teiler-dashboard`)"
-      - "traefik.http.services.teiler_dashboard_ccp.loadbalancer.server.port=80"
-      - "traefik.http.routers.teiler_dashboard_ccp.tls=true"
-      - "traefik.http.middlewares.teiler_dashboard_ccp_strip.stripprefix.prefixes=/ccp-teiler-dashboard"
-      - "traefik.http.routers.teiler_dashboard_ccp.middlewares=teiler_dashboard_ccp_strip"
+      - "traefik.http.routers.teiler_dashboard_${PLATFORM}.rule=PathPrefix(`/${PLATFORM}-teiler-dashboard`)"
+      - "traefik.http.services.teiler_dashboard_${PLATFORM}.loadbalancer.server.port=80"
+      - "traefik.http.routers.teiler_dashboard_${PLATFORM}.tls=true"
+      - "traefik.http.middlewares.teiler_dashboard_${PLATFORM}_strip.stripprefix.prefixes=/${PLATFORM}-teiler-dashboard"
+      - "traefik.http.routers.teiler_dashboard_${PLATFORM}.middlewares=teiler_dashboard_${PLATFORM}_strip"
     environment:
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
-      TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
-      TEILER_DASHBOARD_URL: "https://${HOST}/ccp-teiler-dashboard"
+      TEILER_BACKEND_URL: "https://${HOST}/${PLATFORM}-teiler-backend"
+      TEILER_DASHBOARD_URL: "https://${HOST}/${PLATFORM}-ccp-teiler-dashboard"
       OIDC_URL: "${OIDC_URL}"
       OIDC_REALM: "${OIDC_REALM}"
       OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
@@ -41,34 +41,35 @@ services:
       TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
       TEILER_PROJECT: "${PROJECT}"
       EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
-      TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
-      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
+      TEILER_ORCHESTRATOR_URL: "https://${HOST}/${PLATFORM}-teiler"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/${PLATFORM}-teiler"
       TEILER_USER: "${OIDC_USER_GROUP}"
       TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
-      REPORTER_DEFAULT_TEMPLATE_ID: "ccp-qb"
-      EXPORTER_DEFAULT_TEMPLATE_ID: "ccp"
+      REPORTER_DEFAULT_TEMPLATE_ID: "${PLATFORM}-qb"
+      EXPORTER_DEFAULT_TEMPLATE_ID: "${PLATFORM}"
 
 
   teiler-backend:
-    image: docker.verbis.dkfz.de/ccp/dktk-teiler-backend:latest
+    image: docker.verbis.dkfz.de/ccp/${PROJECT}-teiler-backend:latest
     container_name: bridgehead-teiler-backend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.teiler_backend_ccp.rule=PathPrefix(`/ccp-teiler-backend`)"
-      - "traefik.http.services.teiler_backend_ccp.loadbalancer.server.port=8085"
-      - "traefik.http.routers.teiler_backend_ccp.tls=true"
-      - "traefik.http.middlewares.teiler_backend_ccp_strip.stripprefix.prefixes=/ccp-teiler-backend"
-      - "traefik.http.routers.teiler_backend_ccp.middlewares=teiler_backend_ccp_strip"
+      - "traefik.http.routers.teiler_backend_${PLATFORM}.rule=PathPrefix(`/${PLATFORM}-teiler-backend`)"
+      - "traefik.http.services.teiler_backend_${PLATFORM}.loadbalancer.server.port=8085"
+      - "traefik.http.routers.teiler_backend_${PLATFORM}.tls=true"
+      - "traefik.http.middlewares.teiler_backend_${PLATFORM}_strip.stripprefix.prefixes=/${PLATFORM}-teiler-backend"
+      - "traefik.http.routers.teiler_backend_${PLATFORM}.middlewares=teiler_backend_${PLATFORM}_strip"
     environment:
       LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"
       APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
       CONFIG_ENV_VAR_PATH: "/run/secrets/project-conf"
-      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
-      TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
-      TEILER_DASHBOARD_DE_URL: "https://${HOST}/ccp-teiler-dashboard/de"
-      TEILER_DASHBOARD_EN_URL: "https://${HOST}/ccp-teiler-dashboard/en"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/${PLATFORM}-teiler"
+      TEILER_ORCHESTRATOR_URL: "https://${HOST}/${PLATFORM}-teiler"
+      TEILER_DASHBOARD_DE_URL: "https://${HOST}/${PLATFORM}-teiler-dashboard/de"
+      TEILER_DASHBOARD_EN_URL: "https://${HOST}/${PLATFORM}-teiler-dashboard/en"
+      CENTRAX_URL: "${CENTRAXX_URL}"
       HTTP_PROXY: "http://forward_proxy:3128"
       ENABLE_MTBA: "${ENABLE_MTBA}"
       ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"

@@ -5,6 +5,7 @@ FOCUS_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | h
 FOCUS_RETRY_COUNT=${FOCUS_RETRY_COUNT:-64}
 SUPPORT_EMAIL=support-ccp@dkfz-heidelberg.de
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
+PLATFORM=ccp
 
 BROKER_URL_FOR_PREREQ=$BROKER_URL
 

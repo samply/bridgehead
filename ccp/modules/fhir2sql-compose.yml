@@ -23,3 +23,7 @@ services:
       POSTGRES_DB: "dashboard"
     volumes:
       - "/var/cache/bridgehead/ccp/dashboard-db:/var/lib/postgresql/data"
+
+  focus:
+    environment:
+      POSTGRES_CONNECTION_STRING: "postgresql://dashboard:${DASHBOARD_DB_PASSWORD}@dashboard-db/dashboard"

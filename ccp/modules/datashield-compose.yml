@@ -22,7 +22,7 @@ services:
 
   opal:
     container_name: bridgehead-opal
-    image: docker.verbis.dkfz.de/ccp/dktk-opal:latest
+    image: docker.verbis.dkfz.de/ccp/dktk-opal:test
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.opal_ccp.rule=PathPrefix(`/opal`)"

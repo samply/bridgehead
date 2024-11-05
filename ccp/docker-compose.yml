@@ -35,6 +35,7 @@ services:
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
       EXPORTER_URL: "http://exporter:8092"
       AUTH_HEADER: "${EXPORTER_API_KEY}"
+      ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
     volumes:
       - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf
     depends_on:
@@ -59,7 +60,6 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
-
 
 volumes:
   blaze-data:

@@ -59,7 +59,6 @@ services:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
 
-
 volumes:
   blaze-data:
 

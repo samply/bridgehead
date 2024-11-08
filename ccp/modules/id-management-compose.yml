@@ -14,6 +14,7 @@ services:
       MAGICPL_CONNECTOR_APIKEY: ${IDMANAGER_READ_APIKEY}
       MAGICPL_CENTRAL_PATIENTLIST_APIKEY: ${IDMANAGER_CENTRAL_PATIENTLIST_APIKEY}
       MAGICPL_CONTROLNUMBERGENERATOR_APIKEY: ${IDMANAGER_CONTROLNUMBERGENERATOR_APIKEY}
+      ML_LOG_LEVEL: ${LOG_LEVEL_IDMANAGER:-WARN}
     depends_on:
       - patientlist
       - traefik-forward-auth
@@ -44,6 +45,8 @@ services:
       - ML_UPLOAD_API_KEY=${IDMANAGER_UPLOAD_APIKEY}
       # Add Variables from /etc/patientlist-id-generators.env
       - PATIENTLIST_SEEDS_TRANSFORMED
+      - LOG_LEVEL=${LOG_LEVEL_PATIENTLIST:-WARN}
+      #TODO confirm LOG_LEVEL
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.patientlist.rule=PathPrefix(`/patientlist`)"

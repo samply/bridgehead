@@ -11,6 +11,7 @@ services:
       DB_BLOCK_CACHE_SIZE: ${BLAZE_MEMORY_CAP}
       CQL_EXPR_CACHE_SIZE: ${BLAZE_CQL_CACHE_CAP:-32}
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
+      LOG_LEVEL: ${LOG_LEVEL_BLAZE:-WARN}
     volumes:
       - "blaze-data:/app/data"
     labels:
@@ -34,6 +35,7 @@ services:
       EPSILON: 0.28
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
       ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
+      RUST_LOG: ${LOG_LEVEL_FOCUS:-WARN}
     volumes:
       - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf
     depends_on:
@@ -51,6 +53,7 @@ services:
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
       ROOTCERT_FILE: /conf/root.crt.pem
+      RUST_LOG: ${LOG_LEVEL_FOCUS:-WARN}
     secrets:
       - proxy.pem
     depends_on:

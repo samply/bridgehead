@@ -25,6 +25,7 @@ services:
       OIDC_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
       OIDC_REALM: "${OIDC_REALM}"
       OIDC_URL: "${OIDC_URL}"
+      LOG_LEVEL: ${LOG_LEVEL_MTBA:-WARN}
 
     labels:
       - "traefik.enable=true"

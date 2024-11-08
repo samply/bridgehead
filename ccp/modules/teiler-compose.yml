@@ -17,6 +17,7 @@ services:
       TEILER_DASHBOARD_URL: "https://${HOST}/ccp-teiler-dashboard"
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
       HTTP_RELATIVE_PATH: "/ccp-teiler"
+      LOG_LEVEL: ${LOG_LEVEL_TEILER:-WARN}
 
   teiler-dashboard:
     image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
@@ -47,6 +48,7 @@ services:
       TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
       REPORTER_DEFAULT_TEMPLATE_ID: "ccp-qb"
       EXPORTER_DEFAULT_TEMPLATE_ID: "ccp"
+      LOG_LEVEL: ${LOG_LEVEL_TEILER:-WARN}
 
 
   teiler-backend:
@@ -60,7 +62,6 @@ services:
       - "traefik.http.middlewares.teiler_backend_ccp_strip.stripprefix.prefixes=/ccp-teiler-backend"
       - "traefik.http.routers.teiler_backend_ccp.middlewares=teiler_backend_ccp_strip"
     environment:
-      LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"
       APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
@@ -73,6 +74,7 @@ services:
       HTTP_PROXY: "http://forward_proxy:3128"
       ENABLE_MTBA: "${ENABLE_MTBA}"
       ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
+      LOG_LEVEL: ${LOG_LEVEL_TEILER:-WARN}
     secrets:
       - ccp.conf
 

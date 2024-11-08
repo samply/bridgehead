@@ -12,6 +12,7 @@ services:
       CTS_API_KEY: ${NNGM_CTS_APIKEY}
       CRYPT_KEY: ${NNGM_CRYPTKEY}
       #CTS_MAGICPL_SITE: ${SITE_ID}TODO
+      LOG_LEVEL: ${LOG_LEVEL_NNGM:-WARN}
     restart: always
     labels:
       - "traefik.enable=true"

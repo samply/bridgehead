@@ -10,6 +10,7 @@ services:
       DB_RESOURCE_CACHE_SIZE: ${BLAZE_RESOURCE_CACHE_CAP:-2500000}
       DB_BLOCK_CACHE_SIZE: $BLAZE_MEMORY_CAP
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
+      LOG_LEVEL: ${LOG_LEVEL_BLAZE:-WARN}
     volumes:
       - "blaze-secondary-data:/app/data"
     labels:

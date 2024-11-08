@@ -10,6 +10,7 @@ services:
       SALT: ${LOCAL_SALT}
       KEEP_INTERNAL_ID: ${KEEP_INTERNAL_ID:-false}
       MAINZELLISTE_URL: ${PATIENTLIST_URL:-http://patientlist:8080/patientlist}
+      LOG_LEVEL: ${LOG_LEVEL_REPORTER:-WARN}
     restart: always
     labels:
       - "traefik.enable=true"

@@ -45,7 +45,7 @@ services:
       - ML_UPLOAD_API_KEY=${IDMANAGER_UPLOAD_APIKEY}
       # Add Variables from /etc/patientlist-id-generators.env
       - PATIENTLIST_SEEDS_TRANSFORMED
-      - LOG_LEVEL=${LOG_LEVEL_PATIENTLIST:-WARN}
+      - ML_LOG_LEVEL=${LOG_LEVEL_PATIENTLIST:-WARN}
       #TODO confirm LOG_LEVEL
     labels:
       - "traefik.enable=true"

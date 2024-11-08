@@ -77,6 +77,8 @@ services:
     image: docker.verbis.dkfz.de/ccp/dktk-rserver # datashield/rock-base + dsCCPhos
     tmpfs:
       - /srv
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL_OPAL:-WARN}
 
   beam-connect:
     image: docker.verbis.dkfz.de/cache/samply/beam-connect:develop

@@ -1,34 +1,88 @@
 version: "3.7"
 
 services:
-  dnpm-backend:
-    image: ghcr.io/kohlbacherlab/bwhc-backend:1.0-snapshot-broker-connector
-    container_name: bridgehead-dnpm-backend
+  dnpm-mysql:
+    image: mysql:latest
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 3s
+      timeout: 5s
+      retries: 5
     environment:
-      - ZPM_SITE=${ZPM_SITE}
-      - N_RANDOM_FILES=${DNPM_SYNTH_NUM}
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_ROOT_PASSWORD: ${DNPM_MYSQL_ROOT_PASSWORD}
     volumes:
-      - /etc/bridgehead/dnpm:/bwhc_config:ro
-      - ${DNPM_DATA_DIR}:/bwhc_data
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.bwhc-backend.rule=PathPrefix(`/bwhc`)"
-      - "traefik.http.services.bwhc-backend.loadbalancer.server.port=9000"
-      - "traefik.http.routers.bwhc-backend.tls=true"
+      - dnpm-mysql:/var/lib/mysql
 
-  dnpm-frontend:
-    image: ghcr.io/kohlbacherlab/bwhc-frontend:2209
-    container_name: bridgehead-dnpm-frontend
-    links:
-      - dnpm-backend
+  dnpm-authup:
+    image: authup/authup:latest
+    container_name: bridgehead-dnpm-authup
+    volumes:
+      - dnpm-authup:/usr/src/app/writable
+    depends_on:
+      dnpm-mysql:
+        condition: service_healthy
+    command: server/core start
     environment:
-      - NUXT_HOST=0.0.0.0
-      - NUXT_PORT=8080
-      - BACKEND_PROTOCOL=https
-      - BACKEND_HOSTNAME=$HOST
-      - BACKEND_PORT=443
+      - PUBLIC_URL=https://${HOST}/auth/
+      - AUTHORIZE_REDIRECT_URL=https://${HOST}
+      - ROBOT_ADMIN_ENABLED=true
+      - ROBOT_ADMIN_SECRET=${DNPM_AUTHUP_SECRET}
+      - ROBOT_ADMIN_SECRET_RESET=true
+      - DB_TYPE=mysql
+      - DB_HOST=dnpm-mysql
+      - DB_USERNAME=root
+      - DB_PASSWORD=${DNPM_MYSQL_ROOT_PASSWORD}
+      - DB_DATABASE=auth
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.bwhc-frontend.rule=PathPrefix(`/`)"
-      - "traefik.http.services.bwhc-frontend.loadbalancer.server.port=8080"
-      - "traefik.http.routers.bwhc-frontend.tls=true"
+      - "traefik.http.middlewares.authup-strip.stripprefix.prefixes=/auth"
+      - "traefik.http.routers.dnpm-auth.middlewares=authup-strip"
+      - "traefik.http.routers.dnpm-auth.rule=PathPrefix(`/auth`)"
+      - "traefik.http.services.dnpm-auth.loadbalancer.server.port=3000"
+      - "traefik.http.routers.dnpm-auth.tls=true"
+
+  dnpm-portal:
+    image: ghcr.io/kohlbacherlab/dnpm-dip-portal:latest
+    container_name: bridgehead-dnpm-portal
+    environment:
+      - NUXT_API_URL=http://dnpm-backend:9000/
+      - NUXT_PUBLIC_API_URL=https://${HOST}/api/
+      - NUXT_AUTHUP_URL=http://dnpm-authup:3000/
+      - NUXT_PUBLIC_AUTHUP_URL=https://${HOST}/auth/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dnpm-frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.services.dnpm-frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.dnpm-frontend.tls=true"
+
+  dnpm-backend:
+    container_name: bridgehead-dnpm-backend
+    image: ghcr.io/kohlbacherlab/dnpm-dip-backend:latest
+    environment:
+      - LOCAL_SITE=${ZPM_SITE}:${SITE_ID}   # Format: {Site-ID}:{Site-name}, e.g. UKT:Tübingen
+      - RD_RANDOM_DATA=${DNPM_SYNTH_NUM:--1}
+      - MTB_RANDOM_DATA=${DNPM_SYNTH_NUM:--1}
+      - HATEOAS_HOST=https://${HOST}
+      - CONNECTOR_TYPE=${BACKEND_CONNECTOR_TYPE:-broker}
+      - AUTHUP_URL=robot://system:${DNPM_AUTHUP_SECRET}@http://dnpm-authup:3000
+    volumes:
+      - /etc/bridgehead/dnpm/config:/dnpm_config
+      - dnpm-backend-data:/dnpm_data
+    depends_on:
+      dnpm-authup:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dnpm-backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.services.dnpm-backend.loadbalancer.server.port=9000"
+      - "traefik.http.routers.dnpm-backend.tls=true"
+
+  landing:
+    labels:
+      - "traefik.http.routers.landing.rule=PathPrefix(`/landing`)"
+
+volumes:
+  dnpm-authup:
+  dnpm-mysql:
+  dnpm-backend-data:

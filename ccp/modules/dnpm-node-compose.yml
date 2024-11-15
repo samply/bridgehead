@@ -60,7 +60,7 @@ services:
     container_name: bridgehead-dnpm-backend
     image: ghcr.io/kohlbacherlab/dnpm-dip-backend:latest
     environment:
-      - LOCAL_SITE=${ZPM_SITE}:${SITE_ID}   # Format: {Site-ID}:{Site-name}, e.g. UKT:Tübingen
+      - LOCAL_SITE=${ZPM_SITE}:${SITE_NAME}   # Format: {Site-ID}:{Site-name}, e.g. UKT:Tübingen
       - RD_RANDOM_DATA=${DNPM_SYNTH_NUM:--1}
       - MTB_RANDOM_DATA=${DNPM_SYNTH_NUM:--1}
       - HATEOAS_HOST=https://${HOST}

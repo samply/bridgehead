@@ -64,7 +64,7 @@ services:
       - RD_RANDOM_DATA=${DNPM_SYNTH_NUM:--1}
       - MTB_RANDOM_DATA=${DNPM_SYNTH_NUM:--1}
       - HATEOAS_HOST=https://${HOST}
-      - CONNECTOR_TYPE=${BACKEND_CONNECTOR_TYPE:-broker}
+      - CONNECTOR_TYPE=broker
       - AUTHUP_URL=robot://system:${DNPM_AUTHUP_SECRET}@http://dnpm-authup:3000
     volumes:
       - /etc/bridgehead/dnpm/config:/dnpm_config

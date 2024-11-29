@@ -118,7 +118,7 @@
             "id": "UMG",
             "name": "Goettingen",
             "virtualhost": "umg.dnpm.de",
-            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+            "beamconnect": "dnpm-connect.goettingen.broker.ccp-it.dktk.dkfz.de"
         },
         {
             "id": "UKW",

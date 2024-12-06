@@ -69,4 +69,4 @@ services:
   focus:
     environment:
       EXPORTER_URL: "http://exporter:8092"
-      AUTH_HEADER: "${EXPORTER_API_KEY}"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"

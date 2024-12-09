@@ -67,7 +67,7 @@ fi
 log INFO "Checking network access ($BROKER_URL_FOR_PREREQ) ..."
 
 source "${CONFIG_DIR}${PROJECT}".conf
-source ${PROJECT}/vars
+source ${PROJECT}/vars vars
 
 if [ "${PROJECT}" != "minimal" ]; then
   set +e

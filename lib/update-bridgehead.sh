@@ -58,7 +58,8 @@ for DIR in /etc/bridgehead $(pwd); do
     OUT=$(retry 5 git -c http.proxy=$HTTPS_PROXY_FULL_URL -c https.proxy=$HTTPS_PROXY_FULL_URL -C $DIR fetch 2>&1 && retry 5 git -c http.proxy=$HTTPS_PROXY_FULL_URL -c https.proxy=$HTTPS_PROXY_FULL_URL -C $DIR pull 2>&1)
   fi
   if [ $? -ne 0 ]; then
-    report_error log "Unable to update git $DIR: $OUT"
+    OUT_SAN=$(echo $OUT | sed -E 's|://[^:]+:[^@]+@|://credentials@|g')
+    report_error log "Unable to update git $DIR: $OUT_SAN"
   fi
 
   new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"

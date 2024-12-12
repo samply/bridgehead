@@ -23,8 +23,11 @@ services:
       - "traefik.http.routers.exporter_${PLATFORM}.tls=true"
       - "traefik.http.middlewares.exporter_${PLATFORM}_strip.stripprefix.prefixes=/${PLATFORM}-exporter"
       - "traefik.http.routers.exporter_${PLATFORM}.middlewares=exporter_${PLATFORM}_strip"
+      - "traefik.http.routers.connector.middlewares=connector_strip,auth-qr"
+      - "traefik.http.middlewares.auth.basicauth.users=${QR_AUTH}"
     volumes:
       - "/var/cache/bridgehead/${PLATFORM}/exporter-files:/app/exporter-files/output"
+      - "traefik.http.middlewares.auth-qr.basicauth.users=${QR_AUTH}"
 
   exporter-db:
     image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}

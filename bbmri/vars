@@ -32,11 +32,11 @@ do
     source $module
 done
 
-log DEBUG "sourcing ccp/modules/exporter-setup.sh"
-source ccp/modules/exporter-setup.sh
+log DEBUG "sourcing minimal/modules/exporter-setup.sh"
+source minimal/modules/exporter-setup.sh
 
-log DEBUG "sourcing ccp/modules/teiler-setup.sh"
-source ccp/modules/teiler-setup.sh
+log DEBUG "sourcing minimal/modules/teiler-setup.sh"
+source minimal/modules/teiler-setup.sh
 
 
 SUPPORT_EMAIL=$ERIC_SUPPORT_EMAIL

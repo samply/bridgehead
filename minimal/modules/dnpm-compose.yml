@@ -12,13 +12,13 @@ services:
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: ./conf/trusted-ca-certs
       ROOTCERT_FILE: ./conf/root.crt.pem
-    secrets:
-      - proxy.pem
     depends_on:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro,Z
+      # secrets don't seem to allow us to specify Z
+      - /etc/bridgehead/pki/${SITE_ID}.priv.pem:/run/secrets/proxy.pem:ro
 
   dnpm-beam-connect:
     depends_on: [ dnpm-beam-proxy ]
@@ -41,7 +41,7 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /etc/bridgehead/dnpm/local_targets.json:/conf/connect_targets.json:ro
-      - /srv/docker/bridgehead/minimal/modules/dnpm-central-targets.json:/conf/central_targets.json:ro
+      - /srv/docker/bridgehead/minimal/modules/dnpm-central-targets.json:/conf/central_targets.json:ro,Z
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dnpm-connect.rule=PathPrefix(`/dnpm-connect`)"
@@ -53,7 +53,3 @@ services:
   dnpm-echo:
     image: docker.verbis.dkfz.de/cache/samply/bridgehead-echo:latest
     container_name: bridgehead-dnpm-echo
-
-secrets:
-  proxy.pem:
-    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

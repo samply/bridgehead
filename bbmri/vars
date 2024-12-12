@@ -31,12 +31,6 @@ do
     source $module
 done
 
-log DEBUG "sourcing minimal/modules/exporter-setup.sh"
-source minimal/modules/exporter-setup.sh
-
-log DEBUG "sourcing minimal/modules/teiler-setup.sh"
-source minimal/modules/teiler-setup.sh
-
 
 SUPPORT_EMAIL=$ERIC_SUPPORT_EMAIL
 BROKER_URL_FOR_PREREQ="${ERIC_BROKER_URL:-$GBN_BROKER_URL}"

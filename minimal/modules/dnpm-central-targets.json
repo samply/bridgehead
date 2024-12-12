@@ -127,6 +127,12 @@
             "beamconnect": "dnpm-connect.wuerzburg-dnpm.broker.ccp-it.dktk.dkfz.de"
         },
         {
+            "id": "UKSH",
+            "name": "Schleswig-Holstein",
+            "virtualhost": "uksh.dnpm.de",
+            "beamconnect": "dnpm-connect.uksh-dnpm.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
             "id": "TKT",
             "name": "Test",
             "virtualhost": "tkt.dnpm.de",

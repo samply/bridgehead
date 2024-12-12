@@ -21,8 +21,6 @@ services:
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=${LDM_AUTH}"
-      - "traefik.http.middlewares.auth.basicauth.users=${QR_AUTH}"
     ports:
       - 80:80
       - 443:443

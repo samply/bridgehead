@@ -1,6 +1,6 @@
 # Full Excel Export
-curl --location --request POST 'https://${HOST}/${PLATFORM}-exporter/request?query=Patient&query-format=FHIR_PATH&template-id=${PLATFORM}&output-format=EXCEL' \
+curl --location --request POST 'https://${HOST}/${PROJECT}-exporter/request?query=Patient&query-format=FHIR_PATH&template-id=${PROJECT}&output-format=EXCEL' \
 --header 'x-api-key: ${EXPORT_API_KEY}'
 
 # QB
-curl --location --request POST 'https://${HOST}/${PLATFORM}-reporter/generate?template-id=${PLATFORM}'
+curl --location --request POST 'https://${HOST}/${PROJECT}-reporter/generate?template-id=${PROJECT}'

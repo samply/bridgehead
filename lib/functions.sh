@@ -36,6 +36,32 @@ setupProxy() {
 	export HTTPS_PROXY_HOST HTTPS_PROXY_PORT HTTPS_PROXY_FULL_URL
 }
 
+checkAndSetSelinux() {
+	# This is needed for the systemd service to start on SELinux systems.
+	if ! command -v sestatus > /dev/null 2>&1; then
+	 	echo "SELinux not available; nothing to do"
+	 	return
+	fi
+	if ! sestatus | grep "SELinux status:" | grep enabled > /dev/null; then
+		echo "SELinux disabled; nothing to do"
+		return
+	fi
+	current_mode="$(sestatus | grep 'Current mode:' | tr -s ' ' | cut -d' ' -f 3)"
+	echo "SELinux is active and ${current_mode}, checking for labels..."
+	# TODO: perhaps split this into checkSelinux (without the need for root) and setSelinux (needing root)
+	# "stat /srv/docker/bridgehead/bridgehead --printf %C" could be used for a check that doesn't need root
+	exitIfNotRoot
+	labels_for_srv="$(semanage fcontext --list | grep -e ^/srv)"
+	echo "Found the following labels for /srv:"
+	echo "${labels_for_srv}"
+	if ! echo "${labels_for_srv}" | grep -e ^/srv/docker/bridgehead/bridgehead > /dev/null; then
+		echo "Adding a label for /srv/docker/bridgehead/bridgehead..."
+		semanage fcontext --add --type bin_t /srv/docker/bridgehead/bridgehead
+	fi
+	restorecon -v /srv/docker/bridgehead/bridgehead  # this survives a reboot
+	# TODO: check if this survives updates
+}
+
 exitIfNotRoot() {
   if [ "$EUID" -ne 0 ]; then
     log "ERROR" "Please run as root"

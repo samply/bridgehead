@@ -3,6 +3,7 @@
 source lib/functions.sh
 
 exitIfNotRoot
+checkAndSetSelinux
 
 if [ $# -eq 0 ]; then
     log "ERROR" "Please provide a Project as argument"

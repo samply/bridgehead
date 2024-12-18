@@ -12,13 +12,13 @@ services:
       MYSQL_ROOT_HOST: "%"
       MYSQL_ROOT_PASSWORD: ${DNPM_MYSQL_ROOT_PASSWORD}
     volumes:
-      - dnpm-mysql:/var/lib/mysql
+      - /var/cache/bridgehead/dnpm/mysql:/var/lib/mysql
 
   dnpm-authup:
     image: authup/authup:latest
     container_name: bridgehead-dnpm-authup
     volumes:
-      - dnpm-authup:/usr/src/app/writable
+      - /var/cache/bridgehead/dnpm/authup:/usr/src/app/writable
     depends_on:
       dnpm-mysql:
         condition: service_healthy
@@ -68,7 +68,7 @@ services:
       - AUTHUP_URL=robot://system:${DNPM_AUTHUP_SECRET}@http://dnpm-authup:3000
     volumes:
       - /etc/bridgehead/dnpm/config:/dnpm_config
-      - dnpm-backend-data:/dnpm_data
+      - /var/cache/bridgehead/dnpm/backend-data:/dnpm_data
     depends_on:
       dnpm-authup:
         condition: service_healthy
@@ -81,8 +81,3 @@ services:
   landing:
     labels:
       - "traefik.http.routers.landing.rule=PathPrefix(`/landing`)"
-
-volumes:
-  dnpm-authup:
-  dnpm-mysql:
-  dnpm-backend-data:

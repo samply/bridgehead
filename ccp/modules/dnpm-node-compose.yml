@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   dnpm-mysql:
-    image: mysql:latest
+    image: mysql:9
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       interval: 3s

@@ -166,6 +166,10 @@ case "$ACTION" in
 		;;
 	postRun | postUpdate)
 		;;
+	gitCredentials)
+		loadVars >&2
+		exec ./lib/gitpassword.sh $@
+		;;
 	*)
 		printUsage
 		exit 1

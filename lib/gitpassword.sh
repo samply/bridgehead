@@ -4,10 +4,6 @@
 
 SECRETS_FILE=/var/cache/bridgehead/secrets/gitetcbridgehead
 
-# Called from bridgehead, so shift 2 times
-shift
-shift
-
 case "$1" in
   erase)
     rm -f $SECRETS_FILE

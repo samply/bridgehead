@@ -168,6 +168,7 @@ case "$ACTION" in
 		;;
 	gitCredentials)
 		loadVars >&2
+		shift 2
 		exec ./lib/gitpassword.sh $@
 		;;
 	*)

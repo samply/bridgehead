@@ -1,7 +1,5 @@
 #!/bin/bash -eu
 
-#echo "Called: $@" >> /tmp/credhelper
-
 SECRETS_FILE=/var/cache/bridgehead/secrets/gitetcbridgehead
 
 case "$1" in

@@ -1,6 +1,8 @@
 #!/bin/bash
 source lib/functions.sh
 
+PROJECT="$1"
+
 AUTO_HOUSEKEEPING=${AUTO_HOUSEKEEPING:-true}
 
 if [ "$AUTO_HOUSEKEEPING" == "true" ]; then
@@ -19,7 +21,7 @@ fi
 
 hc_send log "Checking for bridgehead updates ..."
 
-CONFFILE=/etc/bridgehead/$1.conf
+CONFFILE=/etc/bridgehead/$PROJECT.conf
 
 if [ ! -e $CONFFILE ]; then
   fail_and_report 1 "Configuration file $CONFFILE not found."
@@ -33,7 +35,7 @@ export SITE_ID
 checkOwner /srv/docker/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong permissions in /srv/docker/bridgehead"
 checkOwner /etc/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong permissions in /etc/bridgehead"
 
-CREDHELPER="/srv/docker/bridgehead/lib/gitpassword.sh"
+CREDHELPER="/srv/docker/bridgehead/bridgehead gitCredentials $PROJECT"
 
 CHANGES=""
 

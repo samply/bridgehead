@@ -6,7 +6,7 @@ services:
       replicas: 0 #deactivate landing page
 
   blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
+    image: docker.verbis.dkfz.de/cache/samply/blaze:0.31
     container_name: bridgehead-kr-blaze
     environment:
       BASE_URL: "http://bridgehead-kr-blaze:8080"

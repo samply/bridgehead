@@ -53,7 +53,7 @@ checkOwner(){
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|stop|logs|docker-logs|is-running|update|install|uninstall|adduser|enroll|gitCredentials PROJECTNAME"
+	echo "Usage: bridgehead start|stop|logs|docker-logs|is-running|update|install|uninstall|adduser|enroll PROJECTNAME"
 	echo "PROJECTNAME should be one of ccp|bbmri|cce|itcc|kr|dhki"
 }
 
@@ -116,7 +116,7 @@ assertVarsNotEmpty() {
 	MISSING_VARS=""
 
 	for VAR in $@; do
-		if [ -z "${VAR+x}" ] || [ -z "$VAR" ]; then
+		if [ -z "${!VAR}" ]; then
 			MISSING_VARS+="$VAR "
 		fi
 	done

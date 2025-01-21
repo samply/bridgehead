@@ -254,6 +254,8 @@ sh bridgehead uninstall
 
 ## Site-specific configuration
 
+[How to Change Config Access Token](docs/update-access-token.md)
+
 ### HTTPS Access
 
 Even within your internal network, the Bridgehead enforces HTTPS for all services. During the installation, a self-signed, long-lived certificate was created for you. To increase security, you can simply replace the files under `/etc/bridgehead/traefik-tls` with ones from established certification authorities such as [Let's Encrypt](https://letsencrypt.org) or [DFN-AAI](https://www.aai.dfn.de).

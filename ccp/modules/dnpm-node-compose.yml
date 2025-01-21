@@ -74,9 +74,25 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dnpm-backend.rule=PathPrefix(`/api`)"
       - "traefik.http.services.dnpm-backend.loadbalancer.server.port=9000"
+      # expose everything
+      - "traefik.http.routers.dnpm-backend.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.dnpm-backend.tls=true"
+      - "traefik.http.routers.dnpm-backend.service=dnpm-backend"
+      # except ETL
+      - "traefik.http.routers.dnpm-backend-etl.rule=PathRegexp(`^/api(/.*)?etl(/.*)?$`)"
+      - "traefik.http.routers.dnpm-backend-etl.tls=true"
+      - "traefik.http.routers.dnpm-backend-etl.service=dnpm-backend"
+      # this needs an ETL processor with support for basic auth
+      - "traefik.http.routers.dnpm-backend-etl.middlewares=auth"
+      # except peer-to-peer
+      - "traefik.http.routers.dnpm-backend-peer.rule=PathRegexp(`^/api(/.*)?/peer2peer(/.*)?$`)"
+      - "traefik.http.routers.dnpm-backend-peer.tls=true"
+      - "traefik.http.routers.dnpm-backend-peer.service=dnpm-backend"
+      - "traefik.http.routers.dnpm-backend-peer.middlewares=dnpm-backend-peer"
+      # this effectively denies all requests
+      # this is okay, because requests from peers don't go through Traefik
+      - "traefik.http.middlewares.dnpm-backend-peer.ipWhiteList.sourceRange=0.0.0.0/32"
 
   landing:
     labels:

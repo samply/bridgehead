@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   blaze-secondary:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
+    image: docker.verbis.dkfz.de/cache/samply/blaze:0.31
     container_name: bridgehead-ccp-blaze-secondary
     environment:
       BASE_URL: "http://bridgehead-ccp-blaze-secondary:8080"

@@ -10,7 +10,6 @@ services:
       SALT: ${LOCAL_SALT}
       KEEP_INTERNAL_ID: ${KEEP_INTERNAL_ID:-false}
       MAINZELLISTE_URL: ${PATIENTLIST_URL:-http://patientlist:8080/patientlist}
-    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.obds2fhir-rest.rule=PathPrefix(`/obds2fhir-rest`) || PathPrefix(`/adt2fhir-rest`)"

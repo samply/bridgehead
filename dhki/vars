@@ -25,4 +25,4 @@ do
     source $module
 done
 
-routineConnectorSetup
+transfairSetup

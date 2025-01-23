@@ -58,11 +58,18 @@ if [ $? -eq 0 ]; then
   # In the past we used to hardcode tokens into the repository URL. We have to remove those now for the git credential helper to become effective.
   CLEAN_REPO="$(git -C /etc/bridgehead remote get-url origin | sed -E 's|https://[^@]+@|https://|')"
   git -C /etc/bridgehead remote set-url origin "$CLEAN_REPO"
+  # Set the git credential helper
+  git -C /etc/bridgehead config credential.helper /srv/docker/bridgehead/lib/gitlab-token-helper.sh
 else
   log "WARN" "Secret Sync failed"
+  # Remove the git credential helper
+  git -C /etc/bridgehead config --unset credential.helper
 fi
 
-CREDHELPER="/srv/docker/bridgehead/lib/gitpassword.sh"
+# In the past the git credential helper was also set for /srv/docker/bridgehead but never used.
+# Let's remove it to avoid confusion. This line can be removed at some point the future when we
+# believe that it was removed on all/most production servers.
+git -C /srv/docker/bridgehead config --unset credential.helper
 
 CHANGES=""
 
@@ -73,10 +80,6 @@ for DIR in /etc/bridgehead $(pwd); do
   OUT="$(git -C $DIR status --porcelain)"
   if [ -n "$OUT" ]; then
     report_error log "The working directory $DIR is modified. Changed files: $OUT"
-  fi
-  if [ "$(git -C $DIR config --get credential.helper)" != "$CREDHELPER" ]; then
-    log "INFO" "Configuring repo to use bridgehead git credential helper."
-    git -C $DIR config credential.helper "$CREDHELPER"
   fi
   old_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
   if [ -z "$HTTPS_PROXY_FULL_URL" ]; then

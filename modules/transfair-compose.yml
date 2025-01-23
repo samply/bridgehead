@@ -1,7 +1,7 @@
 
 services:
   transfair:
-    image: samply/routine-connector:latest # TODO: Harbor image and new name ofc
+    image: docker.verbis.dkfz.de/cache/samply/transfair:latest
     container_name: bridgehead-transfair
     environment:
       INSTITUTE_TTP_URL: "${INSTITUTE_TTP_URL}"

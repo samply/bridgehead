@@ -36,7 +36,7 @@ services:
       - DB_DATABASE=auth
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.authup-strip.stripprefix.prefixes=/auth"
+      - "traefik.http.middlewares.authup-strip.stripprefix.prefixes=/auth/"
       - "traefik.http.routers.dnpm-auth.middlewares=authup-strip"
       - "traefik.http.routers.dnpm-auth.rule=PathPrefix(`/auth`)"
       - "traefik.http.services.dnpm-auth.loadbalancer.server.port=3000"

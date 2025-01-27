@@ -83,6 +83,10 @@ services:
       - "traefik.http.routers.dnpm-backend-etl.rule=PathRegexp(`^/api(/.*)?etl(/.*)?$`)"
       - "traefik.http.routers.dnpm-backend-etl.tls=true"
       - "traefik.http.routers.dnpm-backend-etl.service=dnpm-backend"
+      # TODO: add to minimal and document
+      - "traefik.http.middlewares.rewrite-mtbfile.replacepathregex.regex=^(.*)/MTBFile$"
+      - "traefik.http.middlewares.rewrite-mtbfile.replacepathregex.replacement=$1"
+      - "traefik.http.routers.dnpm-backend-etl.middlewares=rewrite-mtbfile"
       # this needs an ETL processor with support for basic auth
       - "traefik.http.routers.dnpm-backend-etl.middlewares=auth"
       # except peer-to-peer

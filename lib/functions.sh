@@ -116,7 +116,7 @@ assertVarsNotEmpty() {
 	MISSING_VARS=""
 
 	for VAR in $@; do
-	if [ -z "${!VAR}" ]; then
+		if [ -z "${!VAR}" ]; then
 			MISSING_VARS+="$VAR "
 		fi
 	done

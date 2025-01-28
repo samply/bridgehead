@@ -76,7 +76,7 @@ The following URLs need to be accessible (prefix with `https://`):
   * git.verbis.dkfz.de
 * To fetch docker images
   * docker.verbis.dkfz.de
-  * Official Docker, Inc. URLs (subject to change, see [official list](https://docs.docker.com/desktop/all))
+  * Official Docker, Inc. URLs (subject to change, see [official list](https://docs.docker.com/desktop/setup/allow-list/))
     * hub.docker.com
     * registry-1.docker.io
     * production.cloudflare.docker.com

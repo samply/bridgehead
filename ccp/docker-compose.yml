@@ -20,45 +20,40 @@ services:
       - "traefik.http.routers.blaze_ccp.middlewares=ccp_b_strip,auth"
       - "traefik.http.routers.blaze_ccp.tls=true"
 
-# Modification needed for running in a test mode
-# Commented out so that the Bridgehead can run without Beam.
+  focus:
+    image: docker.verbis.dkfz.de/cache/samply/focus:0.4.4
+    container_name: bridgehead-focus
+    environment:
+      API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      BEAM_APP_ID_LONG: focus.${PROXY_ID}
+      PROXY_ID: ${PROXY_ID}
+      BLAZE_URL: "http://bridgehead-ccp-blaze:8080/fhir/"
+      BEAM_PROXY_URL: http://beam-proxy:8081
+      RETRY_COUNT: ${FOCUS_RETRY_COUNT}
+      EPSILON: 0.28
+    depends_on:
+#      - "beam-proxy"
+      - "beam-proxy"
+      - "blaze"
 
-#  focus:
-#    image: docker.verbis.dkfz.de/cache/samply/focus:0.4.4
-#    container_name: bridgehead-focus
-#    environment:
-#      API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
-#      BEAM_APP_ID_LONG: focus.${PROXY_ID}
-#      PROXY_ID: ${PROXY_ID}
-#      BLAZE_URL: "http://bridgehead-ccp-blaze:8080/fhir/"
-#      BEAM_PROXY_URL: http://beam-proxy:8081
-#      RETRY_COUNT: ${FOCUS_RETRY_COUNT}
-#      EPSILON: 0.28
-#    depends_on:
-##      - "beam-proxy"
-#      - "blaze"
-
-# Modification needed for running in a test mode
-# Commented out so that the Bridgehead can run without Beam.
-
-#  beam-proxy:
-#    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
-#    container_name: bridgehead-beam-proxy
-#    environment:
-#      BROKER_URL: ${BROKER_URL}
-#      PROXY_ID: ${PROXY_ID}
-#      APP_focus_KEY: ${FOCUS_BEAM_SECRET_SHORT}
-#      PRIVKEY_FILE: /run/secrets/proxy.pem
-#      ALL_PROXY: http://forward_proxy:3128
-#      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
-#      ROOTCERT_FILE: /conf/root.crt.pem
-#    secrets:
-#      - proxy.pem
-#    depends_on:
-#      - "forward_proxy"
-#    volumes:
-#      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-#      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
+  beam-proxy:
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    container_name: bridgehead-beam-proxy
+    environment:
+      BROKER_URL: ${BROKER_URL}
+      PROXY_ID: ${PROXY_ID}
+      APP_focus_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      PRIVKEY_FILE: /run/secrets/proxy.pem
+      ALL_PROXY: http://forward_proxy:3128
+      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
+      ROOTCERT_FILE: /conf/root.crt.pem
+    secrets:
+      - proxy.pem
+    depends_on:
+      - "forward_proxy"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
 
 
 volumes:

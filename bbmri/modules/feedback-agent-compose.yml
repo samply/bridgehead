@@ -1,0 +1,59 @@
+version: "3.7"
+
+services:
+  feedback-agent-ui:
+    image: "samply/feedback-agent-ui"
+    environment:
+      - VUE_APP_EXPORTER_URL=https://localhost/ccp-exporter
+      - VUE_APP_FB_BACKEND_URL=http://localhost:8072
+    labels:
+     - traefik.enable=true
+     # HTTPS
+     - traefik.http.routers.feedback_agent_ui_ccp_https.rule=PathPrefix(`/ccp-feedback-agent-ui`)
+     - traefik.http.services.feedback_agent_ui_ccp_https.loadbalancer.server.port=8096
+     - traefik.http.routers.feedback_agent_ui_ccp_https.entrypoints=websecure
+     - traefik.http.routers.feedback_agent_ui_ccp_https.tls=true
+  feedback-agent:
+    image: "samply/feedback-agent"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://feedback-agent-db:5432/compose-postgres
+      - SPRING_DATASOURCE_USERNAME=compose-postgres
+      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - BEAM_PROXY_URI=http://beam-proxy-eric:8081
+      - FEEDBACK_HUB_URL=http://feedback-hub-be:8071
+      - BLAZE_BASE_URL=http://blaze:8080/fhir
+      - FEEDBACK_AGENT_SECRET=App1Secret
+      - FEEDBACK_AGENT_BEAM_ID=feedback-agent.${ERIC_PROXY_ID}
+      - FEEDBACK_HUB_BEAM_ID=feedback-hub.feedback-central.${ERIC_BROKER_ID}
+      - EXPORTER_API_KEY=${EXPORTER_API_KEY}
+      - CORS_ALLOWED_ORIGINS="https://${HOST}
+    networks:
+      # Only needed for local testing.
+      - feedback
+      - default
+    labels:
+     - traefik.enable=true
+     # HTTPS
+     - traefik.http.routers.feedback_agent_ccp_https.rule=PathPrefix(`/ccp-feedback-agent`)
+     - traefik.http.services.feedback_agent_ccp_https.loadbalancer.server.port=8072
+     - traefik.http.routers.feedback_agent_ccp_https.entrypoints=websecure
+     - traefik.http.middlewares.feedback_agent_ccp_https_strip.stripprefix.prefixes=/ccp-feedback-agent
+     - traefik.http.routers.feedback_agent_ccp_https.middlewares=feedback_agent_ccp_https_strip
+     - traefik.http.routers.feedback_agent_ccp_https.tls=true
+  feedback-agent-db:
+    image: 'postgres:13.1-alpine'
+    container_name: feedback-agent-db
+    environment:
+      - POSTGRES_USER=compose-postgres
+      - POSTGRES_PASSWORD=compose-postgres
+
+# This is needed when you run both agent and hub locally in a test
+# environment. Not necessary in production, though it probably won't
+# cause any problems.
+networks:
+  # Network to connect agent and hub.
+  feedback:
+    name: feedback
+    driver: bridge
+

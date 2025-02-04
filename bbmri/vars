@@ -4,7 +4,7 @@
 # Makes only sense for German Biobanks
 : ${ENABLE_GBN:=false}
 
-FOCUS_RETRY_COUNT=32
+FOCUS_RETRY_COUNT=256
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 
 OIDC_USER_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})"

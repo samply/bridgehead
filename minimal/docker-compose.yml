@@ -25,6 +25,9 @@ services:
     ports:
       - 80:80
       - 443:443
+    security_opt:
+      # allow access to the docker socket on systems with SELinux
+      - "label:type:container_runtime_t"
     volumes:
       - /etc/bridgehead/traefik-tls:/certs:ro
       - ../lib/traefik-configuration/:/configuration:ro

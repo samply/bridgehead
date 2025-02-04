@@ -10,7 +10,7 @@ if [ -n "${ENABLE_DNPM_NODE}" ]; then
 		exit 1
 	fi
     mkdir -p /var/cache/bridgehead/dnpm/ || fail_and_report 1 "Failed to create '/var/cache/bridgehead/dnpm/'. Please run sudo './bridgehead install $PROJECT' again to fix the permissions."
-	DNPM_SYNTH_NUM=${DNPM_SYNTH_NUM:--1}
+    DNPM_SYNTH_NUM=${DNPM_SYNTH_NUM:--1}
     DNPM_MYSQL_ROOT_PASSWORD="$(generate_simple_password 'dnpm mysql')"
     DNPM_AUTHUP_SECRET="$(generate_simple_password 'dnpm authup')"
 fi

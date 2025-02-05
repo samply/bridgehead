@@ -32,7 +32,6 @@ services:
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
       EPSILON: 0.28
     depends_on:
-#      - "beam-proxy"
       - "beam-proxy"
       - "blaze"
 

@@ -18,12 +18,12 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://feedback-agent-db:5432/compose-postgres
       - SPRING_DATASOURCE_USERNAME=compose-postgres
-      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+      - SPRING_DATASOURCE_PASSWORD=${FEEDBACK_AGENT_DB_PASSWORD}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - BEAM_PROXY_URI=http://beam-proxy-eric:8081
       - FEEDBACK_HUB_URL=http://feedback-hub-be:8071
       - BLAZE_BASE_URL=http://blaze:8080/fhir
-      - FEEDBACK_AGENT_SECRET=App1Secret
+      - FEEDBACK_AGENT_SECRET=${FEEDBACK_AGENT_BEAM_SECRET}
       - FEEDBACK_AGENT_BEAM_ID=feedback-agent.${ERIC_PROXY_ID}
       - FEEDBACK_HUB_BEAM_ID=feedback-hub.feedback-central.${ERIC_BROKER_ID}
       - EXPORTER_API_KEY=${EXPORTER_API_KEY}
@@ -46,7 +46,7 @@ services:
     container_name: feedback-agent-db
     environment:
       - POSTGRES_USER=compose-postgres
-      - POSTGRES_PASSWORD=compose-postgres
+      - POSTGRES_PASSWORD=${FEEDBACK_AGENT_DB_PASSWORD}
 
 # This is needed when you run both agent and hub locally in a test
 # environment. Not necessary in production, though it probably won't

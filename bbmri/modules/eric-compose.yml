@@ -22,7 +22,7 @@ services:
       BROKER_URL: ${ERIC_BROKER_URL}
       PROXY_ID: ${ERIC_PROXY_ID}
       APP_focus_KEY: ${ERIC_FOCUS_BEAM_SECRET_SHORT}
-      APP_feedback-agent_KEY: App1Secret
+      APP_feedback-agent_KEY: ${FEEDBACK_AGENT_BEAM_SECRET}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs

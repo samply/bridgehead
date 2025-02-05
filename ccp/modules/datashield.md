@@ -1,5 +1,5 @@
 # DataSHIELD
-This module constitutes the infrastructure to run DataSHIELD within the bridghead. 
+This module constitutes the infrastructure to run DataSHIELD within the bridgehead. 
 For more information about DataSHIELD, please visit https://www.datashield.org/
 
 ## R-Studio

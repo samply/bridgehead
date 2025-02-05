@@ -53,8 +53,8 @@ checkOwner(){
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|stop|logs|is-running|update|install|uninstall|adduser|enroll PROJECTNAME"
-	echo "PROJECTNAME should be one of ccp|bbmri"
+	echo "Usage: bridgehead start|stop|logs|docker-logs|is-running|update|install|uninstall|adduser|enroll PROJECTNAME"
+	echo "PROJECTNAME should be one of ccp|bbmri|cce|itcc|kr|dhki"
 }
 
 checkRequirements() {
@@ -116,7 +116,7 @@ assertVarsNotEmpty() {
 	MISSING_VARS=""
 
 	for VAR in $@; do
-	if [ -z "${!VAR}" ]; then
+		if [ -z "${!VAR}" ]; then
 			MISSING_VARS+="$VAR "
 		fi
 	done
@@ -171,8 +171,10 @@ optimizeBlazeMemoryUsage() {
 		if [ $available_system_memory_chunks -eq 0 ]; then
 			log WARN "Only ${BLAZE_MEMORY_CAP} system memory available for Blaze. If your Blaze stores more than 128000 fhir ressources it will run significally slower."
 			export BLAZE_RESOURCE_CACHE_CAP=128000;
+			export BLAZE_CQL_CACHE_CAP=32;
 		else
 			export BLAZE_RESOURCE_CACHE_CAP=$((available_system_memory_chunks * 312500))
+			export BLAZE_CQL_CACHE_CAP=$((($system_memory_in_mb/4)/16));
 		fi
 	fi
 }
@@ -334,7 +336,7 @@ function sync_secrets() {
 #        docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
 
     set -a # Export variables as environment variables
-    source /var/cache/bridgehead/secrets/*
+    source /var/cache/bridgehead/secrets/oidc
     set +a # Export variables in the regular way
 }
 

@@ -65,3 +65,8 @@ services:
       - "traefik.http.routers.reporter_ccp.tls=true"
       - "traefik.http.middlewares.reporter_ccp_strip.stripprefix.prefixes=/ccp-reporter"
       - "traefik.http.routers.reporter_ccp.middlewares=reporter_ccp_strip"
+
+  focus:
+    environment:
+      EXPORTER_URL: "http://exporter:8092"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"

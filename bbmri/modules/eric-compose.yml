@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   focus-eric:
-    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-bbmri
     container_name: bridgehead-focus-eric
     environment:
       API_KEY: ${ERIC_FOCUS_BEAM_SECRET_SHORT}
@@ -16,7 +16,7 @@ services:
       - "blaze"
 
   beam-proxy-eric:
-    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:${BEAM_TAG}
     container_name: bridgehead-beam-proxy-eric
     environment:
       BROKER_URL: ${ERIC_BROKER_URL}

@@ -34,7 +34,7 @@ This repository is the starting point for any information and tools you will nee
 
 ## Requirements
 
-The data protection group at your site will probably want to know exactly what our software does with patient data, and you may need to get their approval before you are allowed to install a Bridgehead. To help you with this, we have provided some data protection concepts:
+The data protection officer at your site will probably want to know exactly what our software does with patient data, and you may need to get their approval before you are allowed to install a Bridgehead. To help you with this, we have provided some data protection concepts:
 
 - [Germany](https://www.bbmri.de/biobanking/it/infrastruktur/datenschutzkonzept/)
 
@@ -45,6 +45,8 @@ Hardware requirements strongly depend on the specific use-cases of your network 
 - 4 CPU cores
 - 32 GB RAM
 - 160GB Hard Drive, SSD recommended
+
+We recommend using a dedicated VM for the Bridgehead, with no other applications running on it. While the Bridgehead can, in principle, run on a shared VM, you might run into surprising problems such as resource conflicts (e.g., two apps using tcp port 443).
 
 ### Software
 
@@ -74,7 +76,7 @@ The following URLs need to be accessible (prefix with `https://`):
   * git.verbis.dkfz.de
 * To fetch docker images
   * docker.verbis.dkfz.de
-  * Official Docker, Inc. URLs (subject to change, see [official list](https://docs.docker.com/desktop/all))
+  * Official Docker, Inc. URLs (subject to change, see [official list](https://docs.docker.com/desktop/setup/allow-list/))
     * hub.docker.com
     * registry-1.docker.io
     * production.cloudflare.docker.com
@@ -200,7 +202,7 @@ sudo systemctl [enable|disable] bridgehead@<PROJECT>.service
 After starting the Bridgehead, you can watch the initialization process with the following command:
 
 ```shell
-journalctl -u bridgehead@bbmri -f
+/srv/docker/bridgehead/bridgehead logs <project> -f
 ```
 
 if this exits with something similar to the following:
@@ -220,8 +222,9 @@ docker ps
 There should be 6 - 10 Docker proceses. If there are fewer, then you know that something has gone wrong. To see what is going on, run:
 
 ```shell
-journalctl -u bridgehead@bbmri -f
+/srv/docker/bridgehead/bridgehead logs <Project> -f
 ```
+This translates to a journalctl command so all the regular journalctl flags can be used.
 
 Once the Bridgehead has passed these checks, take a look at the landing page:
 
@@ -235,7 +238,7 @@ You can either do this in a browser or with curl. If you visit the URL in the br
 curl -k https://localhost
 ```
 
-If you get errors when you do this, you need to use ```docker logs``` to examine your landing page container in order to determine what is going wrong.
+Should the landing page not show anything, you can inspect the logs of the containers to determine what is going wrong. To do this you can use `./bridgehead docker-logs <Project> -f` to follow the logs of the container. This transaltes to a docker compose logs command meaning all the ususal docker logs flags work.
 
 If you have chosen to take part in our monitoring program (by setting the ```MONITOR_APIKEY``` variable in the configuration), you will be informed by email when problems are detected in your Bridgehead.
 
@@ -250,6 +253,8 @@ sh bridgehead uninstall
 ```
 
 ## Site-specific configuration
+
+[How to Change Config Access Token](docs/update-access-token.md)
 
 ### HTTPS Access
 
@@ -298,19 +303,19 @@ Once you have added your biobank to the Directory you got persistent identifier 
 
 The Bridgehead's **Directory Sync** is an optional feature that keeps the Directory up to date with your local data, e.g. number of samples. Conversely, it also updates the local FHIR store with the latest contact details etc. from the Directory. You must explicitly set your country specific directory URL, username and password to enable this feature.
 
+You should talk with your local data protection group regarding the information that is published by Directory sync.
+
 Full details can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
 
 To enable it, you will need to set these variables to the ```bbmri.conf``` file of your GitLab repository. Here is an example config:
 
 ```
-DS_DIRECTORY_URL=https://directory.bbmri-eric.eu
 DS_DIRECTORY_USER_NAME=your_directory_username
-DS_DIRECTORY_USER_PASS=qwdnqwswdvqHBVGFR9887
-DS_TIMER_CRON="0 22 * * *"
+DS_DIRECTORY_USER_PASS=your_directory_password
 ```
-You must contact the Directory team for your national node to find the URL, and to register as a user.
+Please contact your National Node to obtain this information.
 
-Additionally, you should choose when you want Directory sync to run. In the example above, this is set to happen at 10 pm every evening. You can modify this to suit your requirements. The timer specification should follow the [cron](https://crontab.guru) convention.
+Optionally, you **may** change when you want Directory sync to run by specifying a [cron](https://crontab.guru) expression, e.g. `DS_TIMER_CRON="0 22 * * *"` for 10 pm every evening.
 
 Once you edited the gitlab config, the bridgehead will autoupdate the config with the values and will sync the data.
 

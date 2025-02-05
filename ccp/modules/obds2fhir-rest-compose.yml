@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  obds2fhir-rest:
+    container_name: bridgehead-obds2fhir-rest
+    image: docker.verbis.dkfz.de/ccp/obds2fhir-rest:main
+    environment:
+      IDTYPE: BK_${IDMANAGEMENT_FRIENDLY_ID}_L-ID
+      MAINZELLISTE_APIKEY: ${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
+      SALT: ${LOCAL_SALT}
+      KEEP_INTERNAL_ID: ${KEEP_INTERNAL_ID:-false}
+      MAINZELLISTE_URL: ${PATIENTLIST_URL:-http://patientlist:8080/patientlist}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.obds2fhir-rest.rule=PathPrefix(`/obds2fhir-rest`) || PathPrefix(`/adt2fhir-rest`)"
+      - "traefik.http.middlewares.obds2fhir-rest_strip.stripprefix.prefixes=/obds2fhir-rest,/adt2fhir-rest"
+      - "traefik.http.services.obds2fhir-rest.loadbalancer.server.port=8080"
+      - "traefik.http.routers.obds2fhir-rest.tls=true"
+      - "traefik.http.routers.obds2fhir-rest.middlewares=obds2fhir-rest_strip,auth"

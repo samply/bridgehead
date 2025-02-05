@@ -32,6 +32,18 @@ case "$PROJECT" in
 	bbmri)
 		#nothing extra to do
 		;;
+	cce)
+		#nothing extra to do
+		;;
+	itcc)
+		#nothing extra to do
+		;;
+	kr)
+		#nothing extra to do
+		;;
+	dhki)
+		#nothing extra to do
+		;;
 	minimal)
 		#nothing extra to do
 		;;
@@ -41,17 +53,44 @@ case "$PROJECT" in
 		;;
 esac
 
+# Loads config variables and runs the projects setup script
 loadVars() {
-	# Load variables from /etc/bridgehead and /srv/docker/bridgehead
 	set -a
+	# Source the project specific config file
 	source /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "/etc/bridgehead/$PROJECT.conf not found"
+	# Source the project specific local config file if present
+	# This file is ignored by git as oposed to the regular config file as it contains private site information like etl auth data
 	if [ -e /etc/bridgehead/$PROJECT.local.conf ]; then
 		log INFO "Applying /etc/bridgehead/$PROJECT.local.conf"
 		source /etc/bridgehead/$PROJECT.local.conf || fail_and_report 1 "Found /etc/bridgehead/$PROJECT.local.conf but failed to import"
 	fi
+	# Set execution environment on main default to prod else test
+	if [[ -z "${ENVIRONMENT+x}" ]]; then
+		if [ "$(git rev-parse --abbrev-ref HEAD)" == "main" ]; then
+			ENVIRONMENT="production"
+		else
+			ENVIRONMENT="test"
+		fi
+	fi
+	# Source the versions of the images components 
+	case "$ENVIRONMENT" in
+		"production")
+			source ./versions/prod
+			;;
+		"test")
+			source ./versions/test
+			;;
+		*)
+			report_error 7 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
+			source ./versions/prod
+			;;
+	esac
 	fetchVarsFromVaultByFile /etc/bridgehead/$PROJECT.conf || fail_and_report 1 "Unable to fetchVarsFromVaultByFile"
 	setHostname
 	optimizeBlazeMemoryUsage
+	# Run project specific setup if it exists
+	# This will ususally modiy the `OVERRIDE` to include all the compose files that the project depends on
+	# This is also where projects specify which modules to load
 	[ -e ./$PROJECT/vars ] && source ./$PROJECT/vars
 	set +a
 
@@ -67,22 +106,6 @@ loadVars() {
 	fi
 	detectCompose
 	setupProxy
-
-	# Set some project-independent default values
-	: ${ENVIRONMENT:=production}
-
-	case "$ENVIRONMENT" in
-		"production")
-			export FOCUS_TAG=main
-			;;
-		"test")
-			export FOCUS_TAG=develop
-			;;
-		*)
-			report_error 7 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
-			export FOCUS_TAG=main
-			;;
-	esac
 }
 
 case "$ACTION" in
@@ -107,6 +130,11 @@ case "$ACTION" in
 		exit $?
 		;;
 	logs)
+		loadVars
+		shift 2
+		exec journalctl -u bridgehead@$PROJECT -u bridgehead-update@$PROJECT -a $@
+		;;
+	docker-logs)
 		loadVars
 		shift 2
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE logs -f $@

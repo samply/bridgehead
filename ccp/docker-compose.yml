@@ -2,13 +2,14 @@ version: "3.7"
 
 services:
   blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:latest
+    image: docker.verbis.dkfz.de/cache/samply/blaze:0.31
     container_name: bridgehead-ccp-blaze
     environment:
       BASE_URL: "http://bridgehead-ccp-blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx${BLAZE_MEMORY_CAP:-4096}m"
       DB_RESOURCE_CACHE_SIZE: ${BLAZE_RESOURCE_CACHE_CAP:-2500000}
-      DB_BLOCK_CACHE_SIZE: $BLAZE_MEMORY_CAP
+      DB_BLOCK_CACHE_SIZE: ${BLAZE_MEMORY_CAP}
+      CQL_EXPR_CACHE_SIZE: ${BLAZE_CQL_CACHE_CAP:-32}
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
     volumes:
       - "blaze-data:/app/data"
@@ -21,7 +22,7 @@ services:
       - "traefik.http.routers.blaze_ccp.tls=true"
 
   focus:
-    image: docker.verbis.dkfz.de/cache/samply/focus:0.4.4
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-dktk
     container_name: bridgehead-focus
     environment:
       API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
@@ -31,12 +32,16 @@ services:
       BEAM_PROXY_URL: http://beam-proxy:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
       EPSILON: 0.28
+      QUERIES_TO_CACHE: '/queries_to_cache.conf'
+      ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
+    volumes:
+      - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf
     depends_on:
       - "beam-proxy"
       - "blaze"
 
   beam-proxy:
-    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:${BEAM_TAG}
     container_name: bridgehead-beam-proxy
     environment:
       BROKER_URL: ${BROKER_URL}
@@ -53,7 +58,6 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
-
 
 volumes:
   blaze-data:

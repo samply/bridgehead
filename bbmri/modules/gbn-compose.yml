@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   focus-gbn:
-    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-bbmri
     container_name: bridgehead-focus-gbn
     environment:
       API_KEY: ${GBN_FOCUS_BEAM_SECRET_SHORT}
@@ -16,7 +16,7 @@ services:
       - "blaze"
 
   beam-proxy-gbn:
-    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:develop
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:${BEAM_TAG}
     container_name: bridgehead-beam-proxy-gbn
     environment:
       BROKER_URL: ${GBN_BROKER_URL}

@@ -21,7 +21,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${FEEDBACK_AGENT_DB_PASSWORD}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - BEAM_PROXY_URI=http://beam-proxy-eric:8081
-      - FEEDBACK_HUB_URL=http://feedback-hub-be:8071
+      - FEEDBACK_HUB_URL=${FEEDBACK_HUB_URL}
       - BLAZE_BASE_URL=http://blaze:8080/fhir
       - FEEDBACK_AGENT_SECRET=${FEEDBACK_AGENT_BEAM_SECRET}
       - FEEDBACK_AGENT_BEAM_ID=feedback-agent.${ERIC_PROXY_ID}

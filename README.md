@@ -386,6 +386,17 @@ We have tested the installation procedure with an Ubuntu 22.04 guest system runn
 
 Installation under WSL ought to work, but we have not tested this.
 
+### Metadata feedback
+
+The Bridgehead comes with a tool that allows you to associate metadata with samples. Multiple arbitrary text strings are allowed. A typical use case would be publications based on research using a sample. Here, one could lay down the DOI of the publication in the sample. Full details of the process can be found HERE. To avail yourself of this feature, you need to be using the bbmri project. Some extra environment variables sould be added to your ```/etc/bridgehead/bbmri.conf``` file:
+
+``` code
+ENABLE_EXPORTER=true
+ENABLE_FEEDBACK_AGENT=true
+FEEDBACK_HUB_URL=<URL for central feedback hub backend API>
+FOCUS_RETRY_COUNT=256
+```
+
 ## Troubleshooting
 
 ### Docker Daemon Proxy Configuration

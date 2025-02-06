@@ -353,12 +353,14 @@ You can find the profiles for generating FHIR in [Simplifier](https://simplifier
 
 The Bridgehead comes with a tool that allows you to associate metadata with samples. Multiple arbitrary text strings are allowed. A typical use case would be publications based on research using a sample. Here, one could lay down the DOI of the publication in the sample.
 
-Full details of the process can be found [here](https://github.com/samply/feedback-deployment). To avail yourself of this feature, you need to
+Full details of the system can be found [here](https://github.com/samply/feedback-deployment). To avail yourself of this feature, you need to
 
 - Use the bbmri project.
 - work with the ```metadata_fb``` branch of the Bridgehead repository.
+- Build the feedback-agent Docker container (more details [here](https://github.com/samply/feedback-agent/)).
+- Build the feedback-agent-ui Docker container (more details [here](https://github.com/samply/feedback-agent-ui/)).
 
-Some extra environment variables sould be added to your ```/etc/bridgehead/bbmri.conf``` file:
+The following extra environment variables need to be added to your ```/etc/bridgehead/bbmri.conf``` file:
 
 ``` code
 ENABLE_EXPORTER=true

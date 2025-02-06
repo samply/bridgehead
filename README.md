@@ -23,6 +23,7 @@ This repository is the starting point for any information and tools you will nee
     - [File structure](#file-structure)
     - [BBMRI-ERIC Directory entry needed](#bbmri-eric-directory-entry-needed)
     - [Loading data](#loading-data)
+    - [Metadata feedback](#metadata-feedback)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
     - [Auto-Backups](#auto-backups)
@@ -155,6 +156,7 @@ Clone the bridgehead repository:
 ```shell
 sudo mkdir -p /srv/docker/
 sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
+sudo git checkout metadata_fb # Only needed if you want to use metadata feedback
 ```
 
 Then, run the installation script:
@@ -347,6 +349,24 @@ Normally, you will need to build your own ETL to feed the Bridgehead. However, t
 
 You can find the profiles for generating FHIR in [Simplifier](https://simplifier.net/bbmri.de/~resources?category=Profile).
 
+### Metadata feedback
+
+The Bridgehead comes with a tool that allows you to associate metadata with samples. Multiple arbitrary text strings are allowed. A typical use case would be publications based on research using a sample. Here, one could lay down the DOI of the publication in the sample.
+
+Full details of the process can be found [here](https://github.com/samply/feedback-deployment). To avail yourself of this feature, you need to
+
+- Use the bbmri project.
+- work with the ```metadata_fb``` branch of the Bridgehead repository.
+
+Some extra environment variables sould be added to your ```/etc/bridgehead/bbmri.conf``` file:
+
+``` code
+ENABLE_EXPORTER=true
+ENABLE_FEEDBACK_AGENT=true
+FEEDBACK_HUB_URL=<URL for central feedback hub backend API>
+FOCUS_RETRY_COUNT=256
+```
+
 ## Things you should know
 
 ### Auto-Updates
@@ -385,17 +405,6 @@ Under Windows, you have 2 options:
 We have tested the installation procedure with an Ubuntu 22.04 guest system running on a VMware virtual machine. That worked flawlessly.
 
 Installation under WSL ought to work, but we have not tested this.
-
-### Metadata feedback
-
-The Bridgehead comes with a tool that allows you to associate metadata with samples. Multiple arbitrary text strings are allowed. A typical use case would be publications based on research using a sample. Here, one could lay down the DOI of the publication in the sample. Full details of the process can be found HERE. To avail yourself of this feature, you need to be using the bbmri project. Some extra environment variables sould be added to your ```/etc/bridgehead/bbmri.conf``` file:
-
-``` code
-ENABLE_EXPORTER=true
-ENABLE_FEEDBACK_AGENT=true
-FEEDBACK_HUB_URL=<URL for central feedback hub backend API>
-FOCUS_RETRY_COUNT=256
-```
 
 ## Troubleshooting
 

@@ -47,12 +47,6 @@ services:
       TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
       REPORTER_DEFAULT_TEMPLATE_ID: "ccp-qb"
       EXPORTER_DEFAULT_TEMPLATE_ID: "ccp"
-      # Modification needed for running in a test mode
-      APPLICATION_PORT: "8080"
-      CONFIG_ENV_VAR_PATH: "/run/secrets/ccp.conf"
-    # Modification needed for running in a test mode
-    secrets:
-      - ccp.conf
 
 
   teiler-backend:

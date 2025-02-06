@@ -1,2 +1,0 @@
-OIDC_USER_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})"
-OIDC_ADMIN_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})_Verwalter"

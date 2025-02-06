@@ -1,6 +1,6 @@
 version: "3.7"
 
-# This includes only the shared persistence for BBMRI-ERIC and GBN. Federation components are included as modules, see ccp vars.
+# This includes only the shared persistence for BBMRI-ERIC and GBN. Federation components are included as modules, see vars.
 
 services:
   blaze:

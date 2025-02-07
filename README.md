@@ -154,7 +154,7 @@ Pay special attention to:
 Clone the bridgehead repository:
 ```shell
 sudo mkdir -p /srv/docker/
-sudo git clone https://github.com/samply/bridgehead.git /srv/docker/bridgehead
+sudo git clone -b main https://github.com/samply/bridgehead.git /srv/docker/bridgehead
 ```
 
 Then, run the installation script:

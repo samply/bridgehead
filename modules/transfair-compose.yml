@@ -4,17 +4,18 @@ services:
     image: docker.verbis.dkfz.de/cache/samply/transfair:latest
     container_name: bridgehead-transfair
     environment:
-      INSTITUTE_TTP_URL: "${INSTITUTE_TTP_URL}"
-      INSTITUTE_TTP_API_KEY: "${INSTITUTE_TTP_API_KEY}"
-      PROJECT_ID_SYSTEM: "${PROJECT_ID_SYSTEM}"
-      FHIR_REQUEST_URL: "${FHIR_REQUEST_URL}"
-      FHIR_INPUT_URL: "${FHIR_INPUT_URL}"
-      FHIR_OUTPUT_URL: "${FHIR_OUTPUT_URL:-http://blaze:8080}"
-      FHIR_REQUEST_CREDENTIALS: "${FHIR_REQUEST_CREDENTIALS}"
-      FHIR_INPUT_CREDENTIALS: "${FHIR_INPUT_CREDENTIALS}"
-      FHIR_OUTPUT_CREDENTIALS: "${FHIR_OUTPUT_CREDENTIALS}"
-      EXCHANGE_ID_SYSTEM: "${EXCHANGE_ID_SYSTEM:-SESSION_ID}"
-      DATABASE_URL: "sqlite://transfair/data_requests.sql?mode=rwc"
+      # NOTE: Those 3 variables need only to be passed if their set, otherwise transfair will complain about empty url values
+      - INSTITUTE_TTP_URL
+      - INSTITUTE_TTP_API_KEY
+      - PROJECT_ID_SYSTEM
+      - FHIR_REQUEST_URL=${FHIR_REQUEST_URL}
+      - FHIR_INPUT_URL=${FHIR_INPUT_URL}
+      - FHIR_OUTPUT_URL=${FHIR_OUTPUT_URL:-http://blaze:8080}
+      - FHIR_REQUEST_CREDENTIALS=${FHIR_REQUEST_CREDENTIALS}
+      - FHIR_INPUT_CREDENTIALS=${FHIR_INPUT_CREDENTIALS}
+      - FHIR_OUTPUT_CREDENTIALS=${FHIR_OUTPUT_CREDENTIALS}
+      - EXCHANGE_ID_SYSTEM=${EXCHANGE_ID_SYSTEM:-SESSION_ID}
+      - DATABASE_URL=sqlite://transfair/data_requests.sql?mode=rwc
     volumes:
       - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
 

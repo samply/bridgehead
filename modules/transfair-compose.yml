@@ -16,6 +16,7 @@ services:
       - FHIR_OUTPUT_CREDENTIALS=${FHIR_OUTPUT_CREDENTIALS}
       - EXCHANGE_ID_SYSTEM=${EXCHANGE_ID_SYSTEM:-SESSION_ID}
       - DATABASE_URL=sqlite://transfair/data_requests.sql?mode=rwc
+      - RUST_LOG=${RUST_LOG:-info}
     volumes:
       - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
 

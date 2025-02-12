@@ -18,3 +18,11 @@ done
 
 idManagementSetup
 obds2fhirRestSetup
+
+for module in modules/*.sh
+do
+    log DEBUG "sourcing $module"
+    source $module
+done
+
+transfairSetup

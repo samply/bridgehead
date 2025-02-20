@@ -29,7 +29,7 @@ services:
       PROXY_APIKEY: ${DNPM_BEAM_SECRET_SHORT}
       APP_ID: dnpm-connect.${DNPM_PROXY_ID}
       DISCOVERY_URL: "./conf/central_targets.json"
-      LOCAL_TARGETS_FILE: "./conf/connect_targets.json"
+      LOCAL_TARGETS_FILE: "/conf/connect_targets.json"
       HTTP_PROXY: http://forward_proxy:3128
       HTTPS_PROXY: http://forward_proxy:3128
       NO_PROXY: dnpm-beam-proxy,dnpm-backend, host.docker.internal${DNPM_ADDITIONAL_NO_PROXY}
@@ -41,7 +41,7 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /etc/bridgehead/dnpm/local_targets.json:/conf/connect_targets.json:ro
-      - /etc/bridgehead/dnpm/central_targets.json:/conf/central_targets.json:ro
+      - /srv/docker/bridgehead/minimal/modules/dnpm-central-targets.json:/conf/central_targets.json:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dnpm-connect.rule=PathPrefix(`/dnpm-connect`)"

@@ -116,7 +116,7 @@ assertVarsNotEmpty() {
 	MISSING_VARS=""
 
 	for VAR in $@; do
-	if [ -z "${!VAR}" ]; then
+		if [ -z "${!VAR}" ]; then
 			MISSING_VARS+="$VAR "
 		fi
 	done
@@ -318,7 +318,7 @@ function sync_secrets() {
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
 
     set -a # Export variables as environment variables
-    source /var/cache/bridgehead/secrets/*
+    source /var/cache/bridgehead/secrets/oidc
     set +a # Export variables in the regular way
 }
 

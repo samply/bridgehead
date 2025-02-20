@@ -1,0 +1,142 @@
+{
+    "sites": [
+        {
+            "id": "UKFR",
+            "name": "Freiburg",
+            "virtualhost": "ukfr.dnpm.de",
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKHD",
+            "name": "Heidelberg",
+            "virtualhost": "ukhd.dnpm.de",
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKT",
+            "name": "Tübingen",
+            "virtualhost": "ukt.dnpm.de",
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKU",
+            "name": "Ulm",
+            "virtualhost": "uku.dnpm.de",
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UM",
+            "name": "Mainz",
+            "virtualhost": "um.dnpm.de",
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKMR",
+            "name": "Marburg",
+            "virtualhost": "ukmr.dnpm.de",
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKE",
+            "name": "Hamburg",
+            "virtualhost": "uke.dnpm.de",
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKA",
+            "name": "Aachen",
+            "virtualhost": "uka.dnpm.de",
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "Charite",
+            "name": "Berlin",
+            "virtualhost": "charite.dnpm.de",
+            "beamconnect": "dnpm-connect.berlin-test.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "MRI",
+            "name": "Muenchen-tum",
+            "virtualhost": "mri.dnpm.de",
+            "beamconnect": "dnpm-connect.muenchen-tum.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "KUM",
+            "name": "Muenchen-lmu",
+            "virtualhost": "kum.dnpm.de",
+            "beamconnect": "dnpm-connect.muenchen-lmu.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "MHH",
+            "name": "Hannover",
+            "virtualhost": "mhh.dnpm.de",
+            "beamconnect": "dnpm-connect.hannover.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKDD",
+            "name": "dresden-dnpm",
+            "virtualhost": "ukdd.dnpm.de",
+            "beamconnect": "dnpm-connect.dresden-dnpm.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKB",
+            "name": "Bonn",
+            "virtualhost": "ukb.dnpm.de",
+            "beamconnect": "dnpm-connect.bonn-dnpm.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKD",
+            "name": "Duesseldorf",
+            "virtualhost": "ukd.dnpm.de",
+            "beamconnect": "dnpm-connect.duesseldorf-dnpm.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKK",
+            "name": "Koeln",
+            "virtualhost": "ukk.dnpm.de",
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UME",
+            "name": "Essen",
+            "virtualhost": "ume.dnpm.de",
+            "beamconnect": "dnpm-connect.essen.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKM",
+            "name": "Muenster",
+            "virtualhost": "ukm.dnpm.de",
+            "beamconnect": "dnpm-connect.muenster-dnpm.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKF",
+            "name": "Frankfurt",
+            "virtualhost": "ukf.dnpm.de",
+            "beamconnect": "dnpm-connect.frankfurt.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UMG",
+            "name": "Goettingen",
+            "virtualhost": "umg.dnpm.de",
+            "beamconnect": "dnpm-connect.goettingen.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKW",
+            "name": "Würzburg",
+            "virtualhost": "ukw.dnpm.de",
+            "beamconnect": "dnpm-connect.wuerzburg-dnpm.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "UKSH",
+            "name": "Schleswig-Holstein",
+            "virtualhost": "uksh.dnpm.de",
+            "beamconnect": "dnpm-connect.uksh-dnpm.broker.ccp-it.dktk.dkfz.de"
+        },
+        {
+            "id": "TKT",
+            "name": "Test",
+            "virtualhost": "tkt.dnpm.de",
+            "beamconnect": "dnpm-connect.tobias-develop.broker.ccp-it.dktk.dkfz.de"
+        }
+    ]
+}

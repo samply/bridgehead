@@ -35,7 +35,7 @@ services:
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
       ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
     volumes:
-      - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf
+      - /srv/docker/bridgehead/itcc/queries_to_cache.conf:/queries_to_cache.conf
     depends_on:
       - "beam-proxy"
       - "blaze"

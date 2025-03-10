@@ -313,7 +313,7 @@ function sync_secrets() {
         -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
         -e PROXY_ID=$PROXY_ID \
         -e BROKER_URL=$BROKER_URL \
-        -e OIDC_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
+        -e OIDC_PROVIDER=secret-sync-central.central-secret-sync.$BROKER_ID \
         -e SECRET_DEFINITIONS=$secret_sync_args \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
 
@@ -351,7 +351,7 @@ function secret_sync_gitlab_token() {
         -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
         -e PROXY_ID=$PROXY_ID \
         -e BROKER_URL=$BROKER_URL \
-        -e GITLAB_PROJECT_ACCESS_TOKEN_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
+        -e GITLAB_PROJECT_ACCESS_TOKEN_PROVIDER=secret-sync-central.central-secret-sync.$BROKER_ID \
         -e SECRET_DEFINITIONS=GitLabProjectAccessToken:BRIDGEHEAD_CONFIG_REPO_TOKEN:$gitlab \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
     if [ $? -eq 0 ]; then

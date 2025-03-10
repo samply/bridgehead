@@ -33,7 +33,7 @@ services:
       EPSILON: 0.28
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
     volumes:
-      - /srv/docker/bridgehead/dhki/queries_to_cache.conf:/queries_to_cache.conf
+      - /srv/docker/bridgehead/dhki/queries_to_cache.conf:/queries_to_cache.conf:ro
     depends_on:
       - "beam-proxy"
       - "blaze"

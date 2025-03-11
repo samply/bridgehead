@@ -9,8 +9,8 @@ BROKER_URL_FOR_PREREQ=$BROKER_URL
 
 POSTGRES_TAG=15.6-alpine
 
-OIDC_USER_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})"
-OIDC_ADMIN_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})_Verwalter"
+OIDC_USER_GROUP="CCE_$(capitalize_first_letter ${SITE_ID})"
+OIDC_ADMIN_GROUP="CCE_$(capitalize_first_letter ${SITE_ID})_Verwalter"
 OIDC_PRIVATE_CLIENT_ID=${SITE_ID}-private
 OIDC_PUBLIC_CLIENT_ID=${SITE_ID}-public
 # Use "test-realm-01" for testing

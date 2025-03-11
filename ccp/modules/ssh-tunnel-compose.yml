@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  ssh-tunnel:
+    # For now use the docker hub image, until it is properly replicated
+    image: samply/ssh-tunnel:latest
+    container_name: bridgehead-ccp-ssh-tunnel
+    environment:
+      SSH_TUNNEL_USERNAME: "${SSH_TUNNEL_USERNAME}"
+      SSH_TUNNEL_HOST: "${SSH_TUNNEL_HOST}"
+    volumes:
+      - "/etc/bridgehead/ssh-tunnel.conf:/ssh-tunnel.conf:ro"
+    secrets:
+      - privkey
+secrets:
+  privkey:
+    file: /etc/bridgehead/pki/ssh-tunnel.priv.pem

@@ -17,6 +17,7 @@ services:
       - EXCHANGE_ID_SYSTEM=${EXCHANGE_ID_SYSTEM:-SESSION_ID}
       - DATABASE_URL=sqlite://transfair/data_requests.sql?mode=rwc
       - RUST_LOG=${RUST_LOG:-info}
+      - TTP_TYPE=greifswald
     volumes:
       - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
 

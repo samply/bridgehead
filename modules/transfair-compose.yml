@@ -21,7 +21,7 @@ services:
       - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
 
   transfair-input-blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
+    image: docker.verbis.dkfz.de/cache/samply/blaze:0.32
     container_name: bridgehead-transfair-input-blaze
     environment:
       BASE_URL: "http://bridgehead-transfair-input-blaze:8080"
@@ -34,7 +34,7 @@ services:
     profiles: ["transfair-input-blaze"]
 
   transfair-request-blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
+    image: docker.verbis.dkfz.de/cache/samply/blaze:0.32
     container_name: bridgehead-transfair-requests-blaze
     environment:
       BASE_URL: "http://bridgehead-transfair-requests-blaze:8080"

@@ -17,8 +17,10 @@ services:
       - EXCHANGE_ID_SYSTEM=${EXCHANGE_ID_SYSTEM:-SESSION_ID}
       - DATABASE_URL=sqlite://transfair/data_requests.sql?mode=rwc
       - RUST_LOG=${RUST_LOG:-info}
+      - TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs
     volumes:
       - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
 
   transfair-input-blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}

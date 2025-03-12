@@ -26,6 +26,12 @@ do
     source $module
 done
 
+for module in modules/*.sh
+do
+    log DEBUG "sourcing $module"
+    source $module
+done
+
 idManagementSetup
 mtbaSetup
 obds2fhirRestSetup

@@ -73,6 +73,14 @@ services:
       HTTP_PROXY: "http://forward_proxy:3128"
       ENABLE_MTBA: "${ENABLE_MTBA}"
       ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
+      TEILER_APP16_BACKENDURL: "https://${HOST}/cce-exporter"
+      TEILER_APP17_BACKENDURL: "https://${HOST}/cce-exporter"
+      TEILER_APP18_BACKENDURL: "https://${HOST}/cce-exporter"
+      TEILER_APP35_BACKENDURL: "https://${HOST}/cce-exporter"
+      TEILER_APP36_BACKENDURL: "https://${HOST}/cce-exporter"
+      TEILER_APP26_BACKENDURL: "https://${HOST}/cce-reporter"
+
+
     secrets:
       - cce.conf
 

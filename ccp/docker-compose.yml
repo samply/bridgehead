@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.31
+    image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
     container_name: bridgehead-ccp-blaze
     environment:
       BASE_URL: "http://bridgehead-ccp-blaze:8080"
@@ -35,7 +35,7 @@ services:
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
       ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
     volumes:
-      - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf
+      - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf:ro
     depends_on:
       - "beam-proxy"
       - "blaze"

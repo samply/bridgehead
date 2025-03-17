@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 function transfairSetup() {
-    if [[ -n "$INSTITUTE_TTP_URL" || -n "$EXCHANGE_ID_SYSTEM" ]]; then
+    if [[ -n "$TTP_URL" || -n "$EXCHANGE_ID_SYSTEM" ]]; then
         echo "Starting transfair."
 	    OVERRIDE+=" -f ./modules/transfair-compose.yml"
 	    if [ -n "$FHIR_INPUT_URL" ]; then
@@ -17,6 +17,15 @@ function transfairSetup() {
 		    log INFO "TransFAIR request fhir store not set writing to internal blaze"
 		    FHIR_REQUEST_URL="http://transfair-requests-blaze:8080"
 		    OVERRIDE+=" --profile transfair-request-blaze"
+	    fi
+	    if [ -n "$TTP_GW_SOURCE" ]; then
+		    log INFO "TransFAIR configured with greifswald as ttp"
+		    TTP_TYPE="greifswald"
+	    elif [ -n "$TTP_ML_API_KEY" ]; then
+		    log INFO "TransFAIR configured with mainzelliste as ttp"
+		    TTP_TYPE="mainzelliste"
+        else
+		    log INFO "TransFAIR configured without ttp"
 	    fi
     fi
 }

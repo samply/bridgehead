@@ -5,8 +5,11 @@ services:
     container_name: bridgehead-transfair
     environment:
       # NOTE: Those 3 variables need only to be passed if their set, otherwise transfair will complain about empty url values
-      - INSTITUTE_TTP_URL
-      - INSTITUTE_TTP_API_KEY
+      - TTP_URL
+      - TTP_ML_API_KEY
+      - TTP_GW_SOURCE
+      - TTP_TYPE
+      - TTP_AUTH
       - PROJECT_ID_SYSTEM
       - FHIR_REQUEST_URL=${FHIR_REQUEST_URL}
       - FHIR_INPUT_URL=${FHIR_INPUT_URL}

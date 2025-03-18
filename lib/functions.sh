@@ -334,6 +334,19 @@ function secret_sync_gitlab_token() {
             ;;
     esac
 
+    if [ "$PROJECT" == "bbmri" ]; then
+        # If the project is BBMRI, use the BBMRI-ERIC broker and not the GBN broker
+        proxy_id=$ERIC_PROXY_ID
+        broker_url=$ERIC_BROKER_URL
+        broker_id=$ERIC_BROKER_ID
+        root_crt_file="/srv/docker/bridgehead/bbmri/modules/${ERIC_ROOT_CERT}.root.crt.pem"
+    else
+        proxy_id=$PROXY_ID
+        broker_url=$BROKER_URL
+        broker_id=$BROKER_ID
+        root_crt_file="/srv/docker/bridgehead/$PROJECT/root.crt.pem"
+    fi
+
     # Use Secret Sync to validate the GitLab token in /var/cache/bridgehead/secrets/gitlab_token.
     # If it is missing or expired, Secret Sync will create a new token and write it to the file.
     # The git credential helper reads the token from the file during git pull.
@@ -344,14 +357,14 @@ function secret_sync_gitlab_token() {
     docker run --rm \
         -v /var/cache/bridgehead/secrets/gitlab_token:/usr/local/cache \
         -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
-        -v /srv/docker/bridgehead/$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
+        -v $root_crt_file:/run/secrets/root.crt.pem:ro \
         -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
         -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
         -e NO_PROXY=localhost,127.0.0.1 \
         -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
-        -e PROXY_ID=$PROXY_ID \
-        -e BROKER_URL=$BROKER_URL \
-        -e GITLAB_PROJECT_ACCESS_TOKEN_PROVIDER=secret-sync-central.central-secret-sync.$BROKER_ID \
+        -e PROXY_ID=$proxy_id \
+        -e BROKER_URL=$broker_url \
+        -e GITLAB_PROJECT_ACCESS_TOKEN_PROVIDER=secret-sync-central.central-secret-sync.$broker_id \
         -e SECRET_DEFINITIONS=GitLabProjectAccessToken:BRIDGEHEAD_CONFIG_REPO_TOKEN:$gitlab \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
     if [ $? -eq 0 ]; then

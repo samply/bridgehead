@@ -30,3 +30,11 @@ idManagementSetup
 mtbaSetup
 obds2fhirRestSetup
 blazeSecondarySetup
+
+for module in modules/*.sh
+do
+    log DEBUG "sourcing $module"
+    source $module
+done
+
+transfairSetup

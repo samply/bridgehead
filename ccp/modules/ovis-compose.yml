@@ -1,4 +1,271 @@
+version: '3.7'
 
 services:
-  ovis-thing:
-    image: todo
+  traefik:
+    image: traefik:latest
+    restart: always
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --accesslog=true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - ovis-network
+
+  traefik-forward-auth:
+    image: quay.io/oauth2-proxy/oauth2-proxy:latest
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - OAUTH2_PROXY_PROVIDER=oidc
+      - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
+      - OAUTH2_PROXY_OIDC_ISSUER_URL=${OAUTH_ISSUER_URL}
+      - OAUTH2_PROXY_CLIENT_ID=${OAUTH_CLIENT_ID}
+      - OAUTH2_PROXY_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
+      - OAUTH2_PROXY_COOKIE_SECRET=${AUTHENTICATION_SECRET}
+      - OAUTH2_PROXY_COOKIE_DOMAINS=.${GUI_HOST:-localhost}
+      - OAUTH2_PROXY_COOKIE_REFRESH=4m
+      - OAUTH2_PROXY_COOKIE_EXPIRE=24h
+      - OAUTH2_PROXY_HTTP_ADDRESS=:4180
+      - OAUTH2_PROXY_REVERSE_PROXY=true
+      - OAUTH2_PROXY_WHITELIST_DOMAINS=.${GUI_HOST:-localhost}
+      - OAUTH2_PROXY_UPSTREAMS=static://202
+      - OAUTH2_PROXY_EMAIL_DOMAINS=*
+      - OAUTH2_PROXY_ALLOWED_GROUPS=app-ovis
+      - OAUTH2_PROXY_ERRORS_TO_INFO_LOG=true
+      - OAUTH2_PROXY_CODE_CHALLENGE_METHOD=S256
+      # For some reason, login.verbis.dkfz.de does not have a "groups" scope but this comes automatically through a
+      # scope called microprofile-jwt. Remove the following line once we have a "groups" scope.
+      - OAUTH2_PROXY_SCOPE=openid profile email
+      # Pass Authorization Header and some user information to spot
+      - OAUTH2_PROXY_SET_AUTHORIZATION_HEADER=true
+      - OAUTH2_PROXY_SET_XAUTHREQUEST=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4180"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=Authorization, X-Forwarded-User, X-Auth-Request-User, X-Auth-Request-Email"
+      - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4180"
+      - "traefik.http.routers.oauth2.rule=Host(`${GUI_HOST:-localhost}`) && PathPrefix(`/oauth2/`)"
+      - "traefik.http.routers.oauth2.tls=true"
+
+  fhir-transformer:
+    image: docker.verbis.dkfz.de/ovis/adt-mon-gql-fhir-transformer:latest
+    restart: on-failure
+    network_mode: "host"
+    volumes:
+      - shared_data:/app/output
+    environment:
+      - FHIR_SERVER_URL=${FHIR_SERVER_URL:-http://localhost:8080/fhir}
+      - FHIR_USERNAME=${FHIR_USERNAME}
+      - FHIR_PASSWORD=${FHIR_PASSWORD}
+    command: >
+      sh -c "python main.py"
+
+  mongo:
+    image: mongo:${MONGO_VER:-latest}
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+      - mongo_conf:/data/configdb
+    networks:
+      - ovis-network
+    command: |
+      bash -c '
+      cat > /docker-entrypoint-initdb.d/init.js << "EOFJS"
+      db = db.getSiblingDB("test_credos");
+      db.createCollection("user");
+      db.user.insertMany([{
+          "_id": "OVIS-Root",
+          "createdAt": new Date(),
+          "createdBy": "system",
+          "role": "super-admin",
+          "status": "active",
+          "pseudonymization": false,
+          "darkMode": false,
+          "colorTheme": "CCCMunich",
+          "language":  "de",
+      }]);
+
+      db = db.getSiblingDB("onc_test");
+      db.createCollection("user");
+      db.user.insertMany([{
+          "_id": "OVIS-Root",
+          "createdAt": new Date(),
+          "createdBy": "system",
+          "role": "super-admin",
+          "status": "active",
+          "pseudonymization": false,
+          "darkMode": false,
+          "colorTheme": "CCCMunich",
+          "language":  "de",
+      }]);
+
+      db.ops.insertMany([
+          {"OPSC_4":"1-40","OPS_Gruppen_Text":"Biopsie ohne Inzision an Nervensystem und endokrinen Organen "},
+          {"OPSC_4":"1-44","OPS_Gruppen_Text":"Biopsie ohne Inzision an den Verdauungsorganen"},
+          {"OPSC_4":"1-40","OPS_Gruppen_Text":"Biopsie ohne Inzision an anderen Organen und Geweben"},
+          {"OPSC_4":"1-50","OPS_Gruppen_Text":"Biopsie an Haut, Mamma, Knochen und Muskeln durch Inzision"},
+          {"OPSC_4":"1-51","OPS_Gruppen_Text":"Biopsie an Nervengewebe, Hypophyse, Corpus pineale durch Inzision und Trepanation von Schädelknochen "},
+          {"OPSC_4":"1-55","OPS_Gruppen_Text":"Biopsie an anderen Verdauungsorganen, Zwerchfell und (Retro-)Peritoneum durch Inzision "},
+          {"OPSC_4":"1-56","OPS_Gruppen_Text":"Biopsie an Harnwegen und männlichen Geschlechtsorgannen durch Inzision"},
+          {"OPSC_4":"1-58","OPS_Gruppen_Text":"Biopsie an anderen Organen durch Inzision "},
+          {"OPSC_4":"1-63","OPS_Gruppen_Text":"Diagnostische Endoskopie des oberen Verdauungstraktes"},
+          {"OPSC_4":"1-65","OPS_Gruppen_Text":"Diagnostische Endoskopie des unteren Verdauungstraktes"},
+          {"OPSC_4":"1-69","OPS_Gruppen_Text":"Diagnostische Endoskopie durch Inzision und intraoperativ "},
+          {"OPSC_4":"5-01","OPS_Gruppen_Text":"Inzision (Trepanation) und Exzision an Schädel, Gehirn und Hirnhäuten"},
+          {"OPSC_4":"5-02","OPS_Gruppen_Text":"Andere Operationen  an Schädel, Gehirn und Hirnhäuten"},
+          {"OPSC_4":"5-03","OPS_Gruppen_Text":"Operationen an Rückenmark, Rückenmarkhäuten und Spinalkanal"},
+          {"OPSC_4":"5-05","OPS_Gruppen_Text":"Andere Operationen an Nerven und Nervenganglien "},
+          {"OPSC_4":"5-06","OPS_Gruppen_Text":"Operationen an Schilddrüse und Nebenschilddrüse "},
+          {"OPSC_4":"5-07","OPS_Gruppen_Text":"Operationen an anderen endokrinen Drüsen "},
+          {"OPSC_4":"5-20","OPS_Gruppen_Text":"Andere Operationen an Mittel- und Innenohr "},
+          {"OPSC_4":"5-25","OPS_Gruppen_Text":"Operationen an der Zunge "},
+          {"OPSC_4":"5-31","OPS_Gruppen_Text":"Andere Larynxoperationen und Operationen an der Trachea "},
+          {"OPSC_4":"5-32","OPS_Gruppen_Text":"Exzision und Resektion an Lunge und Bronchus "},
+          {"OPSC_4":"5-33","OPS_Gruppen_Text":"Andere Operationen an Lunge und Bronchus"},
+          {"OPSC_4":"5-34","OPS_Gruppen_Text":"Operationen an Brustwand, Pleura, Mediastinum und Zwerchfell "},
+          {"OPSC_4":"5-37","OPS_Gruppen_Text":"Rhythmuschirurgie und andere Operationen an Herz und Perikard"},
+          {"OPSC_4":"5-38","OPS_Gruppen_Text":"Inzision, Exzision und Verschluß von Blutgefäßen "},
+          {"OPSC_4":"5-39","OPS_Gruppen_Text":"Andere Operationen an Blutgefäßen "},
+          {"OPSC_4":"5-40","OPS_Gruppen_Text":"Operationen am Lymphgewebe "},
+          {"OPSC_4":"5-41","OPS_Gruppen_Text":"Operationen an Milz und Knochenmark "},
+          {"OPSC_4":"5-42","OPS_Gruppen_Text":"Operationen am Ösophagus "},
+          {"OPSC_4":"5-43","OPS_Gruppen_Text":"Inzision, Exzision und Resektion am Magen "},
+          {"OPSC_4":"5-44","OPS_Gruppen_Text":"Erweiterte Magenresektion und andere Operationen am Magen "},
+          {"OPSC_4":"5-45","OPS_Gruppen_Text":"Inzision, Exzision, Resektion und Anastomose an Dünn- und Dickdarm "},
+          {"OPSC_4":"5-46","OPS_Gruppen_Text":"Andere Operationen an Dünn- und Dickdarm "},
+          {"OPSC_4":"5-47","OPS_Gruppen_Text":"Operationen an der Appendix "},
+          {"OPSC_4":"5-48","OPS_Gruppen_Text":"Operationen am Rektum "},
+          {"OPSC_4":"5-49","OPS_Gruppen_Text":"Operationen am Anus "},
+          {"OPSC_4":"5-50","OPS_Gruppen_Text":"Operationen an der Leber "},
+          {"OPSC_4":"5-51","OPS_Gruppen_Text":"Operationen an Gallenblase und Gallenwegen "},
+          {"OPSC_4":"5-52","OPS_Gruppen_Text":"Operationen am Pankreas "},
+          {"OPSC_4":"5-53","OPS_Gruppen_Text":"Verschluß abdominaler Hernien "},
+          {"OPSC_4":"5-54","OPS_Gruppen_Text":"Andere Operationen in der Bauchregion "},
+          {"OPSC_4":"5-55","OPS_Gruppen_Text":"Operationen an der Niere "},
+          {"OPSC_4":"5-56","OPS_Gruppen_Text":"Operationen am Ureter "},
+          {"OPSC_4":"5-57","OPS_Gruppen_Text":"Operationen an der Harnblase "},
+          {"OPSC_4":"5-59","OPS_Gruppen_Text":"Andere Operationen an den Harnorganen "},
+          {"OPSC_4":"5-60","OPS_Gruppen_Text":"Operationen an Prostata und Vesiculae seminales "},
+          {"OPSC_4":"5-61","OPS_Gruppen_Text":"Operationen an Skrotum und Tunica vaginalis testis"},
+          {"OPSC_4":"5-62","OPS_Gruppen_Text":"Operationen am Hoden "},
+          {"OPSC_4":"5-65","OPS_Gruppen_Text":"Operationen am Ovar "},
+          {"OPSC_4":"5-68","OPS_Gruppen_Text":"Inzision, Exzision und Exstirpation des Uterus "},
+          {"OPSC_4":"5-70","OPS_Gruppen_Text":"Operationen an Vagina und Douglasraum "},
+          {"OPSC_4":"5-71","OPS_Gruppen_Text":"Operationen an der Vulva "},
+          {"OPSC_4":"5-85","OPS_Gruppen_Text":"Operationen an Muskeln, Sehnen, Faszien und Schleimbeuteln"},
+          {"OPSC_4":"5-87","OPS_Gruppen_Text":"Exzision und Resektion der Mamma "},
+          {"OPSC_4":"5-89","OPS_Gruppen_Text":"Operationen an Haut und Unterhaut "},
+          {"OPSC_4":"5-90","OPS_Gruppen_Text":"Operative Wiederherstellung und Rekonstruktion von Haut und Unterhaut"},
+          {"OPSC_4":"5-91","OPS_Gruppen_Text":"Andere Operationen an Haut und Unterhaut "},
+          {"OPSC_4":"5-93","OPS_Gruppen_Text":"Angaben zum Transplantat und zu verwendeten Materialien"},
+          {"OPSC_4":"5-98","OPS_Gruppen_Text":"Spezielle Operationstechniken und Operationen bei speziellen Versorgungssituationen "},
+          {"OPSC_4":"8-13","OPS_Gruppen_Text":"Manipulation am Harntrakt"},
+          {"OPSC_4":"8-14","OPS_Gruppen_Text":"Therapeutische Kathedirisierung, Aspiration, Punktion und Spülung "},
+          {"OPSC_4":"8-15","OPS_Gruppen_Text":"Therapeutische Aspiration und Entleerung durch Punktion "},
+          {"OPSC_4":"8-17","OPS_Gruppen_Text":"Spülung (Lavage) "},
+          {"OPSC_4":"8-19","OPS_Gruppen_Text":"Verbände "},
+          {"OPSC_4":"8-77","OPS_Gruppen_Text":"Maßnahmen im Rahmen der Reanimation "},
+          {"OPSC_4":"8-92","OPS_Gruppen_Text":"Neurologisches Monitoring "},
+      ])
+      EOFJS
+      exec docker-entrypoint.sh mongod'
+
+  init_onco:
+    image: docker.verbis.dkfz.de/ovis/adt-mon-gql-backend:latest
+    restart: on-failure
+    working_dir: /app
+    user: root
+    entrypoint: >
+      sh -c "
+        while [ ! -f /shared/omock.json ]; do
+          echo 'Waiting for omock.json...'
+          sleep 5
+        done;
+        mkdir -p ./prep &&
+        cp /shared/omock.json ./prep/omock.json &&
+        node ./mgDB/prep/preprocessor.mjs;
+        echo 'Processing complete';"
+    volumes:
+      - shared_data:/shared
+      - nodemodules:/app/node_modules
+    depends_on:
+      - mongo
+      - fhir-transformer
+    environment:
+      - APOLLO_PORT=${APOLLO_PORT:-4001}
+      - CREDOS_PORT=${CREDOS_PORT:-4000}
+      - MONGO_VER=latest
+      - DB=${DB:-onc_test}
+      - ADRESS=${ADRESS:-mongodb://mongo:27017}
+    networks:
+      - ovis-network
+
+  backend:
+    image: docker.verbis.dkfz.de/ovis/adt-mon-gql-backend:latest
+    restart: always
+    working_dir: /app
+    environment:
+      - APOLLO_PORT=${APOLLO_PORT:-4001}
+      - CREDOS_PORT=${CREDOS_PORT:-4000}
+      - MONGO_VER=latest
+      - NODE_ENV=development
+      - CORS_ORIGIN=*
+      - DB=${DB:-onc_test}
+      - ADRESS=${ADRESS:-mongodb://mongo:27017}
+    ports:
+      - "${APOLLO_PORT:-4001}:${APOLLO_PORT:-4001}"
+    depends_on:
+      - mongo
+      - init_onco
+    networks:
+      - ovis-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${APOLLO_PORT:-4001}/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    entrypoint: ["node", "--watch", "index.js"]
+
+  frontend:
+    image: docker.verbis.dkfz.de/ovis/adt-mon-gql-frontend:latest
+    restart: always
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    environment:
+      - NODE_ENV=development
+      - VITE_GRAPHQL_URL=http://localhost:${APOLLO_PORT:-4001}/graphql
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ovis-network
+    volumes:
+      - /app/.svelte-kit
+    working_dir: /app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lens.tls=true"
+      - "traefik.http.routers.lens.rule=Host(`${GUI_HOST:-localhost}`)"
+      # - "traefik.http.routers.lens.middlewares=traefik-forward-auth"
+      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
+
+networks:
+  ovis-network:
+    driver: bridge
+
+volumes:
+  shared_data:
+  mongo_db:
+    name: ovis_repo_mongo_db
+  mongo_conf:
+    name: ovis_repo_mongo_conf
+  nodemodules:
+    name: ovis_repo_node_modules

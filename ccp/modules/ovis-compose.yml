@@ -56,7 +56,7 @@ services:
     volumes:
       - /var/cache/bridgehead/ccp/ovis/mongo/mongo_db:/data/db
       - /var/cache/bridgehead/ccp/ovis/mongo/mongo_conf:/data/configdb
-      - /var/cache/bridgehead/ccp/ovis/mongo/init/init.js}:/docker-entrypoint-initdb.d/init.js
+      - /var/cache/bridgehead/ccp/ovis/mongo/init/init.js:/docker-entrypoint-initdb.d/init.js
 
   init_onco:
     image: docker.verbis.dkfz.de/ovis/adt-mon-gql-backend:latest

@@ -72,7 +72,8 @@ services:
         mkdir -p ./prep &&
         cp /shared/omock.json ./prep/omock.json &&
         node ./mgDB/prep/preprocessor.mjs;
-        echo 'Processing complete';"
+        echo 'Processing complete';
+        tail -f /dev/null"
     depends_on:
       - mongo
       - fhir-transformer

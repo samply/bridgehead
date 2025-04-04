@@ -444,17 +444,9 @@ See the first question for the control mechanism.
 </details>
 
 <details>
-<summary><strong>Q: Is data only transferred one-way (Bridgehead/FHIR Store → GBN Node), or is two-way access necessary?</strong></summary>
+<summary><strong>Q: Is data only transferred one-way (Bridgehead/FHIR Store → Central/Locator), or is two-way access necessary?</strong></summary>
 
 A: By using Samply.Beam, only one outgoing connection to the broker is required at the network level (i.e., Bridgehead → Broker).
-</details>
-
-<details>
-<summary><strong>Q: Are there already thoughts regarding data export from Centraxx to Bridgehead/DZPG Node?</strong></summary>
-
-A: TransFAIR would be a good option for loading the data from the DIZ into the BK.
-CentraXX has the FHIR export interface, which is expensive.
-Our colleagues in Frankfurt and Mainz have already developed a data integration tool for CentraXX export—perhaps we could exchange ideas here.
 </details>
 
 ## Troubleshooting

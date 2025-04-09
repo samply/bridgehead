@@ -21,8 +21,8 @@ services:
         - OAUTH2_PROXY_WHITELIST_DOMAINS=.${HOST:-localhost}
         - OAUTH2_PROXY_UPSTREAMS=static://202
         - OAUTH2_PROXY_EMAIL_DOMAINS=*
-        - OAUTH2_PROXY_ALLOWED_GROUPS=app-ovis
-        - OAUTH2_PROXY_ERRORS_TO_INFO_LOG=true
+        #- OAUTH2_PROXY_ALLOWED_GROUPS=app-ovis
+        #- OAUTH2_PROXY_ERRORS_TO_INFO_LOG=true
         - OAUTH2_PROXY_CODE_CHALLENGE_METHOD=S256
         # For some reason, login.verbis.dkfz.de does not have a "groups" scope but this comes automatically through a
         # scope called microprofile-jwt. Remove the following line once we have a "groups" scope.
@@ -89,9 +89,9 @@ services:
         exec node --watch index.js"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend-gql.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/graphql`)"
-      - "traefik.http.routers.backend-gql.tls=true"
-      - "traefik.http.services.backend-gql.loadbalancer.server.port=${APOLLO_PORT:-4001}"
+      - "traefik.http.routers.ovis-backend.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/graphql`)"
+      - "traefik.http.routers.ovis-backend.tls=true"
+      - "traefik.http.services.ovis-backend.loadbalancer.server.port=${APOLLO_PORT:-4001}"
     volumes:
       - /var/cache/bridgehead/ccp/ovis/shared_data:/shared
 
@@ -108,5 +108,5 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ovis-frontend.tls=true"
       - "traefik.http.routers.ovis-frontend.rule=Host(`${HOST:-localhost}`)"
-      - "traefik.http.routers.lens.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.ovis-frontend.middlewares=traefik-forward-auth"
       - "traefik.http.services.ovis-frontend.loadbalancer.server.port=5173"

@@ -5,20 +5,20 @@ services:
   ovis-traefik-forward-auth:
       image: quay.io/oauth2-proxy/oauth2-proxy:latest
       environment:
-        - http_proxy=${http_proxy}
-        - https_proxy=${https_proxy}
+        - http_proxy=${http_proxy:-http://forward_proxy:3128}
+        - https_proxy=${https_proxy:-http://forward_proxy:3128}
         - OAUTH2_PROXY_PROVIDER=oidc
         - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
         - OAUTH2_PROXY_OIDC_ISSUER_URL=${OAUTH_ISSUER_URL}
         - OAUTH2_PROXY_CLIENT_ID=${OAUTH_CLIENT_ID}
         - OAUTH2_PROXY_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
         - OAUTH2_PROXY_COOKIE_SECRET=${AUTHENTICATION_SECRET}
-        - OAUTH2_PROXY_COOKIE_DOMAINS=.${GUI_HOST:-localhost}
+        - OAUTH2_PROXY_COOKIE_DOMAINS=.${HOST:-localhost}
         - OAUTH2_PROXY_COOKIE_REFRESH=4m
         - OAUTH2_PROXY_COOKIE_EXPIRE=24h
         - OAUTH2_PROXY_HTTP_ADDRESS=:4180
         - OAUTH2_PROXY_REVERSE_PROXY=true
-        - OAUTH2_PROXY_WHITELIST_DOMAINS=.${GUI_HOST:-localhost}
+        - OAUTH2_PROXY_WHITELIST_DOMAINS=.${HOST:-localhost}
         - OAUTH2_PROXY_UPSTREAMS=static://202
         - OAUTH2_PROXY_EMAIL_DOMAINS=*
         - OAUTH2_PROXY_ALLOWED_GROUPS=app-ovis
@@ -35,13 +35,12 @@ services:
         - "traefik.http.middlewares.ovis-traefik-forward-auth.forwardauth.address=http://ovis-traefik-forward-auth:4180"
         - "traefik.http.middlewares.ovis-traefik-forward-auth.forwardauth.authResponseHeaders=Authorization, X-Forwarded-User, X-Auth-Request-User, X-Auth-Request-Email"
         - "traefik.http.services.ovis-traefik-forward-auth.loadbalancer.server.port=4180"
-        - "traefik.http.routers.oauth2.rule=Host(`${GUI_HOST:-localhost}`) && PathPrefix(`/oauth2/`)"
+        - "traefik.http.routers.oauth2.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/oauth2-ovis/`)"
         - "traefik.http.routers.oauth2.tls=true"
 
   fhir-transformer:
     image: docker.verbis.dkfz.de/ovis/adt-mon-gql-fhir-transformer:latest
     restart: on-failure
-    network_mode: "host"
     environment:
       - FHIR_SERVER_URL=${FHIR_SERVER_URL:-http://bridgehead-ccp-blaze:8080/fhir}
       - FHIR_USERNAME=${FHIR_USERNAME}
@@ -53,72 +52,54 @@ services:
     image: mongo:${MONGO_VER:-latest}
     restart: always
     command: mongod
-    volumes:
-      - /var/cache/bridgehead/ccp/ovis/mongo/mongo_db:/data/db
-      - /var/cache/bridgehead/ccp/ovis/mongo/mongo_conf:/data/configdb
       - /var/cache/bridgehead/ccp/ovis/mongo/init/init.js:/docker-entrypoint-initdb.d/init.js
-
-  init_onco:
-    image: docker.verbis.dkfz.de/ovis/adt-mon-gql-backend:latest
-    restart: on-failure
-    working_dir: /app
-    user: root
-    entrypoint: >
-      sh -c "
-        while [ ! -f /shared/omock.json ]; do
-          echo 'Waiting for omock.json...'
-          sleep 5
-        done;
-        mkdir -p ./prep &&
-        cp /shared/omock.json ./prep/omock.json &&
-        node ./mgDB/prep/preprocessor.mjs;
-        echo 'Processing complete';"
-    depends_on:
-      - mongo
-      - fhir-transformer
-    environment:
-      - APOLLO_PORT=${APOLLO_PORT:-4001}
-      - CREDOS_PORT=${CREDOS_PORT:-4000}
-      - MONGO_VER=latest
-      - DB=${DB:-onc_test}
-      - ADRESS=${ADRESS:-mongodb://mongo:27017}
-    volumes:
-      - /var/cache/bridgehead/ccp/ovis/shared_data:/shared
-      - /var/cache/bridgehead/ccp/ovis/init_onco/node_modules:/app/node_modules  
 
   backend:
     image: docker.verbis.dkfz.de/ovis/adt-mon-gql-backend:latest
     restart: always
+    user: root
     working_dir: /app
     environment:
       - APOLLO_PORT=${APOLLO_PORT:-4001}
       - CREDOS_PORT=${CREDOS_PORT:-4000}
       - MONGO_VER=latest
-      - NODE_ENV=development
       - CORS_ORIGIN=*
       - DB=${DB:-onc_test}
       - ADRESS=${ADRESS:-mongodb://mongo:27017}
     depends_on:
       - mongo
-      - init_onco
+      - fhir-transformer
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${APOLLO_PORT:-4001}/health"]
       interval: 5s
       timeout: 3s
       retries: 5
       start_period: 10s
-    entrypoint: ["node", "--watch", "index.js"]
+    entrypoint: >
+      sh -c "
+        # First run the initialization process
+        while [ ! -f /shared/omock.json ]; do
+          echo 'Waiting for omock.json...'
+          sleep 5
+        done;
+        mkdir -p ./prep &&
+        cp /shared/omock.json ./prep/omock.json &&
+        node ./mgDB/prep/preprocessor.mjs &&
+        echo 'Processing complete' &&
+        exec node --watch index.js"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ovis-backend.tls=true"
-      - "traefik.http.services.ovis-backend.loadbalancer.server.port=4001"
+      - "traefik.http.routers.backend-gql.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/graphql`)"
+      - "traefik.http.routers.backend-gql.tls=true"
+      - "traefik.http.services.backend-gql.loadbalancer.server.port=${APOLLO_PORT:-4001}"
+    volumes:
+      - /var/cache/bridgehead/ccp/ovis/shared_data:/shared
 
   frontend:
     image: docker.verbis.dkfz.de/ovis/adt-mon-gql-frontend:latest
     restart: always
     environment:
-      - NODE_ENV=development
-      - VITE_GRAPHQL_URL=http://localhost:${APOLLO_PORT:-4001}/graphql
+      - PUBLIC_GRAPHQL_URL=https://${HOST:-localhost}/graphql
     depends_on:
       backend:
         condition: service_healthy
@@ -126,8 +107,6 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ovis-frontend.tls=true"
-      - "traefik.http.routers.ovis-frontend.rule=Host(`${GUI_HOST:-localhost}`)"
-      # - "traefik.http.routers.lens.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.ovis-frontend.rule=Host(`${HOST:-localhost}`)"
+      - "traefik.http.routers.lens.middlewares=traefik-forward-auth"
       - "traefik.http.services.ovis-frontend.loadbalancer.server.port=5173"
-    volumes:
-      - /var/cache/bridgehead/ccp/ovis/frontend/.svelte-kit:/app/.svelte-kit

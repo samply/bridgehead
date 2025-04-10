@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   teiler-orchestrator:
-    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:latest
+    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:test
     container_name: bridgehead-teiler-orchestrator
     labels:
       - "traefik.enable=true"

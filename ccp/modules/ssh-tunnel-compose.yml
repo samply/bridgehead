@@ -7,6 +7,7 @@ services:
     environment:
       SSH_TUNNEL_USERNAME: "${SSH_TUNNEL_USERNAME}"
       SSH_TUNNEL_HOST: "${SSH_TUNNEL_HOST}"
+      SSH_TUNNEL_PORT: "${SSH_TUNNEL_PORT:-22}"
     volumes:
       - "/etc/bridgehead/ssh-tunnel.conf:/ssh-tunnel.conf:ro"
     secrets:

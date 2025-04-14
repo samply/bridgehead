@@ -389,48 +389,37 @@ Installation under WSL ought to work, but we have not tested this.
 
 ### FAQ
 
-<details>
-<summary><strong>Q: How is the security of GitHub pulls, volumes/containers, and image signing ensured?</strong></summary>
+**Q: How is the security of GitHub pulls, volumes/containers, and image signing ensured?**
 
 A: Changes to Git branches that could be delivered to sites (main and develop) must be accepted via a pull request with at least two positive reviews.
 Containers/images are not built manually, but rather automatically through a CI/CD pipeline, so that an image can be rolled back to a defined code version at any time without changes.
 **Note:** If firewall access for (outgoing) connections to GitHub and/or Docker Hub is problematic at the site, mirrors for both services are available, operated by the DKFZ.
-</details>
 
-<details>
-<summary><strong>Q: How is authentication between users and components regulated?</strong></summary>
+**Q: How is authentication between users and components regulated?**
 
 A: When setting up a Bridgehead, a private key and a so-called Certificate Sign Request (CSR) are generated locally. This CSR is manually signed by the broker operator, which allows the Bridgehead access to the network infrastructure.
 All communication runs via Samply.Beam and is therefore end-to-end encrypted, but also signed. This allows the integrity and authenticity of the sender to be technically verified (which happens automatically both in the broker and at the recipients).
 The connection to the broker is additionally secured using traditional TLS (transport encryption over https).
-</details>
 
-<details>
-<summary><strong>Q: Are there any statistics on incoming traffic from the Bridgehead (what goes in and what goes out)?</strong></summary>
+**Q: Are there any statistics on incoming traffic from the Bridgehead (what goes in and what goes out)?**
 
 A: Incoming and outgoing traffic can only enter/leave the Bridgehead via a forward or reverse proxy, respectively. These components log all connections.
 Statistical analysis is not currently being conducted, but is on the roadmap for some projects. We are also working on a dashboard for all tasks/responses delivered via Beam.
-</details>
 
-<details>
-<summary><strong>Q: How is container access controlled, and what permission level is used?</strong></summary>
+**Q: How is container access controlled, and what permission level is used?**
 
 A: Currently, it is not possible to run the Bridgehead "out-of-the-box" as a rootless Docker Compose stack. The main reason is the operation of the reverse proxy, which binds to the privileged ports 80 (HTTP) and 443 (HTTPS).
 Otherwise, there are no known technical obstacles, although we don't have concrete experience implementing this.
 At the file system level, a "bridgehead" user is created during installation, which manages the configuration and Bridgehead folders.
-</details>
 
-<details>
-<summary><strong>Q: Is a cloud installation (not a company-owned one, but an external service provider) possible?</strong></summary>
+**Q: Is a cloud installation (not a company-owned one, but an external service provider) possible?**
 
 A: Technically, yes. This is primarily a data protection issue between the participant and their cloud provider.
 The Bridgehead contains a data storage system that, during use, contains sensitive patient and sample data.
 There are cloud providers with whom appropriately worded contracts can be concluded to make this possible.
 Of course, the details must be discussed with the responsible data protection officer.
 
-</details>
-<details>
-<summary><strong>Q: What needs to be considered regarding the Docker distribution/registry, and how is it used here?</strong></summary>
+**Q: What needs to be considered regarding the Docker distribution/registry, and how is it used here?**
 
 A: The Bridgehead images are located both in Docker Hub and mirrored in a registry operated by the DKFZ.
 The latter is used by default, avoiding potential issues with Docker Hub URL activation or rate limits.
@@ -441,13 +430,10 @@ When using automatic updates (highly recommended), an hourly check is performed 
 
 If updates are found, they are downloaded and applied.
 See the first question for the control mechanism.
-</details>
 
-<details>
-<summary><strong>Q: Is data only transferred one-way (Bridgehead/FHIR Store → Central/Locator), or is two-way access necessary?</strong></summary>
+**Q: Is data only transferred one-way (Bridgehead/FHIR Store → Central/Locator), or is two-way access necessary?**
 
 A: By using Samply.Beam, only one outgoing connection to the broker is required at the network level (i.e., Bridgehead → Broker).
-</details>
 
 ## Troubleshooting
 

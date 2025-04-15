@@ -10,6 +10,10 @@ if [ "${ENABLE_ERIC}" == "true" ]; then
 			export ERIC_BROKER_ID=broker.bbmri.samply.de
 			export ERIC_ROOT_CERT=eric
 			;;
+		"acceptance")
+			export ERIC_BROKER_ID=broker-acc.bbmri-acc.samply.de
+			export ERIC_ROOT_CERT=eric.acc
+			;;
 		"test")
 			export ERIC_BROKER_ID=broker-test.bbmri-test.samply.de
 			export ERIC_ROOT_CERT=eric.test

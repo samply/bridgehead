@@ -69,7 +69,7 @@ loadVars() {
 		if [ "$(git rev-parse --abbrev-ref HEAD)" == "main" ]; then
 			ENVIRONMENT="production"
 		else
-			ENVIRONMENT="test"
+			ENVIRONMENT="test" # we have acceptance environment in BBMRI ERIC and it would be more appropriate to default to that one in case the data they have in BH is real, but I'm gonna leave it as is for backward compatibility
 		fi
 	fi
 	# Source the versions of the images components 
@@ -79,6 +79,9 @@ loadVars() {
 			;;
 		"test")
 			source ./versions/test
+			;;
+		"acceptance")
+			source ./versions/acceptance
 			;;
 		*)
 			report_error 7 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"

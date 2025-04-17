@@ -22,6 +22,7 @@ services:
       - DATABASE_URL=sqlite://transfair/data_requests.sql?mode=rwc
       - RUST_LOG=${RUST_LOG:-info}
       - TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs
+      - TLS_DISABLE=${TRANSFAIR_TLS_DISABLE:-false}
     volumes:
       - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro

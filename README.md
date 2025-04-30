@@ -22,6 +22,7 @@ This repository is the starting point for any information and tools you will nee
     - [TLS terminating proxies](#tls-terminating-proxies)
     - [File structure](#file-structure)
     - [BBMRI-ERIC Directory entry needed](#bbmri-eric-directory-entry-needed)
+    - [Directory sync tool](#directory-sync-tool)
     - [Loading data](#loading-data)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
@@ -301,25 +302,37 @@ Once you have added your biobank to the Directory you got persistent identifier 
 
 ### Directory sync tool
 
-The Bridgehead's **Directory Sync** is an optional feature that keeps the Directory up to date with your local data, e.g. number of samples. Conversely, it also updates the local FHIR store with the latest contact details etc. from the Directory. You must explicitly set your country specific directory URL, username and password to enable this feature.
+The Bridgehead's **Directory Sync** is an optional feature that keeps the Directory up to date with your local data, e.g. number of samples. Conversely, it can also update the local FHIR store with the latest contact details etc. from the Directory.
 
 You should talk with your local data protection group regarding the information that is published by Directory sync.
 
-Full details can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
-
-To enable it, you will need to set these variables to the ```bbmri.conf``` file of your GitLab repository. Here is an example config:
+To enable it, you will need to explicitly set the username and password variables for Directory login in the configuration file of your GitLab repository (e.g. ```bbmri.conf```). Here is an example minimal config:
 
 ```
 DS_DIRECTORY_USER_NAME=your_directory_username
 DS_DIRECTORY_USER_PASS=your_directory_password
 ```
-Please contact your National Node to obtain this information.
+Please contact your National Node or Directory support (directory-dev@helpdesk.bbmri-eric.eu) to obtain these credentials.
 
-Optionally, you **may** change when you want Directory sync to run by specifying a [cron](https://crontab.guru) expression, e.g. `DS_TIMER_CRON="0 22 * * *"` for 10 pm every evening.
+The following environment variables can be used from within your config file to control the behavior of Directory sync:
 
-Once you edited the gitlab config, the bridgehead will autoupdate the config with the values and will sync the data.
+| Variable                           | Purpose                                                                                                                                                              | Default if not specified               |
+|:-----------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------|
+| DS_DIRECTORY_URL                   | Base URL of the Directory                                                                                                                                            | https://directory-backend.molgenis.net |
+| DS_DIRECTORY_USER_NAME             | User name for logging in to Directory **Mandatory**                                                                                                                  |                                        |
+| DS_DIRECTORY_USER_PASS             | Password for logging in to Directory **Mandatory**                                                                                                                   |                                        |
+| DS_DIRECTORY_DEFAULT_COLLECTION_ID | ID of collection to be used if not in samples                                                                                                                        |                                        |
+| DS_DIRECTORY_ALLOW_STAR_MODEL      | Set to 'True' to send star model info to Directory                                                                                                                   | True                                  |
+| DS_FHIR_STORE_URL                  | URL for FHIR store                                                                                                                                                   | http://bridgehead-bbmri-blaze:8080     |
+| DS_TIMER_CRON                      | Execution interval for Directory sync, [cron](https://crontab.guru) format                                                                                           | 0 22 * * *                             |
+| DS_IMPORT_BIOBANKS                 | Set to 'True' to import biobank metadata from Directory                                                                                                              | True                                  |
+| DS_IMPORT_COLLECTIONS              | Set to 'True' to import collection metadata from Directory                                                                                                           | True                                  |
+
+Once you have finished editing the Gitlab config, the Bridgehead will autoupdate the config with the values and will sync data at regular intervals, using the time specified in DS_TIMER_CRON.
 
 There will be a delay before the effects of Directory sync become visible. First, you will need to wait until the time you have specified in ```TIMER_CRON```. Second, the information will then be synchronized from your national node with the central European Directory. This can take up to 24 hours.
+
+More details of Directory sync can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
 
 ### Loading data
 

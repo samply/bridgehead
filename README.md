@@ -302,7 +302,7 @@ Once you have added your biobank to the Directory you got persistent identifier 
 
 ### Directory sync tool
 
-The Bridgehead's **Directory Sync** is an optional feature that keeps the Directory up to date with your local data, e.g. number of samples. Conversely, it can also update the local FHIR store with the latest contact details etc. from the Directory.
+The Bridgehead's **Directory Sync** is an optional feature that keeps the BBMRI-ERIC Directory up to date with your local data, e.g. number of samples. Conversely, it can also update the local FHIR store with the latest contact details etc. from the  BBMRI-ERIC Directory.
 
 You should talk with your local data protection group regarding the information that is published by Directory sync.
 

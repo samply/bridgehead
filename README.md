@@ -306,7 +306,7 @@ The Bridgehead's **Directory Sync** is an optional feature that keeps the Direct
 
 You should talk with your local data protection group regarding the information that is published by Directory sync.
 
-To enable it, you will need to explicitly set the username and password variables for Directory login in the configuration file of your GitLab repository (e.g. ```bbmri.conf```). Here is an example minimal config:
+To enable it, you will need to explicitly set the username and password variables for BBMRI-ERIC Directory login in the configuration file of your GitLab repository (e.g. ```bbmri.conf```). Here is an example minimal config:
 
 ```
 DS_DIRECTORY_USER_NAME=your_directory_username

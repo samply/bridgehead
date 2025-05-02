@@ -328,7 +328,7 @@ The following environment variables can be used from within your config file to 
 | DS_IMPORT_BIOBANKS                 | Set to 'True' to import biobank metadata from Directory                                                                                                              | True                                  |
 | DS_IMPORT_COLLECTIONS              | Set to 'True' to import collection metadata from Directory                                                                                                           | True                                  |
 
-Once you have finished editing the Gitlab config, the Bridgehead will autoupdate the config with the values and will sync data at regular intervals, using the time specified in DS_TIMER_CRON.
+Once you have finished editing the config, the Bridgehead will autoupdate the config with the values and will sync data at regular intervals, using the time specified in DS_TIMER_CRON.
 
 There will be a delay before the effects of Directory sync become visible. First, you will need to wait until the time you have specified in ```TIMER_CRON```. Second, the information will then be synchronized from your national node with the central European Directory. This can take up to 24 hours.
 

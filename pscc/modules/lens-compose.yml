@@ -2,7 +2,7 @@ version: "3.7"
 services:
   landing:
     container_name: lens_federated-search
-    image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
+    image: docker.verbis.dkfz.de/pscc/pscc-explorer
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"

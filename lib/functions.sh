@@ -348,7 +348,7 @@ function secret_sync_gitlab_token() {
     fi
 
     # Create a temporary directory for Secret Sync that is valid per boot
-    secret_sync_tempdir="/tmp/secret-sync.boot-$(cat /proc/sys/kernel/random/boot_id)"
+    secret_sync_tempdir="/tmp/bridgehead/secret-sync.boot-$(cat /proc/sys/kernel/random/boot_id)"
     mkdir -p $secret_sync_tempdir
 
     # Use Secret Sync to validate the GitLab token in $secret_sync_tempdir/cache.

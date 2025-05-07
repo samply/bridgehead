@@ -347,18 +347,21 @@ function secret_sync_gitlab_token() {
         root_crt_file="/srv/docker/bridgehead/$PROJECT/root.crt.pem"
     fi
 
-    # Use Secret Sync to validate the GitLab token in /var/cache/bridgehead/secrets/gitlab_token.
+    # Create a temporary directory for Secret Sync that is valid per boot
+    secret_sync_tempdir="/tmp/secret-sync.boot-$(cat /proc/sys/kernel/random/boot_id)"
+    mkdir -p $secret_sync_tempdir
+
+    # Use Secret Sync to validate the GitLab token in $secret_sync_tempdir/cache.
     # If it is missing or expired, Secret Sync will create a new token and write it to the file.
     # The git credential helper reads the token from the file during git pull.
-    mkdir -p /var/cache/bridgehead/secrets
-    touch /var/cache/bridgehead/secrets/gitlab_token # the file has to exist to be mounted correctly in the Docker container
     log "INFO" "Running Secret Sync for the GitLab token (gitlab=$gitlab)"
     docker pull docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest # make sure we have the latest image
     docker run --rm \
-        -v /var/cache/bridgehead/secrets/gitlab_token:/usr/local/cache \
         -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
         -v $root_crt_file:/run/secrets/root.crt.pem:ro \
         -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
+        -v $secret_sync_tempdir:/secret-sync/ \
+        -e CACHE_PATH=/secret-sync/gitlab-token \
         -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
         -e NO_PROXY=localhost,127.0.0.1 \
         -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \

@@ -2,7 +2,7 @@
 
 [ "$1" = "get" ] || exit
 
-source /var/cache/bridgehead/secrets/gitlab_token
+source "/tmp/secret-sync.boot-$(cat /proc/sys/kernel/random/boot_id)/gitlab-token"
 
 # Any non-empty username works, only the token matters
 cat << EOF

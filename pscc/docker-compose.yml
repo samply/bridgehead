@@ -18,7 +18,7 @@ services:
       - "traefik.http.routers.blaze_pscc.rule=PathPrefix(`/pscc-localdatamanagement`)"
       - "traefik.http.middlewares.pscc_b_strip.stripprefix.prefixes=/pscc-localdatamanagement"
       - "traefik.http.services.blaze_pscc.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_pscc.middlewares=pscc_b_strip,auth"
+      - "traefik.http.routers.blaze_pscc.middlewares=pscc_b_strip"
       - "traefik.http.routers.blaze_pscc.tls=true"
 
   focus:

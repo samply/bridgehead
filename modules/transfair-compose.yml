@@ -24,6 +24,8 @@ services:
       - RUST_LOG=${RUST_LOG:-info}
       - TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs
       - TLS_DISABLE=${TRANSFAIR_TLS_DISABLE:-false}
+      - NO_PROXY=${TRANSFAIR_NO_PROXIES}
+      - ALL_PROXY=http://forward_proxy:3128
     volumes:
       - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro

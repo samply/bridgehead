@@ -340,6 +340,24 @@ The storage space on your hard drive will depend on the number of FHIR resources
 
 For more information on Blaze performance, please refer to [import performance](https://github.com/samply/blaze/blob/master/docs/performance/import.md).
 
+### Clearing data
+
+The Bridgehead's FHIR store, Blaze, keeps its data in a Docker volume. This means that the data will persist even if you stop the Bridgehead. You can clear existing data from the FHIR store by deleting the relevant Docker volume.
+
+First, stop the Bridgehead:
+```shell
+sudo systemctl stop bridgehead@<PROJECT>.service
+```
+Now remove the volume:
+```shell
+docker volume rm <PROJECT>_blaze-data
+```
+Finally, restart the Bridgehead:
+```shell
+sudo systemctl start bridgehead@<PROJECT>.service
+```
+You will need to do this for example if you are using a VM as a test environment and you subsequently want to use the same VM for production.
+
 #### ETL for BBMRI and GBA
 
 Normally, you will need to build your own ETL to feed the Bridgehead. However, there is one case where a short cut might be available:

@@ -1,7 +1,8 @@
 
 services:
   transfair:
-    image: docker.verbis.dkfz.de/cache/samply/transfair:latest
+    # image: docker.verbis.dkfz.de/cache/samply/transfair:latest
+    image: samply/transfair:fix-linkWithTTP
     container_name: bridgehead-transfair
     environment:
       # NOTE: Those 3 variables need only to be passed if their set, otherwise transfair will complain about empty url values
@@ -63,9 +64,9 @@ services:
 
   transfair-request-blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
-    container_name: bridgehead-transfair-requests-blaze
+    container_name: bridgehead-transfair-request-blaze
     environment:
-      BASE_URL: "http://bridgehead-transfair-requests-blaze:8080"
+      BASE_URL: "http://bridgehead-transfair-request-blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx1024m"
       DB_BLOCK_CACHE_SIZE: 1024
       CQL_EXPR_CACHE_SIZE: 8

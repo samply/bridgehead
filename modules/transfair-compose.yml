@@ -1,8 +1,7 @@
 
 services:
   transfair:
-    # image: docker.verbis.dkfz.de/cache/samply/transfair:latest
-    image: samply/transfair:fix-properCreationOfDataRequest
+    image: docker.verbis.dkfz.de/cache/samply/transfair:latest
     container_name: bridgehead-transfair
     environment:
       # NOTE: Those 3 variables need only to be passed if their set, otherwise transfair will complain about empty url values

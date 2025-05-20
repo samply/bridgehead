@@ -69,10 +69,10 @@ services:
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
       TEILER_DASHBOARD_DE_URL: "https://${HOST}/ccp-teiler-dashboard/de"
       TEILER_DASHBOARD_EN_URL: "https://${HOST}/ccp-teiler-dashboard/en"
-      CENTRAX_URL: "${CENTRAXX_URL}"
       HTTP_PROXY: "http://forward_proxy:3128"
       ENABLE_MTBA: "${ENABLE_MTBA}"
       ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
+      IDMANAGER_UPLOAD_APIKEY: "${IDMANAGER_UPLOAD_APIKEY}" # Only used to check if the ID Manager is active
     secrets:
       - ccp.conf
 

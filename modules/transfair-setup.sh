@@ -15,7 +15,7 @@ function transfairSetup() {
 		    log INFO "TransFAIR request fhir store set to external $FHIR_REQUEST_URL"
 	    else
 		    log INFO "TransFAIR request fhir store not set writing to internal blaze"
-		    FHIR_REQUEST_URL="http://transfair-requests-blaze:8080"
+		    FHIR_REQUEST_URL="http://transfair-request-blaze:8080"
 		    OVERRIDE+=" --profile transfair-request-blaze"
 	    fi
 	    if [ -n "$TTP_GW_SOURCE" ]; then
@@ -27,5 +27,9 @@ function transfairSetup() {
         else
 		    log INFO "TransFAIR configured without ttp"
 	    fi
+        TRANSFAIR_NO_PROXIES="transfair-input-blaze,blaze,transfair-requests-blaze"
+        if [ -n "${TRANSFAIR_NO_PROXY}" ]; then
+            TRANSFAIR_NO_PROXIES+=",${TRANSFAIR_NO_PROXY}"
+        fi
     fi
 }

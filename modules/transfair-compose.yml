@@ -8,7 +8,8 @@ services:
       - TTP_URL
       - TTP_ML_API_KEY
       - TTP_GW_SOURCE
-      - TTP_GW_DOMAIN
+      - TTP_GW_EPIX_DOMAIN
+      - TTP_GW_GPAS_DOMAIN
       - TTP_TYPE
       - TTP_AUTH
       - PROJECT_ID_SYSTEM
@@ -23,6 +24,8 @@ services:
       - RUST_LOG=${RUST_LOG:-info}
       - TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs
       - TLS_DISABLE=${TRANSFAIR_TLS_DISABLE:-false}
+      - NO_PROXY=${TRANSFAIR_NO_PROXIES}
+      - ALL_PROXY=http://forward_proxy:3128
     volumes:
       - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
@@ -60,9 +63,9 @@ services:
 
   transfair-request-blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
-    container_name: bridgehead-transfair-requests-blaze
+    container_name: bridgehead-transfair-request-blaze
     environment:
-      BASE_URL: "http://bridgehead-transfair-requests-blaze:8080"
+      BASE_URL: "http://bridgehead-transfair-request-blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx1024m"
       DB_BLOCK_CACHE_SIZE: 1024
       CQL_EXPR_CACHE_SIZE: 8

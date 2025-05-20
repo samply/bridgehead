@@ -31,6 +31,7 @@ services:
     environment:
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
       TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
+      TEILER_DASHBOARD_URL: "https://${HOST}/ccp-teiler-dashboard"
       OIDC_URL: "${OIDC_URL}"
       OIDC_REALM: "${OIDC_REALM}"
       OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
@@ -41,7 +42,6 @@ services:
       TEILER_PROJECT: "${PROJECT}"
       EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
-      TEILER_DASHBOARD_HTTP_RELATIVE_PATH: "/ccp-teiler-dashboard"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
       TEILER_USER: "${OIDC_USER_GROUP}"
       TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"

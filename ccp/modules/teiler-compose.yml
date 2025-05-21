@@ -20,7 +20,7 @@ services:
 
   teiler-dashboard:
     #image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
-    image: teiler-dashboard:develop
+    image: samply/teiler-dashboard:develop
     container_name: bridgehead-teiler-dashboard
     labels:
       - "traefik.enable=true"

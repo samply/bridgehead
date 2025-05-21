@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   exporter:
-    image: docker.verbis.dkfz.de/ccp/dktk-exporter:latest
+    image: docker.verbis.dkfz.de/ccp/dktk-exporter:test
     container_name: bridgehead-ccp-exporter
     environment:
       JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"

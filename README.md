@@ -408,7 +408,7 @@ Statistical analysis is not currently being conducted, but is on the roadmap for
 
 **Q: How is container access controlled, and what permission level is used?**
 
-A: Currently, it is not possible to run the Bridgehead "out-of-the-box" as a rootless Docker Compose stack. The main reason is the operation of the reverse proxy, which binds to the privileged ports 80 (HTTP) and 443 (HTTPS).
+A: Currently, it is not possible to run the Bridgehead "out-of-the-box" as a rootless Docker Compose stack. The main reason is the operation of the reverse proxy (Traefik), which binds to the privileged ports 80 (HTTP) and 443 (HTTPS).
 Otherwise, there are no known technical obstacles, although we don't have concrete experience implementing this.
 At the file system level, a "bridgehead" user is created during installation, which manages the configuration and Bridgehead folders.
 

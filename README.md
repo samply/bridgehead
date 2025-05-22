@@ -404,7 +404,7 @@ The connection to the broker is additionally secured using traditional TLS (tran
 **Q: Are there any statistics on incoming traffic from the Bridgehead (what goes in and what goes out)?**
 
 A: Incoming and outgoing traffic can only enter/leave the Bridgehead via a forward or reverse proxy, respectively. These components log all connections.
-Statistical analysis is not currently being conducted, but is on the roadmap for some projects. We are also working on a dashboard for all tasks/responses delivered via Beam.
+Statistical analysis is not currently being conducted, but is on the roadmap for some projects. We are also working on a dashboard for all tasks/responses delivered via Samply.Beam.
 
 **Q: How is container access controlled, and what permission level is used?**
 

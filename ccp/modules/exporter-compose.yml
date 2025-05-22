@@ -18,6 +18,11 @@ services:
       OPAL_PASSWORD: "${EXPORTER_OPAL_PASSWORD}"
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.exporter_${PLATFORM}.rule=PathPrefix(`/${PLATFORM}-exporter`)"
+      - "traefik.http.services.exporter_${PLATFORM}.loadbalancer.server.port=8092"
+      - "traefik.http.routers.exporter_${PLATFORM}.tls=true"
+      - "traefik.http.middlewares.exporter_${PLATFORM}_strip.stripprefix.prefixes=/${PLATFORM}-exporter"
+      - "traefik.http.routers.exporter_${PLATFORM}.middlewares=exporter_${PLATFORM}_strip"
       - "traefik.http.routers.exporter_${PLATFORM}.rule=Path(`/${PLATFORM}-exporter/`)"
       - "traefik.http.services.exporter_${PLATFORM}.loadbalancer.server.port=8092"
       - "traefik.http.routers.exporter_${PLATFORM}.tls=true"
@@ -83,3 +88,8 @@ services:
       - "traefik.http.routers.reporter_${PLATFORM}_api.tls=true"
       - "traefik.http.routers.reporter_${PLATFORM}_api.middlewares=reporter_${PLATFORM}_strip,exporter_auth"
       - "traefik.http.routers.reporter_${PLATFORM}_api.priority=25"
+
+  focus:
+    environment:
+      EXPORTER_URL: "http://exporter:8092"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"

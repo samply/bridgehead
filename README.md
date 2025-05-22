@@ -342,7 +342,7 @@ For more information on Blaze performance, please refer to [import performance](
 
 ### Clearing data
 
-The Bridgehead's FHIR store, Blaze, keeps its data in a Docker volume. This means that the data will persist even if you stop the Bridgehead. You can clear existing data from the FHIR store by deleting the relevant Docker volume.
+The Bridgehead's FHIR store, Blaze, saves its data in a Docker volume. This means that the data will persist even if you stop the Bridgehead. You can clear existing data from the FHIR store by deleting the relevant Docker volume.
 
 First, stop the Bridgehead:
 ```shell

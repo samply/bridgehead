@@ -423,7 +423,7 @@ Of course, the details must be discussed with the responsible data protection of
 
 A: The Bridgehead images are located both in Docker Hub and mirrored in a registry operated by the DKFZ.
 The latter is used by default, avoiding potential issues with Docker Hub URL activation or rate limits.
-When using automatic updates (highly recommended), an hourly check is performed for:
+When using automatic updates (highly recommended), an daily check is performed for:
 - site configuration updates
 - Bridgehead software updates
 - container image updates

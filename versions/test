@@ -1,3 +1,4 @@
 FOCUS_TAG=develop
 BEAM_TAG=develop
 BLAZE_TAG=main
+BEAM_FILE_TAG=task-based-files

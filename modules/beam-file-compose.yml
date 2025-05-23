@@ -1,0 +1,32 @@
+# NOTE: Current implementation is restricted to a bridgehead only being able to either upload or download data
+services:
+  beam-file-sender:
+    image: samply/beam-file:${BEAM_FILE_TAG}
+    container_name: bridgehead-beam-file-sender
+    environment:
+      - BEAM_ID=beamfile.${PROXY_ID}
+      - BEAM_SECRET=${BEAM_FILE_SECRET}
+      - BEAM_URL=http://beam-proxy:8081
+      - BIND_ADDR=0.0.0.0:8085
+      - API_KEY=${BEAM_FILE_API_KEY}
+    # Only uncomment if your are sure what to do
+    # ports:
+    #   - 8085:8085
+    profiles: ["beam-file-sender"]
+
+  beam-file-receiver:
+    image: samply/beam-file:${BEAM_FILE_TAG}
+    container_name: bridgehead-beam-file-receiver
+    environment:
+      - BEAM_ID=beamfile.${PROXY_ID}
+      - BEAM_SECRET=${BEAM_FILE_SECRET}
+      - BEAM_URL=http://beam-proxy:8081
+      - API_KEY=${BEAM_FILE_API_KEY}
+    command: ["receive", "save", "--outdir /data"]
+    volumes:
+      - /var/cache/bridgehead/beam-file/:/data
+    profiles: ["beam-file-receiver"]
+
+  beam-proxy:
+    environment:
+      APP_beamfile_KEY: ${BEAM_FILE_SECRET}

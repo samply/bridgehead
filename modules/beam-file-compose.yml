@@ -22,7 +22,7 @@ services:
       - BEAM_SECRET=${BEAM_FILE_SECRET}
       - BEAM_URL=http://beam-proxy:8081
       - API_KEY=${BEAM_FILE_API_KEY}
-    command: ["receive", "save", "--outdir 'data'"]
+    command: ["receive", "save", "--outdir", "/data"]
     volumes:
       - /var/cache/bridgehead/beam-file/:/data
     profiles: ["beam-file-receiver"]

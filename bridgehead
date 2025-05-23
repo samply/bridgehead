@@ -185,7 +185,7 @@ case "$ACTION" in
 		log "WARNING" "Your are about to send a file to another bridgehead in your network!"
 		read -p "Please name the bridgehead you want to send the file to (proxy-id): " RECEIVER_PROXY_ID
         read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-		exec $COMPOSE -p $PROJECT ./modules/beam-file-compose.yml --profile beam-file-sender run beam-file-sender send --to beamfile.$1 /data/outfile
+		exec $COMPOSE -p $PROJECT -f ./modules/beam-file-compose.yml --profile beam-file-sender run beam-file-sender send --to beamfile.$1 /data/outfile
 		;;
 	*)
 		printUsage

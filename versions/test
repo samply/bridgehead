@@ -4,3 +4,4 @@ BLAZE_TAG=main
 POSTGRES_TAG=15.13-alpine
 TEILER_DASHBOARD_TAG=develop
 MTBA_TAG=develop
+BEAM_FILE_TAG=task-based-files

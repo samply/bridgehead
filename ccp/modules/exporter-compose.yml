@@ -85,7 +85,7 @@ services:
       - "traefik.http.routers.reporter_${PLATFORM}_api.priority=25"
 
 
-  focus:
-    environment:
-      EXPORTER_URL: "http://exporter:8092"
-      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
+#  focus:
+#    environment:
+#      EXPORTER_URL: "http://exporter:8092"
+#      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"

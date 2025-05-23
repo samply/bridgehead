@@ -12,6 +12,8 @@ services:
     # Only uncomment if your are sure what to do
     # ports:
     #   - 8085:8085
+    networks:
+      - ${PROJECT}_default
     volumes:
       - /var/cache/bridgehead/beam-file-out/:/data
     profiles: ["beam-file-sender"]

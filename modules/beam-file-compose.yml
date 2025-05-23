@@ -12,7 +12,8 @@ services:
     # Only uncomment if your are sure what to do
     # ports:
     #   - 8085:8085
-    command: ["send", "--to", "beamfile"]
+    volumes:
+      - /var/cache/bridgehead/beam-file-out/:/data
     profiles: ["beam-file-sender"]
 
   beam-file-receiver:

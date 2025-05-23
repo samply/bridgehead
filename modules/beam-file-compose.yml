@@ -12,6 +12,7 @@ services:
     # Only uncomment if your are sure what to do
     # ports:
     #   - 8085:8085
+    command: ["send", "--to", "beamfile"]
     profiles: ["beam-file-sender"]
 
   beam-file-receiver:

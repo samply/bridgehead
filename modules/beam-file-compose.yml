@@ -4,8 +4,8 @@ services:
     image: samply/beam-file:${BEAM_FILE_TAG}
     container_name: bridgehead-beam-file-sender
     environment:
-      - BEAM_ID=beamfile.${PROXY_ID}
-      - BEAM_SECRET=${BEAM_FILE_SECRET}
+      - BEAM_ID=beamfilesend.${PROXY_ID}
+      - BEAM_SECRET=${BEAM_FILE_SEND_SECRET}
       - BEAM_URL=http://beam-proxy:8081
       - BIND_ADDR=0.0.0.0:8085
       - API_KEY=${BEAM_FILE_API_KEY}
@@ -32,3 +32,4 @@ services:
   beam-proxy:
     environment:
       APP_beamfile_KEY: ${BEAM_FILE_SECRET}
+    profiles: ["beam-file-receiver"]

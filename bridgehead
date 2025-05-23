@@ -180,6 +180,14 @@ case "$ACTION" in
 		;;
 	postRun | postUpdate)
 		;;
+	send-file)
+		loadVars
+		log "WARNING" "Your are about to send a file to another bridgehead in your network!"
+		read -p "Please name the bridgehead you want to send the file to (proxy-id): " RECEIVER_PROXY_ID
+		read -p "Please type the path to the file you want to upload: " FILE_TO_SEND_PATH
+        read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+		curl -X POST -F "data=@$FILE_TO_SEND_PATH" -u ":${BEAM_FILE_API_KEY}" http://localhost:8085/send/$RECEIVER_PROXY_ID
+		;;
 	*)
 		printUsage
 		exit 1

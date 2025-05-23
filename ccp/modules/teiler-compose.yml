@@ -51,7 +51,8 @@ services:
 
 
   teiler-backend:
-    image: docker.verbis.dkfz.de/ccp/${PROJECT}-teiler-backend:latest
+    #image: docker.verbis.dkfz.de/ccp/${PROJECT}-teiler-backend:latest
+    image: ttl.sh/bbmri-teiler-backend:5h  
     container_name: bridgehead-teiler-backend
     labels:
       - "traefik.enable=true"

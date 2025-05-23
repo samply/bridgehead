@@ -2,13 +2,14 @@ version: "3.7"
 
 services:
   blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
+    image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
     container_name: bridgehead-itcc-blaze
     environment:
       BASE_URL: "http://bridgehead-itcc-blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx${BLAZE_MEMORY_CAP:-4096}m"
       DB_RESOURCE_CACHE_SIZE: ${BLAZE_RESOURCE_CACHE_CAP:-2500000}
-      DB_BLOCK_CACHE_SIZE: $BLAZE_MEMORY_CAP
+      DB_BLOCK_CACHE_SIZE: ${BLAZE_MEMORY_CAP}
+      CQL_EXPR_CACHE_SIZE: ${BLAZE_CQL_CACHE_CAP:-32}
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
     volumes:
       - "blaze-data:/app/data"
@@ -31,6 +32,10 @@ services:
       BEAM_PROXY_URL: http://beam-proxy:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
       EPSILON: 0.28
+      QUERIES_TO_CACHE: '/queries_to_cache.conf'
+      ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
+    volumes:
+      - /srv/docker/bridgehead/itcc/queries_to_cache.conf:/queries_to_cache.conf:ro
     depends_on:
       - "beam-proxy"
       - "blaze"

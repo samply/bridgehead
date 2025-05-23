@@ -19,7 +19,7 @@ fi
 
 hc_send log "Checking for bridgehead updates ..."
 
-CONFFILE=/etc/bridgehead/$1.conf
+CONFFILE=/etc/bridgehead/$PROJECT.conf
 
 if [ ! -e $CONFFILE ]; then
   fail_and_report 1 "Configuration file $CONFFILE not found."
@@ -33,7 +33,7 @@ export SITE_ID
 checkOwner /srv/docker/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong permissions in /srv/docker/bridgehead"
 checkOwner /etc/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong permissions in /etc/bridgehead"
 
-CREDHELPER="/srv/docker/bridgehead/lib/gitpassword.sh"
+secret_sync_gitlab_token
 
 CHANGES=""
 
@@ -45,10 +45,6 @@ for DIR in /etc/bridgehead $(pwd); do
   if [ -n "$OUT" ]; then
     report_error log "The working directory $DIR is modified. Changed files: $OUT"
   fi
-  if [ "$(git -C $DIR config --get credential.helper)" != "$CREDHELPER" ]; then
-    log "INFO" "Configuring repo to use bridgehead git credential helper."
-    git -C $DIR config credential.helper "$CREDHELPER"
-  fi
   old_git_hash="$(git -C $DIR rev-parse --verify HEAD)"
   if [ -z "$HTTPS_PROXY_FULL_URL" ]; then
     log "INFO" "Git is using no proxy!"
@@ -58,7 +54,8 @@ for DIR in /etc/bridgehead $(pwd); do
     OUT=$(retry 5 git -c http.proxy=$HTTPS_PROXY_FULL_URL -c https.proxy=$HTTPS_PROXY_FULL_URL -C $DIR fetch 2>&1 && retry 5 git -c http.proxy=$HTTPS_PROXY_FULL_URL -c https.proxy=$HTTPS_PROXY_FULL_URL -C $DIR pull 2>&1)
   fi
   if [ $? -ne 0 ]; then
-    report_error log "Unable to update git $DIR: $OUT"
+    OUT_SAN=$(echo $OUT | sed -E 's|://[^:]+:[^@]+@|://credentials@|g')
+    report_error log "Unable to update git $DIR: $OUT_SAN"
   fi
 
   new_git_hash="$(git -C $DIR rev-parse --verify HEAD)"

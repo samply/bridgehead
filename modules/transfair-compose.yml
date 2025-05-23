@@ -1,0 +1,86 @@
+
+services:
+  transfair:
+    image: docker.verbis.dkfz.de/cache/samply/transfair:latest
+    container_name: bridgehead-transfair
+    environment:
+      # NOTE: Those 3 variables need only to be passed if their set, otherwise transfair will complain about empty url values
+      - TTP_URL
+      - TTP_ML_API_KEY
+      - TTP_GW_SOURCE
+      - TTP_GW_EPIX_DOMAIN
+      - TTP_GW_GPAS_DOMAIN
+      - TTP_TYPE
+      - TTP_AUTH
+      - PROJECT_ID_SYSTEM
+      - FHIR_REQUEST_URL=${FHIR_REQUEST_URL}
+      - FHIR_INPUT_URL=${FHIR_INPUT_URL}
+      - FHIR_OUTPUT_URL=${FHIR_OUTPUT_URL:-http://blaze:8080}
+      - FHIR_REQUEST_CREDENTIALS=${FHIR_REQUEST_CREDENTIALS}
+      - FHIR_INPUT_CREDENTIALS=${FHIR_INPUT_CREDENTIALS}
+      - FHIR_OUTPUT_CREDENTIALS=${FHIR_OUTPUT_CREDENTIALS}
+      - EXCHANGE_ID_SYSTEM=${EXCHANGE_ID_SYSTEM:-SESSION_ID}
+      - DATABASE_URL=sqlite://transfair/data_requests.sql?mode=rwc
+      - RUST_LOG=${RUST_LOG:-info}
+      - TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs
+      - TLS_DISABLE=${TRANSFAIR_TLS_DISABLE:-false}
+      - NO_PROXY=${TRANSFAIR_NO_PROXIES}
+      - ALL_PROXY=http://forward_proxy:3128
+    volumes:
+      - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.transfair-strip.stripprefix.prefixes=/transfair"
+      - "traefik.http.routers.transfair.middlewares=transfair-strip,transfair-auth"
+      - "traefik.http.routers.transfair.rule=PathPrefix(`/transfair`)"
+      - "traefik.http.services.transfair.loadbalancer.server.port=8080"
+      - "traefik.http.routers.transfair.tls=true"
+  
+  traefik:
+    labels:
+      - "traefik.http.middlewares.transfair-auth.basicauth.users=${TRANSFAIR_AUTH}"
+
+  transfair-input-blaze:
+    image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
+    container_name: bridgehead-transfair-input-blaze
+    environment:
+      BASE_URL: "http://bridgehead-transfair-input-blaze:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx1024m"
+      DB_BLOCK_CACHE_SIZE: 1024
+      CQL_EXPR_CACHE_SIZE: 8
+      ENFORCE_REFERENTIAL_INTEGRITY: "false"
+    volumes:
+      - "transfair-input-blaze-data:/app/data"
+    profiles: ["transfair-input-blaze"]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.transfair-input-blaze.rule=PathPrefix(`/data-delivery`)"
+      - "traefik.http.middlewares.transfair-input-strip.stripprefix.prefixes=/data-delivery"
+      - "traefik.http.services.transfair-input-blaze.loadbalancer.server.port=8080"
+      - "traefik.http.routers.transfair-input-blaze.middlewares=transfair-input-strip,transfair-auth"
+      - "traefik.http.routers.transfair-input-blaze.tls=true"
+
+  transfair-request-blaze:
+    image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
+    container_name: bridgehead-transfair-request-blaze
+    environment:
+      BASE_URL: "http://bridgehead-transfair-request-blaze:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx1024m"
+      DB_BLOCK_CACHE_SIZE: 1024
+      CQL_EXPR_CACHE_SIZE: 8
+      ENFORCE_REFERENTIAL_INTEGRITY: "false"
+    volumes:
+      - "transfair-request-blaze-data:/app/data"
+    profiles: ["transfair-request-blaze"]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.transfair-request-blaze.rule=PathPrefix(`/data-requests`)"
+      - "traefik.http.middlewares.transfair-request-strip.stripprefix.prefixes=/data-requests"
+      - "traefik.http.services.transfair-request-blaze.loadbalancer.server.port=8080"
+      - "traefik.http.routers.transfair-request-blaze.middlewares=transfair-request-strip,transfair-auth"
+      - "traefik.http.routers.transfair-request-blaze.tls=true"
+
+volumes:
+  transfair-input-blaze-data:
+  transfair-request-blaze-data:

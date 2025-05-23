@@ -12,7 +12,6 @@ services:
       CTS_API_KEY: ${NNGM_CTS_APIKEY}
       CRYPT_KEY: ${NNGM_CRYPTKEY}
       #CTS_MAGICPL_SITE: ${SITE_ID}TODO
-    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.connector.rule=PathPrefix(`/nngm-connector`)"

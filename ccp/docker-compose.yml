@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
+    image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
     container_name: bridgehead-ccp-blaze
     environment:
       BASE_URL: "http://bridgehead-ccp-blaze:8080"
@@ -22,7 +22,7 @@ services:
       - "traefik.http.routers.blaze_ccp.tls=true"
 
   focus:
-    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-dktk
     container_name: bridgehead-focus
     environment:
       API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
@@ -33,8 +33,9 @@ services:
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
       EPSILON: 0.28
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
+      ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
     volumes:
-      - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf
+      - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf:ro
     depends_on:
       - "beam-proxy"
       - "blaze"
@@ -57,7 +58,6 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
-
 
 volumes:
   blaze-data:

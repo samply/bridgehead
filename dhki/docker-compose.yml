@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   blaze:
-    image: docker.verbis.dkfz.de/cache/samply/blaze:0.28
+    image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
     container_name: bridgehead-dhki-blaze
     environment:
       BASE_URL: "http://bridgehead-dhki-blaze:8080"
@@ -33,7 +33,7 @@ services:
       EPSILON: 0.28
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
     volumes:
-      - /srv/docker/bridgehead/dhki/queries_to_cache.conf:/queries_to_cache.conf
+      - /srv/docker/bridgehead/dhki/queries_to_cache.conf:/queries_to_cache.conf:ro
     depends_on:
       - "beam-proxy"
       - "blaze"

@@ -15,11 +15,16 @@ services:
     environment:
       TEILER_BACKEND_URL: "https://${HOST}/${PLATFORM}-teiler-backend"
       TEILER_DASHBOARD_URL: "https://${HOST}/${PLATFORM}-teiler-dashboard"
+<<<<<<< HEAD
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
+=======
       DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE_LOWER_CASE}"
+>>>>>>> 6476529abd2103e8d5bd4fcdecbec27d1c633f37
       HTTP_RELATIVE_PATH: "/${PLATFORM}-teiler"
 
   teiler-dashboard:
-    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    #image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    image:  docker.verbis.dkfz.de/ccp/samply/teiler-dashboard:bbmri
     container_name: bridgehead-teiler-dashboard
     labels:
       - "traefik.enable=true"
@@ -29,9 +34,14 @@ services:
       - "traefik.http.middlewares.teiler_dashboard_${PLATFORM}_strip.stripprefix.prefixes=/${PLATFORM}-teiler-dashboard"
       - "traefik.http.routers.teiler_dashboard_${PLATFORM}.middlewares=teiler_dashboard_${PLATFORM}_strip"
     environment:
+<<<<<<< HEAD
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_BACKEND_URL: "https://${HOST}/${PLATFORM}-teiler-backend"
+=======
       DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE}"
       TEILER_BACKEND_URL: "https://${HOST}/${PLATFORM}-teiler-backend"
       TEILER_DASHBOARD_URL: "https://${HOST}/${PLATFORM}-teiler-dashboard"
+>>>>>>> 6476529abd2103e8d5bd4fcdecbec27d1c633f37
       OIDC_URL: "${OIDC_URL}"
       OIDC_REALM: "${OIDC_REALM}"
       OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
@@ -42,6 +52,10 @@ services:
       TEILER_PROJECT: "${PROJECT}"
       EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/${PLATFORM}-teiler"
+<<<<<<< HEAD
+      TEILER_DASHBOARD_HTTP_RELATIVE_PATH: "/${PLATFORM}-teiler-dashboard"
+=======
+>>>>>>> 6476529abd2103e8d5bd4fcdecbec27d1c633f37
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/${PLATFORM}-teiler"
       TEILER_USER: "${OIDC_USER_GROUP}"
       TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
@@ -50,7 +64,12 @@ services:
 
 
   teiler-backend:
+<<<<<<< HEAD
+    #image: docker.verbis.dkfz.de/ccp/${PROJECT}-teiler-backend:latest
+    image: ttl.sh/bbmri-teiler-backend:5h  
+=======
     image: docker.verbis.dkfz.de/ccp/${PROJECT}-teiler-backend:latest
+>>>>>>> 6476529abd2103e8d5bd4fcdecbec27d1c633f37
     container_name: bridgehead-teiler-backend
     labels:
       - "traefik.enable=true"
@@ -63,15 +82,30 @@ services:
       LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"
       APPLICATION_ADDRESS: "${HOST}"
+<<<<<<< HEAD
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      CONFIG_ENV_VAR_PATH: "/run/secrets/project-conf"
+=======
       DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE}"
       CONFIG_ENV_VAR_PATH: "/run/secrets/${PLATFORM}.conf"
+>>>>>>> 6476529abd2103e8d5bd4fcdecbec27d1c633f37
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/${PLATFORM}-teiler"
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/${PLATFORM}-teiler"
       TEILER_DASHBOARD_DE_URL: "https://${HOST}/${PLATFORM}-teiler-dashboard/de"
       TEILER_DASHBOARD_EN_URL: "https://${HOST}/${PLATFORM}-teiler-dashboard/en"
+<<<<<<< HEAD
+      CENTRAX_URL: "${CENTRAXX_URL}"
+=======
+>>>>>>> 6476529abd2103e8d5bd4fcdecbec27d1c633f37
       HTTP_PROXY: "http://forward_proxy:3128"
+      ENABLE_MTBA: "${ENABLE_MTBA}"
+      ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
     secrets:
+<<<<<<< HEAD
       - project-conf
+=======
+      - ${PLATFORM}.conf
+>>>>>>> 6476529abd2103e8d5bd4fcdecbec27d1c633f37
 
 secrets:
   project-conf:

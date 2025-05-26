@@ -64,15 +64,11 @@ services:
       APPLICATION_PORT: "8085"
       APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "${DEFAULT_LANGUAGE}"
-      CONFIG_ENV_VAR_PATH: "/run/secrets/project-conf"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/${PLATFORM}-teiler"
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/${PLATFORM}-teiler"
       TEILER_DASHBOARD_DE_URL: "https://${HOST}/${PLATFORM}-teiler-dashboard/de"
       TEILER_DASHBOARD_EN_URL: "https://${HOST}/${PLATFORM}-teiler-dashboard/en"
       HTTP_PROXY: "http://forward_proxy:3128"
-    secrets:
-      - project-conf
-
-secrets:
-  project-conf:
-    file: "/etc/bridgehead/${PROJECT}.conf"
+      ENABLE_MTBA: "${ENABLE_MTBA}"
+      ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
+      IDMANAGER_UPLOAD_APIKEY: "${IDMANAGER_UPLOAD_APIKEY}" # Only used to check if the ID Manager is active

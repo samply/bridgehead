@@ -10,7 +10,7 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --providers.file.directory=/configuration/
-      - --api.dashboard=false
+      - --api.dashboard=true
       - --accesslog=true
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https

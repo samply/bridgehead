@@ -22,18 +22,7 @@ services:
       - "traefik.http.services.exporter_${PLATFORM}.loadbalancer.server.port=8092"
       - "traefik.http.routers.exporter_${PLATFORM}.tls=true"
       - "traefik.http.middlewares.exporter_${PLATFORM}_strip.stripprefix.prefixes=/${PLATFORM}-exporter"
-      - "traefik.http.middlewares.exporter_auth.basicauth.users=${EXPORTER_USER}"
-        #- "traefik.http.routers.exporter_${PLATFORM}.middlewares=exporter_${PLATFORM}_strip,exporter_auth"
       - "traefik.http.routers.exporter_${PLATFORM}.middlewares=exporter_${PLATFORM}_strip"
-      - "traefik.http.routers.exporter_${PLATFORM}.priority=20"
-
-      - "traefik.http.routers.exporter_${PLATFORM}_api.rule=PathRegexp(`/${PLATFORM}-exporter/.+`)"
-      - "traefik.http.routers.exporter_${PLATFORM}_api.tls=true"
-        #- "traefik.http.middlewares.exporter_${PLATFORM}_api_strip.stripprefix.prefixes=/${PLATFORM}-exporter"
-        #- "traefik.http.middlewares.exporter_api_auth.basicauth.users=${EXPORTER_USER}"
-      - "traefik.http.routers.exporter_${PLATFORM}_api.middlewares=exporter_${PLATFORM}_strip,exporter_auth"
-        #- "traefik.http.routers.exporter_${PLATFORM}_api.middlewares=exporter_auth"
-      - "traefik.http.routers.exporter_${PLATFORM}_api.priority=25"
     volumes:
       - "/var/cache/bridgehead/${PLATFORM}/exporter-files:/app/exporter-files/output"
 
@@ -74,15 +63,8 @@ services:
       - "traefik.http.routers.reporter_${PLATFORM}.rule=Path(`/${PLATFORM}-reporter`)"
       - "traefik.http.services.reporter_${PLATFORM}.loadbalancer.server.port=8095"
       - "traefik.http.routers.reporter_${PLATFORM}.tls=true"
-      - "traefik.http.routers.reporter_${PLATFORM}.priority=20"
       - "traefik.http.middlewares.reporter_${PLATFORM}_strip.stripprefix.prefixes=/${PLATFORM}-reporter"
-        #- "traefik.http.middlewares.reporter_auth.basicauth.users=${EXPORTER_USER}"
-      - "traefik.http.routers.reporter_${PLATFORM}.middlewares=reporter_${PLATFORM}_strip,exporter_auth"
-
-      - "traefik.http.routers.reporter_${PLATFORM}_api.rule=PathRegexp(`/${PLATFORM}-reporter/.+`)"
-      - "traefik.http.routers.reporter_${PLATFORM}_api.tls=true"
-      - "traefik.http.routers.reporter_${PLATFORM}_api.middlewares=reporter_${PLATFORM}_strip,exporter_auth"
-      - "traefik.http.routers.reporter_${PLATFORM}_api.priority=25"
+      - "traefik.http.routers.reporter_${PLATFORM}.middlewares=reporter_${PLATFORM}_strip"
 
 
 #  focus:

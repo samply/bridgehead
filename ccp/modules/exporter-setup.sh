@@ -5,4 +5,7 @@ if [ "$ENABLE_EXPORTER" == true ]; then
   OVERRIDE+=" -f ./ccp/modules/exporter-compose.yml"
   EXPORTER_DB_PASSWORD="$(echo \"This is a salt string to generate one consistent password for the exporter. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
   EXPORTER_API_KEY="$(echo \"This is a salt string to generate one consistent API KEY for the exporter. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 64)"
+  if [ "$EXPORTER_USER" == true ]; then
+    OVERRIDE+=" -f ./ccp/modules/exporter-auth-compose.yml"
+  fi
 fi

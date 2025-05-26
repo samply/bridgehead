@@ -117,7 +117,8 @@ case "$ACTION" in
 		hc_send log "Bridgehead $PROJECT startup: Checking requirements ..."
 		checkRequirements
 		# NOTE: for testing only, we will need to properly setup secret sync if we want to use this code
-		# sync_secrets
+		# TODO: Adapt it for BBMRI (sync_secrets)
+		sync_secrets
 		hc_send log "Bridgehead $PROJECT startup: Requirements checked out. Now starting bridgehead ..."
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;

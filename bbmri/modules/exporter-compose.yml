@@ -1,0 +1,67 @@
+version: "3.7"
+
+services:
+  exporter:
+    image: docker.verbis.dkfz.de/ccp/dktk-exporter:latest
+    container_name: bridgehead-bbmri-exporter
+    environment:
+      JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
+      LOG_LEVEL: "INFO"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}" # Set in exporter-setup.sh
+      CROSS_ORIGINS: "https://${HOST}"
+      EXPORTER_DB_USER: "exporter"
+      EXPORTER_DB_PASSWORD: "${EXPORTER_DB_PASSWORD}" # Set in exporter-setup.sh
+      EXPORTER_DB_URL: "jdbc:postgresql://exporter-db:5432/exporter"
+      HTTP_RELATIVE_PATH: "/bbmri-exporter"
+      SITE: "${SITE_ID}"
+      HTTP_SERVLET_REQUEST_SCHEME: "https"
+      OPAL_PASSWORD: "${EXPORTER_OPAL_PASSWORD}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.exporter_bbmri.rule=PathPrefix(`/bbmri-exporter`)"
+      - "traefik.http.services.exporter_bbmri.loadbalancer.server.port=8092"
+      - "traefik.http.routers.exporter_bbmri.tls=true"
+      - "traefik.http.middlewares.exporter_bbmri_strip.stripprefix.prefixes=/bbmri-exporter"
+      - "traefik.http.routers.exporter_bbmri.middlewares=exporter_bbmri_strip"
+    volumes:
+      - "/var/cache/bridgehead/bbmri/exporter-files:/app/exporter-files/output"
+
+  exporter-db:
+    image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
+    container_name: bridgehead-bbmri-exporter-db
+    environment:
+      POSTGRES_USER: "exporter"
+      POSTGRES_PASSWORD: "${EXPORTER_DB_PASSWORD}" # Set in exporter-setup.sh
+      POSTGRES_DB: "exporter"
+    volumes:
+      # Consider removing this volume once we find a solution to save Lens-queries to be executed in the explorer.
+      - "/var/cache/bridgehead/bbmri/exporter-db:/var/lib/postgresql/data"
+
+  reporter:
+    image: docker.verbis.dkfz.de/ccp/dktk-reporter:latest
+    container_name: bridgehead-bbmri-reporter
+    environment:
+      JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
+      LOG_LEVEL: "INFO"
+      CROSS_ORIGINS: "https://${HOST}"
+      HTTP_RELATIVE_PATH: "/bbmri-reporter"
+      SITE: "${SITE_ID}"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}" # Set in exporter-setup.sh
+      EXPORTER_URL: "http://exporter:8092"
+      LOG_FHIR_VALIDATION: "false"
+      HTTP_SERVLET_REQUEST_SCHEME: "https"
+
+    # In this initial development state of the bridgehead, we are trying to have so many volumes as possible.
+    # However, in the first executions in the bbmri sites, this volume seems to be very important. A report is
+    # a process that can take several hours, because it depends on the exporter.
+    # There is a risk that the bridgehead restarts, losing the already created export.
+
+    volumes:
+      - "/var/cache/bridgehead/bbmri/reporter-files:/app/reports"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.reporter_bbmri.rule=PathPrefix(`/bbmri-reporter`)"
+      - "traefik.http.services.reporter_bbmri.loadbalancer.server.port=8095"
+      - "traefik.http.routers.reporter_bbmri.tls=true"
+      - "traefik.http.middlewares.reporter_bbmri_strip.stripprefix.prefixes=/bbmri-reporter"
+      - "traefik.http.routers.reporter_bbmri.middlewares=reporter_bbmri_strip"

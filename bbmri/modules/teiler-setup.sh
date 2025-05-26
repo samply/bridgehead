@@ -5,5 +5,5 @@ if [ "$ENABLE_TEILER" == true ];then
   OVERRIDE+=" -f ./$PROJECT/modules/teiler-compose.yml"
   TEILER_DEFAULT_LANGUAGE=EN
   TEILER_DEFAULT_LANGUAGE_LOWER_CASE=${TEILER_DEFAULT_LANGUAGE,,}
-  add_public_oidc_redirect_url "/ccp-teiler/*"
+  # add_public_oidc_redirect_url "/ccp-teiler/*"
 fi

@@ -64,7 +64,6 @@ services:
       APPLICATION_PORT: "8085"
       APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
-      CONFIG_ENV_VAR_PATH: "/run/secrets/ccp.conf"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
       TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
       TEILER_DASHBOARD_DE_URL: "https://${HOST}/ccp-teiler-dashboard/de"
@@ -73,9 +72,3 @@ services:
       ENABLE_MTBA: "${ENABLE_MTBA}"
       ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
       IDMANAGER_UPLOAD_APIKEY: "${IDMANAGER_UPLOAD_APIKEY}" # Only used to check if the ID Manager is active
-    secrets:
-      - ccp.conf
-
-secrets:
-  ccp.conf:
-    file: /etc/bridgehead/ccp.conf

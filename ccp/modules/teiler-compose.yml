@@ -33,7 +33,6 @@ services:
       TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
       TEILER_DASHBOARD_URL: "https://${HOST}/ccp-teiler-dashboard"
       OIDC_URL: "${OIDC_URL}"
-      OIDC_REALM: "${OIDC_REALM}"
       OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
       OIDC_TOKEN_GROUP: "${OIDC_GROUP_CLAIM}"
       TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"

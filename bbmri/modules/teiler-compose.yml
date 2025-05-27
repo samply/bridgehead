@@ -33,7 +33,6 @@ services:
       TEILER_BACKEND_URL: "https://${HOST}/bbmri-teiler-backend"
       TEILER_DASHBOARD_URL: "https://${HOST}/bbmri-teiler-dashboard"
       OIDC_URL: "${OIDC_URL}"
-      OIDC_REALM: "${OIDC_REALM}"
       OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
       OIDC_TOKEN_GROUP: "${OIDC_GROUP_CLAIM}"
       TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
@@ -69,6 +68,3 @@ services:
       TEILER_DASHBOARD_DE_URL: "https://${HOST}/bbmri-teiler-dashboard/de"
       TEILER_DASHBOARD_EN_URL: "https://${HOST}/bbmri-teiler-dashboard/en"
       HTTP_PROXY: "http://forward_proxy:3128"
-      ENABLE_MTBA: "${ENABLE_MTBA}"
-      ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
-      IDMANAGER_UPLOAD_APIKEY: "${IDMANAGER_UPLOAD_APIKEY}" # Only used to check if the ID Manager is active

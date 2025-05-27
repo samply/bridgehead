@@ -23,6 +23,18 @@ services:
       - "traefik.http.routers.exporter_bbmri.tls=true"
       - "traefik.http.middlewares.exporter_bbmri_strip.stripprefix.prefixes=/bbmri-exporter"
       - "traefik.http.routers.exporter_bbmri.middlewares=exporter_bbmri_strip"
+      # Main router
+      - "traefik.http.routers.exporter_bbmri.priority=20"
+
+      # API router
+      - "traefik.http.routers.exporter_bbmri_api.middlewares=exporter_bbmri_strip,exporter_auth"
+      - "traefik.http.routers.exporter_bbmri_api.rule=PathRegexp(`/bbmri-exporter/.+`)"
+      - "traefik.http.routers.exporter_bbmri_api.tls=true"
+      - "traefik.http.routers.exporter_bbmri_api.priority=25"
+
+      # Shared middlewares
+      - "traefik.http.middlewares.exporter_auth.basicauth.users=${EXPORTER_USER}"
+
     volumes:
       - "/var/cache/bridgehead/bbmri/exporter-files:/app/exporter-files/output"
 
@@ -65,3 +77,12 @@ services:
       - "traefik.http.routers.reporter_bbmri.tls=true"
       - "traefik.http.middlewares.reporter_bbmri_strip.stripprefix.prefixes=/bbmri-reporter"
       - "traefik.http.routers.reporter_bbmri.middlewares=reporter_bbmri_strip"
+      - "traefik.http.routers.reporter_bbmri.priority=20"
+
+      #- "traefik.http.routers.reporter_bbmri.middlewares=reporter_bbmri_strip,exporter_auth"
+      - "traefik.http.routers.reporter_bbmri_api.middlewares=reporter_bbmri_strip,exporter_auth"
+      - "traefik.http.routers.reporter_bbmri_api.rule=PathRegexp(`/bbmri-reporter/.+`)"
+      - "traefik.http.routers.reporter_bbmri_api.tls=true"
+      - "traefik.http.routers.reporter_bbmri_api.priority=25"
+      #- "traefik.http.middlewares.reporter_auth.basicauth.users=${EXPORTER_USER}"
+

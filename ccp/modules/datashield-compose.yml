@@ -45,7 +45,6 @@ services:
       OPAL_PRIVATE_KEY: "/run/secrets/opal-key.pem"
       OPAL_CERTIFICATE: "/run/secrets/opal-cert.pem"
       OIDC_URL: "${OIDC_URL}"
-      OIDC_REALM: "${OIDC_REALM}"
       OIDC_CLIENT_ID: "${OIDC_PRIVATE_CLIENT_ID}"
       OIDC_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
       OIDC_ADMIN_GROUP: "${OIDC_ADMIN_GROUP}"
@@ -141,7 +140,7 @@ services:
       --client-id="${OIDC_PRIVATE_CLIENT_ID}"
       --client-secret="${OIDC_CLIENT_SECRET}"
       --redirect-url="https://${HOST}${OAUTH2_CALLBACK}"
-      --oidc-issuer-url="${OIDC_ISSUER_URL}"
+      --oidc-issuer-url="${OIDC_URL}"
       --scope="openid email profile"
       --code-challenge-method="S256"
       --skip-provider-button=true

@@ -23,7 +23,6 @@ services:
       OIDC_ADMIN_GROUP: "${OIDC_ADMIN_GROUP}"
       OIDC_CLIENT_ID: "${OIDC_PRIVATE_CLIENT_ID}"
       OIDC_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
-      OIDC_REALM: "${OIDC_REALM}"
       OIDC_URL: "${OIDC_URL}"
 
     labels:

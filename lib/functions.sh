@@ -301,34 +301,19 @@ function sync_secrets() {
     if [[ $secret_sync_args == "" ]]; then
         return
     fi
-
-    if [ "$PROJECT" == "bbmri" ]; then
-        # If the project is BBMRI, use the BBMRI-ERIC broker and not the GBN broker
-        proxy_id=$ERIC_PROXY_ID
-        broker_url=$ERIC_BROKER_URL
-        broker_id=$ERIC_BROKER_ID
-        root_crt_file="/srv/docker/bridgehead/bbmri/modules/${ERIC_ROOT_CERT}.root.crt.pem"
-    else
-        proxy_id=$PROXY_ID
-        broker_url=$BROKER_URL
-        broker_id=$BROKER_ID
-        root_crt_file="/srv/docker/bridgehead/$PROJECT/root.crt.pem"
-    fi
-
     mkdir -p /var/cache/bridgehead/secrets/ || fail_and_report 1 "Failed to create '/var/cache/bridgehead/secrets/'. Please run sudo './bridgehead install $PROJECT' again."
     touch /var/cache/bridgehead/secrets/oidc
-    echo $PRIVATEKEYFILENAME
     docker run --rm \
         -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \
         -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
-        -v $root_crt_file:/run/secrets/root.crt.pem:ro \
+        -v /srv/docker/bridgehead/$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
         -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
         -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
         -e NO_PROXY=localhost,127.0.0.1 \
         -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
-        -e PROXY_ID=$proxy_id \
-        -e BROKER_URL=$broker_url \
-        -e OIDC_PROVIDER=secret-sync-central.central-secret-sync.$broker_id \
+        -e PROXY_ID=$PROXY_ID \
+        -e BROKER_URL=$BROKER_URL \
+        -e OIDC_PROVIDER=secret-sync-central.central-secret-sync.$BROKER_ID \
         -e SECRET_DEFINITIONS=$secret_sync_args \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
 

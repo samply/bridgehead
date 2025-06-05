@@ -19,7 +19,7 @@ services:
       HTTP_RELATIVE_PATH: "/bbmri-teiler"
 
   teiler-dashboard:
-    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    image: docker.verbis.dkfz.de/ccp/samply/teiler-dashboard:test
     container_name: bridgehead-teiler-dashboard
     labels:
       - "traefik.enable=true"

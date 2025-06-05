@@ -12,13 +12,8 @@ OIDC_USER_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})"
 OIDC_ADMIN_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})_Verwalter"
 OIDC_PRIVATE_CLIENT_ID=${SITE_ID}-private
 OIDC_PUBLIC_CLIENT_ID=${SITE_ID}-public
-# Use "test-realm-01" for testing
-OIDC_REALM="${OIDC_REALM:-master}"
-OIDC_URL="https://login.verbis.dkfz.de"
-OIDC_ISSUER_URL="${OIDC_URL}/realms/${OIDC_REALM}"
+OIDC_URL="https://login.verbis.dkfz.de/realms/test-realm-01"
 OIDC_GROUP_CLAIM="groups"
-
-POSTGRES_TAG=15.6-alpine
 
 for module in $PROJECT/modules/*.sh
 do

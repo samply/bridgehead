@@ -1,0 +1,70 @@
+version: "3.7"
+
+services:
+
+  teiler-orchestrator:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:latest
+    container_name: bridgehead-teiler-orchestrator
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_orchestrator_bbmri.rule=PathPrefix(`/bbmri-teiler`)"
+      - "traefik.http.services.teiler_orchestrator_bbmri.loadbalancer.server.port=9000"
+      - "traefik.http.routers.teiler_orchestrator_bbmri.tls=true"
+      - "traefik.http.middlewares.teiler_orchestrator_bbmri_strip.stripprefix.prefixes=/bbmri-teiler"
+      - "traefik.http.routers.teiler_orchestrator_bbmri.middlewares=teiler_orchestrator_bbmri_strip"
+    environment:
+      TEILER_BACKEND_URL: "https://${HOST}/bbmri-teiler-backend"
+      TEILER_DASHBOARD_URL: "https://${HOST}/bbmri-teiler-dashboard"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
+      HTTP_RELATIVE_PATH: "/bbmri-teiler"
+
+  teiler-dashboard:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    container_name: bridgehead-teiler-dashboard
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_dashboard_bbmri.rule=PathPrefix(`/bbmri-teiler-dashboard`)"
+      - "traefik.http.services.teiler_dashboard_bbmri.loadbalancer.server.port=80"
+      - "traefik.http.routers.teiler_dashboard_bbmri.tls=true"
+      - "traefik.http.middlewares.teiler_dashboard_bbmri_strip.stripprefix.prefixes=/bbmri-teiler-dashboard"
+      - "traefik.http.routers.teiler_dashboard_bbmri.middlewares=teiler_dashboard_bbmri_strip"
+    environment:
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_BACKEND_URL: "https://${HOST}/bbmri-teiler-backend"
+      TEILER_DASHBOARD_URL: "https://${HOST}/bbmri-teiler-dashboard"
+      OIDC_URL: "${OIDC_URL}"
+      OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
+      OIDC_TOKEN_GROUP: "${OIDC_GROUP_CLAIM}"
+      TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
+      TEILER_ADMIN_EMAIL: "${OPERATOR_EMAIL}"
+      TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
+      TEILER_PROJECT: "${PROJECT}"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
+      TEILER_ORCHESTRATOR_URL: "https://${HOST}/bbmri-teiler"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/bbmri-teiler"
+      TEILER_USER: "${OIDC_USER_GROUP}"
+      TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
+      REPORTER_DEFAULT_TEMPLATE_ID: "bbmri-qb"
+      EXPORTER_DEFAULT_TEMPLATE_ID: "bbmri"
+
+
+  teiler-backend:
+    image: docker.verbis.dkfz.de/ccp/bbmri-teiler-backend:latest
+    container_name: bridgehead-teiler-backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_backend_bbmri.rule=PathPrefix(`/bbmri-teiler-backend`)"
+      - "traefik.http.services.teiler_backend_bbmri.loadbalancer.server.port=8085"
+      - "traefik.http.routers.teiler_backend_bbmri.tls=true"
+      - "traefik.http.middlewares.teiler_backend_bbmri_strip.stripprefix.prefixes=/bbmri-teiler-backend"
+      - "traefik.http.routers.teiler_backend_bbmri.middlewares=teiler_backend_bbmri_strip"
+    environment:
+      LOG_LEVEL: "INFO"
+      APPLICATION_PORT: "8085"
+      APPLICATION_ADDRESS: "${HOST}"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/bbmri-teiler"
+      TEILER_ORCHESTRATOR_URL: "https://${HOST}/bbmri-teiler"
+      TEILER_DASHBOARD_DE_URL: "https://${HOST}/bbmri-teiler-dashboard/de"
+      TEILER_DASHBOARD_EN_URL: "https://${HOST}/bbmri-teiler-dashboard/en"
+      HTTP_PROXY: "http://forward_proxy:3128"

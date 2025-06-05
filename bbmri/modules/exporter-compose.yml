@@ -79,10 +79,8 @@ services:
       - "traefik.http.routers.reporter_bbmri.middlewares=reporter_bbmri_strip"
       - "traefik.http.routers.reporter_bbmri.priority=20"
 
-      #- "traefik.http.routers.reporter_bbmri.middlewares=reporter_bbmri_strip,exporter_auth"
       - "traefik.http.routers.reporter_bbmri_api.middlewares=reporter_bbmri_strip,exporter_auth"
       - "traefik.http.routers.reporter_bbmri_api.rule=PathRegexp(`/bbmri-reporter/.+`)"
       - "traefik.http.routers.reporter_bbmri_api.tls=true"
       - "traefik.http.routers.reporter_bbmri_api.priority=25"
-      #- "traefik.http.middlewares.reporter_auth.basicauth.users=${EXPORTER_USER}"
 

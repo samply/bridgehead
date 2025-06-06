@@ -24,6 +24,9 @@ This repository is the starting point for any information and tools you will nee
     - [BBMRI-ERIC Directory entry needed](#bbmri-eric-directory-entry-needed)
     - [Directory sync tool](#directory-sync-tool)
     - [Loading data](#loading-data)
+    - [Teiler (Frontend)](#teiler-frontend)
+    - [Data Exporter Service](#data-exporter-service)
+      - [Data Quality Report](#data-quality-report)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
     - [Auto-Backups](#auto-backups)
@@ -378,6 +381,38 @@ Normally, you will need to build your own ETL to feed the Bridgehead. However, t
 - If you are using CentraXX as a BIMS and you have a FHIR-Export License, then you can employ standard mapping scripts that access the CentraXX-internal data structures and map the data onto the BBMRI FHIR profile. It may be necessary to adjust a few parameters, but this is nonetheless significantly easier than writing your own ETL.
 
 You can find the profiles for generating FHIR in [Simplifier](https://simplifier.net/bbmri.de/~resources?category=Profile).
+
+### Teiler (Frontend)
+
+Teiler is the **web-based frontend of the Bridgehead**, providing **access** to its various **embedded, internal, and external services**.   
+Its architecture is based on microfrontends, which allows individual modules—potentially backed by dedicated microservices—to be integrated in a straightforward and modular way.    
+- To activate Teiler, set the following environment variable in your `<PROJECT>.conf` file:  
+
+```bash
+ENABLE_TEILER=true
+```
+
+### Data Exporter Service
+
+The Exporter is a dedicated service for **extracting and exporting raw data in tabular formats** such as **Excel, CSV, Opal, JSON, XML**...  
+Its architecture is template-based, allowing users to define **what data** to extract and from **which sources** (e.g., **Blaze**).
+
+#### Data Quality Report
+Additionally, a plugin is available for generating **advanced Excel reports** that include built-in **data analysis**. One such template is **preconfigured** to generate **data quality reports** out of the box.  
+
+- To enable the Exporter service, set the following environment variable in your `<PROJECT>.conf` file:  
+
+```bash
+ENABLE_EXPORTER=true
+```
+
+The **Teiler** frontend includes embedded apps that provide **user-friendly interfaces** for both **exporting** data and generating **quality reports**. For this reason, it is **recommended to enable Teiler together with the Exporter** service to fully utilize these integrated features.  
+- Suggested configuration in your `<PROJECT>.conf` file:
+```bash
+ENABLE_TEILER=true
+ENABLE_EXPORTER=true
+```
+
 
 ## Things you should know
 

@@ -1,0 +1,65 @@
+version: "3.7"
+
+services:
+  blaze-pscc:
+    image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
+    container_name: bridgehead-pscc-blaze
+    environment:
+      BASE_URL: "http://bridgehead-pscc-blaze:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx${BLAZE_MEMORY_CAP:-4096}m"
+      DB_RESOURCE_CACHE_SIZE: ${BLAZE_RESOURCE_CACHE_CAP:-2500000}
+      DB_BLOCK_CACHE_SIZE: ${BLAZE_MEMORY_CAP}
+      CQL_EXPR_CACHE_SIZE: ${BLAZE_CQL_CACHE_CAP:-32}
+      ENFORCE_REFERENTIAL_INTEGRITY: "false"
+    volumes:
+      - "blaze-data-pscc:/app/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blaze_pscc.rule=PathPrefix(`/pscc-localdatamanagement`)"
+      - "traefik.http.middlewares.pscc_b_strip.stripprefix.prefixes=/pscc-localdatamanagement"
+      - "traefik.http.services.blaze_pscc.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_pscc.middlewares=pscc_b_strip"
+      - "traefik.http.routers.blaze_pscc.tls=true"
+
+  focus-pscc:
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
+    container_name: bridgehead-pscc-focus
+    environment:
+      API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      BEAM_APP_ID_LONG: focus.${PROXY_ID_PSCC}
+      PROXY_ID: ${PROXY_ID_PSCC}
+      BLAZE_URL: "http://bridgehead-pscc-blaze:8080/fhir/"
+      BEAM_PROXY_URL: http://beam-proxy-pscc:8081
+      RETRY_COUNT: ${FOCUS_RETRY_COUNT}
+      EPSILON: 0.28
+      ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
+    depends_on:
+      - "beam-proxy"
+      - "blaze"
+
+  beam-proxy-pscc:
+    image: docker.verbis.dkfz.de/cache/samply/beam-proxy:${BEAM_TAG}
+    container_name: bridgehead-pscc-beam-proxy
+    environment:
+      BROKER_URL: ${BROKER_URL_PSCC}
+      PROXY_ID: ${PROXY_ID_PSCC}
+      APP_focus_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      PRIVKEY_FILE: /run/secrets/proxy.pem
+      ALL_PROXY: http://forward_proxy:3128
+      TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
+      ROOTCERT_FILE: /conf/root.crt.pem
+    secrets:
+      - proxy.pem
+    depends_on:
+      - "forward_proxy"
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
+      - /srv/docker/bridgehead/pscc/root.crt.pem:/conf/root.crt.pem:ro
+
+
+volumes:
+  blaze-data-pscc:
+
+secrets:
+  proxy.pem:
+    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

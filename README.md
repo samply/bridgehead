@@ -24,6 +24,9 @@ This repository is the starting point for any information and tools you will nee
     - [BBMRI-ERIC Directory entry needed](#bbmri-eric-directory-entry-needed)
     - [Directory sync tool](#directory-sync-tool)
     - [Loading data](#loading-data)
+    - [Teiler (Frontend)](#teiler-frontend)
+    - [Data Exporter Service](#data-exporter-service)
+      - [Data Quality Report](#data-quality-report)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
     - [Auto-Backups](#auto-backups)
@@ -378,6 +381,36 @@ Normally, you will need to build your own ETL to feed the Bridgehead. However, t
 - If you are using CentraXX as a BIMS and you have a FHIR-Export License, then you can employ standard mapping scripts that access the CentraXX-internal data structures and map the data onto the BBMRI FHIR profile. It may be necessary to adjust a few parameters, but this is nonetheless significantly easier than writing your own ETL.
 
 You can find the profiles for generating FHIR in [Simplifier](https://simplifier.net/bbmri.de/~resources?category=Profile).
+
+### Teiler (Frontend)
+
+Teiler is the web-based frontend of the Bridgehead, providing access to its various internal, and external services and components.   
+To learn how to integrate your custom module into Teiler, please refer to https://github.com/samply/teiler-dashboard.
+- To activate Teiler, set the following environment variable in your `<PROJECT>.conf` file:  
+
+```bash
+ENABLE_TEILER=true
+```
+
+### Data Exporter Service
+
+The Exporter is a dedicated service for extracting and exporting Bridgehead data in (tabular) formats such as Excel, CSV, Opal, JSON, XML, ...  
+- To enable the Exporter service, set the following environment variable in your `<PROJECT>.conf` file:  
+
+```bash
+ENABLE_EXPORTER=true
+
+#### Data Quality Report
+To assess the quality and plausibility of your imported data, the Reporter component is pre-configured to generate Excel reports with data quality metrics and statistical analyses. Reporter is part of the Exporter and can be enabled by setting the same environment variable in your `<PROJECT>.conf` file:
+```bash
+ENABLE_EXPORTER=true
+```
+
+For convenience, it's recommended to enable the Teiler web frontend alongside the Exporter to access export and quality control features via a web interface: set the following environment varibles in your `<PROJECT>.conf` file:
+```bash
+ENABLE_TEILER=true
+ENABLE_EXPORTER=true
+```
 
 ## Things you should know
 

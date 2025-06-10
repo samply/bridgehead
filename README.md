@@ -394,7 +394,7 @@ ENABLE_TEILER=true
 
 ### Data Exporter Service
 
-The Exporter is a dedicated service for **extracting and exporting raw data in tabular formats** such as **Excel, CSV, Opal, JSON, XML**...  
+The Exporter is a dedicated service for extracting and exporting Bridgehead data in (tabular) formats such as Excel, CSV, Opal, JSON, XML, ...  
 Its architecture is template-based, allowing users to define **what data** to extract and from **which sources** (e.g., **Blaze**).
 
 #### Data Quality Report

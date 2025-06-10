@@ -384,7 +384,7 @@ You can find the profiles for generating FHIR in [Simplifier](https://simplifier
 
 ### Teiler (Frontend)
 
-Teiler is the **web-based frontend of the Bridgehead**, providing **access** to its various **embedded, internal, and external services**.   
+Teiler is the web-based frontend of the Bridgehead, providing access to its various internal, and external services and components.   
 Its architecture is based on microfrontends, which allows individual modules—potentially backed by dedicated microservices—to be integrated in a straightforward and modular way.    
 - To activate Teiler, set the following environment variable in your `<PROJECT>.conf` file:  
 

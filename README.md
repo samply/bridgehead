@@ -412,7 +412,6 @@ ENABLE_TEILER=true
 ENABLE_EXPORTER=true
 ```
 
-
 ## Things you should know
 
 ### Auto-Updates

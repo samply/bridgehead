@@ -395,7 +395,10 @@ ENABLE_TEILER=true
 ### Data Exporter Service
 
 The Exporter is a dedicated service for extracting and exporting Bridgehead data in (tabular) formats such as Excel, CSV, Opal, JSON, XML, ...  
-Its architecture is template-based, allowing users to define **what data** to extract and from **which sources** (e.g., **Blaze**).
+- To enable the Exporter service, set the following environment variable in your `<PROJECT>.conf` file:  
+
+```bash
+ENABLE_EXPORTER=true
 
 #### Data Quality Report
 Additionally, a plugin is available for generating **advanced Excel reports** that include built-in **data analysis**. One such template is **preconfigured** to generate **data quality reports** out of the box.  

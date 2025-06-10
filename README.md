@@ -401,10 +401,7 @@ The Exporter is a dedicated service for extracting and exporting Bridgehead data
 ENABLE_EXPORTER=true
 
 #### Data Quality Report
-Additionally, a plugin is available for generating **advanced Excel reports** that include built-in **data analysis**. One such template is **preconfigured** to generate **data quality reports** out of the box.  
-
-- To enable the Exporter service, set the following environment variable in your `<PROJECT>.conf` file:  
-
+To assess the quality and plausibility of your imported data, the Reporter component is pre-configured to generate Excel reports with data quality metrics and statistical analyses. Reporter is part of the Exporter and can be enabled by setting the same environment variable in your `<PROJECT>.conf` file:
 ```bash
 ENABLE_EXPORTER=true
 ```

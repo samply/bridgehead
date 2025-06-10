@@ -406,8 +406,7 @@ To assess the quality and plausibility of your imported data, the Reporter compo
 ENABLE_EXPORTER=true
 ```
 
-The **Teiler** frontend includes embedded apps that provide **user-friendly interfaces** for both **exporting** data and generating **quality reports**. For this reason, it is **recommended to enable Teiler together with the Exporter** service to fully utilize these integrated features.  
-- Suggested configuration in your `<PROJECT>.conf` file:
+For convenience, it's recommended to enable the Teiler web frontend alongside the Exporter to access export and quality control features via a web interface: set the following environment varibles in your `<PROJECT>.conf` file:
 ```bash
 ENABLE_TEILER=true
 ENABLE_EXPORTER=true

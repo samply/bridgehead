@@ -1,19 +1,57 @@
 # Teiler
-This module orchestrates the different microfrontends of the bridgehead as a single page application.  
+
+**Teiler** is the central frontend of the **bridgehead system**. It brings together multiple independent tools—each built as a **microfrontend**—into a single, unified web application.
+
+Users interact with Teiler as one coherent interface, but behind the scenes, it dynamically integrates and displays self-contained modules developed with different technologies (**Angular**, **Vue**, **React**, etc.). This modular approach makes Teiler highly flexible, allowing teams to develop, deploy, and maintain features independently.
+
+Teiler ensures:
+
+* **A consistent look and feel** across tools.
+* **Smooth navigation** between components.
+* **Seamless user authentication** across the entire interface.
+
+Below is a breakdown of Teiler's internal components that make this orchestration possible.
+
+---
 
 ## Teiler Orchestrator
-Single SPA component that consists on the root HTML site of the single page application and a javascript code that
-gets the information about the microfrontend calling the teiler backend and is responsible for registering them. With the
-resulting mapping, it can initialize, mount and unmount the required microfrontends on the fly. 
 
-The microfrontends run independently in different containers and can be based on different frameworks (Angular, Vue, React,...)
-This microfrontends can run as single alone but need an extension with Single-SPA (https://single-spa.js.org/docs/ecosystem).
-There are also available three templates (Angular, Vue, React) to be directly extended to be used directly in the teiler.
+The **Teiler Orchestrator** is the entry point of the **Single Page Application (SPA)**. It consists of:
+
+- An **HTML root page**.
+- A **JavaScript layer** that:
+    - **Retrieves microfrontend configurations** from the backend.
+    - **Registers and manages** them using [**Single-SPA**](https://single-spa.js.org/).
+
+Using this information, it dynamically **loads the correct microfrontend** for a given route and manages its **lifecycle** (*init*, *mount*, *unmount*) in real time.
+
+**Microfrontends** run in their own containers and can be implemented with any major frontend framework. To be compatible with Teiler, they must integrate with **Single-SPA**.
+
+To ease integration, Teiler offers **starter templates** for **Angular**, **Vue**, and **React**.
+
+---
 
 ## Teiler Dashboard
-It consists on the main dashboard and a set of embedded services.
-### Login
-user and password in ccp.local.conf
+
+The **Teiler Dashboard** is what users see after logging in. It provides:
+
+- A **unified interface** where various services are embedded as microfrontends.
+- **Central navigation** and **session management**.
+
+### Authentication
+
+Teiler uses **OpenID Connect (OIDC)** for authentication.
+
+Users log in via the **top navigation bar**.
+
+---
 
 ## Teiler Backend
-In this component, the microfrontends are configured.
+
+The **Teiler Backend** is responsible for **storing and serving the configuration** of the available microfrontends. It defines:
+
+- **Which microfrontends are available**
+- Their **loading URLs and routes**
+- Optional metadata such as **display names** or **icons**
+
+This enables the orchestrator to remain **generic and flexible**, adapting dynamically to whatever microfrontends are defined in the backend configuration.

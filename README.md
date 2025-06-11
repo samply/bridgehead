@@ -393,6 +393,7 @@ To learn how to integrate your custom module into Teiler, please refer to https:
 ```bash
 ENABLE_TEILER=true
 ```
+[For further information](ccp/modules/teiler.md)  
 
 ### Data Exporter Service
 
@@ -414,6 +415,7 @@ For convenience, it's recommended to enable the Teiler web frontend alongside th
 ENABLE_TEILER=true
 ENABLE_EXPORTER=true
 ```
+[For further information](ccp/modules/exporter.md)  
 
 ## Things you should know
 

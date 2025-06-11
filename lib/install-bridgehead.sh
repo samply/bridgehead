@@ -49,8 +49,8 @@ if [ -z "$TRANSFAIR_AUTH" ]; then
   fi
 fi
 
-if [ -z "$EXPORTER_USER" ]; then
-  log "INFO" "Now generating basic auth for the exporter and reporter (see adduser in bridgehead for more information). "
+if [ "$ENABLE_EXPORTER" == "true" ] && [ -z "$EXPORTER_USER" ]; then
+  log "INFO" "Now generating basic auth for the exporter and reporter (see adduser in bridgehead for more information)."
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
   add_basic_auth_user $PROJECT $generated_passwd "EXPORTER_USER" $PROJECT
 fi

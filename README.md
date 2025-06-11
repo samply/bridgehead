@@ -22,11 +22,16 @@ This repository is the starting point for any information and tools you will nee
     - [TLS terminating proxies](#tls-terminating-proxies)
     - [File structure](#file-structure)
     - [BBMRI-ERIC Directory entry needed](#bbmri-eric-directory-entry-needed)
+    - [Directory sync tool](#directory-sync-tool)
     - [Loading data](#loading-data)
+    - [Teiler (Frontend)](#teiler-frontend)
+    - [Data Exporter Service](#data-exporter-service)
+      - [Data Quality Report](#data-quality-report)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
     - [Auto-Backups](#auto-backups)
     - [Non-Linux OS](#non-linux-os)
+    - [FAQ](#faq)
 5. [Troubleshooting](#troubleshooting)
     - [Docker Daemon Proxy Configuration](#docker-daemon-proxy-configuration)
     - [Monitoring](#monitoring)
@@ -301,25 +306,37 @@ Once you have added your biobank to the Directory you got persistent identifier 
 
 ### Directory sync tool
 
-The Bridgehead's **Directory Sync** is an optional feature that keeps the Directory up to date with your local data, e.g. number of samples. Conversely, it also updates the local FHIR store with the latest contact details etc. from the Directory. You must explicitly set your country specific directory URL, username and password to enable this feature.
+The Bridgehead's **Directory Sync** is an optional feature that keeps the BBMRI-ERIC Directory up to date with your local data, e.g. number of samples. Conversely, it can also update the local FHIR store with the latest contact details etc. from the  BBMRI-ERIC Directory.
 
 You should talk with your local data protection group regarding the information that is published by Directory sync.
 
-Full details can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
-
-To enable it, you will need to set these variables to the ```bbmri.conf``` file of your GitLab repository. Here is an example config:
+To enable it, you will need to explicitly set the username and password variables for BBMRI-ERIC Directory login in the configuration file of your GitLab repository (e.g. ```bbmri.conf```). Here is an example minimal config:
 
 ```
 DS_DIRECTORY_USER_NAME=your_directory_username
 DS_DIRECTORY_USER_PASS=your_directory_password
 ```
-Please contact your National Node to obtain this information.
+Please contact your National Node or Directory support (directory-dev@helpdesk.bbmri-eric.eu) to obtain these credentials.
 
-Optionally, you **may** change when you want Directory sync to run by specifying a [cron](https://crontab.guru) expression, e.g. `DS_TIMER_CRON="0 22 * * *"` for 10 pm every evening.
+The following environment variables can be used from within your config file to control the behavior of Directory sync:
 
-Once you edited the gitlab config, the bridgehead will autoupdate the config with the values and will sync the data.
+| Variable                           | Purpose                                                                                                                                                              | Default if not specified               |
+|:-----------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------|
+| DS_DIRECTORY_URL                   | Base URL of the Directory                                                                                                                                            | https://directory-backend.molgenis.net |
+| DS_DIRECTORY_USER_NAME             | User name for logging in to Directory **Mandatory**                                                                                                                  |                                        |
+| DS_DIRECTORY_USER_PASS             | Password for logging in to Directory **Mandatory**                                                                                                                   |                                        |
+| DS_DIRECTORY_DEFAULT_COLLECTION_ID | ID of collection to be used if not in samples                                                                                                                        |                                        |
+| DS_DIRECTORY_ALLOW_STAR_MODEL      | Set to 'True' to send star model info to Directory                                                                                                                   | True                                  |
+| DS_FHIR_STORE_URL                  | URL for FHIR store                                                                                                                                                   | http://bridgehead-bbmri-blaze:8080     |
+| DS_TIMER_CRON                      | Execution interval for Directory sync, [cron](https://crontab.guru) format                                                                                           | 0 22 * * *                             |
+| DS_IMPORT_BIOBANKS                 | Set to 'True' to import biobank metadata from Directory                                                                                                              | True                                  |
+| DS_IMPORT_COLLECTIONS              | Set to 'True' to import collection metadata from Directory                                                                                                           | True                                  |
+
+Once you have finished editing the config, the Bridgehead will autoupdate the config with the values and will sync data at regular intervals, using the time specified in DS_TIMER_CRON.
 
 There will be a delay before the effects of Directory sync become visible. First, you will need to wait until the time you have specified in ```TIMER_CRON```. Second, the information will then be synchronized from your national node with the central European Directory. This can take up to 24 hours.
+
+More details of Directory sync can be found in [directory_sync_service](https://github.com/samply/directory_sync_service).
 
 ### Loading data
 
@@ -340,12 +357,60 @@ The storage space on your hard drive will depend on the number of FHIR resources
 
 For more information on Blaze performance, please refer to [import performance](https://github.com/samply/blaze/blob/master/docs/performance/import.md).
 
+### Clearing data
+
+The Bridgehead's FHIR store, Blaze, saves its data in a Docker volume. This means that the data will persist even if you stop the Bridgehead. You can clear existing data from the FHIR store by deleting the relevant Docker volume.
+
+First, stop the Bridgehead:
+```shell
+sudo systemctl stop bridgehead@<PROJECT>.service
+```
+Now remove the volume:
+```shell
+docker volume rm <PROJECT>_blaze-data
+```
+Finally, restart the Bridgehead:
+```shell
+sudo systemctl start bridgehead@<PROJECT>.service
+```
+You will need to do this for example if you are using a VM as a test environment and you subsequently want to use the same VM for production.
+
 #### ETL for BBMRI and GBA
 
 Normally, you will need to build your own ETL to feed the Bridgehead. However, there is one case where a short cut might be available:
 - If you are using CentraXX as a BIMS and you have a FHIR-Export License, then you can employ standard mapping scripts that access the CentraXX-internal data structures and map the data onto the BBMRI FHIR profile. It may be necessary to adjust a few parameters, but this is nonetheless significantly easier than writing your own ETL.
 
 You can find the profiles for generating FHIR in [Simplifier](https://simplifier.net/bbmri.de/~resources?category=Profile).
+
+### Teiler (Frontend)
+
+Teiler is the web-based frontend of the Bridgehead, providing access to its various internal, and external services and components.   
+To learn how to integrate your custom module into Teiler, please refer to https://github.com/samply/teiler-dashboard.
+- To activate Teiler, set the following environment variable in your `<PROJECT>.conf` file:  
+
+```bash
+ENABLE_TEILER=true
+```
+
+### Data Exporter Service
+
+The Exporter is a dedicated service for extracting and exporting Bridgehead data in (tabular) formats such as Excel, CSV, Opal, JSON, XML, ...  
+- To enable the Exporter service, set the following environment variable in your `<PROJECT>.conf` file:  
+
+```bash
+ENABLE_EXPORTER=true
+
+#### Data Quality Report
+To assess the quality and plausibility of your imported data, the Reporter component is pre-configured to generate Excel reports with data quality metrics and statistical analyses. Reporter is part of the Exporter and can be enabled by setting the same environment variable in your `<PROJECT>.conf` file:
+```bash
+ENABLE_EXPORTER=true
+```
+
+For convenience, it's recommended to enable the Teiler web frontend alongside the Exporter to access export and quality control features via a web interface: set the following environment varibles in your `<PROJECT>.conf` file:
+```bash
+ENABLE_TEILER=true
+ENABLE_EXPORTER=true
+```
 
 ## Things you should know
 
@@ -385,6 +450,54 @@ Under Windows, you have 2 options:
 We have tested the installation procedure with an Ubuntu 22.04 guest system running on a VMware virtual machine. That worked flawlessly.
 
 Installation under WSL ought to work, but we have not tested this.
+
+### FAQ
+
+**Q: How is the security of GitHub pulls, volumes/containers, and image signing ensured?**
+
+A: Changes to Git branches that could be delivered to sites (main and develop) must be accepted via a pull request with at least two positive reviews.
+Containers/images are not built manually, but rather automatically through a CI/CD pipeline, so that an image can be rolled back to a defined code version at any time without changes.
+**Note:** If firewall access for (outgoing) connections to GitHub and/or Docker Hub is problematic at the site, mirrors for both services are available, operated by the DKFZ.
+
+**Q: How is authentication between users and components regulated?**
+
+A: When setting up a Bridgehead, a private key and a so-called Certificate Sign Request (CSR) are generated locally. This CSR is manually signed by the broker operator, which allows the Bridgehead access to the network infrastructure.
+All communication runs via Samply.Beam and is therefore end-to-end encrypted, but also signed. This allows the integrity and authenticity of the sender to be technically verified (which happens automatically both in the broker and at the recipients).
+The connection to the broker is additionally secured using traditional TLS (transport encryption over https).
+
+**Q: Are there any statistics on incoming traffic from the Bridgehead (what goes in and what goes out)?**
+
+A: Incoming and outgoing traffic can only enter/leave the Bridgehead via a forward or reverse proxy, respectively. These components log all connections.
+Statistical analysis is not currently being conducted, but is on the roadmap for some projects. We are also working on a dashboard for all tasks/responses delivered via Samply.Beam.
+
+**Q: How is container access controlled, and what permission level is used?**
+
+A: Currently, it is not possible to run the Bridgehead "out-of-the-box" as a rootless Docker Compose stack. The main reason is the operation of the reverse proxy (Traefik), which binds to the privileged ports 80 (HTTP) and 443 (HTTPS).
+Otherwise, there are no known technical obstacles, although we don't have concrete experience implementing this.
+At the file system level, a "bridgehead" user is created during installation, which manages the configuration and Bridgehead folders.
+
+**Q: Is a cloud installation (not a company-owned one, but an external service provider) possible?**
+
+A: Technically, yes. This is primarily a data protection issue between the participant and their cloud provider.
+The Bridgehead contains a data storage system that, during use, contains sensitive patient and sample data.
+There are cloud providers with whom appropriately worded contracts can be concluded to make this possible.
+Of course, the details must be discussed with the responsible data protection officer.
+
+**Q: What needs to be considered regarding the Docker distribution/registry, and how is it used here?**
+
+A: The Bridgehead images are located both in Docker Hub and mirrored in a registry operated by the DKFZ.
+The latter is used by default, avoiding potential issues with Docker Hub URL activation or rate limits.
+When using automatic updates (highly recommended), an daily check is performed for:
+- site configuration updates
+- Bridgehead software updates
+- container image updates
+
+If updates are found, they are downloaded and applied.
+See the first question for the control mechanism.
+
+**Q: Is data only transferred one-way (Bridgehead/FHIR Store → Central/Locator), or is two-way access necessary?**
+
+A: By using Samply.Beam, only one outgoing connection to the broker is required at the network level (i.e., Bridgehead → Broker).
 
 ## Troubleshooting
 

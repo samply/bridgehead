@@ -15,7 +15,6 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
   TOKEN_MANAGER_OPAL_PASSWORD="$(generate_password \"Token Manager in Opal\")"
   OPAL_DB_PASSWORD="$(echo \"Opal DB\" | generate_simple_password)"
   OPAL_ADMIN_PASSWORD="$(generate_password \"admin password for Opal\")"
-  RSTUDIO_ADMIN_PASSWORD="$(generate_password \"admin password for R-Studio\")"
   DATASHIELD_CONNECT_SECRET="$(echo \"DataShield Connect\" | generate_simple_password)"
   TOKEN_MANAGER_SECRET="$(echo \"Token Manager\" | generate_simple_password)"
   if [ ! -e /tmp/bridgehead/opal-cert.pem ]; then

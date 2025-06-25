@@ -17,7 +17,6 @@ services:
       BEAM_PROXY_ID: ${SITE_ID}
       BEAM_BROKER_ID: ${BROKER_ID}
       BEAM_APP_ID: "focus"
-      PROJECT_METADATA: "cce_supervisors"
     depends_on:
       - "beam-proxy"
     labels:
@@ -30,4 +29,4 @@ services:
       - "traefik.http.routers.spot.rule=Host(`${HOST}`) && PathPrefix(`/backend`)"
       - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/backend"
       - "traefik.http.routers.spot.tls=true"
-      - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot"
+      - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot,auth"

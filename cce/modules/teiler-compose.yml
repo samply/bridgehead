@@ -1,0 +1,69 @@
+version: "3.7"
+
+services:
+
+  teiler-orchestrator:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:latest
+    container_name: bridgehead-teiler-orchestrator
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_orchestrator_cce.rule=PathPrefix(`/cce-teiler`)"
+      - "traefik.http.services.teiler_orchestrator_cce.loadbalancer.server.port=9000"
+      - "traefik.http.routers.teiler_orchestrator_cce.tls=true"
+      - "traefik.http.middlewares.teiler_orchestrator_cce_strip.stripprefix.prefixes=/cce-teiler"
+      - "traefik.http.routers.teiler_orchestrator_cce.middlewares=teiler_orchestrator_cce_strip"
+    environment:
+      TEILER_BACKEND_URL: "/cce-teiler-backend"
+      TEILER_DASHBOARD_URL: "/cce-teiler-dashboard"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
+      HTTP_RELATIVE_PATH: "/cce-teiler"
+
+  teiler-dashboard:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    container_name: bridgehead-teiler-dashboard
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_dashboard_cce.rule=PathPrefix(`/cce-teiler-dashboard`)"
+      - "traefik.http.services.teiler_dashboard_cce.loadbalancer.server.port=80"
+      - "traefik.http.routers.teiler_dashboard_cce.tls=true"
+      - "traefik.http.middlewares.teiler_dashboard_cce_strip.stripprefix.prefixes=/cce-teiler-dashboard"
+      - "traefik.http.routers.teiler_dashboard_cce.middlewares=teiler_dashboard_cce_strip"
+    environment:
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_BACKEND_URL: "/cce-teiler-backend"
+      TEILER_DASHBOARD_URL: "/cce-teiler-dashboard"
+      OIDC_URL: "${OIDC_URL}"
+      OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
+      OIDC_TOKEN_GROUP: "${OIDC_GROUP_CLAIM}"
+      TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
+      TEILER_ADMIN_EMAIL: "${OPERATOR_EMAIL}"
+      TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
+      TEILER_PROJECT: "${PROJECT}"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
+      TEILER_ORCHESTRATOR_URL: "/cce-teiler"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/cce-teiler"
+      TEILER_USER: "${OIDC_USER_GROUP}"
+      TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
+      REPORTER_DEFAULT_TEMPLATE_ID: "cce-qb"
+      EXPORTER_DEFAULT_TEMPLATE_ID: "cce"
+
+
+  teiler-backend:
+    image: docker.verbis.dkfz.de/ccp/cce-teiler-backend:latest
+    container_name: bridgehead-teiler-backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_backend_cce.rule=PathPrefix(`/cce-teiler-backend`)"
+      - "traefik.http.services.teiler_backend_cce.loadbalancer.server.port=8085"
+      - "traefik.http.routers.teiler_backend_cce.tls=true"
+      - "traefik.http.middlewares.teiler_backend_cce_strip.stripprefix.prefixes=/cce-teiler-backend"
+      - "traefik.http.routers.teiler_backend_cce.middlewares=teiler_backend_cce_strip"
+    environment:
+      LOG_LEVEL: "INFO"
+      APPLICATION_PORT: "8085"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/cce-teiler"
+      TEILER_ORCHESTRATOR_URL: "/cce-teiler"
+      TEILER_DASHBOARD_DE_URL: "/cce-teiler-dashboard/de"
+      TEILER_DASHBOARD_EN_URL: "/cce-teiler-dashboard/en"
+      HTTP_PROXY: "http://forward_proxy:3128"

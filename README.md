@@ -85,6 +85,8 @@ The following URLs need to be accessible (prefix with `https://`):
     * hub.docker.com
     * registry-1.docker.io
     * production.cloudflare.docker.com
+  * GitHub Container Registry - (for use of DNPM:DIP)
+    * ghcr.io
 * To report bridgeheads operational status
   * healthchecks.verbis.dkfz.de
 * only for DKTK/CCP
@@ -95,7 +97,7 @@ The following URLs need to be accessible (prefix with `https://`):
 * only for German Biobank Node
   * broker.bbmri.de
 
-> 📝 This URL list is subject to change. Instead of the individual names, we highly recommend whitelisting wildcard domains: *.dkfz.de, github.com, *.docker.com, *.docker.io, *.samply.de, *.bbmri.de.
+> 📝 This URL list is subject to change. Instead of the individual names, we highly recommend whitelisting wildcard domains: *.dkfz.de, github.com, *.docker.com, *.docker.io, *.ghcr.io, *.samply.de, *.bbmri.de.
 
 > 📝 Ubuntu's pre-installed uncomplicated firewall (ufw) is known to conflict with Docker, more info [here](https://github.com/chaifeng/ufw-docker).
 

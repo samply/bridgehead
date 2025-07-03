@@ -62,7 +62,7 @@ services:
     volumes:
       - "patientlist-db-data:/var/lib/postgresql/data"
       # NOTE: Add backups here. This is only imported if /var/lib/bridgehead/data/patientlist/ is empty!!!
-      - "/tmp/bridgehead/patientlist/:/docker-entrypoint-initdb.d/"
+      - "/tmp/bridgehead/patientlist/:/docker-entrypoint-initdb.d/:Z"
 
   traefik-forward-auth:
     image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:latest

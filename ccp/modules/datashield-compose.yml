@@ -35,10 +35,10 @@ services:
       BEAM_SECRET: ${TOKEN_MANAGER_SECRET}
       BEAM_DATASHIELD_PROXY: request-manager
     volumes:
-      - "/var/cache/bridgehead/ccp/opal-metadata-db:/srv" # Opal metadata
-    secrets:
-      - opal-cert.pem
-      - opal-key.pem
+      - "/var/cache/bridgehead/ccp/opal-metadata-db:/srv:Z" # Opal metadata
+      # secrets don't seem to allow us to specify Z/z
+      - /tmp/bridgehead/opal-cert.pem:/run/secrets/opal-cert.pem:z
+      - /tmp/bridgehead/opal-key.pem:/run/secrets/opal-key.pem:Z
 
   opal-db:
     container_name: bridgehead-opal-db
@@ -48,7 +48,7 @@ services:
       POSTGRES_USER: "opal"
       POSTGRES_DB: "opal"
     volumes:
-      - "/var/cache/bridgehead/ccp/opal-db:/var/lib/postgresql/data" # Opal project data (imported from exporter)
+      - "/var/cache/bridgehead/ccp/opal-db:/var/lib/postgresql/data:Z" # Opal project data (imported from exporter)
 
   opal-rserver:
     container_name: bridgehead-opal-rserver
@@ -67,20 +67,14 @@ services:
       DISCOVERY_URL: "./map/central.json"
       LOCAL_TARGETS_FILE: "./map/local.json"
       NO_AUTH: "true"
-    secrets:
-      - opal-cert.pem
     depends_on:
       - beam-proxy
     volumes:
-      - /tmp/bridgehead/opal-map/:/map/:ro
+      - /tmp/bridgehead/opal-map/:/map/:ro,Z
+      # secrets don't seem to allow us to specify Z/z
+      - /tmp/bridgehead/opal-cert.pem:/run/secrets/opal-cert.pem:z
 
   beam-proxy:
     environment:
       APP_datashield-connect_KEY: ${DATASHIELD_CONNECT_SECRET}
       APP_token-manager_KEY: ${TOKEN_MANAGER_SECRET}
-
-secrets:
-  opal-cert.pem:
-    file: /tmp/bridgehead/opal-cert.pem
-  opal-key.pem:
-    file: /tmp/bridgehead/opal-key.pem

@@ -26,7 +26,3 @@ services:
 volumes:
   blaze-data:
 
-# used in modules *-locator.yml
-secrets:
-  proxy.pem:
-    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

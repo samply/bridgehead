@@ -56,12 +56,10 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/kr/root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/kr/root.crt.pem:/conf/root.crt.pem:ro,Z
+      # secrets don't seem to allow us to specify Z
+      - /etc/bridgehead/pki/${SITE_ID}.priv.pem:/run/secrets/proxy.pem:ro
 
 
 volumes:
   blaze-data:
-
-secrets:
-  proxy.pem:
-    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

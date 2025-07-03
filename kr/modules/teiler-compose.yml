@@ -71,9 +71,6 @@ services:
       HTTP_PROXY: "http://forward_proxy:3128"
       ENABLE_MTBA: "${ENABLE_MTBA}"
       ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
-    secrets:
-      - ccp.conf
-
-secrets:
-  ccp.conf:
-    file: /etc/bridgehead/ccp.conf
+    volumes:
+      # secrets don't seem to allow us to specify Z
+      - /etc/bridgehead/ccp.conf:/run/secrets/ccp.conf:ro

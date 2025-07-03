@@ -35,7 +35,7 @@ services:
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
       ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
     volumes:
-      - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf:ro
+      - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf:ro,Z
     depends_on:
       - "beam-proxy"
       - "blaze"
@@ -57,11 +57,9 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/ccp/root.crt.pem:/conf/root.crt.pem:ro,Z
+      # secrets don't seem to allow us to specify Z
+      - /etc/bridgehead/pki/${SITE_ID}.priv.pem:/run/secrets/proxy.pem:ro
 
 volumes:
   blaze-data:
-
-secrets:
-  proxy.pem:
-    file: /etc/bridgehead/pki/${SITE_ID}.priv.pem

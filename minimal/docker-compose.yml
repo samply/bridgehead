@@ -28,6 +28,9 @@ services:
     security_opt:
       # allow access to the docker socket on systems with SELinux
       - "label:type:container_runtime_t"
+    cap_add:
+      # Allow binding to ports <1024 without root
+      - NET_BIND_SERVICE
     volumes:
       - /etc/bridgehead/traefik-tls:/certs:ro
       - ../lib/traefik-configuration/:/configuration:ro

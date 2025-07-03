@@ -27,7 +27,7 @@ services:
       - NO_PROXY=${TRANSFAIR_NO_PROXIES}
       - ALL_PROXY=http://forward_proxy:3128
     volumes:
-      - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
+      - /var/cache/bridgehead/${PROJECT}/transfair:/transfair:Z
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
     labels:
       - "traefik.enable=true"

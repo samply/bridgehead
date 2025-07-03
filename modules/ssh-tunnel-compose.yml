@@ -10,8 +10,4 @@ services:
       SSH_TUNNEL_PORT: "${SSH_TUNNEL_PORT:-22}"
     volumes:
       - "/etc/bridgehead/ssh-tunnel.conf:/ssh-tunnel.conf:ro"
-    secrets:
-      - privkey
-secrets:
-  privkey:
-    file: /etc/bridgehead/pki/ssh-tunnel.priv.pem
+      - "/etc/bridgehead/pki/ssh-tunnel.priv.pem:/run/secrets/privkey:ro"

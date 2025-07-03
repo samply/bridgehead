@@ -37,7 +37,7 @@ services:
       - "traefik.http.middlewares.exporter_auth.basicauth.users=${EXPORTER_USER}"
 
     volumes:
-      - "/var/cache/bridgehead/cce/exporter-files:/app/exporter-files/output"
+      - "/var/cache/bridgehead/cce/exporter-files:/app/exporter-files/output:z"
 
   exporter-db:
     image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
@@ -48,7 +48,7 @@ services:
       POSTGRES_DB: "exporter"
     volumes:
       # Consider removing this volume once we find a solution to save Lens-queries to be executed in the explorer.
-      - "/var/cache/bridgehead/cce/exporter-db:/var/lib/postgresql/data"
+      - "/var/cache/bridgehead/cce/exporter-db:/var/lib/postgresql/data:Z"
 
   reporter:
     image: docker.verbis.dkfz.de/ccp/dktk-reporter:latest
@@ -70,7 +70,7 @@ services:
     # There is a risk that the bridgehead restarts, losing the already created export.
 
     volumes:
-      - "/var/cache/bridgehead/cce/reporter-files:/app/reports"
+      - "/var/cache/bridgehead/cce/reporter-files:/app/reports:z"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.reporter_cce.rule=PathPrefix(`/cce-reporter`)"

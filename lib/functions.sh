@@ -317,7 +317,6 @@ function sync_secrets() {
 
     mkdir -p /var/cache/bridgehead/secrets/ || fail_and_report 1 "Failed to create '/var/cache/bridgehead/secrets/'. Please run sudo './bridgehead install $PROJECT' again."
     touch /var/cache/bridgehead/secrets/oidc
-    echo $PRIVATEKEYFILENAME
     docker run --rm \
         -v /var/cache/bridgehead/secrets/oidc:/usr/local/cache \
         -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \

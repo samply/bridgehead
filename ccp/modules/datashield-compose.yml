@@ -25,7 +25,7 @@ services:
       APP_CONTEXT_PATH: "/opal"
       OPAL_PRIVATE_KEY: "/run/secrets/opal-key.pem"
       OPAL_CERTIFICATE: "/run/secrets/opal-cert.pem"
-      OIDC_URL: "${OIDC_URL}"
+      OIDC_URL: "${OIDC_PRIVATE_URL}"
       OIDC_CLIENT_ID: "${OIDC_PRIVATE_CLIENT_ID}"
       OIDC_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
       OIDC_ADMIN_GROUP: "${OIDC_ADMIN_GROUP}"

@@ -43,7 +43,7 @@ services:
       - "traefik.http.routers.dnpm-auth.tls=true"
 
   dnpm-portal:
-    image: ghcr.io/dnpm-dip/portal:latest
+    image: ghcr.io/dnpm-dip/portal:{DNPM_IMAGE_TAG:-latest}
     container_name: bridgehead-dnpm-portal
     environment:
       - NUXT_API_URL=http://dnpm-backend:9000/
@@ -58,7 +58,7 @@ services:
 
   dnpm-backend:
     container_name: bridgehead-dnpm-backend
-    image: ghcr.io/dnpm-dip/backend:latest
+    image: ghcr.io/dnpm-dip/backend:{DNPM_IMAGE_TAG:-latest}
     environment:
       - LOCAL_SITE=${ZPM_SITE}:${SITE_NAME}   # Format: {Site-ID}:{Site-name}, e.g. UKT:Tübingen
       - RD_RANDOM_DATA=${DNPM_SYNTH_NUM:--1}

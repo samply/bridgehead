@@ -71,9 +71,9 @@ services:
       - https_proxy=http://forward_proxy:3128
       - OAUTH2_PROXY_PROVIDER=oidc
       - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
-      - OAUTH2_PROXY_OIDC_ISSUER_URL=https://login.verbis.dkfz.de/realms/master
-      - OAUTH2_PROXY_CLIENT_ID=bridgehead-${SITE_ID}
-      - OAUTH2_PROXY_CLIENT_SECRET=${IDMANAGER_AUTH_CLIENT_SECRET}
+      - OAUTH2_PROXY_OIDC_ISSUER_URL=${OIDC_PRIVATE_URL}
+      - OAUTH2_PROXY_CLIENT_ID=${OIDC_PRIVATE_CLIENT_ID}
+      - OAUTH2_PROXY_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
       - OAUTH2_PROXY_COOKIE_SECRET=${IDMANAGER_AUTH_COOKIE_SECRET}
       - OAUTH2_PROXY_COOKIE_NAME=_BRIDGEHEAD_oauth2_idm
       - OAUTH2_PROXY_COOKIE_DOMAINS=.${HOST}
@@ -88,7 +88,7 @@ services:
       - OAUTH2_PROXY_SET_XAUTHREQUEST=true
       # Keycloak has an expiration time of 60s therefore oauth2-proxy needs to refresh after that
       - OAUTH2_PROXY_COOKIE_REFRESH=60s
-      - OAUTH2_PROXY_ALLOWED_GROUPS=DKTK-CCP-PPSN
+      - OAUTH2_PROXY_ALLOWED_GROUPS=app-dktk-ccp-ppsn
       - OAUTH2_PROXY_PROXY_PREFIX=/oauth2-idm
     labels:
       - "traefik.enable=true"

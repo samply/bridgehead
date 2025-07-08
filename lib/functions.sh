@@ -327,7 +327,7 @@ function sync_secrets() {
         -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
         -e PROXY_ID=$proxy_id \
         -e BROKER_URL=$broker_url \
-        -e OIDC_PROVIDER=secret-sync-central.test-secret-sync.$broker_id \
+        -e OIDC_PROVIDER=secret-sync-central.secret-sync.$broker_id \
         -e SECRET_DEFINITIONS=$secret_sync_args \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
 

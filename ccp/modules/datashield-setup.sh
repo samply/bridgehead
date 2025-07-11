@@ -31,4 +31,5 @@ if [ "$ENABLE_DATASHIELD" == true ]; then
     chmod g+r /tmp/bridgehead/opal-key.pem
   fi
   add_private_oidc_redirect_url "/opal/*"
+  add_private_oidc_redirect_url "/oauth2-idm/callback"
 fi

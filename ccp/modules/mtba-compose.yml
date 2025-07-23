@@ -22,8 +22,14 @@ services:
       HTTP_RELATIVE_PATH: "/mtba"
       OIDC_ADMIN_GROUP: "${OIDC_ADMIN_GROUP}"
       OIDC_CLIENT_ID: "${OIDC_PRIVATE_CLIENT_ID}"
-      OIDC_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
-      OIDC_URL: "${OIDC_URL}"
+      # TODO: Add following variables after moving to Authentik:
+      #OIDC_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
+      #OIDC_URL: "${OIDC_URL}"
+      # TODO: Remove following variables after moving to Authentik:
+      # Please add KECLOAK_CLIENT_SECRET in ccp.conf
+      OIDC_CLIENT_SECRET: "${KEYCLOAK_CLIENT_SECRET}"
+      OIDC_URL: "https://login.verbis.dkfz.de/realms/test-realm-01"
+      OIDC_ADMIN_URL: "https://login.verbis.dkfz.de/admin/realms/test-realm-01"
 
     labels:
       - "traefik.enable=true"

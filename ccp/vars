@@ -10,9 +10,11 @@ BROKER_URL_FOR_PREREQ=$BROKER_URL
 
 OIDC_USER_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})"
 OIDC_ADMIN_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})_Verwalter"
+OIDC_PSP_GROUP="DKTK_CCP_$(capitalize_first_letter ${SITE_ID})_PSP"
 OIDC_PRIVATE_CLIENT_ID=${SITE_ID}-private
 OIDC_PUBLIC_CLIENT_ID=${SITE_ID}-public
-OIDC_URL="https://login.verbis.dkfz.de/realms/test-realm-01"
+OIDC_URL="https://sso.verbis.dkfz.de/application/o/${OIDC_PUBLIC_CLIENT_ID}/"
+OIDC_PRIVATE_URL="https://sso.verbis.dkfz.de/application/o/${OIDC_PRIVATE_CLIENT_ID}/"
 OIDC_GROUP_CLAIM="groups"
 
 for module in $PROJECT/modules/*.sh

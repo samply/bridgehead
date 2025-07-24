@@ -1,25 +1,6 @@
 version: "3.7"
 
 services:
-  rstudio:
-    container_name: bridgehead-rstudio
-    image: docker.verbis.dkfz.de/ccp/dktk-rstudio:latest
-    environment:
-      #DEFAULT_USER: "rstudio" # This line is kept for informational purposes
-      PASSWORD: "${RSTUDIO_ADMIN_PASSWORD}" # It is required, even if the authentication is disabled
-      DISABLE_AUTH: "true" # https://rocker-project.org/images/versioned/rstudio.html#how-to-use
-      HTTP_RELATIVE_PATH: "/rstudio"
-      ALL_PROXY: "http://forward_proxy:3128" # https://rocker-project.org/use/networking.html
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.rstudio_ccp.rule=PathPrefix(`/rstudio`)"
-      - "traefik.http.services.rstudio_ccp.loadbalancer.server.port=8787"
-      - "traefik.http.middlewares.rstudio_ccp_strip.stripprefix.prefixes=/rstudio"
-      - "traefik.http.routers.rstudio_ccp.tls=true"
-      - "traefik.http.routers.rstudio_ccp.middlewares=oidcAuth,rstudio_ccp_strip"
-    networks:
-      - rstudio
-
   opal:
     container_name: bridgehead-opal
     image: docker.verbis.dkfz.de/ccp/dktk-opal:latest
@@ -44,7 +25,7 @@ services:
       APP_CONTEXT_PATH: "/opal"
       OPAL_PRIVATE_KEY: "/run/secrets/opal-key.pem"
       OPAL_CERTIFICATE: "/run/secrets/opal-cert.pem"
-      OIDC_URL: "${OIDC_URL}"
+      OIDC_URL: "${OIDC_PRIVATE_URL}"
       OIDC_CLIENT_ID: "${OIDC_PRIVATE_CLIENT_ID}"
       OIDC_CLIENT_SECRET: "${OIDC_CLIENT_SECRET}"
       OIDC_ADMIN_GROUP: "${OIDC_ADMIN_GROUP}"
@@ -92,79 +73,14 @@ services:
       - beam-proxy
     volumes:
       - /tmp/bridgehead/opal-map/:/map/:ro
-    networks:
-      - default
-      - rstudio
-
-  traefik:
-    labels:
-      - "traefik.http.middlewares.oidcAuth.forwardAuth.address=http://oauth2-proxy:4180/"
-      - "traefik.http.middlewares.oidcAuth.forwardAuth.trustForwardHeader=true"
-      - "traefik.http.middlewares.oidcAuth.forwardAuth.authResponseHeaders=X-Auth-Request-Access-Token,Authorization"
-    networks:
-      - default
-      - rstudio
-  forward_proxy:
-    networks:
-      - default
-      - rstudio
 
   beam-proxy:
     environment:
       APP_datashield-connect_KEY: ${DATASHIELD_CONNECT_SECRET}
       APP_token-manager_KEY: ${TOKEN_MANAGER_SECRET}
 
-  # TODO: Allow users of group /DataSHIELD and OIDC_USER_GROUP at the same time:
-  # Maybe a solution would be (https://oauth2-proxy.github.io/oauth2-proxy/configuration/oauth_provider):
-  # --allowed-groups=/DataSHIELD,OIDC_USER_GROUP
-  oauth2-proxy:
-    image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:latest
-    container_name: bridgehead-oauth2proxy
-    command: >-
-      --allowed-group=DataSHIELD
-      --oidc-groups-claim=${OIDC_GROUP_CLAIM}
-      --auth-logging=true
-      --whitelist-domain=${HOST}
-      --http-address="0.0.0.0:4180"
-      --reverse-proxy=true
-      --upstream="static://202"
-      --email-domain="*"
-      --cookie-name="_BRIDGEHEAD_oauth2"
-      --cookie-secret="${OAUTH2_PROXY_SECRET}"
-      --cookie-expire="12h"
-      --cookie-secure="true"
-      --cookie-httponly="true"
-      #OIDC settings
-      --provider="keycloak-oidc"
-      --provider-display-name="VerbIS Login"
-      --client-id="${OIDC_PRIVATE_CLIENT_ID}"
-      --client-secret="${OIDC_CLIENT_SECRET}"
-      --redirect-url="https://${HOST}${OAUTH2_CALLBACK}"
-      --oidc-issuer-url="${OIDC_URL}"
-      --scope="openid email profile"
-      --code-challenge-method="S256"
-      --skip-provider-button=true
-      #X-Forwarded-Header settings - true/false depending on your needs
-      --pass-basic-auth=true
-      --pass-user-headers=false
-      --pass-access-token=false
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.oauth2_proxy.rule=PathPrefix(`/oauth2`)"
-      - "traefik.http.services.oauth2_proxy.loadbalancer.server.port=4180"
-      - "traefik.http.routers.oauth2_proxy.tls=true"
-    environment:
-      http_proxy: "http://forward_proxy:3128"
-      https_proxy: "http://forward_proxy:3128"
-    depends_on:
-      forward_proxy:
-        condition: service_healthy
-
 secrets:
   opal-cert.pem:
     file: /tmp/bridgehead/opal-cert.pem
   opal-key.pem:
     file: /tmp/bridgehead/opal-key.pem
-
-networks:
-  rstudio:

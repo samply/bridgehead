@@ -59,3 +59,4 @@ services:
       PROJECT: ${PROJECT}
       SITE_NAME: ${SITE_NAME}
       ENVIRONMENT: ${ENVIRONMENT}
+    profiles: [deactivated]

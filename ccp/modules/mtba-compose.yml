@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   mtba:
-    image: docker.verbis.dkfz.de/cache/samply/mtba:develop
+    image: docker.verbis.dkfz.de/cache/samply/mtba:${MTBA_TAB}
     container_name: bridgehead-mtba
     environment:
       BLAZE_STORE_URL: http://blaze:8080

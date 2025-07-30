@@ -19,7 +19,7 @@ services:
       HTTP_RELATIVE_PATH: "/ccp-teiler"
 
   teiler-dashboard:
-    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:${TEILER_DASHBOARD_TAG}
     container_name: bridgehead-teiler-dashboard
     labels:
       - "traefik.enable=true"

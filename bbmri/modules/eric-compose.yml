@@ -22,6 +22,7 @@ services:
       BROKER_URL: ${ERIC_BROKER_URL}
       PROXY_ID: ${ERIC_PROXY_ID}
       APP_focus_KEY: ${ERIC_FOCUS_BEAM_SECRET_SHORT}
+      APP_monitoring_KEY: ${ERIC_MONITORING_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
@@ -34,3 +35,12 @@ services:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/bbmri/modules/${ERIC_ROOT_CERT}.root.crt.pem:/conf/root.crt.pem:ro
 
+  bridgehead-monitoring:
+    image: docker.verbis.dkfz.de/cache/samply/bridgehead-monitoring:latest
+    container_name: bridgehead-monitoring-eric
+    environment:
+      - BEAM_ID=monitoring.${ERIC_PROXY_ID}
+      - BEAM_API_KEY=${ERIC_MONITORING_BEAM_SECRET_SHORT}
+      - BEAM_PROXY_URL=http://beam-proxy-eric:8081
+    depends_on:
+      - beam-proxy-eric

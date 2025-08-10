@@ -29,4 +29,7 @@ if [ "${ENABLE_ERIC}" == "true" ]; then
 	ERIC_PROXY_ID=${SITE_ID}.${ERIC_BROKER_ID}
 	ERIC_FOCUS_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 	ERIC_SUPPORT_EMAIL=bridgehead@helpdesk.bbmri-eric.eu
+
+	#Monitoring
+	ERIC_MONITORING_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 fi

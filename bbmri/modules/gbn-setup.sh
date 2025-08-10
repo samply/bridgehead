@@ -25,4 +25,7 @@ if [ "${ENABLE_GBN}" == "true" ]; then
 	GBN_PROXY_ID=${SITE_ID}.${GBN_BROKER_ID}
 	GBN_FOCUS_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 	GBN_SUPPORT_EMAIL=feedback@germanbiobanknode.de
+
+	#Monitoring
+	GBN_MONITORING_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 fi

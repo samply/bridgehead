@@ -55,6 +55,9 @@ case "$PROJECT" in
 	cce)
 		site_configuration_repository_middle="git.verbis.dkfz.de/cce-sites/"
 		;;
+	pscc)
+		site_configuration_repository_middle="git.verbis.dkfz.de/pscc-sites/"
+		;;
 	itcc)
 		site_configuration_repository_middle="git.verbis.dkfz.de/itcc-sites/"
         ;;

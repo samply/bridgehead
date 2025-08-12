@@ -35,6 +35,9 @@ case "$PROJECT" in
 	cce)
 		#nothing extra to do
 		;;
+	pscc)
+		#nothing extra to do
+		;;
 	itcc)
 		#nothing extra to do
 		;;

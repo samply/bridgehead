@@ -10,6 +10,7 @@ services:
       - TTP_GW_SOURCE
       - TTP_GW_EPIX_DOMAIN
       - TTP_GW_GPAS_DOMAIN
+      - TTP_GW_GPAS_URL
       - TTP_AUTH
       - PROJECT_ID_SYSTEM
       - FHIR_REQUEST_URL=${FHIR_REQUEST_URL}

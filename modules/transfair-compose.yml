@@ -10,7 +10,6 @@ services:
       - TTP_GW_SOURCE
       - TTP_GW_EPIX_DOMAIN
       - TTP_GW_GPAS_DOMAIN
-      - TTP_TYPE
       - TTP_AUTH
       - PROJECT_ID_SYSTEM
       - FHIR_REQUEST_URL=${FHIR_REQUEST_URL}
@@ -26,6 +25,7 @@ services:
       - TLS_DISABLE=${TRANSFAIR_TLS_DISABLE:-false}
       - NO_PROXY=${TRANSFAIR_NO_PROXIES}
       - ALL_PROXY=http://forward_proxy:3128
+    command: dic ${TTP_TYPE}
     volumes:
       - /var/cache/bridgehead/${PROJECT}/transfair:/transfair
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro

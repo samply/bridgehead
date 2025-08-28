@@ -1,0 +1,40 @@
+volumes:
+  blaze-data-2:
+
+services:
+  traefik:
+    labels:
+      - "traefik.http.middlewares.additional-users-auth.basicauth.users=${SCOUT_BASIC_AUTH_USERS}"
+
+  blaze-2:
+    image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
+    container_name: bridgehead-dhki-blaze-2
+    environment:
+      BASE_URL: "http://bridgehead-dhki-blaze-2:8080"
+      ENFORCE_REFERENTIAL_INTEGRITY: "false"
+    volumes:
+      - "blaze-data-2:/app/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blaze-dhki-2.rule=PathPrefix(`/dhki-localdatamanagement-2`)"
+      - "traefik.http.middlewares.dhki-b-strip-2.stripprefix.prefixes=/dhki-localdatamanagement-2"
+      - "traefik.http.services.blaze-dhki-2.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze-dhki-2.middlewares=dhki-b-strip-2,additional-users-auth"
+      - "traefik.http.routers.blaze-dhki-2.tls=true"
+
+  scout:
+    image: samply/scout:main
+    container_name: bridgehead-dhki-scout
+    configs:
+      - scout.toml
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.scout.rule=PathPrefix(`/scout`)"
+      - "traefik.http.services.scout.loadbalancer.server.port=8080"
+      - "traefik.http.routers.scout.middlewares=additional-users-auth"
+      - "traefik.http.routers.scout.tls=true"
+
+configs:
+  scout.toml:
+    content: |
+      fhir_base_url = "http://blaze-2:8080/fhir"

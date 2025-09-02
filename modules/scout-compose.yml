@@ -16,8 +16,8 @@ services:
       - "scout-blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.scout-blaze.rule=PathPrefix(`/dhki-localdatamanagement-2`)"
-      - "traefik.http.middlewares.scout-blaze-stripprefix.stripprefix.prefixes=/dhki-localdatamanagement-2"
+      - "traefik.http.routers.scout-blaze.rule=PathPrefix(`/scout-blaze`)"
+      - "traefik.http.middlewares.scout-blaze-stripprefix.stripprefix.prefixes=/scout-blaze"
       - "traefik.http.services.scout-blaze.loadbalancer.server.port=8080"
       - "traefik.http.routers.scout-blaze.middlewares=scout-blaze-stripprefix,additional-users-auth"
       - "traefik.http.routers.scout-blaze.tls=true"

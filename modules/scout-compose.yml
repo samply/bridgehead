@@ -1,5 +1,5 @@
 volumes:
-  blaze-data-2:
+  scout-blaze-data:
 
 services:
   traefik:
@@ -10,17 +10,17 @@ services:
     image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
     container_name: bridgehead-scout-blaze
     environment:
-      BASE_URL: "http://bridgehead-dhki-blaze-2:8080"
+      BASE_URL: "http://bridgehead-scout-blaze:8080"
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
     volumes:
-      - "blaze-data-2:/app/data"
+      - "scout-blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.blaze-dhki-2.rule=PathPrefix(`/dhki-localdatamanagement-2`)"
-      - "traefik.http.middlewares.dhki-b-strip-2.stripprefix.prefixes=/dhki-localdatamanagement-2"
-      - "traefik.http.services.blaze-dhki-2.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze-dhki-2.middlewares=dhki-b-strip-2,additional-users-auth"
-      - "traefik.http.routers.blaze-dhki-2.tls=true"
+      - "traefik.http.routers.scout-blaze.rule=PathPrefix(`/dhki-localdatamanagement-2`)"
+      - "traefik.http.middlewares.scout-blaze-stripprefix.stripprefix.prefixes=/dhki-localdatamanagement-2"
+      - "traefik.http.services.scout-blaze.loadbalancer.server.port=8080"
+      - "traefik.http.routers.scout-blaze.middlewares=scout-blaze-stripprefix,additional-users-auth"
+      - "traefik.http.routers.scout-blaze.tls=true"
 
   scout:
     image: samply/scout:main

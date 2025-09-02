@@ -6,9 +6,9 @@ services:
     labels:
       - "traefik.http.middlewares.additional-users-auth.basicauth.users=${SCOUT_BASIC_AUTH_USERS}"
 
-  blaze-2:
+  scout-blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
-    container_name: bridgehead-dhki-blaze-2
+    container_name: bridgehead-scout-blaze
     environment:
       BASE_URL: "http://bridgehead-dhki-blaze-2:8080"
       ENFORCE_REFERENTIAL_INTEGRITY: "false"
@@ -24,7 +24,7 @@ services:
 
   scout:
     image: samply/scout:main
-    container_name: bridgehead-dhki-scout
+    container_name: bridgehead-scout
     configs:
       - scout.toml
     labels:

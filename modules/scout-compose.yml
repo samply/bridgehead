@@ -37,4 +37,4 @@ services:
 configs:
   scout.toml:
     content: |
-      fhir_base_url = "http://blaze-2:8080/fhir"
+      fhir_base_url = "http://scout-blaze:8080/fhir"

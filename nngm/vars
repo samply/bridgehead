@@ -1,5 +1,9 @@
-BROKER_ID=broker.nngm.dktk.dkfz.de
-BROKER_URL=https://${BROKER_ID}
+# TODO: Replace after getting FQDN from ITCF
+# BROKER_ID=broker.nngm.dktk.dkfz.de
+# BROKER_URL=https://${BROKER_ID}
+BROKER_ID=e260-nngm-lens.inet.dkfz-heidelberg.de
+BROKER_URL=http://${BROKER_ID}
+
 PROXY_ID=${SITE_ID}.${BROKER_ID}
 FOCUS_BEAM_SECRET_SHORT="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)"
 FOCUS_RETRY_COUNT=${FOCUS_RETRY_COUNT:-64}

@@ -16,13 +16,11 @@ services:
     ports:
       - "8055:8055"
     environment:
-      HTTP_PROXY: ${http_proxy}
-      HTTPS_PROXY: ${https_proxy}
-      NO_PROXY: beam-proxy
       BEAM_SECRET: "${FOCUS_BEAM_SECRET_SHORT}"
       BEAM_PROXY_URL: http://beam-proxy:8081
-      BEAM_APP_ID: "focus"
-      CORS_ORIGIN: "https://${GUI_HOST}"
+      BEAM_APP_ID: "spot.${SITE_ID}.${BROKER_ID}"
+      #CORS_ORIGIN: "https://${GUI_HOST}"
+      CORS_ORIGIN: "https://127.0.0.1"
       SITES: "pscc-dkfz"
       TRANSFORM: LENS
       BIND_ADDR: 0.0.0.0:8055
@@ -34,12 +32,16 @@ services:
       - "beam-proxy"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.spot.loadbalancer.server.port=8080"
+      - "traefik.http.services.spot.loadbalancer.server.port=8055"
       - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
-      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolalloworiginlist=https://${HOST}"
+      #- "traefik.http.middlewares.corsheaders2.headers.accesscontrolalloworiginlist=https://${HOST}"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolalloworiginlist=http://localhost:3000"
       - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowcredentials=true"
       - "traefik.http.middlewares.corsheaders2.headers.accesscontrolmaxage=-1"
       - "traefik.http.routers.spot.rule=Host(`${HOST}`) && PathPrefix(`/backend`)"
       - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/backend"
       - "traefik.http.routers.spot.tls=true"
       - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot"
+  beam-proxy:
+    environment:
+      APP_spot_KEY: ${FOCUS_BEAM_SECRET_SHORT}

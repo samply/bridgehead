@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  landing:
+  lens:
     container_name: lens_federated-search
     image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
     labels:
@@ -13,8 +13,6 @@ services:
   spot:
     image: samply/rustyspot:main
     platform: linux/amd64
-    ports:
-      - "8055:8055"
     environment:
       BEAM_SECRET: "${FOCUS_BEAM_SECRET_SHORT}"
       BEAM_PROXY_URL: http://beam-proxy:8081
@@ -25,6 +23,7 @@ services:
       BIND_ADDR: 0.0.0.0:8055
       RUST_LOG: "debug"
       LOG_FILE: /logs/requests.log
+      PROJECT: pscc
     volumes:
       - ./logs:/logs
     depends_on:

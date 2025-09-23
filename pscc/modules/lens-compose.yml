@@ -6,7 +6,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
-      - "traefik.http.services.landing.loadbalancer.server.port=5173"
+      - "traefik.http.services.landing.loadbalancer.server.port=3000"
       - "traefik.http.routers.landing.middlewares=auth"
       - "traefik.http.routers.landing.tls=true"
 

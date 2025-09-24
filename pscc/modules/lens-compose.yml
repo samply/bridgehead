@@ -25,7 +25,8 @@ services:
       LOG_FILE: /logs/requests.log
       PROJECT: pscc
     volumes:
-      - ./logs:/logs
+      - /etc/bridgehead/logs:/logs
+      - /etc/bridgehead/query:/query:ro
     depends_on:
       - "beam-proxy"
     labels:

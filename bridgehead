@@ -146,6 +146,10 @@ case "$ACTION" in
 		loadVars
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
+	check)
+		loadVars &> /dev/null
+		exec ./lib/check-bridgehead.sh $PROJECT
+		;;
 	install)
 		source ./lib/prepare-system.sh NODEV
 		loadVars

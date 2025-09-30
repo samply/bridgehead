@@ -25,15 +25,16 @@ services:
     image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-dktk
     container_name: bridgehead-focus
     environment:
-      API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
-      BEAM_APP_ID_LONG: focus.${PROXY_ID}
-      PROXY_ID: ${PROXY_ID}
-      BLAZE_URL: "http://bridgehead-ccp-blaze:8080/fhir/"
-      BEAM_PROXY_URL: http://beam-proxy:8081
-      RETRY_COUNT: ${FOCUS_RETRY_COUNT}
-      EPSILON: 0.28
-      QUERIES_TO_CACHE: '/queries_to_cache.conf'
-      ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
+    - API_KEY=${FOCUS_BEAM_SECRET_SHORT}
+    - BEAM_APP_ID_LONG=focus.${PROXY_ID}
+    - PROXY_ID=${PROXY_ID}
+    - BLAZE_URL=http://bridgehead-ccp-blaze:8080/fhir/
+    - BEAM_PROXY_URL=http://beam-proxy:8081
+    - RETRY_COUNT=${FOCUS_RETRY_COUNT}
+    - EPSILON=0.28
+    - QUERIES_TO_CACHE=/queries_to_cache.conf
+    - ENDPOINT_TYPE=${FOCUS_ENDPOINT_TYPE:-blaze}
+    - CQL_PROJECTS_ENABLED
     volumes:
       - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf:ro
     depends_on:

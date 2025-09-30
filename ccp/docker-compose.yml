@@ -34,6 +34,7 @@ services:
       EPSILON: 0.28
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
       ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
+      CQL_PROJECTS_ENABLED: "${CQL_ALLOWED_PROJECTS}"
     volumes:
       - /srv/docker/bridgehead/ccp/queries_to_cache.conf:/queries_to_cache.conf:ro
     depends_on:

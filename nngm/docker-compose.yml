@@ -22,7 +22,8 @@ services:
       - "traefik.http.routers.blaze_nngm.tls=true"
 
   focus:
-    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-dktk
+    #image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-dktk
+    image: docker.verbis.dkfz.de/ccp/focus:nngm-test
     container_name: bridgehead-focus
     environment:
     - API_KEY=${FOCUS_BEAM_SECRET_SHORT}

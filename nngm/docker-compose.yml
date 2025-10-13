@@ -23,7 +23,7 @@ services:
 
   focus:
     #image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-dktk
-    image: docker.verbis.dkfz.de/ccp/focus:nngm-test
+    image: ghcr.io/samply/focus:feature-nngm-v2
     container_name: bridgehead-focus
     environment:
     - API_KEY=${FOCUS_BEAM_SECRET_SHORT}

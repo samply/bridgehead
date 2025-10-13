@@ -44,6 +44,9 @@ case "$PROJECT" in
 	dhki)
 		#nothing extra to do
 		;;
+	nngm)
+		#nothing extra to do
+		;;
 	minimal)
 		#nothing extra to do
 		;;

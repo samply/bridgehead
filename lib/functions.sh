@@ -337,8 +337,7 @@ function sync_secrets() {
 }
 
 function secret_sync_gitlab_token() {
-    if [ "$PROJECT" == "minimal" ]; then
-        log "INFO" "Not running Secret Sync for project minimal"
+    if [[ "$PROJECT" != "dktk" && "$PROJECT" != "bbmri" ]]; then
         return
     fi
     # Map the origin of the git repository /etc/bridgehead to the prefix recognized by Secret Sync

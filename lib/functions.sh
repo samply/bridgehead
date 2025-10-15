@@ -337,6 +337,10 @@ function sync_secrets() {
 }
 
 function secret_sync_gitlab_token() {
+    if [ "$PROJECT" == "minimal" ]; then
+        log "INFO" "Not running Secret Sync for project minimal"
+        return
+    fi
     # Map the origin of the git repository /etc/bridgehead to the prefix recognized by Secret Sync
     local gitlab
     case "$(git -C /etc/bridgehead remote get-url origin)" in

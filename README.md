@@ -318,6 +318,12 @@ To enable it, you will need to explicitly set the username and password variable
 DS_DIRECTORY_USER_NAME=your_directory_username
 DS_DIRECTORY_USER_PASS=your_directory_password
 ```
+Alternatively, if you have obtained a token from the Directory, you can insert the following into the configuration file:
+```
+DS_DIRECTORY_USER_TOKEN=your_directory_token
+```
+If you don't supply any authentification information (either login credentials or a token), Directory sync will not start.
+
 Please contact your National Node or Directory support (directory-dev@helpdesk.bbmri-eric.eu) to obtain these credentials.
 
 The following environment variables can be used from within your config file to control the behavior of Directory sync:
@@ -325,12 +331,13 @@ The following environment variables can be used from within your config file to 
 | Variable                           | Purpose                                                                                                                                                              | Default if not specified               |
 |:-----------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------|
 | DS_DIRECTORY_URL                   | Base URL of the Directory                                                                                                                                            | https://directory-backend.molgenis.net |
-| DS_DIRECTORY_USER_NAME             | User name for logging in to Directory **Mandatory**                                                                                                                  |                                        |
-| DS_DIRECTORY_USER_PASS             | Password for logging in to Directory **Mandatory**                                                                                                                   |                                        |
+| DS_DIRECTORY_USER_NAME             | User name for logging in to Directory                                                                                                                                |                                        |
+| DS_DIRECTORY_USER_PASS             | Password for logging in to Directory                                                                                                                                 |                                        |
+| DS_DIRECTORY_USER_TOKEN            | Token for logging in to Directory                                                                                                                                    |                                        |
 | DS_DIRECTORY_DEFAULT_COLLECTION_ID | ID of collection to be used if not in samples                                                                                                                        |                                        |
 | DS_DIRECTORY_ALLOW_STAR_MODEL      | Set to 'True' to send star model info to Directory                                                                                                                   | True                                  |
 | DS_FHIR_STORE_URL                  | URL for FHIR store                                                                                                                                                   | http://bridgehead-bbmri-blaze:8080     |
-| DS_TIMER_CRON                      | Execution interval for Directory sync, [cron](https://crontab.guru) format                                                                                           | 0 22 * * *                             |
+| DS_TIMER_CRON                      | Execution interval for Directory sync, [cron](https://crontab.guru) format                                                                                           | 30 22 * * *                            |
 | DS_IMPORT_BIOBANKS                 | Set to 'True' to import biobank metadata from Directory                                                                                                              | True                                  |
 | DS_IMPORT_COLLECTIONS              | Set to 'True' to import collection metadata from Directory                                                                                                           | True                                  |
 

@@ -16,3 +16,7 @@ services:
       DS_IMPORT_COLLECTIONS: ${DS_IMPORT_COLLECTIONS:-true}
     depends_on:
       - "blaze"
+    volumes:
+      - /etc/localtime:/etc/localtime # inherit host timezone
+      - /etc/timezone:/etc/timezone   # inherit host timezone
+

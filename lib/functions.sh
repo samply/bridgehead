@@ -54,7 +54,7 @@ checkOwner(){
 
 printUsage() {
 	echo "Usage: bridgehead start|stop|logs|docker-logs|is-running|update|check|install|uninstall|adduser|enroll PROJECTNAME"
-	echo "PROJECTNAME should be one of ccp|bbmri|cce|itcc|kr|dhki"
+	echo "PROJECTNAME should be one of ccp|bbmri|cce|itcc|kr|dhki|nngm"
 }
 
 checkRequirements() {

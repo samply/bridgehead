@@ -397,7 +397,7 @@ function secret_sync_gitlab_token() {
     else
         log "WARN" "Secret Sync failed"
         # Remove the git credential helper
-        git -C /etc/bridgehead config --unset credential.helper
+        git -C /etc/bridgehead config --unset credential.helpera
     fi
 
     # In the past the git credential helper was also set for /srv/docker/bridgehead but never used.

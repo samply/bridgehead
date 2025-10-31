@@ -22,7 +22,7 @@ services:
       - "traefik.http.routers.blaze_cce.tls=true"
 
   focus:
-    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-dktk
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
     container_name: bridgehead-focus
     environment:
       API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
@@ -34,7 +34,6 @@ services:
       EPSILON: 0.28
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
       ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
-      CQL_PROJECTS_ENABLED: "cce"
     volumes:
       - /srv/docker/bridgehead/cce/queries_to_cache.conf:/queries_to_cache.conf:ro
     depends_on:

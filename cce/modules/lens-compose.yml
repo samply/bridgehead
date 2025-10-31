@@ -1,13 +1,15 @@
 version: "3.7"
 services:
-  landing:
+  lens:
     container_name: lens_federated-search
     image: ghcr.io/samply/cce-explorer:pr-1
+    environment:
+      PUBLIC_ENVIRONMENT: test
     labels:
-      - "traefik.http.services.landing.loadbalancer.server.port=3000"
+      - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"
-      - "traefik.http.routers.landing.rule=Host(`${HOST}`)"
-      - "traefik.http.routers.landing.tls=true"
+      - "traefik.http.routers.lens.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.lens.tls=true"
 
   spot:
     image: samply/rustyspot:latest
@@ -24,7 +26,6 @@ services:
       TRANSFORM: LENS
       PROJECT: cce
       BIND_ADDR: 0.0.0.0:8055
-      PRISM_URL: http://prism:8066
       RUST_LOG: "info"
       LOG_FILE: /logs/requests.log
     volumes:

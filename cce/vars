@@ -12,3 +12,4 @@ do
     log DEBUG "sourcing $module"
     source $module
 done
+SITES=cce-dkfz,cce-gr,cce-ki,cce-nki,cce-vhio,cce-cruk-cc

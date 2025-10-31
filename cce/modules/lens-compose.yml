@@ -2,7 +2,7 @@ version: "3.7"
 services:
   landing:
     container_name: lens_federated-search
-    image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
+    image: ghcr.io/samply/cce-explorer:pr-1
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.landing.rule=Host(`${GUI_HOST}`)"

@@ -5,7 +5,7 @@ services:
     image: ghcr.io/samply/cce-explorer:pr-1
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.landing.rule=Host(`${GUI_HOST}`)"
+      - "traefik.http.routers.landing.rule=Host(`${HOST}`)"
       - "traefik.http.routers.landing.tls=true"
 
   spot:
@@ -18,7 +18,7 @@ services:
       BEAM_SECRET: "${LOCAL_BEAM_SECRET_SPOT}"
       BEAM_PROXY_URL: http://beam-proxy:8081
       BEAM_APP_ID: "spot.${LOCAL_BEAM_ID}.${BROKER_HOST}"
-      CORS_ORIGIN: "https://${GUI_HOST}"
+      CORS_ORIGIN: "https://${HOST}"
       SITES: ${SITES}
       TRANSFORM: LENS
       PROJECT: cce
@@ -42,4 +42,3 @@ services:
       - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/prod"
       - "traefik.http.routers.spot.tls=true"
       - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot,auth"
-a

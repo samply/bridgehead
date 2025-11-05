@@ -4,42 +4,37 @@ services:
     container_name: lens_federated-search
     image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
     labels:
+      - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"
-      - "traefik.http.routers.landing.rule=PathPrefix(`/`)"
-      - "traefik.http.services.landing.loadbalancer.server.port=3000"
-      - "traefik.http.routers.landing.middlewares=auth"
-      - "traefik.http.routers.landing.tls=true"
+      - "traefik.http.routers.lens.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.lens.tls=true"
 
   spot:
-    image: samply/rustyspot:main
+    image: samply/rustyspot:latest
     platform: linux/amd64
     environment:
-      BEAM_SECRET: "${FOCUS_BEAM_SECRET_SHORT}"
+      HTTP_PROXY: ${HTTP_PROXY_URL}
+      HTTPS_PROXY: ${HTTPS_PROXY_URL}
+      NO_PROXY: beam-proxy
+      #BEAM_SECRET: "${LOCAL_BEAM_SECRET_SPOT}"
       BEAM_PROXY_URL: http://beam-proxy:8081
       BEAM_APP_ID: "spot.${SITE_ID}.${BROKER_ID}"
       CORS_ORIGIN: "https://${HOST}"
-      SITES: "${SITE_ID}"
+      SITES: ${SITES}
       TRANSFORM: LENS
-      BIND_ADDR: 0.0.0.0:8055
-      RUST_LOG: "debug"
-      LOG_FILE: /logs/requests.log
       PROJECT: pscc
-    volumes:
-      - /etc/bridgehead/logs:/logs
-      - /etc/bridgehead/query:/query:ro
+      BIND_ADDR: 0.0.0.0:8055
     depends_on:
       - "beam-proxy"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.spot.loadbalancer.server.port=8055"
       - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowheaders=content-type"
       - "traefik.http.middlewares.corsheaders2.headers.accesscontrolalloworiginlist=https://${HOST}"
       - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowcredentials=true"
       - "traefik.http.middlewares.corsheaders2.headers.accesscontrolmaxage=-1"
-      - "traefik.http.routers.spot.rule=Host(`${HOST}`) && PathPrefix(`/backend`)"
-      - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/backend"
+      - "traefik.http.routers.spot.rule=Host(`${HOST}`) && PathPrefix(`/prod`)"
+      - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/prod"
       - "traefik.http.routers.spot.tls=true"
-      - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot"
-  beam-proxy:
-    environment:
-      APP_spot_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot,auth"

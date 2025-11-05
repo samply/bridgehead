@@ -3,8 +3,6 @@ services:
   lens:
     container_name: lens_federated-search
     image: ghcr.io/samply/cce-explorer:pr-1
-    environment:
-      PUBLIC_ENVIRONMENT: test
     labels:
       - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"
@@ -15,21 +13,17 @@ services:
     image: samply/rustyspot:latest
     platform: linux/amd64
     environment:
-      HTTP_PROXY: ${http_proxy}
-      HTTPS_PROXY: ${https_proxy}
-      NO_PROXY: beam-proxy, prism
-      BEAM_SECRET: "${LOCAL_BEAM_SECRET_SPOT}"
+      HTTP_PROXY: ${HTTP_PROXY_URL}
+      HTTPS_PROXY: ${HTTPS_PROXY_URL}
+      NO_PROXY: beam-proxy
+      #BEAM_SECRET: "${LOCAL_BEAM_SECRET_SPOT}"
       BEAM_PROXY_URL: http://beam-proxy:8081
-      BEAM_APP_ID: "spot.${LOCAL_BEAM_ID}.${BROKER_HOST}"
+      BEAM_APP_ID: "spot.${SITE_ID}.${BROKER_ID}"
       CORS_ORIGIN: "https://${HOST}"
       SITES: ${SITES}
       TRANSFORM: LENS
       PROJECT: cce
       BIND_ADDR: 0.0.0.0:8055
-      RUST_LOG: "info"
-      LOG_FILE: /logs/requests.log
-    volumes:
-      - ./logs:/logs
     depends_on:
       - "beam-proxy"
     labels:

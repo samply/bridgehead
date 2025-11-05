@@ -16,7 +16,7 @@ services:
       HTTP_PROXY: ${HTTP_PROXY_URL}
       HTTPS_PROXY: ${HTTPS_PROXY_URL}
       NO_PROXY: beam-proxy
-      #BEAM_SECRET: "${LOCAL_BEAM_SECRET_SPOT}"
+      BEAM_SECRET: "${FOCUS_BEAM_SECRET_SHORT}"
       BEAM_PROXY_URL: http://beam-proxy:8081
       BEAM_APP_ID: "spot.${SITE_ID}.${BROKER_ID}"
       CORS_ORIGIN: "https://${HOST}"

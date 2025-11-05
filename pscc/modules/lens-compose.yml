@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   lens:
-    container_name: lens_federated-search
+    container_name: lens-federated-search
     image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
     labels:
       - "traefik.http.services.lens.loadbalancer.server.port=3000"

@@ -17,6 +17,7 @@ services:
       BEAM_PROXY_ID: ${SITE_ID}
       BEAM_BROKER_ID: ${BROKER_ID}
       BEAM_APP_ID: "focus"
+      PROJECT_METADATA: "itcc"
     depends_on:
       - "beam-proxy"
     labels:

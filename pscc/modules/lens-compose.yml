@@ -1,8 +1,8 @@
 version: "3.7"
 services:
   lens:
-    container_name: lens_federated-search
-    image: ghcr.io/samply/cce-explorer:pr-1
+    container_name: lens-federated-search
+    image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
     labels:
       - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"
@@ -11,6 +11,7 @@ services:
 
   spot:
     image: samply/rustyspot:latest
+    platform: linux/amd64
     environment:
       HTTP_PROXY: ${HTTP_PROXY_URL}
       HTTPS_PROXY: ${HTTPS_PROXY_URL}
@@ -21,7 +22,7 @@ services:
       CORS_ORIGIN: "https://${HOST}"
       SITES: ${SITES}
       TRANSFORM: LENS
-      PROJECT: cce
+      PROJECT: pscc
       BIND_ADDR: 0.0.0.0:8055
     depends_on:
       - "beam-proxy"

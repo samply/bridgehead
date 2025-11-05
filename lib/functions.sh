@@ -337,7 +337,7 @@ function sync_secrets() {
 }
 
 function secret_sync_gitlab_token() {
-    if [ "$PROJECT" == "minimal" ]; then
+    if [[ "$PROJECT" != "dktk" && "$PROJECT" != "bbmri" ]]; then
         log "INFO" "Not running Secret Sync for project minimal"
         return
     fi

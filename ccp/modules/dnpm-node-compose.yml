@@ -66,6 +66,7 @@ services:
       - HATEOAS_HOST=https://${HOST}
       - CONNECTOR_TYPE=broker
       - AUTHUP_URL=robot://system:${DNPM_AUTHUP_SECRET}@http://dnpm-authup:3000
+      - TZ=Europe/Berlin
     volumes:
       - /etc/bridgehead/dnpm/config:/dnpm_config
       - /var/cache/bridgehead/dnpm/backend-data:/dnpm_data

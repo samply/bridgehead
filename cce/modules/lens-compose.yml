@@ -37,3 +37,8 @@ services:
       - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/prod"
       - "traefik.http.routers.spot.tls=true"
       - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot,auth"
+
+  beam-proxy:
+    environment:
+      APP_spot_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      

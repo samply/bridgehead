@@ -2,7 +2,7 @@ version: "3.7"
 services:
   lens:
     container_name: lens_federated-search
-    image: ghcr.io/samply/cce-explorer:pr-1
+    image: ghcr.io/samply/cce-explorer:main
     labels:
       - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"

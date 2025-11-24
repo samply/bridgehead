@@ -2,7 +2,7 @@ version: "3.7"
 services:
   lens:
     container_name: lens-federated-search
-    image: docker.verbis.dkfz.de/ccp/lens:wildcard-pscc
+    image: docker.verbis.dkfz.de/ccp/lens:pscc
     labels:
       - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"

@@ -9,7 +9,7 @@ services:
       - "traefik.http.routers.lens.rule=Host(`${HOST}`)"
       - "traefik.http.routers.lens.tls=true"
     environment:
-      - PUBLIC_SPOT_URL: "https://${HOST}/prod"
+      PUBLIC_SPOT_URL: "https://${HOST}/prod"
 
   spot:
     image: samply/rustyspot:latest

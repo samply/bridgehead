@@ -2,12 +2,14 @@ version: "3.7"
 services:
   lens:
     container_name: lens-federated-search
-    image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
+    image: docker.verbis.dkfz.de/ccp/lens:wildcard-pscc
     labels:
       - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"
       - "traefik.http.routers.lens.rule=Host(`${HOST}`)"
       - "traefik.http.routers.lens.tls=true"
+    environment:
+      - PUBLIC_SPOT_URL: "https://${HOST}/prod"
 
   spot:
     image: samply/rustyspot:latest
@@ -38,3 +40,7 @@ services:
       - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/prod"
       - "traefik.http.routers.spot.tls=true"
       - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot,auth"
+
+  beam-proxy:
+    environment:
+      APP_spot_KEY: ${FOCUS_BEAM_SECRET_SHORT}

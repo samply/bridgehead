@@ -7,6 +7,7 @@ SUPPORT_EMAIL=arturo.macias@dkfz-heidelberg.de
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 BROKER_URL_FOR_PREREQ=$BROKER_URL
 PUBLIC_ENVIRONMENT=prod
+SITES=itcc-inform,itcc-ither,itcc-mappyacts,itcc-profyle,itcc-smpaeds,itcc-zero
 
 for module in $PROJECT/modules/*.sh
 do

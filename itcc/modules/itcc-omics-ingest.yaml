@@ -1,15 +1,16 @@
 services:
   omics-endpoint:
     build: .
-    image: samply/itcc-omics-ingest:workflow
+    image: ghcr.io/samply/itcc-omics-ingest:workflow
     ports:
-      - "8080:8040"
+      - "6080:6080"
     environment:
       - UPLOAD_DIR=/data/uploads
+      - RUST_LOG=trace
     volumes:
       - ./uploads:/data/uploads
     labels:
-      - "traefik.http.routers.omics.rule=Host(`${HOST}`) && PathPrefix(`/omics`)"
+      - "traefik.http.routers.omics.rule=Host(`${HOST}`) && PathPrefix(`/api`)"
       - "traefik.enable=true"
-      - "traefik.http.services.omics.loadbalancer.server.port=8040"
+      - "traefik.http.services.omics.loadbalancer.server.port=6080"
       - "traefik.http.routers.omics.tls=true"

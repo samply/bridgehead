@@ -10,7 +10,9 @@ services:
     volumes:
       - /srv/docker/data:/data/uploads
     labels:
-      - "traefik.http.routers.omics.rule=Host(`${HOST}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.omics.rule=Host(`${HOST}`) && PathPrefix(`/api/omics`)"
       - "traefik.enable=true"
       - "traefik.http.services.omics.loadbalancer.server.port=6080"
       - "traefik.http.routers.omics.tls=true"
+      - "traefik.http.middlewares.omics-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.omics.middlewares=omics-stripprefix"

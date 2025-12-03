@@ -1,11 +1,12 @@
 services:
   omics-endpoint:
     build: .
-    image: ghcr.io/samply/itcc-omics-ingest:workflow
+    image: ghcr.io/samply/itcc-omics-ingest:pr-3
     ports:
       - "6080:6080"
     environment:
       - UPLOAD_DIR=/data/uploads
+      - API_KEY=omics
       - RUST_LOG=trace
     volumes:
       - /srv/docker/data:/data/uploads

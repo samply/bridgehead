@@ -2,14 +2,11 @@ services:
   omics-endpoint:
     build: .
     image: ghcr.io/samply/itcc-omics-ingest:pr-3
-    ports:
-      - "6080:6080"
     environment:
-      - UPLOAD_DIR=/data/uploads
-      - API_KEY=omics
+      - API_KEY=${GENERATE_API_KEY}
       - RUST_LOG=trace
     volumes:
-      - /srv/docker/data:/data/uploads
+      - /var/cache/bridgehead/omics/data:/data/uploads
     labels:
       - "traefik.http.routers.omics.rule=Host(`${HOST}`) && PathPrefix(`/api/omics`)"
       - "traefik.enable=true"

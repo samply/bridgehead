@@ -1,10 +1,8 @@
 services:
   omics-endpoint:
-    build: .
-    image: ghcr.io/samply/itcc-omics-ingest:pr-3
+    image: ghcr.io/samply/itcc-omics-ingest:main
     environment:
       - API_KEY=${GENERATE_API_KEY}
-      - RUST_LOG=trace
     volumes:
       - /var/cache/bridgehead/omics/data:/data/uploads
     labels:

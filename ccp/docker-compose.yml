@@ -23,7 +23,7 @@ services:
 
   focus:
     #image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
-    image: ghcr.io/samply/focus:fix-exporter
+    image: ghcr.io/samply/focus:fix-exporter-v2
     container_name: bridgehead-focus
     environment:
     - API_KEY=${FOCUS_BEAM_SECRET_SHORT}

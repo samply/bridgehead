@@ -73,7 +73,7 @@ We recommend to install Docker(-compose) from its official sources as described 
 
 A Bridgehead communicates to all central components via outgoing HTTPS connections.
 
-Your site might require an outgoing proxy (i.e. HTTPS forward proxy) to connect to external servers; you should discuss this with your local systems administration. In that case, you will need to note down the URL of the proxy. If the proxy requires authentication, you will also need to make a note of its username and password. This information will be used later on during the installation process. TLS terminating proxies are also supported, see [here](#tls-terminating-proxies). Apart from the Bridgehead itself, you may also need to configure the proxy server in [git](https://gist.github.com/evantoli/f8c23a37eb3558ab8765) and [docker](https://docs.docker.com/network/proxy/).
+Your site might require an outgoing proxy (i.e. HTTPS forward proxy) to connect to external servers; you should discuss this with your local systems administration. In that case, you will need to note down the URL of the proxy. If the proxy requires authentication, you will also need to make a note of its username and password. This information will be used later on during the installation process. Special characters in the proxy values, e.g. in the access credentials, must be [URL-encoded](https://en.wikipedia.org/wiki/Percent-encoding), e.g. by replacing `@` with `%40`, `/` with `%2F` and so on. TLS terminating proxies are also supported, see [here](#tls-terminating-proxies). Apart from the Bridgehead itself, you may also need to configure the proxy server in [git](https://gist.github.com/evantoli/f8c23a37eb3558ab8765) and [docker](https://docs.docker.com/network/proxy/).
 
 The following URLs need to be accessible (prefix with `https://`):
 * To fetch code and configuration from git repositories
@@ -535,6 +535,8 @@ and restart the docker daemon:
 ``` shell
 sudo systemctl restart docker
 ```
+
+Please note that special characters in the proxy value, such as `#?!()[]{}`, must be double escaped using `%%`.
 
 For more information, please consult the [official documentation](https://docs.docker.com/config/daemon/systemd/#httphttps-proxy).
 

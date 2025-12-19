@@ -3,6 +3,9 @@ services:
   lens:
     container_name: lens_federated-search
     image: samply/cce-explorer:main
+    environment:
+      # PUBLIC_ENVIRONMENT: ${PUBLIC_ENVIRONMENT}
+      PUBLIC_SPOT_URL: https://${HOST}/prod
     labels:
       - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"

@@ -1,15 +1,16 @@
 version: "3.7"
 services:
-  landing:
+  itcc-explorer:
     container_name: lens_itcc_explorer
-    image: ghcr.io/samply/itcc-explorer:fix-setup
+    image: samply/itcc-explorer:main
     environment:
       HOST: "0.0.0.0"
       BIND_ADDR: "0.0.0.0:3000"
       PUBLIC_ENVIRONMENT: ${PUBLIC_ENVIRONMENT}
     labels:
-      - "traefik.http.routers.lens.rule=Host(`${HOST}`)"
       - "traefik.enable=true"
+      - "traefik.http.routers.landing.rule=Host(`${HOST}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.landing.entrypoints=websecure"
       - "traefik.http.services.landing.loadbalancer.server.port=3000"
       - "traefik.http.routers.landing.tls=true"
 

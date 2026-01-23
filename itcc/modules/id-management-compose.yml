@@ -1,0 +1,37 @@
+version: "3.7"
+
+services:
+  patientlist:
+    image: docker.verbis.dkfz.de/bridgehead/mainzelliste
+    container_name: bridgehead-patientlist
+    environment:
+      - TOMCAT_REVERSEPROXY_FQDN=${HOST}
+      - TOMCAT_REVERSEPROXY_SSL=true
+      - ML_SITE=${IDMANAGEMENT_FRIENDLY_ID}
+      - ML_DB_PASS=${PATIENTLIST_POSTGRES_PASSWORD}
+      - ML_API_KEY=${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}
+      - ML_UPLOAD_API_KEY=${IDMANAGER_UPLOAD_APIKEY}
+      # Add Variables from /etc/patientlist-id-generators.env
+      - PATIENTLIST_SEEDS_TRANSFORMED
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.patientlist.rule=PathPrefix(`/patientlist`)"
+      - "traefik.http.services.patientlist.loadbalancer.server.port=8080"
+      - "traefik.http.routers.patientlist.tls=true"
+    depends_on:
+      - patientlist-db
+
+  patientlist-db:
+    image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
+    container_name: bridgehead-patientlist-db
+    environment:
+      POSTGRES_USER: "mainzelliste"
+      POSTGRES_DB: "mainzelliste"
+      POSTGRES_PASSWORD: ${PATIENTLIST_POSTGRES_PASSWORD}
+    volumes:
+      - "patientlist-db-data:/var/lib/postgresql/data"
+      # NOTE: Add backups here. This is only imported if /var/lib/bridgehead/data/patientlist/ is empty!!!
+      - "/tmp/bridgehead/patientlist/:/docker-entrypoint-initdb.d/"
+
+volumes:
+  patientlist-db-data:

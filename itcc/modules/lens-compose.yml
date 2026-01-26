@@ -9,10 +9,10 @@ services:
       PUBLIC_ENVIRONMENT: ${PUBLIC_ENVIRONMENT}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.landing.rule=Host(`${HOST}`) && PathPrefix(`/`)"
-      - "traefik.http.routers.landing.entrypoints=websecure"
-      - "traefik.http.services.landing.loadbalancer.server.port=3000"
-      - "traefik.http.routers.landing.tls=true"
+      - "traefik.http.routers.itcc.rule=Host(`${HOST}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.itcc.entrypoints=websecure"
+      - "traefik.http.services.itcc.loadbalancer.server.port=3000"
+      - "traefik.http.routers.itcc.tls=true"
 
   spot:
     image: samply/rustyspot:latest

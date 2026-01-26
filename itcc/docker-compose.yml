@@ -15,7 +15,7 @@ services:
       - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.blaze_itcc.rule=PathPrefix(`/itcc-localdatamanagement`)"
+      - "traefik.http.routers.blaze_itcc.rule=Host(`${HOST}`) && PathPrefix(`/itcc-localdatamanagement`)"
       - "traefik.http.middlewares.itcc_b_strip.stripprefix.prefixes=/itcc-localdatamanagement"
       - "traefik.http.services.blaze_itcc.loadbalancer.server.port=8080"
       - "traefik.http.routers.blaze_itcc.middlewares=itcc_b_strip,auth"

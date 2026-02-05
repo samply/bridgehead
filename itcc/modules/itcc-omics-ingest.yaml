@@ -12,3 +12,38 @@ services:
       - "traefik.http.routers.omics.tls=true"
       - "traefik.http.middlewares.omics-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.omics.middlewares=omics-stripprefix"
+
+  mzl-db:
+    image: postgres:15
+    container_name: mzl-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mainzelliste
+      POSTGRES_USER: ${ML_DB_USER}
+      POSTGRES_PASSWORD: ${PATIENTLIST_POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  mainzelliste:
+    image: medicalinformatics/mainzelliste:latest
+    container_name: mainzelliste
+    restart: unless-stopped
+    depends_on:
+      - db
+
+    ports:
+      - 7887:8080
+
+    environment:
+      ML_API_KEY: ${GENERATE_API_KEY}
+      ML_DB_HOST: db
+      ML_DB_PORT: "5432"
+      ML_DB_NAME: mainzelliste
+      ML_DB_USER: ${ML_DB_USER}
+      ML_DB_PASS: ${PATIENTLIST_POSTGRES_PASSWORD}
+      ML_LOG_LEVEL: INFO
+    volumes:
+      - /etc/bridgehead/mainzelliste/mainzelliste.conf:/etc/mainzelliste/mainzelliste.conf
+      - /etc/bridgehead/mainzelliste/keyset_siv.json:/etc/resources/keys/symmetric_key.der

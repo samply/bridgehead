@@ -47,3 +47,6 @@ services:
     volumes:
       - /etc/bridgehead/mainzelliste/mainzelliste.conf:/etc/mainzelliste/mainzelliste.conf
       - /etc/bridgehead/mainzelliste/keyset_siv.json:/etc/resources/keys/symmetric_key.der
+
+volumes:
+  db_data:

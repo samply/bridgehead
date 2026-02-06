@@ -1,8 +1,16 @@
 services:
   omics-endpoint:
-    image: ghcr.io/samply/itcc-omics-ingest:main
+    image: ghcr.io/samply/itcc-omics-ingest:hotfix-docker
     environment:
       - API_KEY=${GENERATE_API_KEY}
+      - RUST_LOG=debug
+      - BEAM_ID=app1.proxy1.broker
+      - BEAM_SECRET=App1Secret
+      - BEAM_URL=http://proxy1:8083
+      - DATA_LAKE_ID=app1.proxy2.broker
+      - PARTNER_ID=itcc-inform
+      - ML_API_KEY=${GENERATE_API_KEY}
+
     volumes:
       - /var/cache/bridgehead/omics/data:/data/uploads
     labels:
@@ -31,14 +39,14 @@ services:
     container_name: mainzelliste
     restart: unless-stopped
     depends_on:
-      - db
+      - mzl-db
 
     ports:
       - 7887:8080
 
     environment:
       ML_API_KEY: ${GENERATE_API_KEY}
-      ML_DB_HOST: db
+      ML_DB_HOST: mzl-db
       ML_DB_PORT: "5432"
       ML_DB_NAME: mainzelliste
       ML_DB_USER: ${ML_DB_USER}

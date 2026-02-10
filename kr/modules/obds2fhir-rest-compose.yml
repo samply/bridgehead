@@ -3,7 +3,7 @@ version: "3.7"
 services:
   obds2fhir-rest:
     container_name: bridgehead-obds2fhir-rest
-    image: docker.verbis.dkfz.de/ccp/obds2fhir-rest:main
+    image: docker.verbis.dkfz.de/samply/obds2fhir-rest:main
     environment:
       IDTYPE: BK_${IDMANAGEMENT_FRIENDLY_ID}_L-ID
       MAINZELLISTE_APIKEY: ${IDMANAGER_LOCAL_PATIENTLIST_APIKEY}

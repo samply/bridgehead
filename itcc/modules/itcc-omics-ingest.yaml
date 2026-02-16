@@ -5,9 +5,11 @@ services:
       - API_KEY=${GENERATE_API_KEY}
       - RUST_LOG=debug
       - BEAM_ID=app1.proxy1.broker
-      - BEAM_SECRET=App1Secret
-      - BEAM_URL=http://proxy1:8083
-      - DATA_LAKE_ID=app1.proxy2.broker
+      - BEAM_SECRET="${FOCUS_BEAM_SECRET_SHORT}"
+      - BEAM_URL=http://beam-proxy:8081
+      - ML_URL=http://mainzelliste:8080
+      - BLAZE_URL="http://bridgehead-itcc-blaze:8080/fhir/"
+      - DATA_LAKE_ID="${DATA_LAKE_ID}"
       - PARTNER_ID=itcc-inform
       - ML_API_KEY=${GENERATE_API_KEY}
 

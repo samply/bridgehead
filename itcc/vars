@@ -7,6 +7,7 @@ SUPPORT_EMAIL=arturo.macias@dkfz-heidelberg.de
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 BROKER_URL_FOR_PREREQ=$BROKER_URL
 PUBLIC_ENVIRONMENT=prod
+DATA_LAKE_ID=itcc-datalake.itcc-datalake.${BROKER_ID}
 
 ML_DB_USER=mainzelliste
 

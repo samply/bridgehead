@@ -32,7 +32,7 @@ services:
       BEAM_PROXY_URL: http://beam-proxy:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
       EPSILON: 0.28
-      QUERIES_TO_CACHE: '/queries_to_cache.conf'
+      QUERIES_TO_CACHE: "/queries_to_cache.conf"
       ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
     volumes:
       - /srv/docker/bridgehead/itcc/queries_to_cache.conf:/queries_to_cache.conf:ro
@@ -47,6 +47,7 @@ services:
       BROKER_URL: ${BROKER_URL}
       PROXY_ID: ${PROXY_ID}
       APP_focus_KEY: ${FOCUS_BEAM_SECRET_SHORT}
+      APP_omics-endpoint_KEY: ${FOCUS_BEAM_SECRET_SHORT}
       PRIVKEY_FILE: /run/secrets/proxy.pem
       ALL_PROXY: http://forward_proxy:3128
       TLS_CA_CERTIFICATES_DIR: /conf/trusted-ca-certs
@@ -58,7 +59,6 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /srv/docker/bridgehead/itcc/root.crt.pem:/conf/root.crt.pem:ro
-
 
 volumes:
   blaze-data:

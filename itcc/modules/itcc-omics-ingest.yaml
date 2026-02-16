@@ -1,17 +1,17 @@
 services:
   omics-endpoint:
-    image: ghcr.io/samply/itcc-omics-ingest:hotfix-docker
+    image: ghcr.io/samply/itcc-omics-ingest:data-lake-s3
     environment:
-      - API_KEY=${GENERATE_API_KEY}
-      - RUST_LOG=debug
-      - BEAM_ID=app1.proxy1.broker
-      - BEAM_SECRET="${FOCUS_BEAM_SECRET_SHORT}"
-      - BEAM_URL=http://beam-proxy:8081
-      - ML_URL=http://mainzelliste:8080
-      - BLAZE_URL="http://bridgehead-itcc-blaze:8080/fhir/"
-      - DATA_LAKE_ID="${DATA_LAKE_ID}"
-      - PARTNER_ID=itcc-inform
-      - ML_API_KEY=${GENERATE_API_KEY}
+      API_KEY: ${GENERATE_API_KEY}
+      RUST_LOG: debug
+      BEAM_ID: "omics-endpoint.${PROXY_ID}"
+      BEAM_SECRET: "${FOCUS_BEAM_SECRET_SHORT}"
+      BEAM_URL: http://beam-proxy:8081
+      ML_URL: http://mainzelliste:8080
+      BLAZE_URL: http://bridgehead-itcc-blaze:8080/fhir/
+      DATA_LAKE_ID: "${DATA_LAKE_ID}"
+      PARTNER_ID: itcc-inform
+      ML_API_KEY: ${GENERATE_API_KEY}
 
     volumes:
       - /var/cache/bridgehead/omics/data:/data/uploads

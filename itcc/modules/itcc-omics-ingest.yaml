@@ -1,6 +1,6 @@
 services:
   omics-endpoint:
-    image: ghcr.io/samply/itcc-omics-ingest:data-lake-s3
+    image: ghcr.io/samply/itcc-omics-ingest:deploy
     environment:
       API_KEY: ${GENERATE_API_KEY}
       RUST_LOG: debug
@@ -53,10 +53,21 @@ services:
       ML_DB_NAME: mainzelliste
       ML_DB_USER: ${ML_DB_USER}
       ML_DB_PASS: ${PATIENTLIST_POSTGRES_PASSWORD}
+      ML_DB_DRIVER: org.postgresql.Driver
+      ML_DB_TYPE: postgresql
       ML_LOG_LEVEL: INFO
-    volumes:
-      - /etc/bridgehead/mainzelliste/mainzelliste.conf:/etc/mainzelliste/mainzelliste.conf
-      - /etc/bridgehead/mainzelliste/keyset_siv.json:/etc/resources/keys/symmetric_key.der
+      ML_ALLOWEDREMOTEADDRESSES: "0.0.0.0,::1,127.0.0.1,192.168.65.1"
+
+    secrets:
+      - mainzelliste.docker.conf
+      - source: symmetric_key
+        target: /etc/resources/keys/symmetric_key.der
 
 volumes:
   db_data:
+secrets:
+  mainzelliste.docker.conf:
+    file: /etc/bridgehead/mainzelliste/mainzelliste.docker.conf
+
+  symmetric_key:
+    file: /etc/bridgehead/mainzelliste/keyset_siv.json

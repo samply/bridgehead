@@ -1,6 +1,6 @@
 services:
   osiris2fhir:
-    container_name: bridgehead-osiris2fhir-rest
+    container_name: bridgehead-osiris2fhir
     image: docker.verbis.dkfz.de/ccp/osiris2fhir:${SITE_ID}
     environment:
       SALT: ${LOCAL_SALT}

@@ -1,71 +1,37 @@
-version: '3.7'
+version: "3.7"
 
 services:
-
-  ovis-traefik-forward-auth:
-      image: quay.io/oauth2-proxy/oauth2-proxy:latest
-      environment:
-        - http_proxy=${http_proxy:-http://forward_proxy:3128}
-        - https_proxy=${https_proxy:-http://forward_proxy:3128}
-        - OAUTH2_PROXY_PROVIDER=oidc
-        - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
-        - OAUTH2_PROXY_OIDC_ISSUER_URL=${OAUTH_ISSUER_URL}
-        - OAUTH2_PROXY_CLIENT_ID=${OAUTH_CLIENT_ID}
-        - OAUTH2_PROXY_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
-        - OAUTH2_PROXY_COOKIE_SECRET=${AUTHENTICATION_SECRET}
-        - OAUTH2_PROXY_COOKIE_DOMAINS=.${HOST:-localhost}
-        - OAUTH2_PROXY_COOKIE_REFRESH=4m
-        - OAUTH2_PROXY_COOKIE_EXPIRE=24h
-        - OAUTH2_PROXY_HTTP_ADDRESS=:4180
-        - OAUTH2_PROXY_REVERSE_PROXY=true
-        - OAUTH2_PROXY_WHITELIST_DOMAINS=.${HOST:-localhost}
-        - OAUTH2_PROXY_UPSTREAMS=static://202
-        - OAUTH2_PROXY_EMAIL_DOMAINS=*
-        #- OAUTH2_PROXY_ALLOWED_GROUPS=app-ovis
-        #- OAUTH2_PROXY_ERRORS_TO_INFO_LOG=true
-        - OAUTH2_PROXY_CODE_CHALLENGE_METHOD=S256
-        # For some reason, login.verbis.dkfz.de does not have a "groups" scope but this comes automatically through a
-        # scope called microprofile-jwt. Remove the following line once we have a "groups" scope.
-        - OAUTH2_PROXY_SCOPE=openid profile email
-        # Pass Authorization Header and some user information to spot
-        - OAUTH2_PROXY_SET_AUTHORIZATION_HEADER=true
-        - OAUTH2_PROXY_SET_XAUTHREQUEST=true
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.middlewares.ovis-traefik-forward-auth.forwardauth.address=http://ovis-traefik-forward-auth:4180"
-        - "traefik.http.middlewares.ovis-traefik-forward-auth.forwardauth.authResponseHeaders=Authorization, X-Forwarded-User, X-Auth-Request-User, X-Auth-Request-Email"
-        - "traefik.http.services.ovis-traefik-forward-auth.loadbalancer.server.port=4180"
-        - "traefik.http.routers.oauth2.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/oauth2-ovis/`)"
-        - "traefik.http.routers.oauth2.tls=true"
-
   fhir-transformer:
     image: docker.verbis.dkfz.de/ovis/adt-mon-gql-fhir-transformer:latest
+    container_name: bridgehead-ccp-ovis-fhir-transformer
     restart: on-failure
     environment:
-      - FHIR_SERVER_URL=${FHIR_SERVER_URL:-http://bridgehead-ccp-blaze:8080/fhir}
-      - FHIR_USERNAME=${FHIR_USERNAME}
-      - FHIR_PASSWORD=${FHIR_PASSWORD}
+      FHIR_SERVER_URL: ${FHIR_SERVER_URL:-http://bridgehead-ccp-blaze:8080/fhir}
+      FHIR_USERNAME: ${FHIR_USERNAME}
+      FHIR_PASSWORD: ${FHIR_PASSWORD}
     volumes:
       - /var/cache/bridgehead/ccp/ovis/shared_data:/app/output
 
   mongo:
     image: mongo:${MONGO_VER:-latest}
+    container_name: bridgehead-ccp-ovis-mongo
     restart: always
     command: mongod
-      - /var/cache/bridgehead/ccp/ovis/mongo/init/init.js:/docker-entrypoint-initdb.d/init.js
+    volumes:
+      - /var/cache/bridgehead/ccp/ovis/mongo/init/init.js:/docker-entrypoint-initdb.d/init.js:ro
 
   backend:
     image: docker.verbis.dkfz.de/ovis/adt-mon-gql-backend:latest
+    container_name: bridgehead-ccp-ovis-backend
     restart: always
     user: root
     working_dir: /app
     environment:
-      - APOLLO_PORT=${APOLLO_PORT:-4001}
-      - CREDOS_PORT=${CREDOS_PORT:-4000}
-      - MONGO_VER=latest
-      - CORS_ORIGIN=*
-      - DB=${DB:-onc_test}
-      - ADRESS=${ADRESS:-mongodb://mongo:27017}
+      APOLLO_PORT: ${APOLLO_PORT:-4001}
+      CREDOS_PORT: ${CREDOS_PORT:-4000}
+      CORS_ORIGIN: ${OVIS_CORS_ORIGIN:-*}
+      DB: ${DB:-onc_test}
+      ADRESS: ${ADRESS:-mongodb://mongo:27017}
     depends_on:
       - mongo
       - fhir-transformer
@@ -77,7 +43,6 @@ services:
       start_period: 10s
     entrypoint: >
       sh -c "
-        # First run the initialization process
         while [ ! -f /shared/omock.json ]; do
           echo 'Waiting for omock.json...'
           sleep 5
@@ -91,22 +56,32 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ovis-backend.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/graphql`)"
       - "traefik.http.routers.ovis-backend.tls=true"
+      - "traefik.http.routers.ovis-backend.middlewares=${OVIS_AUTH_MIDDLEWARE:-traefik-forward-auth}"
+      - "traefik.http.routers.ovis-backend-ccp.rule=PathPrefix(`/ccp-ovis/graphql`)"
+      - "traefik.http.routers.ovis-backend-ccp.tls=true"
+      - "traefik.http.middlewares.ovis-backend-ccp-strip.stripprefix.prefixes=/ccp-ovis"
+      - "traefik.http.routers.ovis-backend-ccp.middlewares=ovis-backend-ccp-strip,${OVIS_AUTH_MIDDLEWARE:-traefik-forward-auth}"
       - "traefik.http.services.ovis-backend.loadbalancer.server.port=${APOLLO_PORT:-4001}"
     volumes:
       - /var/cache/bridgehead/ccp/ovis/shared_data:/shared
 
   frontend:
     image: docker.verbis.dkfz.de/ovis/adt-mon-gql-frontend:latest
+    container_name: bridgehead-ccp-ovis-frontend
     restart: always
     environment:
-      - PUBLIC_GRAPHQL_URL=https://${HOST:-localhost}/graphql
+      PUBLIC_GRAPHQL_URL: https://${HOST:-localhost}/ccp-ovis/graphql
+      PUBLIC_LOGIN_ENABLED: "false"
     depends_on:
       backend:
         condition: service_healthy
-    working_dir: /app
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ovis-frontend.tls=true"
       - "traefik.http.routers.ovis-frontend.rule=Host(`${HOST:-localhost}`)"
-      - "traefik.http.routers.ovis-frontend.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.ovis-frontend.middlewares=${OVIS_AUTH_MIDDLEWARE:-traefik-forward-auth}"
+      - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
+      - "traefik.http.routers.ovis-frontend-ccp.tls=true"
+      - "traefik.http.middlewares.ovis-frontend-ccp-strip.stripprefix.prefixes=/ccp-ovis"
+      - "traefik.http.routers.ovis-frontend-ccp.middlewares=ovis-frontend-ccp-strip,${OVIS_AUTH_MIDDLEWARE:-traefik-forward-auth}"
       - "traefik.http.services.ovis-frontend.loadbalancer.server.port=5173"

@@ -7,7 +7,7 @@ services:
     environment:
       # Remove these 2 environment variables if you do not wish to share Data Quality Reports
       REPORTING_SERVER_URL: ${DATA_QUALITY_SERVER_URL}
-      REPORTING_SERVER_NAME: ${DATA_QUALITYSERVER_NAME}
+      REPORTING_SERVER_NAME: ${DATA_QUALITY_SERVER_NAME}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.data_quality_agent_bbmri.rule=PathPrefix(`/bbmri-data-quality-agent`)"

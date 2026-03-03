@@ -438,8 +438,8 @@ ENABLE_DATA_QUALITY_AGENT=true
 By default, the service is configured to share Data Quality Reports with the central BBMRI-ERIC quality dashboard. To opt out, remove or leave unset the following variables in your `<PROJECT>.conf` file:
 
 ```bash
-REPORTING_SERVER_URL=https://quality-dashboard.bbmri-eric.eu
-REPORTING_SERVER_NAME=Central Data Quality Server of BBMRI
+DATA_QUALITY_SERVER_URL=https://quality-dashboard.bbmri-eric.eu
+DATA_QUALITY_SERVER_NAME=Central Data Quality Server of BBMRI
 ```
 
 Reports are stored under `/var/cache/bridgehead/bbmri/data-quality-agent-reports/` and are accessible at `https://<your-host>/bbmri-data-quality-agent` (requires Bridgehead login).

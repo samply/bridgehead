@@ -32,7 +32,7 @@ services:
 
   forward_proxy:
     container_name: bridgehead-forward-proxy
-    image: docker.verbis.dkfz.de/cache/samply/bridgehead-forward-proxy:latest
+    image: samply/bridgehead-forward-proxy:pr-16
     environment:
       HTTPS_PROXY: ${HTTPS_PROXY_URL}
       HTTPS_PROXY_USERNAME: ${HTTPS_PROXY_USERNAME}

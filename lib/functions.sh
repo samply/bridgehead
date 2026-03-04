@@ -22,9 +22,10 @@ setupProxy() {
 		HTTPS_PROXY_HOST="$(echo $hostport | sed -e 's,:.*,,g')"
 		HTTPS_PROXY_PORT="$(echo $hostport | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
 		if [[ ! -z "$HTTPS_PROXY_USERNAME" && ! -z "$HTTPS_PROXY_PASSWORD" ]]; then
+		    local ESCAPED_PASSWORD="$(echo $HTTPS_PROXY_PASSWORD | od -An -v -t x1 | sed -e 's/[[:space:]]//g' -e 's/\([0-9a-f][0-9a-f]\)/%\1/g')"
 			local proto="$(echo $HTTPS_PROXY_URL | grep :// | sed -e 's,^\(.*://\).*,\1,g')"
 			local fqdn="$(echo ${HTTPS_PROXY_URL/$proto/})"
-			HTTPS_PROXY_FULL_URL="$(echo $proto$HTTPS_PROXY_USERNAME:$HTTPS_PROXY_PASSWORD@$fqdn)"
+			HTTPS_PROXY_FULL_URL="$(echo $proto$HTTPS_PROXY_USERNAME:$ESCAPED_PASSWORD_PASSWORD@$fqdn)"
 			https="authenticated"
 		else
 			HTTPS_PROXY_FULL_URL=$HTTPS_PROXY_URL

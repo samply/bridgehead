@@ -9,6 +9,15 @@ detectCompose() {
 	fi
 }
 
+# Encodes all characters not in unrestricted character set of RFC3986 Section 2.3
+urlencode() {
+  for ((i=0;i<${#1};i++)); do
+    local c=${1:i:1}
+    [[ "$c" =~ [a-zA-Z0-9._~-] ]] && printf '%s' "$c" || printf '%%%02X' "'$c"
+  done
+  echo
+}
+
 setupProxy() {
 	### Note: As the current data protection concepts do not allow communication via HTTP,
 	### we are not setting a proxy for HTTP requests.
@@ -22,10 +31,12 @@ setupProxy() {
 		HTTPS_PROXY_HOST="$(echo $hostport | sed -e 's,:.*,,g')"
 		HTTPS_PROXY_PORT="$(echo $hostport | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
 		if [[ ! -z "$HTTPS_PROXY_USERNAME" && ! -z "$HTTPS_PROXY_PASSWORD" ]]; then
-		    local ESCAPED_PASSWORD="$(echo $HTTPS_PROXY_PASSWORD | od -An -v -t x1 | sed -e 's/[[:space:]]//g' -e 's/\([0-9a-f][0-9a-f]\)/%\1/g' | tr -d '\n')"
+			local ESCAPED_PASSWORD="$(echo $HTTPS_PROXY_PASSWORD | od -An -v -t x1 | sed -e 's/[[:space:]]//g' -e 's/\([0-9a-f][0-9a-f]\)/%\1/g' | tr -d '\n')"
+			local CURL_ESCAPED_PW="$(urlencode $HTTPS_PROXY_PASSWORD)"
 			local proto="$(echo $HTTPS_PROXY_URL | grep :// | sed -e 's,^\(.*://\).*,\1,g')"
 			local fqdn="$(echo ${HTTPS_PROXY_URL/$proto/})"
 			HTTPS_PROXY_FULL_URL="$(echo $proto$HTTPS_PROXY_USERNAME:$ESCAPED_PASSWORD@$fqdn)"
+			CURL_HTTPS_PROXY_FULL_URL="$(echo $proto$HTTPS_PROXY_USERNAME:$CURL_ESCAPED_PW@$fqdn)"
 			https="authenticated"
 		else
 			HTTPS_PROXY_FULL_URL=$HTTPS_PROXY_URL
@@ -34,7 +45,7 @@ setupProxy() {
 	fi
 
 	log INFO "Configuring proxy servers: $http http proxy (we're not supporting unencrypted comms), $https https proxy"
-	export HTTPS_PROXY_HOST HTTPS_PROXY_PORT HTTPS_PROXY_FULL_URL
+	export HTTPS_PROXY_HOST HTTPS_PROXY_PORT HTTPS_PROXY_FULL_URL CURL_HTTPS_PROXY_FULL_URL
 }
 
 exitIfNotRoot() {

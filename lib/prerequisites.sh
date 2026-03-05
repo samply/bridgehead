@@ -71,7 +71,7 @@ source ${PROJECT}/vars
 
 if [ "${PROJECT}" != "minimal" ]; then
   set +e
-  SERVERTIME="$(https_proxy=$HTTPS_PROXY_FULL_URL curl -m 5 -s -I $BROKER_URL_FOR_PREREQ 2>&1 | grep -i -e '^Date: ' | sed -e 's/^Date: //i')"
+  SERVERTIME="$(https_proxy=$CURL_HTTPS_PROXY_FULL_URL curl -m 5 -s -I $BROKER_URL_FOR_PREREQ 2>&1 | grep -i -e '^Date: ' | sed -e 's/^Date: //i')"
   RET=$?
   set -e
   if [ $RET -ne 0 ]; then

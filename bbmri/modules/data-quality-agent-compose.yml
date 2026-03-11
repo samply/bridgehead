@@ -18,7 +18,9 @@ services:
     depends_on:
       - "blaze"
     volumes:
+      - agent-data:/app/data
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-
-
+volumes:
+  agent-data:
+    driver: local

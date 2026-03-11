@@ -427,16 +427,26 @@ ENABLE_EXPORTER=true
 
 ### Data Quality Agent
 
-The Data Quality Agent is an optional module that periodically evaluates the quality of FHIR data stored in Blaze.
+The Data Quality Agent is an optional module that periodically evaluates the quality of FHIR data stored in Blaze. It generates local data quality reports accessible via the Bridgehead web interface.
 
-To enable the service, set the following variables in your `<PROJECT>.conf` file:
+To enable the service, set the following variable in your `<PROJECT>.conf` file:
+
+```bash
+ENABLE_DATA_QUALITY_AGENT=true
+```
+
+#### Sharing Data Quality Reports (recommended)
+
+We strongly encourage sharing your data quality reports with the central BBMRI-ERIC quality dashboard. The reports contain only aggregated, non-patient-identifiable statistics and help the network to monitor and improve overall data quality.
+
+To opt in, additionally set the following variables in your `<PROJECT>.conf` file:
 
 ```bash
 DATA_QUALITY_SERVER_URL=https://quality-dashboard.bbmri-eric.eu
 DATA_QUALITY_SERVER_NAME=Central Data Quality Server of BBMRI
 ```
 
-The service will only start when both variables are set — if you leave them unset, the Data Quality Agent will not run.
+If these variables are not set, the Data Quality Agent will still run and generate local reports, but no data will be shared externally.
 
 Reports are accessible at `https://<your-host>/bbmri-data-quality-agent` (default credentials are admin:admin, please change it after first login!!).
 

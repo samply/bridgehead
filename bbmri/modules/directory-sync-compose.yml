@@ -7,10 +7,16 @@ services:
       DS_DIRECTORY_URL: ${DS_DIRECTORY_URL:-https://directory.bbmri-eric.eu}
       DS_DIRECTORY_USER_NAME: ${DS_DIRECTORY_USER_NAME}
       DS_DIRECTORY_USER_PASS: ${DS_DIRECTORY_USER_PASS}
-      DS_TIMER_CRON: ${DS_TIMER_CRON:-0 22 * * *}
+      DS_DIRECTORY_USER_TOKEN: ${DS_DIRECTORY_USER_TOKEN}
+      DS_TIMER_CRON: ${DS_TIMER_CRON:-30 22 * * *}
       DS_DIRECTORY_ALLOW_STAR_MODEL: ${DS_DIRECTORY_ALLOW_STAR_MODEL:-true}
       DS_DIRECTORY_MOCK: ${DS_DIRECTORY_MOCK}
       DS_DIRECTORY_DEFAULT_COLLECTION_ID: ${DS_DIRECTORY_DEFAULT_COLLECTION_ID}
       DS_DIRECTORY_COUNTRY: ${DS_DIRECTORY_COUNTRY}
+      DS_IMPORT_BIOBANKS: ${DS_IMPORT_BIOBANKS:-true}
+      DS_IMPORT_COLLECTIONS: ${DS_IMPORT_COLLECTIONS:-true}
     depends_on:
       - "blaze"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # inherit host timezone
+      - /etc/timezone:/etc/timezone:ro   # inherit host timezone name

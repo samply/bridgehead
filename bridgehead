@@ -35,6 +35,9 @@ case "$PROJECT" in
 	cce)
 		#nothing extra to do
 		;;
+	pscc)
+		#nothing extra to do
+		;;
 	itcc)
 		#nothing extra to do
 		;;
@@ -42,6 +45,9 @@ case "$PROJECT" in
 		#nothing extra to do
 		;;
 	dhki)
+		#nothing extra to do
+		;;
+	nngm)
 		#nothing extra to do
 		;;
 	minimal)
@@ -69,7 +75,7 @@ loadVars() {
 		if [ "$(git rev-parse --abbrev-ref HEAD)" == "main" ]; then
 			ENVIRONMENT="production"
 		else
-			ENVIRONMENT="test"
+			ENVIRONMENT="test" # we have acceptance environment in BBMRI ERIC and it would be more appropriate to default to that one in case the data they have in BH is real, but I'm gonna leave it as is for backward compatibility
 		fi
 	fi
 	# Source the versions of the images components 
@@ -79,6 +85,9 @@ loadVars() {
 			;;
 		"test")
 			source ./versions/test
+			;;
+		"acceptance")
+			source ./versions/acceptance
 			;;
 		*)
 			report_error 7 "Environment \"$ENVIRONMENT\" is unknown. Assuming production. FIX THIS!"
@@ -143,6 +152,10 @@ case "$ACTION" in
 		loadVars
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
+	check)
+		loadVars &> /dev/null
+		exec ./lib/check-bridgehead.sh $PROJECT
+		;;
 	install)
 		source ./lib/prepare-system.sh NODEV
 		loadVars
@@ -159,7 +172,7 @@ case "$ACTION" in
 	adduser)
 		loadVars
 		log "INFO" "Adding encrypted credentials in /etc/bridgehead/$PROJECT.local.conf"
-    		read -p "Please choose the component (LDM_AUTH|NNGM_AUTH) you want to add a user to : " COMPONENT
+    		read -p "Please choose the component (LDM_AUTH|NNGM_AUTH|EXPORTER_USER) you want to add a user to : " COMPONENT
     		read -p "Please enter a username: " USER
     		read -s -p "Please enter a password (will not be echoed): "$'\n' PASSWORD
     		add_basic_auth_user $USER $PASSWORD $COMPONENT $PROJECT

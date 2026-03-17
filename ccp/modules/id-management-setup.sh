@@ -14,6 +14,8 @@ function idManagementSetup() {
 
 		# Ensure old ids are working !!!
 		export IDMANAGEMENT_FRIENDLY_ID=$(legacyIdMapping "$SITE_ID")
+
+		add_private_oidc_redirect_url "/oauth2-idm/callback"
 	fi
 }
 

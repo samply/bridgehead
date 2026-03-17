@@ -1,0 +1,40 @@
+version: "3.7"
+services:
+  lens:
+    container_name: lens-federated-search
+    image: docker.verbis.dkfz.de/ccp/lens:${SITE_ID}
+    labels:
+      - "traefik.http.services.lens.loadbalancer.server.port=3000"
+      - "traefik.enable=true"
+      - "traefik.http.routers.lens.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.lens.tls=true"
+
+  spot:
+    image: samply/rustyspot:latest
+    platform: linux/amd64
+    environment:
+      HTTP_PROXY: ${HTTP_PROXY_URL}
+      HTTPS_PROXY: ${HTTPS_PROXY_URL}
+      NO_PROXY: beam-proxy
+      BEAM_SECRET: "${FOCUS_BEAM_SECRET_SHORT}"
+      BEAM_PROXY_URL: http://beam-proxy:8081
+      BEAM_APP_ID: "spot.${SITE_ID}.${BROKER_ID}"
+      CORS_ORIGIN: "https://${HOST}"
+      SITES: ${SITES}
+      TRANSFORM: LENS
+      PROJECT: pscc
+      BIND_ADDR: 0.0.0.0:8055
+    depends_on:
+      - "beam-proxy"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.spot.loadbalancer.server.port=8055"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowheaders=content-type"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolalloworiginlist=https://${HOST}"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.corsheaders2.headers.accesscontrolmaxage=-1"
+      - "traefik.http.routers.spot.rule=Host(`${HOST}`) && PathPrefix(`/prod`)"
+      - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/prod"
+      - "traefik.http.routers.spot.tls=true"
+      - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot,auth"

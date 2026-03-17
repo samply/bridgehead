@@ -55,6 +55,9 @@ case "$PROJECT" in
 	cce)
 		site_configuration_repository_middle="git.verbis.dkfz.de/cce-sites/"
 		;;
+	pscc)
+		site_configuration_repository_middle="git.verbis.dkfz.de/pscc-sites/"
+		;;
 	itcc)
 		site_configuration_repository_middle="git.verbis.dkfz.de/itcc-sites/"
         ;;
@@ -66,6 +69,9 @@ case "$PROJECT" in
 		;;
 	dhki)
 		site_configuration_repository_middle="git.verbis.dkfz.de/dhki/"
+		;;
+	nngm)
+		site_configuration_repository_middle="git.verbis.dkfz.de/nngm/"
 		;;
 	minimal)
 		site_configuration_repository_middle="git.verbis.dkfz.de/minimal-bridgehead-configs/"

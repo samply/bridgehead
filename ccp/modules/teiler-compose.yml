@@ -13,13 +13,13 @@ services:
       - "traefik.http.middlewares.teiler_orchestrator_ccp_strip.stripprefix.prefixes=/ccp-teiler"
       - "traefik.http.routers.teiler_orchestrator_ccp.middlewares=teiler_orchestrator_ccp_strip"
     environment:
-      TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
-      TEILER_DASHBOARD_URL: "https://${HOST}/ccp-teiler-dashboard"
+      TEILER_BACKEND_URL: "/ccp-teiler-backend"
+      TEILER_DASHBOARD_URL: "/ccp-teiler-dashboard"
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
       HTTP_RELATIVE_PATH: "/ccp-teiler"
 
   teiler-dashboard:
-    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:${TEILER_DASHBOARD_TAG}
     container_name: bridgehead-teiler-dashboard
     labels:
       - "traefik.enable=true"
@@ -30,9 +30,9 @@ services:
       - "traefik.http.routers.teiler_dashboard_ccp.middlewares=teiler_dashboard_ccp_strip"
     environment:
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
-      TEILER_BACKEND_URL: "https://${HOST}/ccp-teiler-backend"
+      TEILER_BACKEND_URL: "/ccp-teiler-backend"
+      TEILER_DASHBOARD_URL: "/ccp-teiler-dashboard"
       OIDC_URL: "${OIDC_URL}"
-      OIDC_REALM: "${OIDC_REALM}"
       OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
       OIDC_TOKEN_GROUP: "${OIDC_GROUP_CLAIM}"
       TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
@@ -40,8 +40,7 @@ services:
       TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
       TEILER_PROJECT: "${PROJECT}"
       EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
-      TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
-      TEILER_DASHBOARD_HTTP_RELATIVE_PATH: "/ccp-teiler-dashboard"
+      TEILER_ORCHESTRATOR_URL: "/ccp-teiler"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
       TEILER_USER: "${OIDC_USER_GROUP}"
       TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
@@ -62,20 +61,12 @@ services:
     environment:
       LOG_LEVEL: "INFO"
       APPLICATION_PORT: "8085"
-      APPLICATION_ADDRESS: "${HOST}"
       DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
-      CONFIG_ENV_VAR_PATH: "/run/secrets/ccp.conf"
       TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/ccp-teiler"
-      TEILER_ORCHESTRATOR_URL: "https://${HOST}/ccp-teiler"
-      TEILER_DASHBOARD_DE_URL: "https://${HOST}/ccp-teiler-dashboard/de"
-      TEILER_DASHBOARD_EN_URL: "https://${HOST}/ccp-teiler-dashboard/en"
-      CENTRAX_URL: "${CENTRAXX_URL}"
+      TEILER_ORCHESTRATOR_URL: "/ccp-teiler"
+      TEILER_DASHBOARD_DE_URL: "/ccp-teiler-dashboard/de"
+      TEILER_DASHBOARD_EN_URL: "/ccp-teiler-dashboard/en"
       HTTP_PROXY: "http://forward_proxy:3128"
       ENABLE_MTBA: "${ENABLE_MTBA}"
       ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
-    secrets:
-      - ccp.conf
-
-secrets:
-  ccp.conf:
-    file: /etc/bridgehead/ccp.conf
+      IDMANAGER_UPLOAD_APIKEY: "${IDMANAGER_UPLOAD_APIKEY}" # Only used to check if the ID Manager is active

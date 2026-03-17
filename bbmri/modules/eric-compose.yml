@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   focus-eric:
-    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}-bbmri
+    image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
     container_name: bridgehead-focus-eric
     environment:
       API_KEY: ${ERIC_FOCUS_BEAM_SECRET_SHORT}
@@ -11,6 +11,7 @@ services:
       BLAZE_URL: "http://blaze:8080/fhir/"
       BEAM_PROXY_URL: http://beam-proxy-eric:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
+      OBFUSCATE_BBMRI_ERIC_WAY: "true"
     depends_on:
       - "beam-proxy-eric"
       - "blaze"

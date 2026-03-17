@@ -1,0 +1,6 @@
+FOCUS_TAG=develop
+BEAM_TAG=develop
+BLAZE_TAG=0.32
+POSTGRES_TAG=15.13-alpine
+TEILER_DASHBOARD_TAG=develop
+MTBA_TAG=develop

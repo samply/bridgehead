@@ -33,43 +33,7 @@ export SITE_ID
 checkOwner /srv/docker/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong permissions in /srv/docker/bridgehead"
 checkOwner /etc/bridgehead bridgehead || fail_and_report 1 "Update failed: Wrong permissions in /etc/bridgehead"
 
-# Use Secret Sync to validate the GitLab token in /var/cache/bridgehead/secrets/gitlab_token.
-# If it is missing or expired, Secret Sync will create a new token and write it to the file.
-# The git credential helper reads the token from the file during git pull.
-mkdir -p /var/cache/bridgehead/secrets
-touch /var/cache/bridgehead/secrets/gitlab_token # the file has to exist to be mounted correctly in the Docker container
-log "INFO" "Running Secret Sync for the GitLab token"
-docker pull docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest # make sure we have the latest image
-docker run --rm \
-  -v /var/cache/bridgehead/secrets/gitlab_token:/usr/local/cache \
-  -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
-  -v /srv/docker/bridgehead/$PROJECT/root.crt.pem:/run/secrets/root.crt.pem:ro \
-  -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
-  -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
-  -e NO_PROXY=localhost,127.0.0.1 \
-  -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
-  -e PROXY_ID=$PROXY_ID \
-  -e BROKER_URL=$BROKER_URL \
-  -e GITLAB_PROJECT_ACCESS_TOKEN_PROVIDER=secret-sync-central.oidc-client-enrollment.$BROKER_ID \
-  -e SECRET_DEFINITIONS=GitLabProjectAccessToken:BRIDGEHEAD_CONFIG_REPO_TOKEN: \
-  docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
-if [ $? -eq 0 ]; then
-  log "INFO" "Secret Sync was successful"
-  # In the past we used to hardcode tokens into the repository URL. We have to remove those now for the git credential helper to become effective.
-  CLEAN_REPO="$(git -C /etc/bridgehead remote get-url origin | sed -E 's|https://[^@]+@|https://|')"
-  git -C /etc/bridgehead remote set-url origin "$CLEAN_REPO"
-  # Set the git credential helper
-  git -C /etc/bridgehead config credential.helper /srv/docker/bridgehead/lib/gitlab-token-helper.sh
-else
-  log "WARN" "Secret Sync failed"
-  # Remove the git credential helper
-  git -C /etc/bridgehead config --unset credential.helper
-fi
-
-# In the past the git credential helper was also set for /srv/docker/bridgehead but never used.
-# Let's remove it to avoid confusion. This line can be removed at some point the future when we
-# believe that it was removed on all/most production servers.
-git -C /srv/docker/bridgehead config --unset credential.helper
+secret_sync_gitlab_token
 
 CHANGES=""
 

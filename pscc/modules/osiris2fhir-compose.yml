@@ -1,0 +1,13 @@
+services:
+  osiris2fhir:
+    container_name: bridgehead-osiris2fhir
+    image: docker.verbis.dkfz.de/ccp/osiris2fhir:${SITE_ID}
+    environment:
+      SALT: ${LOCAL_SALT}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.osiris2fhir.rule=PathPrefix(`/osiris2fhir`)"
+      - "traefik.http.middlewares.osiris2fhir_strip.stripprefix.prefixes=/osiris2fhir"
+      - "traefik.http.services.osiris2fhir.loadbalancer.server.port=8080"
+      - "traefik.http.routers.osiris2fhir.tls=true"
+      - "traefik.http.routers.osiris2fhir.middlewares=osiris2fhir_strip,auth"

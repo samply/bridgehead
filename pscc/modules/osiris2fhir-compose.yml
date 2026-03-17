@@ -1,8 +1,10 @@
 services:
   osiris2fhir:
     container_name: bridgehead-osiris2fhir
-    image: docker.verbis.dkfz.de/ccp/osiris2fhir:${SITE_ID}
+    image: docker.verbis.dkfz.de/ccp/osiris2fhir
     environment:
+      FHIR_PROFILE: ${PROJECT:-pscc}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
       SALT: ${LOCAL_SALT}
     labels:
       - "traefik.enable=true"

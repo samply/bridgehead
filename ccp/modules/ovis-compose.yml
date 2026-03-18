@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   mongo:
-    image: mongo:${MONGO_VER:-latest}
+    image: mongo:latest
     container_name: bridgehead-ccp-ovis-mongo
     restart: always
     command: mongod
@@ -16,44 +16,44 @@ services:
     user: root
     working_dir: /app
     environment:
-      APOLLO_PORT: ${APOLLO_PORT:-4001}
-      CREDOS_PORT: ${CREDOS_PORT:-4000}
-      HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
-      HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
-      NO_PROXY: ${OVIS_NO_PROXY:-}
-      http_proxy: ${OVIS_HTTP_PROXY:-}
-      https_proxy: ${OVIS_HTTPS_PROXY:-}
-      no_proxy: ${OVIS_NO_PROXY:-}
-      CORS_ORIGIN: ${OVIS_CORS_ORIGIN:-*}
-      DB: ${DB:-onc_test}
+      APOLLO_PORT: "4001"
+      CREDOS_PORT: "4000"
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      NO_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+      no_proxy: ""
+      CORS_ORIGIN: "*"
+      DB: onc_test
       ADRESS: mongodb://mongo:27017
-      MONGO_VER: ${MONGO_VER:-latest}
-      OVIS_PREPROC_DECEASED_KEYWORDS: ${OVIS_PREPROC_DECEASED_KEYWORDS:-}
-      OVIS_PREPROC_REZIDIV_PREFIXES: ${OVIS_PREPROC_REZIDIV_PREFIXES:-}
-      OVIS_PREPROC_REZIDIV_CANONICAL: ${OVIS_PREPROC_REZIDIV_CANONICAL:-}
-      OVIS_PREPROC_REZIDIV_LYMPH_STATES: ${OVIS_PREPROC_REZIDIV_LYMPH_STATES:-}
-      OVIS_PREPROC_PROGRESS_LABELS: ${OVIS_PREPROC_PROGRESS_LABELS:-}
-      OVIS_PREPROC_COMPLETE_REMISSION_LABELS: ${OVIS_PREPROC_COMPLETE_REMISSION_LABELS:-}
-      OVIS_PREPROC_RCLASS_SUCCESS: ${OVIS_PREPROC_RCLASS_SUCCESS:-}
-      OVIS_PREPROC_LOCAL_RSTATE_SUCCESS: ${OVIS_PREPROC_LOCAL_RSTATE_SUCCESS:-}
-      OVIS_PREPROC_METASTASIS_PREFIXES: ${OVIS_PREPROC_METASTASIS_PREFIXES:-}
-      OVIS_PREPROC_METASTASIS_SPREAD_VALUES: ${OVIS_PREPROC_METASTASIS_SPREAD_VALUES:-}
-      OVIS_PREPROC_METASTASIS_STRAT_SYNCHRON: ${OVIS_PREPROC_METASTASIS_STRAT_SYNCHRON:-}
-      OVIS_PREPROC_METASTASIS_STRAT_NONE: ${OVIS_PREPROC_METASTASIS_STRAT_NONE:-}
-      OVIS_PREPROC_NULL_STUDY_PHASES: ${OVIS_PREPROC_NULL_STUDY_PHASES:-}
-      OVIS_PREPROC_PREV_THERAPY_SURGERY: ${OVIS_PREPROC_PREV_THERAPY_SURGERY:-}
-      OVIS_PREPROC_PREV_THERAPY_SYSTEMIC: ${OVIS_PREPROC_PREV_THERAPY_SYSTEMIC:-}
-      OVIS_PREPROC_PREV_THERAPY_RADIATION: ${OVIS_PREPROC_PREV_THERAPY_RADIATION:-}
-      OVIS_PREPROC_PREV_CONSULTATION_NUTRITION: ${OVIS_PREPROC_PREV_CONSULTATION_NUTRITION:-}
-      OVIS_PREPROC_PREV_CONSULTATION_SOCIAL: ${OVIS_PREPROC_PREV_CONSULTATION_SOCIAL:-}
-      OVIS_PREPROC_PREV_CONSULTATION_PSYCHO: ${OVIS_PREPROC_PREV_CONSULTATION_PSYCHO:-}
-      OVIS_PREPROC_PREV_CONSULTATION_GENETIC: ${OVIS_PREPROC_PREV_CONSULTATION_GENETIC:-}
-      OVIS_PREPROC_TUMORBOARD_PATTERN_PRAE: ${OVIS_PREPROC_TUMORBOARD_PATTERN_PRAE:-}
-      OVIS_PREPROC_TUMORBOARD_PATTERN_POST: ${OVIS_PREPROC_TUMORBOARD_PATTERN_POST:-}
-      OVIS_PREPROC_TUMORBOARD_PATTERN_MTB: ${OVIS_PREPROC_TUMORBOARD_PATTERN_MTB:-}
-      OVIS_PREPROC_ECOG_PREFIX: ${OVIS_PREPROC_ECOG_PREFIX:-}
-      OVIS_PREPROC_DISTRESS_TYPE: ${OVIS_PREPROC_DISTRESS_TYPE:-}
-      OVIS_PREPROC_DISTRESS_POSITIVE_VALUES: ${OVIS_PREPROC_DISTRESS_POSITIVE_VALUES:-}
+      MONGO_VER: latest
+      OVIS_PREPROC_DECEASED_KEYWORDS: '["verstorben","dead","deceased","not alive","gestorben"]'
+      OVIS_PREPROC_REZIDIV_PREFIXES: '["Rezidiv"]'
+      OVIS_PREPROC_REZIDIV_CANONICAL: Rezidiv
+      OVIS_PREPROC_REZIDIV_LYMPH_STATES: '["Rezidiv","Neu"]'
+      OVIS_PREPROC_PROGRESS_LABELS: '["Progression","Divergentes Geschehen","Rezidiv"]'
+      OVIS_PREPROC_COMPLETE_REMISSION_LABELS: '["Vollremission / Tumorfrei (complete remission)"]'
+      OVIS_PREPROC_RCLASS_SUCCESS: '["R0"]'
+      OVIS_PREPROC_LOCAL_RSTATE_SUCCESS: '["R0"]'
+      OVIS_PREPROC_METASTASIS_PREFIXES: '["Rezidiv","Neu"]'
+      OVIS_PREPROC_METASTASIS_SPREAD_VALUES: '["Neu","Rezidiv","Tumornachweis"]'
+      OVIS_PREPROC_METASTASIS_STRAT_SYNCHRON: Synchrone Metastasierung
+      OVIS_PREPROC_METASTASIS_STRAT_NONE: keine synchrone Metastasierung
+      OVIS_PREPROC_NULL_STUDY_PHASES: '["NOPH","KA"]'
+      OVIS_PREPROC_PREV_THERAPY_SURGERY: '["operation"]'
+      OVIS_PREPROC_PREV_THERAPY_SYSTEMIC: '["systemic"]'
+      OVIS_PREPROC_PREV_THERAPY_RADIATION: '["radiation"]'
+      OVIS_PREPROC_PREV_CONSULTATION_NUTRITION: '["nutrition"]'
+      OVIS_PREPROC_PREV_CONSULTATION_SOCIAL: '["social"]'
+      OVIS_PREPROC_PREV_CONSULTATION_PSYCHO: '["psycho"]'
+      OVIS_PREPROC_PREV_CONSULTATION_GENETIC: '["genetic"]'
+      OVIS_PREPROC_TUMORBOARD_PATTERN_PRAE: prae|prä|pre
+      OVIS_PREPROC_TUMORBOARD_PATTERN_POST: post
+      OVIS_PREPROC_TUMORBOARD_PATTERN_MTB: mtb
+      OVIS_PREPROC_ECOG_PREFIX: ECOG
+      OVIS_PREPROC_DISTRESS_TYPE: distress
+      OVIS_PREPROC_DISTRESS_POSITIVE_VALUES: '["Positiv"]'
     depends_on:
       - mongo
     volumes:
@@ -67,7 +67,7 @@ services:
     command: ["node", "./Preprocessing/catalogue-service.mjs"]
 
   ovis-backend-data-import:
-    image: docker.verbis.dkfz.de/ovis/ovis-backend-data-import-${OVIS_IMPORT_MODE:-demo}:latest
+    image: docker.verbis.dkfz.de/ovis/ovis-backend-data-import-demo:latest
     container_name: bridgehead-ccp-ovis-import
     restart: on-failure
     depends_on:
@@ -75,83 +75,69 @@ services:
         condition: service_healthy
     environment:
       # CCP mode: FHIR source configuration (ignored by DEMO image)
-      FHIR_SERVER_URL: ${FHIR_SERVER_URL:-http://bridgehead-ccp-blaze:8080/fhir}
-      FHIR_USERNAME: ${FHIR_USERNAME:-}
-      FHIR_PASSWORD: ${FHIR_PASSWORD:-}
-      ICD10_FILTER: ${ICD10_FILTER:-}
+      FHIR_SERVER_URL: http://bridgehead-ccp-blaze:8080/fhir
+      FHIR_USERNAME: your-fhir-username
+      FHIR_PASSWORD: your-fhir-password
+      ICD10_FILTER: ""
       # Required for both CCP and DEMO: preprocessor upload endpoint
-      OVIS_PREPROCESSOR_URL: ${OVIS_PREPROCESSOR_URL:-http://ovis-backend-data-preprocessing:9000/omock}
+      OVIS_PREPROCESSOR_URL: http://ovis-backend-data-preprocessing:9000/omock
       # Proxy configuration
-      HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
-      HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
-      NO_PROXY: ${OVIS_NO_PROXY:-}
-      http_proxy: ${OVIS_HTTP_PROXY:-}
-      https_proxy: ${OVIS_HTTPS_PROXY:-}
-      no_proxy: ${OVIS_NO_PROXY:-}
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      NO_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+      no_proxy: ""
     volumes:
       - /var/cache/bridgehead/ccp/ovis/shared_data:/shared
 
   backend:
-    image: docker.verbis.dkfz.de/ovis/adt-mon-gql-backend:latest
+    image: docker.verbis.dkfz.de/ovis/ovis-backend-apollo:latest
     container_name: bridgehead-ccp-ovis-backend
     restart: always
     user: root
     working_dir: /app
     environment:
-      APOLLO_PORT: ${APOLLO_PORT:-4001}
-      CREDOS_PORT: ${CREDOS_PORT:-4000}
-      CORS_ORIGIN: ${OVIS_CORS_ORIGIN:-*}
-      DB: ${DB:-onc_test}
+      APOLLO_PORT: "4001"
+      CREDOS_PORT: "4000"
+      CORS_ORIGIN: "*"
+      DB: onc_test
       ADRESS: mongodb://mongo:27017
     depends_on:
       - mongo
       - ovis-backend-data-preprocessing
       - ovis-backend-data-import
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${APOLLO_PORT:-4001}/health"]
-      interval: 5s
-      timeout: 3s
+      test: ["CMD-SHELL", "test -d /app/node_modules/mongodb"]
+      interval: 10s
+      timeout: 5s
       retries: 5
-      start_period: 10s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ovis-backend.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/graphql`)"
-      - "traefik.http.routers.ovis-backend.tls=true"
-      - "traefik.http.routers.ovis-backend.middlewares=${OVIS_AUTH_MIDDLEWARE:-traefik-forward-auth}"
-      - "traefik.http.routers.ovis-backend-ccp.rule=PathPrefix(`/ccp-ovis/graphql`)"
-      - "traefik.http.routers.ovis-backend-ccp.tls=true"
-      - "traefik.http.middlewares.ovis-backend-ccp-strip.stripprefix.prefixes=/ccp-ovis"
-      - "traefik.http.routers.ovis-backend-ccp.middlewares=ovis-backend-ccp-strip,${OVIS_AUTH_MIDDLEWARE:-traefik-forward-auth}"
-      - "traefik.http.services.ovis-backend.loadbalancer.server.port=${APOLLO_PORT:-4001}"
 
   frontend:
-    image: docker.verbis.dkfz.de/ovis/adt-mon-gql-frontend:latest
+    image: docker.verbis.dkfz.de/ovis/ovis-frontend:latest
     container_name: bridgehead-ccp-ovis-frontend
     restart: always
     environment:
-      PUBLIC_GRAPHQL_URL: https://${HOST:-localhost}/ccp-ovis/graphql
-      PUBLIC_LOGIN_ENABLED: ${PUBLIC_LOGIN_ENABLED:-false}
-      PUBLIC_OVIS_IMPORT: ${OVIS_IMPORT_MODE:-demo}
-      OVIS_CATALOGUE_UPSTREAM_URL: ${OVIS_CATALOGUE_UPSTREAM_URL:-http://ovis-backend-data-preprocessing:9000/catalogue}
-      EXPRESS_AUTH_URL: ${EXPRESS_AUTH_URL:-http://express-auth:5000}
-      EXPRESS_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME:-admin}
-      EXPRESS_AUTH_PASSWORD: ${EXPRESS_AUTH_PASSWORD:-admin}
-      HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
-      HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
-      NO_PROXY: ${OVIS_NO_PROXY:-}
-      http_proxy: ${OVIS_HTTP_PROXY:-}
-      https_proxy: ${OVIS_HTTPS_PROXY:-}
-      no_proxy: ${OVIS_NO_PROXY:-}
+      PUBLIC_GRAPHQL_URL: https://${HOST}/ccp-ovis/graphql
+      PUBLIC_LOGIN_ENABLED: "false"
+      PUBLIC_OVIS_IMPORT: demo
+      OVIS_CATALOGUE_UPSTREAM_URL: http://ovis-backend-data-preprocessing:9000/catalogue
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      NO_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+      no_proxy: ""
     depends_on:
       backend:
         condition: service_healthy
+    volumes:
+      # Dynamic catalogue from preprocessing service
+      - /var/cache/bridgehead/ccp/ovis/shared_data:/app/dynamic-catalogue:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ovis-frontend.tls=true"
-      - "traefik.http.routers.ovis-frontend.rule=Host(`${HOST:-localhost}`)"
-      - "traefik.http.routers.ovis-frontend.middlewares=${OVIS_AUTH_MIDDLEWARE:-traefik-forward-auth}"
-      - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
       - "traefik.http.routers.ovis-frontend-ccp.tls=true"
+      - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
       - "traefik.http.middlewares.ovis-frontend-ccp-strip.stripprefix.prefixes=/ccp-ovis"
-      - "traefik.http.routers.ovis-frontend-ccp.middlewares=ovis-frontend-ccp-strip,${OVIS_AUTH_MIDDLEWARE:-traefik-forward-auth}"
+      - "traefik.http.routers.ovis-frontend-ccp.middlewares=ovis-frontend-ccp-strip"
       - "traefik.http.services.ovis-frontend.loadbalancer.server.port=5173"

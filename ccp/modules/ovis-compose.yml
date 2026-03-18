@@ -118,6 +118,7 @@ services:
     container_name: bridgehead-ccp-ovis-frontend
     restart: always
     environment:
+      OVIS_PUBLIC_BASE_PATH: /ccp-ovis
       PUBLIC_GRAPHQL_URL: https://${HOST}/ccp-ovis/graphql
       PUBLIC_LOGIN_ENABLED: "false"
       PUBLIC_OVIS_IMPORT: demo

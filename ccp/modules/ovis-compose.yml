@@ -67,7 +67,7 @@ services:
     command: ["node", "./Preprocessing/catalogue-service.mjs"]
 
   ovis-backend-data-import:
-    image: docker.verbis.dkfz.de/ovis/ovis-backend-data-import-demo:latest
+    image: docker.verbis.dkfz.de/ovis/ovis-backend-data-import-ccp:latest
     container_name: bridgehead-ccp-ovis-import
     restart: on-failure
     depends_on:
@@ -132,7 +132,7 @@ services:
       OVIS_PUBLIC_BASE_PATH: /ccp-ovis
       PUBLIC_GRAPHQL_URL: https://${HOST}/ccp-ovis/graphql
       PUBLIC_LOGIN_ENABLED: "false"
-      PUBLIC_OVIS_IMPORT: demo
+      PUBLIC_OVIS_IMPORT: ccp
       OVIS_CATALOGUE_UPSTREAM_URL: http://ovis-backend-data-preprocessing:9000/catalogue
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
@@ -149,7 +149,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ovis-frontend-root-compat.tls=true"
-      - "traefik.http.routers.ovis-frontend-root-compat.rule=PathRegexp(`^/(icons|api|downloads|Ovis_logo.svg|patient-cohort|patient-single|filter-edit|survival-definition|footer-version|user-management|tumorboard|tnm|therapy|therapy-systemic|therapy-radiation|therapy-general|therapy-operation|survival|supplementary|study|settings|status|progress|molecular-marker|footer-licensing|footer-privacy|footer-imprint|footer-issues|footer-contact|footer-cite|diagnosis|bio-material|consultation)(/.*)?$`)"
+      - "traefik.http.routers.ovis-frontend-root-compat.rule=PathRegexp(`^/(icons|svg|fonts|api|downloads|Ovis_logo.svg|patient-cohort|patient-single|filter-edit|survival-definition|footer-version|user-management|tumorboard|tnm|therapy|therapy-systemic|therapy-radiation|therapy-general|therapy-operation|survival|supplementary|study|settings|status|progress|molecular-marker|footer-licensing|footer-privacy|footer-imprint|footer-issues|footer-contact|footer-cite|diagnosis|bio-material|consultation)(/.*)?$`)"
       - "traefik.http.routers.ovis-frontend-root-compat.priority=900"
       - "traefik.http.routers.ovis-frontend-root-compat.middlewares=ovis-frontend-root-compat-redirect"
       - "traefik.http.routers.ovis-frontend-root-compat.service=ovis-frontend"

@@ -112,6 +112,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ovis-backend.rule=PathPrefix(`/graphql`)"
+      - "traefik.http.routers.ovis-backend.tls=true"
+      - "traefik.http.routers.ovis-backend.service=ovis-backend"
+      - "traefik.http.routers.ovis-backend-ccp.rule=PathPrefix(`/ccp-ovis/graphql`)"
+      - "traefik.http.routers.ovis-backend-ccp.tls=true"
+      - "traefik.http.middlewares.ovis-backend-ccp-strip.stripprefix.prefixes=/ccp-ovis"
+      - "traefik.http.routers.ovis-backend-ccp.middlewares=ovis-backend-ccp-strip"
+      - "traefik.http.routers.ovis-backend-ccp.service=ovis-backend"
+      - "traefik.http.services.ovis-backend.loadbalancer.server.port=4001"
 
   frontend:
     image: docker.verbis.dkfz.de/ovis/ovis-frontend:latest

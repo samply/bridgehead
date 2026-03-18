@@ -76,8 +76,8 @@ services:
     environment:
       # CCP mode: FHIR source configuration (ignored by DEMO image)
       FHIR_SERVER_URL: http://bridgehead-ccp-blaze:8080/fhir
-      FHIR_USERNAME: your-fhir-username
-      FHIR_PASSWORD: your-fhir-password
+      FHIR_USERNAME: ""
+      FHIR_PASSWORD: ""
       ICD10_FILTER: ""
       # Required for both CCP and DEMO: preprocessor upload endpoint
       OVIS_PREPROCESSOR_URL: http://ovis-backend-data-preprocessing:9000/omock

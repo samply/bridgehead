@@ -71,6 +71,8 @@ services:
     container_name: bridgehead-ccp-ovis-import
     restart: on-failure
     depends_on:
+      blaze:
+        condition: service_started
       ovis-backend-data-preprocessing:
         condition: service_healthy
     environment:

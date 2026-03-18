@@ -148,6 +148,14 @@ services:
       - /var/cache/bridgehead/ccp/ovis/shared_data:/app/dynamic-catalogue:ro
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.ovis-frontend-root-compat.tls=true"
+      - "traefik.http.routers.ovis-frontend-root-compat.rule=PathRegexp(`^/(icons|patient-cohort|patient-single|filter-edit|survival-definition|footer-version|user-management|tumorboard|tnm|therapy|therapy-systemic|therapy-radiation|therapy-general|therapy-operation|survival|supplementary|study|settings|status|progress|molecular-marker|footer-licensing|footer-privacy|footer-imprint|footer-issues|footer-contact|footer-cite|diagnosis|bio-material|consultation)(/.*)?$`)"
+      - "traefik.http.routers.ovis-frontend-root-compat.priority=900"
+      - "traefik.http.routers.ovis-frontend-root-compat.middlewares=ovis-frontend-root-compat-redirect"
+      - "traefik.http.routers.ovis-frontend-root-compat.service=ovis-frontend"
+      - "traefik.http.middlewares.ovis-frontend-root-compat-redirect.redirectregex.regex=^https?://([^/]+)/(.*)$"
+      - "traefik.http.middlewares.ovis-frontend-root-compat-redirect.redirectregex.replacement=https://$${1}/ccp-ovis/$${2}"
+      - "traefik.http.middlewares.ovis-frontend-root-compat-redirect.redirectregex.permanent=false"
       - "traefik.http.routers.ovis-frontend-ccp-slash.tls=true"
       - "traefik.http.routers.ovis-frontend-ccp-slash.rule=Path(`/ccp-ovis`)"
       - "traefik.http.routers.ovis-frontend-ccp-slash.priority=1000"

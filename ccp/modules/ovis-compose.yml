@@ -137,6 +137,14 @@ services:
       - /var/cache/bridgehead/ccp/ovis/shared_data:/app/dynamic-catalogue:ro
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.ovis-frontend-ccp-slash.tls=true"
+      - "traefik.http.routers.ovis-frontend-ccp-slash.rule=Path(`/ccp-ovis`)"
+      - "traefik.http.routers.ovis-frontend-ccp-slash.priority=1000"
+      - "traefik.http.routers.ovis-frontend-ccp-slash.middlewares=ovis-frontend-ccp-slash-redirect"
+      - "traefik.http.routers.ovis-frontend-ccp-slash.service=ovis-frontend"
+      - "traefik.http.middlewares.ovis-frontend-ccp-slash-redirect.redirectregex.regex=^https?://([^/]+)/ccp-ovis$"
+      - "traefik.http.middlewares.ovis-frontend-ccp-slash-redirect.redirectregex.replacement=https://$${1}/ccp-ovis/"
+      - "traefik.http.middlewares.ovis-frontend-ccp-slash-redirect.redirectregex.permanent=true"
       - "traefik.http.routers.ovis-frontend-ccp.tls=true"
       - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
       - "traefik.http.middlewares.ovis-frontend-ccp-strip.stripprefix.prefixes=/ccp-ovis"

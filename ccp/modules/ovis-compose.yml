@@ -149,7 +149,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ovis-frontend-root-compat.tls=true"
-      - "traefik.http.routers.ovis-frontend-root-compat.rule=PathRegexp(`^/(icons|svg|fonts|api|downloads|Ovis_logo.svg|patient-cohort|patient-single|filter-edit|survival-definition|footer-version|user-management|tumorboard|tnm|therapy|therapy-systemic|therapy-radiation|therapy-general|therapy-operation|survival|supplementary|study|settings|status|progress|molecular-marker|footer-licensing|footer-privacy|footer-imprint|footer-issues|footer-contact|footer-cite|diagnosis|bio-material|consultation)(/.*)?$`)"
+      - "traefik.http.routers.ovis-frontend-root-compat.rule=PathRegexp(`^/(icons|svg|fonts|api|downloads|Ovis_logo.svg|CCP_logo.svg|patient-cohort|patient-single|filter-edit|survival-definition|footer-version|user-management|tumorboard|tnm|therapy|therapy-systemic|therapy-radiation|therapy-general|therapy-operation|survival|supplementary|study|settings|status|progress|molecular-marker|footer-licensing|footer-privacy|footer-imprint|footer-issues|footer-contact|footer-cite|diagnosis|bio-material|consultation)(/.*)?$`)"
       - "traefik.http.routers.ovis-frontend-root-compat.priority=900"
       - "traefik.http.routers.ovis-frontend-root-compat.middlewares=ovis-frontend-root-compat-redirect"
       - "traefik.http.routers.ovis-frontend-root-compat.service=ovis-frontend"

@@ -1,77 +1,36 @@
 version: "3.7"
 
 services:
-  mongo:
-    image: mongo:latest
+  ovis-backend-database-mongodb:
+    image: docker.verbis.dkfz.de/ovis/ovis-backend-mongodb:latest
     container_name: bridgehead-ccp-ovis-mongo
-    restart: always
-    command: mongod
-    volumes:
-      - /var/cache/bridgehead/ccp/ovis/mongo/init/init.js:/docker-entrypoint-initdb.d/init.js:ro
 
-  ovis-backend-data-preprocessing:
+  ovis-backend-mongodb-data-preprocessing:
     image: docker.verbis.dkfz.de/ovis/ovis-backend-preprocessor:latest
     container_name: bridgehead-ccp-ovis-preprocessing
-    restart: on-failure
-    user: root
-    working_dir: /app
     environment:
-      APOLLO_PORT: "4001"
-      CREDOS_PORT: "4000"
+      ADDRESS: mongodb://ovis-backend-database-mongodb:27017
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
       NO_PROXY: ""
       http_proxy: ""
       https_proxy: ""
       no_proxy: ""
-      CORS_ORIGIN: "*"
-      DB: onc_test
-      ADRESS: mongodb://mongo:27017
-      MONGO_VER: latest
-      OVIS_PREPROC_DECEASED_KEYWORDS: '["verstorben","dead","deceased","not alive","gestorben"]'
-      OVIS_PREPROC_REZIDIV_PREFIXES: '["Rezidiv"]'
-      OVIS_PREPROC_REZIDIV_CANONICAL: Rezidiv
-      OVIS_PREPROC_REZIDIV_LYMPH_STATES: '["Rezidiv","Neu"]'
-      OVIS_PREPROC_PROGRESS_LABELS: '["Progression","Divergentes Geschehen","Rezidiv"]'
-      OVIS_PREPROC_COMPLETE_REMISSION_LABELS: '["Vollremission / Tumorfrei (complete remission)"]'
-      OVIS_PREPROC_RCLASS_SUCCESS: '["R0"]'
-      OVIS_PREPROC_LOCAL_RSTATE_SUCCESS: '["R0"]'
-      OVIS_PREPROC_METASTASIS_PREFIXES: '["Rezidiv","Neu"]'
-      OVIS_PREPROC_METASTASIS_SPREAD_VALUES: '["Neu","Rezidiv","Tumornachweis"]'
-      OVIS_PREPROC_METASTASIS_STRAT_SYNCHRON: Synchrone Metastasierung
-      OVIS_PREPROC_METASTASIS_STRAT_NONE: keine synchrone Metastasierung
-      OVIS_PREPROC_NULL_STUDY_PHASES: '["NOPH","KA"]'
-      OVIS_PREPROC_PREV_THERAPY_SURGERY: '["operation"]'
-      OVIS_PREPROC_PREV_THERAPY_SYSTEMIC: '["systemic"]'
-      OVIS_PREPROC_PREV_THERAPY_RADIATION: '["radiation"]'
-      OVIS_PREPROC_PREV_CONSULTATION_NUTRITION: '["nutrition"]'
-      OVIS_PREPROC_PREV_CONSULTATION_SOCIAL: '["social"]'
-      OVIS_PREPROC_PREV_CONSULTATION_PSYCHO: '["psycho"]'
-      OVIS_PREPROC_PREV_CONSULTATION_GENETIC: '["genetic"]'
-      OVIS_PREPROC_TUMORBOARD_PATTERN_PRAE: prae|prä|pre
-      OVIS_PREPROC_TUMORBOARD_PATTERN_POST: post
-      OVIS_PREPROC_TUMORBOARD_PATTERN_MTB: mtb
-      OVIS_PREPROC_ECOG_PREFIX: ECOG
-      OVIS_PREPROC_DISTRESS_TYPE: distress
-      OVIS_PREPROC_DISTRESS_POSITIVE_VALUES: '["Positiv"]'
+
     depends_on:
-      - mongo
-    volumes:
-      - /var/cache/bridgehead/ccp/ovis/shared_data:/app/generated
+      - ovis-backend-database-mongodb
     healthcheck:
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:9000/health', res => process.exit(res.statusCode===200?0:1)).on('error', () => process.exit(1));\""]
       interval: 10s
       timeout: 5s
       retries: 6
       start_period: 5s
-    command: ["node", "./Preprocessing/catalogue-service.mjs"]
 
   ovis-backend-data-import:
     image: docker.verbis.dkfz.de/ovis/ovis-backend-data-import-ccp:latest
     container_name: bridgehead-ccp-ovis-import
-    restart: on-failure
     depends_on:
-      ovis-backend-data-preprocessing:
+      ovis-backend-mongodb-data-preprocessing:
         condition: service_healthy
     environment:
       # CCP mode: FHIR source configuration (ignored by DEMO image)
@@ -79,8 +38,6 @@ services:
       FHIR_USERNAME: ""
       FHIR_PASSWORD: ""
       ICD10_FILTER: ""
-      # Required for both CCP and DEMO: preprocessor upload endpoint
-      OVIS_PREPROCESSOR_URL: http://ovis-backend-data-preprocessing:9000/omock
       # Proxy configuration
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
@@ -88,24 +45,15 @@ services:
       http_proxy: ""
       https_proxy: ""
       no_proxy: ""
-    volumes:
-      - /var/cache/bridgehead/ccp/ovis/shared_data:/shared
 
-  backend:
+  ovis-backend-apollo:
     image: docker.verbis.dkfz.de/ovis/ovis-backend-apollo:latest
     container_name: bridgehead-ccp-ovis-backend
-    restart: always
-    user: root
-    working_dir: /app
     environment:
-      APOLLO_PORT: "4001"
-      CREDOS_PORT: "4000"
-      CORS_ORIGIN: "*"
-      DB: onc_test
-      ADRESS: mongodb://mongo:27017
+      ADDRESS: mongodb://ovis-backend-database-mongodb:27017
     depends_on:
-      - mongo
-      - ovis-backend-data-preprocessing
+      - ovis-backend-database-mongodb
+      - ovis-backend-mongodb-data-preprocessing
       - ovis-backend-data-import
     healthcheck:
       test: ["CMD-SHELL", "test -d /app/node_modules/mongodb"]
@@ -124,16 +72,14 @@ services:
       - "traefik.http.routers.ovis-backend-ccp.service=ovis-backend"
       - "traefik.http.services.ovis-backend.loadbalancer.server.port=4001"
 
-  frontend:
+  ovis-frontend:
     image: docker.verbis.dkfz.de/ovis/ovis-frontend:latest
     container_name: bridgehead-ccp-ovis-frontend
-    restart: always
     environment:
       OVIS_PUBLIC_BASE_PATH: /ccp-ovis
       PUBLIC_GRAPHQL_URL: https://${HOST}/ccp-ovis/graphql
       PUBLIC_LOGIN_ENABLED: "false"
       PUBLIC_OVIS_IMPORT: ccp
-      OVIS_CATALOGUE_UPSTREAM_URL: http://ovis-backend-data-preprocessing:9000/catalogue
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
       NO_PROXY: ""
@@ -141,21 +87,10 @@ services:
       https_proxy: ""
       no_proxy: ""
     depends_on:
-      backend:
+      ovis-backend-apollo:
         condition: service_healthy
-    volumes:
-      # Dynamic catalogue from preprocessing service
-      - /var/cache/bridgehead/ccp/ovis/shared_data:/app/dynamic-catalogue:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ovis-frontend-root-compat.tls=true"
-      - "traefik.http.routers.ovis-frontend-root-compat.rule=PathRegexp(`^/(icons|svg|fonts|api|downloads|Ovis_logo.svg|CCP_logo.svg|patient-cohort|patient-single|filter-edit|survival-definition|footer-version|user-management|tumorboard|tnm|therapy|therapy-systemic|therapy-radiation|therapy-general|therapy-operation|survival|supplementary|study|settings|status|progress|molecular-marker|footer-licensing|footer-privacy|footer-imprint|footer-issues|footer-contact|footer-cite|diagnosis|bio-material|consultation)(/.*)?$`)"
-      - "traefik.http.routers.ovis-frontend-root-compat.priority=900"
-      - "traefik.http.routers.ovis-frontend-root-compat.middlewares=ovis-frontend-root-compat-redirect"
-      - "traefik.http.routers.ovis-frontend-root-compat.service=ovis-frontend"
-      - "traefik.http.middlewares.ovis-frontend-root-compat-redirect.redirectregex.regex=^https?://([^/]+)/(.*)$"
-      - "traefik.http.middlewares.ovis-frontend-root-compat-redirect.redirectregex.replacement=https://$${1}/ccp-ovis/$${2}"
-      - "traefik.http.middlewares.ovis-frontend-root-compat-redirect.redirectregex.permanent=false"
       - "traefik.http.routers.ovis-frontend-ccp-slash.tls=true"
       - "traefik.http.routers.ovis-frontend-ccp-slash.rule=Path(`/ccp-ovis`)"
       - "traefik.http.routers.ovis-frontend-ccp-slash.priority=1000"

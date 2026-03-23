@@ -27,11 +27,7 @@ services:
       ovis-backend-mongodb-data-preprocessing:
         condition: service_healthy
     environment:
-      # CCP mode: FHIR source configuration (ignored by DEMO image)
       FHIR_SERVER_URL: http://bridgehead-ccp-blaze:8080/fhir
-      FHIR_USERNAME: ""
-      FHIR_PASSWORD: ""
-      ICD10_FILTER: ""
 
   ovis-backend-apollo:
     image: docker.verbis.dkfz.de/ovis/ovis-backend-apollo:latest

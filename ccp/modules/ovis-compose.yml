@@ -10,12 +10,6 @@ services:
     container_name: bridgehead-ccp-ovis-preprocessing
     environment:
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
-      HTTP_PROXY: ""
-      HTTPS_PROXY: ""
-      NO_PROXY: ""
-      http_proxy: ""
-      https_proxy: ""
-      no_proxy: ""
 
     depends_on:
       - ovis-backend-database-mongodb
@@ -38,13 +32,6 @@ services:
       FHIR_USERNAME: ""
       FHIR_PASSWORD: ""
       ICD10_FILTER: ""
-      # Proxy configuration
-      HTTP_PROXY: ""
-      HTTPS_PROXY: ""
-      NO_PROXY: ""
-      http_proxy: ""
-      https_proxy: ""
-      no_proxy: ""
 
   ovis-backend-apollo:
     image: docker.verbis.dkfz.de/ovis/ovis-backend-apollo:latest
@@ -80,12 +67,6 @@ services:
       PUBLIC_GRAPHQL_URL: https://${HOST}/ccp-ovis/graphql
       PUBLIC_LOGIN_ENABLED: "false"
       PUBLIC_OVIS_IMPORT: ccp
-      HTTP_PROXY: ""
-      HTTPS_PROXY: ""
-      NO_PROXY: ""
-      http_proxy: ""
-      https_proxy: ""
-      no_proxy: ""
     depends_on:
       ovis-backend-apollo:
         condition: service_healthy

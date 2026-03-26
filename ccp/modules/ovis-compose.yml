@@ -94,7 +94,7 @@ services:
       - "traefik.http.services.ovis-backend.loadbalancer.server.port=4001"
 
   ovis-frontend:
-    image: docker.verbis.dkfz.de/ovis/ovis-frontend-ccp:latest
+    image: docker.verbis.dkfz.de/ovis/ovis-frontend:latest
     container_name: bridgehead-ccp-ovis-frontend
     environment:
       OVIS_PUBLIC_BASE_PATH: /ccp-ovis

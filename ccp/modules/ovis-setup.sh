@@ -1,6 +1,17 @@
 #!/bin/bash -e
 
 if [ -n "$ENABLE_OVIS" ]; then
+  log INFO ""
+  log INFO "######################################################################"
+  log INFO "#    ___ __     _______ ____    __  __  ___  ____  _   _ _     _____ #"
+  log INFO "#   / _ \\ \   / /_ _/ ___|   |  \\/  |/ _ \\|  _ \\| | | | |   | ____|#"
+  log INFO "#  | | | |\\ \\ / / | |\\___ \\   | |\\/| | | | | | | | | | |   |  _|  #"
+  log INFO "#  | |_| | \\ V /  | | ___) |  | |  | | |_| | |_| | |_| | |___| |___ #"
+  log INFO "#   \\___/   \\_/  |___|____/   |_|  |_|\\___/|____/ \\___/|_____|_____|#"
+  log INFO "#                                                                    #"
+  log INFO "#          OVIS MODULE ENABLED - INITIALIZING AUTH + ROUTING         #"
+  log INFO "######################################################################"
+  log INFO ""
   log INFO "OVIS setup detected -- will start OVIS services with local oauth2-proxy middleware."
   TRUSTED_CA_DIR="/etc/bridgehead/trusted-ca-certs"
   OVIS_OAUTH2_PROXY_PROVIDER_CA_FILES=""

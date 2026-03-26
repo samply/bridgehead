@@ -1,6 +1,6 @@
 services:
   omics-endpoint:
-    image: ghcr.io/samply/itcc-omics-ingest:deploy
+    image: ghcr.io/samply/itcc-omics-ingest:fix-task
     environment:
       API_KEY: ${GENERATE_API_KEY}
       RUST_LOG: debug
@@ -9,7 +9,9 @@ services:
       BEAM_URL: http://beam-proxy:8081
       ML_URL: http://mainzelliste:8080
       BLAZE_URL: http://bridgehead-itcc-blaze:8080/fhir/
-      DATA_LAKE_ID: "${DATA_LAKE_ID}"
+      DWH_SOCKET_ID: "${DWH_SOCKET_ID}"
+      DWH_TASK_ID: "${DWH_TASK_ID}"
+      ENABLE_SOCKETS: true
       PARTNER_ID: itcc-inform
       ML_API_KEY: ${GENERATE_API_KEY}
 

@@ -113,4 +113,4 @@ services:
       - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
       - "traefik.http.middlewares.ovis-frontend-ccp-strip.stripprefix.prefixes=/ccp-ovis"
       #- "traefik.http.routers.ovis-frontend-ccp.middlewares=ovis-frontend-ccp-slash-redirect,ovis-frontend-ccp-strip,traefik-forward-auth-ovis"
-      - "traefik.http.services.ovis-frontend.loadbalancer.server.port=5173"
+      - "traefik.http.services.ovis-frontend-ccp.loadbalancer.server.port=5173"

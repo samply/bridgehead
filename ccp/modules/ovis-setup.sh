@@ -18,14 +18,27 @@ if [ -n "$ENABLE_OVIS" ]; then
 
   if [ -d "$TRUSTED_CA_DIR" ]; then
     shopt -s nullglob
-    ca_cert_candidates=("$TRUSTED_CA_DIR"/*.crt)
+    ca_candidates=("$TRUSTED_CA_DIR"/*.crt "$TRUSTED_CA_DIR"/*.pem)
     shopt -u nullglob
 
-    if [ ${#ca_cert_candidates[@]} -gt 0 ]; then
-      OVIS_OAUTH2_PROXY_PROVIDER_CA_FILES="$(IFS=,; printf '%s' "${ca_cert_candidates[*]}")"
-      log INFO "OVIS oauth2-proxy will trust OIDC provider CA files from $TRUSTED_CA_DIR (*.crt)."
+    if [ ${#ca_candidates[@]} -gt 0 ]; then
+      valid_ca_files=()
+      for candidate in "${ca_candidates[@]}"; do
+        if [ -f "$candidate" ] && grep -q "BEGIN CERTIFICATE" "$candidate"; then
+          valid_ca_files+=("$candidate")
+        else
+          log WARN "Skipping non-certificate OIDC CA candidate: $candidate"
+        fi
+      done
+
+      if [ ${#valid_ca_files[@]} -gt 0 ]; then
+        OVIS_OAUTH2_PROXY_PROVIDER_CA_FILES="$(IFS=,; printf '%s' "${valid_ca_files[*]}")"
+        log INFO "OVIS oauth2-proxy will trust OIDC provider CA files from $TRUSTED_CA_DIR (*.crt/*.pem certificates only)."
+      else
+        log INFO "No valid OIDC CA certificate files found in $TRUSTED_CA_DIR; oauth2-proxy will use system trust store only."
+      fi
     else
-      log INFO "No *.crt files found in $TRUSTED_CA_DIR; oauth2-proxy will use system trust store only."
+      log INFO "No OIDC CA candidates (*.crt/*.pem) found in $TRUSTED_CA_DIR; oauth2-proxy will use system trust store only."
     fi
   else
     log INFO "Trusted CA directory $TRUSTED_CA_DIR is missing; oauth2-proxy will use system trust store only."

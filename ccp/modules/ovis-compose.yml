@@ -6,6 +6,8 @@ services:
     environment:
       - http_proxy=http://forward_proxy:3128
       - https_proxy=http://forward_proxy:3128
+      - OAUTH2_PROXY_USE_SYSTEM_TRUST_STORE=true
+      - OAUTH2_PROXY_PROVIDER_CA_FILES=${OVIS_OAUTH2_PROXY_PROVIDER_CA_FILES}
       - OAUTH2_PROXY_PROVIDER=oidc
       - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
       - OAUTH2_PROXY_OIDC_ISSUER_URL=${OIDC_PRIVATE_URL}
@@ -27,6 +29,8 @@ services:
       - OAUTH2_PROXY_ALLOWED_GROUPS=${OIDC_USER_GROUP}
       - OAUTH2_PROXY_OIDC_GROUPS_CLAIM=${OIDC_GROUP_CLAIM}
       - OAUTH2_PROXY_PROXY_PREFIX=/oauth2-ovis
+    volumes:
+      - /etc/bridgehead/trusted-ca-certs:/etc/bridgehead/trusted-ca-certs:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.ovis-traefik-forward-auth.loadbalancer.server.port=4180"

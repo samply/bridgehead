@@ -37,14 +37,20 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ML_DB_USER} -d mainzelliste"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   mainzelliste:
     image: medicalinformatics/mainzelliste:latest
     container_name: mainzelliste
     restart: unless-stopped
     depends_on:
-      - db
-
+      db:
+        condition: service_healthy
     ports:
       - 7887:8080
 

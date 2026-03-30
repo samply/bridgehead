@@ -1,15 +1,11 @@
 version: "3.7"
 
 services:
-  landing:
-    deploy:
-      replicas: 0 #deactivate landing page
-
   blaze:
     image: docker.verbis.dkfz.de/cache/samply/blaze:${BLAZE_TAG}
-    container_name: bridgehead-kr-blaze
+    container_name: bridgehead-pscc-blaze
     environment:
-      BASE_URL: "http://bridgehead-kr-blaze:8080"
+      BASE_URL: "http://bridgehead-pscc-blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx${BLAZE_MEMORY_CAP:-4096}m"
       DB_RESOURCE_CACHE_SIZE: ${BLAZE_RESOURCE_CACHE_CAP:-2500000}
       DB_BLOCK_CACHE_SIZE: ${BLAZE_MEMORY_CAP}
@@ -19,11 +15,11 @@ services:
       - "blaze-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.blaze_kr.rule=PathPrefix(`/kr-localdatamanagement`)"
-      - "traefik.http.middlewares.kr_b_strip.stripprefix.prefixes=/kr-localdatamanagement"
-      - "traefik.http.services.blaze_kr.loadbalancer.server.port=8080"
-      - "traefik.http.routers.blaze_kr.middlewares=kr_b_strip,auth"
-      - "traefik.http.routers.blaze_kr.tls=true"
+      - "traefik.http.routers.blaze_pscc.rule=PathPrefix(`/pscc-localdatamanagement`)"
+      - "traefik.http.middlewares.pscc_b_strip.stripprefix.prefixes=/pscc-localdatamanagement"
+      - "traefik.http.services.blaze_pscc.loadbalancer.server.port=8080"
+      - "traefik.http.routers.blaze_pscc.middlewares=pscc_b_strip,auth"
+      - "traefik.http.routers.blaze_pscc.tls=true"
 
   focus:
     image: docker.verbis.dkfz.de/cache/samply/focus:${FOCUS_TAG}
@@ -32,10 +28,11 @@ services:
       API_KEY: ${FOCUS_BEAM_SECRET_SHORT}
       BEAM_APP_ID_LONG: focus.${PROXY_ID}
       PROXY_ID: ${PROXY_ID}
-      BLAZE_URL: "http://bridgehead-kr-blaze:8080/fhir/"
+      BLAZE_URL: "http://bridgehead-pscc-blaze:8080/fhir/"
       BEAM_PROXY_URL: http://beam-proxy:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
       EPSILON: 0.28
+      ENDPOINT_TYPE: ${FOCUS_ENDPOINT_TYPE:-blaze}
     depends_on:
       - "beam-proxy"
       - "blaze"
@@ -57,8 +54,10 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/kr/root.crt.pem:/conf/root.crt.pem:ro
+      - /srv/docker/bridgehead/pscc/root.crt.pem:/conf/root.crt.pem:ro
 
+  landing:
+    profiles: [deactivated]
 
 volumes:
   blaze-data:

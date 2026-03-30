@@ -35,6 +35,9 @@ case "$PROJECT" in
 	cce)
 		#nothing extra to do
 		;;
+	pscc)
+		#nothing extra to do
+		;;
 	itcc)
 		#nothing extra to do
 		;;
@@ -42,6 +45,9 @@ case "$PROJECT" in
 		#nothing extra to do
 		;;
 	dhki)
+		#nothing extra to do
+		;;
+	nngm)
 		#nothing extra to do
 		;;
 	minimal)

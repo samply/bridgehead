@@ -54,7 +54,7 @@ checkOwner(){
 
 printUsage() {
 	echo "Usage: bridgehead start|stop|logs|docker-logs|is-running|update|check|install|uninstall|adduser|enroll PROJECTNAME"
-	echo "PROJECTNAME should be one of ccp|bbmri|cce|itcc|kr|dhki"
+	echo "PROJECTNAME should be one of ccp|bbmri|cce|itcc|kr|dhki|nngm"
 }
 
 checkRequirements() {
@@ -327,7 +327,7 @@ function sync_secrets() {
         -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
         -e PROXY_ID=$proxy_id \
         -e BROKER_URL=$broker_url \
-        -e OIDC_PROVIDER=secret-sync-central.test-secret-sync.$broker_id \
+        -e OIDC_PROVIDER=secret-sync-central.central-secret-sync.$broker_id \
         -e SECRET_DEFINITIONS=$secret_sync_args \
         docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
 
@@ -337,7 +337,7 @@ function sync_secrets() {
 }
 
 function secret_sync_gitlab_token() {
-    if [ "$PROJECT" == "minimal" ]; then
+    if [[ "$PROJECT" != "dktk" && "$PROJECT" != "bbmri" ]]; then
         log "INFO" "Not running Secret Sync for project minimal"
         return
     fi

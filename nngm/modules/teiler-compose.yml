@@ -1,0 +1,73 @@
+version: "3.7"
+
+services:
+
+  teiler-orchestrator:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:latest
+    container_name: bridgehead-teiler-orchestrator
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_orchestrator_nngm.rule=PathPrefix(`/nngm-teiler`)"
+      - "traefik.http.services.teiler_orchestrator_nngm.loadbalancer.server.port=9000"
+      - "traefik.http.routers.teiler_orchestrator_nngm.tls=true"
+      - "traefik.http.middlewares.teiler_orchestrator_nngm_strip.stripprefix.prefixes=/nngm-teiler"
+      - "traefik.http.routers.teiler_orchestrator_nngm.middlewares=teiler_orchestrator_nngm_strip"
+    environment:
+      TEILER_BACKEND_URL: "/nngm-teiler-backend"
+      TEILER_DASHBOARD_URL: "/nngm-teiler-dashboard"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
+      HTTP_RELATIVE_PATH: "/nngm-teiler"
+
+  teiler-dashboard:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:${TEILER_DASHBOARD_TAG}
+    container_name: bridgehead-teiler-dashboard
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_dashboard_nngm.rule=PathPrefix(`/nngm-teiler-dashboard`)"
+      - "traefik.http.services.teiler_dashboard_nngm.loadbalancer.server.port=80"
+      - "traefik.http.routers.teiler_dashboard_nngm.tls=true"
+      - "traefik.http.middlewares.teiler_dashboard_nngm_strip.stripprefix.prefixes=/nngm-teiler-dashboard"
+      - "traefik.http.routers.teiler_dashboard_nngm.middlewares=teiler_dashboard_nngm_strip"
+    environment:
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_BACKEND_URL: "/nngm-teiler-backend"
+      TEILER_DASHBOARD_URL: "/nngm-teiler-dashboard"
+      OIDC_URL: "${OIDC_URL}"
+      OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
+      OIDC_TOKEN_GROUP: "${OIDC_GROUP_CLAIM}"
+      TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
+      TEILER_ADMIN_EMAIL: "${OPERATOR_EMAIL}"
+      TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
+      TEILER_PROJECT: "${PROJECT}"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
+      TEILER_ORCHESTRATOR_URL: "/nngm-teiler"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/nngm-teiler"
+      TEILER_USER: "${OIDC_USER_GROUP}"
+      TEILER_ADMIN: "${OIDC_ADMIN_GROUP}"
+      REPORTER_DEFAULT_TEMPLATE_ID: "ccp-qb"
+      EXPORTER_DEFAULT_TEMPLATE_ID: "ccp"
+
+
+# TODO: Replace dktk-teiler-backend with nngm-teiler-backend
+  teiler-backend:
+    image: docker.verbis.dkfz.de/ccp/dktk-teiler-backend:latest
+    container_name: bridgehead-teiler-backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_backend_nngm.rule=PathPrefix(`/nngm-teiler-backend`)"
+      - "traefik.http.services.teiler_backend_nngm.loadbalancer.server.port=8085"
+      - "traefik.http.routers.teiler_backend_nngm.tls=true"
+      - "traefik.http.middlewares.teiler_backend_nngm_strip.stripprefix.prefixes=/nngm-teiler-backend"
+      - "traefik.http.routers.teiler_backend_nngm.middlewares=teiler_backend_nngm_strip"
+    environment:
+      LOG_LEVEL: "INFO"
+      APPLICATION_PORT: "8085"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/nngm-teiler"
+      TEILER_ORCHESTRATOR_URL: "/nngm-teiler"
+      TEILER_DASHBOARD_DE_URL: "/nngm-teiler-dashboard/de"
+      TEILER_DASHBOARD_EN_URL: "/nngm-teiler-dashboard/en"
+      HTTP_PROXY: "http://forward_proxy:3128"
+      ENABLE_MTBA: "${ENABLE_MTBA}"
+      ENABLE_DATASHIELD: "${ENABLE_DATASHIELD}"
+      IDMANAGER_UPLOAD_APIKEY: "${IDMANAGER_UPLOAD_APIKEY}" # Only used to check if the ID Manager is active

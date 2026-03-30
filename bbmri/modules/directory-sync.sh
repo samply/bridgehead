@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -n "${DS_DIRECTORY_USER_NAME}" ]; then
+if [ -n "${DS_DIRECTORY_USER_NAME}" ] || [ -n "${DS_DIRECTORY_USER_TOKEN}" ]; then
 	log INFO "Directory sync setup detected -- will start directory sync service."
 	OVERRIDE+=" -f ./$PROJECT/modules/directory-sync-compose.yml"
 fi

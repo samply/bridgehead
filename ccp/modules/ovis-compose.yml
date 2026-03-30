@@ -80,25 +80,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ovis-backend.rule=PathPrefix(`/graphql`)"
-      - "traefik.http.routers.ovis-backend.tls=true"
-      - "traefik.http.routers.ovis-backend.middlewares=traefik-forward-auth-ovis"
-      - "traefik.http.routers.ovis-backend.service=ovis-backend"
-      - "traefik.http.routers.ovis-backend-ccp.rule=PathPrefix(`/ccp-ovis/graphql`)"
-      - "traefik.http.routers.ovis-backend-ccp.tls=true"
-      - "traefik.http.middlewares.ovis-backend-ccp-strip.stripprefix.prefixes=/ccp-ovis"
-      - "traefik.http.routers.ovis-backend-ccp.middlewares=ovis-backend-ccp-strip,traefik-forward-auth-ovis"
-      - "traefik.http.routers.ovis-backend-ccp.service=ovis-backend"
-      - "traefik.http.services.ovis-backend.loadbalancer.server.port=4001"
-
   ovis-frontend:
     image: docker.verbis.dkfz.de/ovis/ovis-frontend:latest
     container_name: bridgehead-ccp-ovis-frontend
     environment:
       OVIS_PUBLIC_BASE_PATH: /ccp-ovis
-      PUBLIC_GRAPHQL_URL: https://${HOST}/ccp-ovis/graphql
       PUBLIC_LOGIN_ENABLED: "false"
       PUBLIC_OVIS_IMPORT: ccp
     depends_on:
@@ -112,5 +98,5 @@ services:
       - "traefik.http.routers.ovis-frontend-ccp.tls=true"
       - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
       - "traefik.http.middlewares.ovis-frontend-ccp-strip.stripprefix.prefixes=/ccp-ovis"
-      #- "traefik.http.routers.ovis-frontend-ccp.middlewares=ovis-frontend-ccp-slash-redirect,ovis-frontend-ccp-strip,traefik-forward-auth-ovis"
+      - "traefik.http.routers.ovis-frontend-ccp.middlewares=traefik-forward-auth-ovis,ovis-frontend-ccp-slash-redirect,ovis-frontend-ccp-strip"
       - "traefik.http.services.ovis-frontend-ccp.loadbalancer.server.port=5173"

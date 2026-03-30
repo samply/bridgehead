@@ -80,6 +80,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    # Internal only - no direct Traefik exposure. GraphQL is accessed via frontend internal proxy.
+
   ovis-frontend:
     image: docker.verbis.dkfz.de/ovis/ovis-frontend:latest
     container_name: bridgehead-ccp-ovis-frontend
@@ -87,7 +89,7 @@ services:
       OVIS_PUBLIC_BASE_PATH: /ccp-ovis
       PUBLIC_LOGIN_ENABLED: "false"
       PUBLIC_OVIS_IMPORT: ccp
-      APP_DOMAIN: ${HOST}
+      ORIGIN: https://${HOST}
     depends_on:
       ovis-backend-apollo:
         condition: service_healthy
@@ -98,6 +100,5 @@ services:
       - "traefik.http.middlewares.ovis-frontend-ccp-slash-redirect.redirectregex.permanent=true"
       - "traefik.http.routers.ovis-frontend-ccp.tls=true"
       - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
-      - "traefik.http.middlewares.ovis-frontend-ccp-strip.stripprefix.prefixes=/ccp-ovis"
-      - "traefik.http.routers.ovis-frontend-ccp.middlewares=traefik-forward-auth-ovis,ovis-frontend-ccp-slash-redirect,ovis-frontend-ccp-strip"
+      - "traefik.http.routers.ovis-frontend-ccp.middlewares=traefik-forward-auth-ovis,ovis-frontend-ccp-slash-redirect"
       - "traefik.http.services.ovis-frontend-ccp.loadbalancer.server.port=5173"

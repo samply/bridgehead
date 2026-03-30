@@ -87,6 +87,7 @@ services:
       OVIS_PUBLIC_BASE_PATH: /ccp-ovis
       PUBLIC_LOGIN_ENABLED: "false"
       PUBLIC_OVIS_IMPORT: ccp
+      APP_DOMAIN: ${HOST}
     depends_on:
       ovis-backend-apollo:
         condition: service_healthy

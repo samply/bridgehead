@@ -18,9 +18,6 @@ services:
     depends_on:
       - "blaze"
     volumes:
-      - agent-data:/app/data
+      - /var/cache/bridgehead/bbmri/agent-db:/app/data
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-volumes:
-  agent-data:
-    driver: local

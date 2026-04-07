@@ -437,7 +437,7 @@ ENABLE_DATA_QUALITY_AGENT=true
 
 #### Sharing Data Quality Reports (recommended)
 
-We strongly encourage sharing your data quality reports with the central BBMRI-ERIC quality dashboard. The reports contain only aggregated, non-patient-identifiable statistics and help the network to monitor and improve overall data quality.
+We encourage sharing your data quality reports with the central BBMRI-ERIC quality dashboard. The reports contain only aggregated, non-patient-identifiable statistics and help the network to monitor and improve overall data quality. However, quality reporting is completely optional and opt-in.
 
 To opt in, additionally set the following variables in your `<PROJECT>.conf` file:
 

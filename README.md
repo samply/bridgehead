@@ -27,6 +27,7 @@ This repository is the starting point for any information and tools you will nee
     - [Teiler (Frontend)](#teiler-frontend)
     - [Data Exporter Service](#data-exporter-service)
       - [Data Quality Report](#data-quality-report)
+    - [Data Quality Agent](#data-quality-agent)
 4. [Things you should know](#things-you-should-know)
     - [Auto-Updates](#auto-updates)
     - [Auto-Backups](#auto-backups)
@@ -424,6 +425,32 @@ ENABLE_EXPORTER=true
 ```
 [For further information](docs/exporter.md)  
 
+### Data Quality Agent
+
+The Data Quality Agent is an optional module that periodically evaluates the quality of FHIR data stored in Blaze. It generates local data quality reports accessible via the Bridgehead web interface.
+
+To enable the service, set the following variable in your `<PROJECT>.conf` file:
+
+```bash
+ENABLE_DATA_QUALITY_AGENT=true
+```
+
+#### Sharing Data Quality Reports (recommended)
+
+We encourage sharing your data quality reports with the central BBMRI-ERIC quality dashboard. The reports contain only aggregated, non-patient-identifiable statistics and help the network to monitor and improve overall data quality. However, quality reporting is completely optional and opt-in.
+
+To opt in, additionally set the following variables in your `<PROJECT>.conf` file:
+
+```bash
+DATA_QUALITY_SERVER_URL=https://quality-dashboard.bbmri-eric.eu
+DATA_QUALITY_SERVER_NAME=Central Data Quality Server of BBMRI
+```
+
+If these variables are not set, the Data Quality Agent will still run and generate local reports, but no data will be shared externally.
+
+Reports are accessible at `https://<your-host>/bbmri-data-quality-agent` (default credentials are admin:admin, please change it after first login!!).
+
+[Official documentation](https://fdqf.bbmri-eric.eu/user/deployment.html)
 ## Things you should know
 
 ### Auto-Updates

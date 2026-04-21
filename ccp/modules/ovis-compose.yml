@@ -41,13 +41,14 @@ services:
   ovis-backend-database-mongodb:
     image: docker.verbis.dkfz.de/ovis/ovis-backend-mongodb:latest
     container_name: bridgehead-ccp-ovis-mongo
+    volumes:
+      - ovis-mongodb-data:/data/db
 
   ovis-backend-mongodb-data-preprocessing:
     image: docker.verbis.dkfz.de/ovis/ovis-backend-preprocessor:latest
     container_name: bridgehead-ccp-ovis-preprocessing
     environment:
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
-
     depends_on:
       - ovis-backend-database-mongodb
     healthcheck:
@@ -56,6 +57,8 @@ services:
       timeout: 5s
       retries: 6
       start_period: 5s
+    profiles:
+      - ovisreimport
 
   ovis-backend-data-import:
     image: docker.verbis.dkfz.de/ovis/ovis-backend-data-import-ccp:latest
@@ -65,6 +68,8 @@ services:
         condition: service_healthy
     environment:
       FHIR_SERVER_URL: http://bridgehead-ccp-blaze:8080/fhir
+    profiles:
+      - ovisreimport
 
   ovis-backend-apollo:
     image: docker.verbis.dkfz.de/ovis/ovis-backend-apollo:latest
@@ -73,8 +78,6 @@ services:
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
     depends_on:
       - ovis-backend-database-mongodb
-      - ovis-backend-mongodb-data-preprocessing
-      - ovis-backend-data-import
     healthcheck:
       test: ["CMD-SHELL", "test -d /app/node_modules/mongodb"]
       interval: 10s
@@ -102,3 +105,6 @@ services:
       - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
       - "traefik.http.routers.ovis-frontend-ccp.middlewares=traefik-forward-auth-ovis,ovis-frontend-ccp-slash-redirect"
       - "traefik.http.services.ovis-frontend-ccp.loadbalancer.server.port=5173"
+
+volumes:
+  ovis-mongodb-data:

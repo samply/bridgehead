@@ -186,6 +186,19 @@ case "$ACTION" in
 		;;
 	postRun | postUpdate)
 		;;
+	### ovisreimport is untested, just writing down the idea to test it later
+	# ovisreimport)
+  # 	./bridgehead stop ${PROJECT}
+  #   docker volume rm ${PROJECT}_ovis-mongodb-data
+	# 	loadVars
+	# 	hc_send log "Bridgehead $PROJECT startup (ovisreimport): Checking requirements ..."
+	# 	checkRequirements
+	# 	sync_secrets
+	# 	hc_send log "Bridgehead $PROJECT startup (ovisreimport): Requirements checked out. Now starting bridgehead ..."
+	# 	exec $COMPOSE --profile ovisreimport -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit	*)
+	# 	printUsage
+	# 	exit 1
+	# 	;;
 	*)
 		printUsage
 		exit 1

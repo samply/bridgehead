@@ -1,9 +1,8 @@
 services:
   omics-endpoint:
-    image: ghcr.io/samply/itcc-omics-ingest:dep-dwh
+    image: ghcr.io/samply/itcc-omics-ingest:main
     environment:
       API_KEY: ${GENERATE_API_KEY}
-      RUST_LOG: debug
       BEAM_ID: "omics-endpoint.${PROXY_ID}"
       BEAM_SECRET: "${FOCUS_BEAM_SECRET_SHORT}"
       BEAM_URL: http://beam-proxy:8081
@@ -12,13 +11,14 @@ services:
       DWH_SOCKET_ID: "${DWH_SOCKET_ID}"
       DWH_TASK_ID: "${DWH_TASK_ID}"
       ENABLE_SOCKETS: false
-      PARTNER_ID: itcc-inform
+      PARTNER_ID: "${SITE_ID}"
       ML_API_KEY: ${GENERATE_API_KEY}
 
     volumes:
       - /var/cache/bridgehead/omics/data:/data/uploads
     labels:
-      - "traefik.http.routers.omics.rule=Host(`${HOST}`) && PathPrefix(`/api/upload`)"
+      - "traefik.http.routers.omics.rule=Host(`${HOST}`) &&
+        PathPrefix(`/api/upload`)"
       - "traefik.enable=true"
       - "traefik.http.services.omics.loadbalancer.server.port=6080"
       - "traefik.http.routers.omics.tls=true"
@@ -38,7 +38,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${ML_DB_USER} -d mainzelliste"]
+      test: [ "CMD-SHELL", "pg_isready -U ${ML_DB_USER} -d mainzelliste" ]
       interval: 5s
       timeout: 5s
       retries: 10

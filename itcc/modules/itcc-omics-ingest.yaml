@@ -2,13 +2,80 @@ services:
   omics-endpoint:
     image: ghcr.io/samply/itcc-omics-ingest:main
     environment:
-      - API_KEY=${GENERATE_API_KEY}
+      API_KEY: ${GENERATE_API_KEY}
+      BEAM_ID: "omics-endpoint.${PROXY_ID}"
+      BEAM_SECRET: "${FOCUS_BEAM_SECRET_SHORT}"
+      BEAM_URL: http://beam-proxy:8081
+      ML_URL: http://mainzelliste:8080
+      BLAZE_URL: http://bridgehead-itcc-blaze:8080/fhir/
+      DWH_SOCKET_ID: "${DWH_SOCKET_ID}"
+      DWH_TASK_ID: "${DWH_TASK_ID}"
+      ENABLE_SOCKETS: false
+      PARTNER_ID: "${SITE_ID}"
+      ML_API_KEY: ${GENERATE_API_KEY}
+
     volumes:
       - /var/cache/bridgehead/omics/data:/data/uploads
     labels:
-      - "traefik.http.routers.omics.rule=Host(`${HOST}`) && PathPrefix(`/api/omics`)"
+      - "traefik.http.routers.omics.rule=Host(`${HOST}`) &&
+        PathPrefix(`/api/upload`)"
       - "traefik.enable=true"
       - "traefik.http.services.omics.loadbalancer.server.port=6080"
       - "traefik.http.routers.omics.tls=true"
       - "traefik.http.middlewares.omics-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.omics.middlewares=omics-stripprefix"
+
+  db:
+    image: postgres:15
+    container_name: db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mainzelliste
+      POSTGRES_USER: ${ML_DB_USER}
+      POSTGRES_PASSWORD: ${PATIENTLIST_POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${ML_DB_USER} -d mainzelliste" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  mainzelliste:
+    image: medicalinformatics/mainzelliste:latest
+    container_name: mainzelliste
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 7887:8080
+
+    environment:
+      ML_API_KEY: ${GENERATE_API_KEY}
+      ML_DB_HOST: db
+      ML_DB_PORT: "5432"
+      ML_DB_NAME: mainzelliste
+      ML_DB_USER: ${ML_DB_USER}
+      ML_DB_PASS: ${PATIENTLIST_POSTGRES_PASSWORD}
+      ML_DB_DRIVER: org.postgresql.Driver
+      ML_DB_TYPE: postgresql
+      ML_LOG_LEVEL: INFO
+      ML_ALLOWEDREMOTEADDRESSES: "127.0.0.1,::1,172.16.0.0/12"
+
+    secrets:
+      - mainzelliste.docker.conf
+      - source: symmetric_key
+        target: /etc/resources/keys/symmetric_key.der
+
+volumes:
+  db_data:
+secrets:
+  mainzelliste.docker.conf:
+    file: /etc/bridgehead/mainzelliste/mainzelliste.docker.conf
+
+  symmetric_key:
+    file: /etc/bridgehead/mainzelliste/keyset_siv.json

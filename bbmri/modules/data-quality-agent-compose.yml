@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  data-quality-agent:
+    image: ghcr.io/bbmri-cz/data-quality-server:${DATA_QUALITY_AGENT_TAG}
+    container_name: bridgehead-bbmri-data-quality-agent
+    environment:
+      APP_SETTING_FHIR_URL: http://bridgehead-bbmri-blaze:8080/fhir
+      REPORTING_SERVER_URL: ${DATA_QUALITY_SERVER_URL}
+      REPORTING_SERVER_NAME: ${DATA_QUALITY_SERVER_NAME}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.data_quality_agent_bbmri.rule=PathPrefix(`/bbmri-data-quality-agent`)"
+      - "traefik.http.services.data_quality_agent_bbmri.loadbalancer.server.port=8082"
+      - "traefik.http.routers.data_quality_agent_bbmri.tls=true"
+      - "traefik.http.middlewares.data_quality_agent_bbmri_strip.stripprefix.prefixes=/bbmri-data-quality-agent"
+      - "traefik.http.routers.data_quality_agent_bbmri.middlewares=data_quality_agent_bbmri_strip,auth"
+    depends_on:
+      - "blaze"
+    volumes:
+      - /var/cache/bridgehead/bbmri/agent-db:/app/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro

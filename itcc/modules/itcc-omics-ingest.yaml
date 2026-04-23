@@ -1,6 +1,6 @@
 services:
   omics-endpoint:
-    image: ghcr.io/samply/itcc-omics-ingest:fix-task
+    image: ghcr.io/samply/itcc-omics-ingest:dep-dwh
     environment:
       API_KEY: ${GENERATE_API_KEY}
       RUST_LOG: debug
@@ -11,14 +11,14 @@ services:
       BLAZE_URL: http://bridgehead-itcc-blaze:8080/fhir/
       DWH_SOCKET_ID: "${DWH_SOCKET_ID}"
       DWH_TASK_ID: "${DWH_TASK_ID}"
-      ENABLE_SOCKETS: true
+      ENABLE_SOCKETS: false
       PARTNER_ID: itcc-inform
       ML_API_KEY: ${GENERATE_API_KEY}
 
     volumes:
       - /var/cache/bridgehead/omics/data:/data/uploads
     labels:
-      - "traefik.http.routers.omics.rule=Host(`${HOST}`) && PathPrefix(`/api/omics`)"
+      - "traefik.http.routers.omics.rule=Host(`${HOST}`) && PathPrefix(`/api/upload`)"
       - "traefik.enable=true"
       - "traefik.http.services.omics.loadbalancer.server.port=6080"
       - "traefik.http.routers.omics.tls=true"

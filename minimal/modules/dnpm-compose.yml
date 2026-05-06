@@ -28,7 +28,7 @@ services:
       PROXY_URL: http://dnpm-beam-proxy:8081
       PROXY_APIKEY: ${DNPM_BEAM_SECRET_SHORT}
       APP_ID: dnpm-connect.${DNPM_PROXY_ID}
-      DISCOVERY_URL: "./conf/central_targets.json"
+      DISCOVERY_URL: "http://dnpm-broker-connector:8080/sites"
       LOCAL_TARGETS_FILE: "/conf/connect_targets.json"
       HTTP_PROXY: http://forward_proxy:3128
       HTTPS_PROXY: http://forward_proxy:3128
@@ -49,6 +49,16 @@ services:
       - "traefik.http.routers.dnpm-connect.middlewares=dnpm-connect-strip"
       - "traefik.http.services.dnpm-connect.loadbalancer.server.port=8062"
       - "traefik.http.routers.dnpm-connect.tls=true"
+
+  dnpm-broker-connector:
+    image: samply/dnpm-broker-connector:main
+    container_name: bridgehead-dnpm-broker-connector
+    command: serve-sites
+    environment:
+      BEAM_CONNECT_URL: "http://dnpm-beam-connect:8062"
+      BEAM_CONNECT_HOST: "${DNPM_BEAM_CONNECT_HOST}"
+      DNPM_BROKER_BEAM_ID: "dnpm-connect.dnpm-bridge.${DNPM_BROKER_ID}"
+      DNPM_BROKER_VHOST: "dnpm.de"
 
   dnpm-echo:
     image: docker.verbis.dkfz.de/cache/samply/bridgehead-echo:latest

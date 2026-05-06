@@ -19,4 +19,9 @@ if [ -n "${ENABLE_DNPM}" ]; then
 	else
 		DNPM_ADDITIONAL_NO_PROXY=""
 	fi
+	if [ -n "${ENABLE_DNPM_NODE}" ]; then
+		DNPM_BEAM_CONNECT_HOST="${DNPM_BEAM_CONNECT_HOST:-$HOST}"
+	else
+	    DNPM_BEAM_CONNECT_HOST="dnpm-beam-connect:8062"
+	fi
 fi

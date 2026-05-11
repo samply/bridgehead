@@ -42,7 +42,7 @@ This repository is the starting point for any information and tools you will nee
 
 The data protection officer at your site will probably want to know exactly what our software does with patient data, and you may need to get their approval before you are allowed to install a Bridgehead. To help you with this, we have provided some data protection concepts:
 
-- [Germany](https://www.bbmri.de/biobanking/it/infrastruktur/datenschutzkonzept/)
+- [Germany](https://www.netzwerk-universitaetsmedizin.de/plattformen/gbn/biobanking/it/infrastruktur/datenschutzkonzept)
 
 ### Hardware
 

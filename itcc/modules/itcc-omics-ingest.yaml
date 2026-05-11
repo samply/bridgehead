@@ -57,7 +57,7 @@ services:
     secrets:
       - mainzelliste.docker.conf
       - source: symmetric_key
-        target: /etc/resources/keys/symmetric_key.der
+        target: /etc/resources/keys/symmetric_key.json
 
 volumes:
   patientlist-db-data:
@@ -66,4 +66,4 @@ secrets:
     file: /etc/bridgehead/mainzelliste/mainzelliste.docker.conf
 
   symmetric_key:
-    file: /etc/bridgehead/mainzelliste/keyset_siv.json
+    file: /var/bridgehead/mainzelliste/keyset_siv.json

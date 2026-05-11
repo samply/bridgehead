@@ -4,7 +4,7 @@ if [ -n "$ENABLE_OMICS" ];then
   OVERRIDE+=" -f ./$PROJECT/modules/itcc-omics-ingest.yaml"
   GENERATE_API_KEY="$(generate_simple_password 'omics')"
   PATIENTLIST_POSTGRES_PASSWORD=="$(generate_simple_password 'mainzelliste')"
-  KEYSET=/etc/bridgehead/mainzelliste/keyset_siv.json
+  KEYSET=/var/bridgehead/mainzelliste/keyset_siv.json
   if [ ! -f "$KEYSET" ]; then
     mkdir -p "$(dirname "$KEYSET")"
     KEY_ID=$(($(openssl rand -hex 4 | sed 's/^/0x/') & 0x7FFFFFFF))

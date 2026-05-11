@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   data-quality-agent:
-    image: ghcr.io/bbmri-cz/data-quality-server:${DATA_QUALITY_AGENT_TAG}
+    image: ghcr.io/bbmri-cz/data-quality-agent:${DATA_QUALITY_AGENT_TAG}
     container_name: bridgehead-bbmri-data-quality-agent
     environment:
       APP_SETTING_FHIR_URL: http://bridgehead-bbmri-blaze:8080/fhir

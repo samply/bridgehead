@@ -40,7 +40,7 @@ services:
     container_name: bridgehead-patientlist
     restart: unless-stopped
     depends_on:
-      db:
+      patientlist-db:
         condition: service_healthy
     environment:
       ML_API_KEY: ${GENERATE_API_KEY}

@@ -2,9 +2,9 @@ version: "3.7"
 services:
   lens:
     container_name: lens-federated-search
+    image: docker.verbis.dkfz.de/ccp/lens:pscc
     environment:
       PUBLIC_SPOT_URL: https://${HOST}/prod
-    image: docker.verbis.dkfz.de/ccp/lens:pscc
     labels:
       - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"
@@ -13,7 +13,6 @@ services:
 
   spot:
     image: samply/rustyspot:latest
-    platform: linux/amd64
     environment:
       HTTP_PROXY: ${HTTP_PROXY_URL}
       HTTPS_PROXY: ${HTTPS_PROXY_URL}
@@ -40,3 +39,7 @@ services:
       - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/prod"
       - "traefik.http.routers.spot.tls=true"
       - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot,auth"
+
+  beam-proxy:
+    environment:
+      APP_spot_KEY: ${FOCUS_BEAM_SECRET_SHORT}

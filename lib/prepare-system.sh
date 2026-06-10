@@ -11,8 +11,7 @@ log "INFO" "Preparing your system for bridgehead installation ..."
 if [[ $(grep -i Microsoft /proc/version) ]]; then
     # Check, if systemd is available
     if [ "$(systemctl is-system-running)" = "offline" ]; then
-        log "ERROR" "It seems you have no active systemd environment in your WSL environment. Please follow the guide in https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/"
-        exit 1
+        log "WARN" "It seems you have no active systemd environment in your WSL environment. Please follow the guide in https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/"
     fi
 fi
 
@@ -115,4 +114,3 @@ chown -R bridgehead:docker /tmp/bridgehead /var/cache/bridgehead
 chmod -R g+wr /var/cache/bridgehead /tmp/bridgehead
 
 log INFO "System preparation is completed and configuration is present."
-

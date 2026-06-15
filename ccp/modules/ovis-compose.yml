@@ -1,5 +1,3 @@
-version: "3.7"
-
 services:
   ovis-traefik-forward-auth:
     image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:latest
@@ -39,16 +37,15 @@ services:
         condition: service_healthy
 
   ovis-backend-database-mongodb:
-    image: docker.verbis.dkfz.de/ovis/ovis-backend-mongodb:latest
+    image: samply/ovis-backend-mongodb:${OVIS_IMAGE_TAG:-main}
     container_name: bridgehead-ccp-ovis-mongo
-    volumes:
-      - ovis-mongodb-data:/data/db
 
   ovis-backend-mongodb-data-preprocessing:
-    image: docker.verbis.dkfz.de/ovis/ovis-backend-preprocessor:latest
+    image: samply/ovis-backend-preprocessor:${OVIS_IMAGE_TAG:-main}
     container_name: bridgehead-ccp-ovis-preprocessing
     environment:
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
+
     depends_on:
       - ovis-backend-database-mongodb
     healthcheck:
@@ -57,27 +54,25 @@ services:
       timeout: 5s
       retries: 6
       start_period: 5s
-    profiles:
-      - ovisreimport
 
   ovis-backend-data-import:
-    image: docker.verbis.dkfz.de/ovis/ovis-backend-data-import-ccp:latest
+    image: samply/ovis-backend-data-import:${OVIS_IMAGE_TAG:-main}
     container_name: bridgehead-ccp-ovis-import
     depends_on:
       ovis-backend-mongodb-data-preprocessing:
         condition: service_healthy
     environment:
       FHIR_SERVER_URL: http://bridgehead-ccp-blaze:8080/fhir
-    profiles:
-      - ovisreimport
 
   ovis-backend-apollo:
-    image: docker.verbis.dkfz.de/ovis/ovis-backend-apollo:latest
+    image: samply/ovis-backend-apollo:${OVIS_IMAGE_TAG:-main}
     container_name: bridgehead-ccp-ovis-backend
     environment:
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
     depends_on:
       - ovis-backend-database-mongodb
+      - ovis-backend-mongodb-data-preprocessing
+      - ovis-backend-data-import
     healthcheck:
       test: ["CMD-SHELL", "test -d /app/node_modules/mongodb"]
       interval: 10s
@@ -86,12 +81,12 @@ services:
     # Internal only - no direct Traefik exposure. GraphQL is accessed via frontend internal proxy.
 
   ovis-frontend:
-    image: docker.verbis.dkfz.de/ovis/ovis-frontend:latest
+    image: samply/ovis-frontend:${OVIS_IMAGE_TAG:-main}
     container_name: bridgehead-ccp-ovis-frontend
     environment:
       OVIS_PUBLIC_BASE_PATH: /ccp-ovis
       PUBLIC_LOGIN_ENABLED: "false"
-      PUBLIC_OVIS_IMPORT: ccp
+      PUBLIC_IMPORT_MODE: ccp
       ORIGIN: https://${HOST}
     depends_on:
       ovis-backend-apollo:
@@ -105,6 +100,3 @@ services:
       - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
       - "traefik.http.routers.ovis-frontend-ccp.middlewares=traefik-forward-auth-ovis,ovis-frontend-ccp-slash-redirect"
       - "traefik.http.services.ovis-frontend-ccp.loadbalancer.server.port=5173"
-
-volumes:
-  ovis-mongodb-data:

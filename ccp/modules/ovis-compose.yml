@@ -105,3 +105,6 @@ services:
       - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
       - "traefik.http.routers.ovis-frontend-ccp.middlewares=traefik-forward-auth-ovis,ovis-frontend-ccp-slash-redirect"
       - "traefik.http.services.ovis-frontend-ccp.loadbalancer.server.port=5173"
+
+volumes:
+  ovis-mongodb-data:

@@ -39,13 +39,14 @@ services:
   ovis-backend-database-mongodb:
     image: samply/ovis-backend-mongodb:${OVIS_IMAGE_TAG:-main}
     container_name: bridgehead-ccp-ovis-mongo
+    volumes:
+      - ovis-mongodb-data:/data/db
 
   ovis-backend-mongodb-data-preprocessing:
     image: samply/ovis-backend-preprocessor:${OVIS_IMAGE_TAG:-main}
     container_name: bridgehead-ccp-ovis-preprocessing
     environment:
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
-
     depends_on:
       - ovis-backend-database-mongodb
     healthcheck:
@@ -54,6 +55,8 @@ services:
       timeout: 5s
       retries: 6
       start_period: 5s
+    profiles:
+      - ovisreimport
 
   ovis-backend-data-import:
     image: samply/ovis-backend-data-import:${OVIS_IMAGE_TAG:-main}
@@ -63,6 +66,8 @@ services:
         condition: service_healthy
     environment:
       FHIR_SERVER_URL: http://bridgehead-ccp-blaze:8080/fhir
+    profiles:
+      - ovisreimport
 
   ovis-backend-apollo:
     image: samply/ovis-backend-apollo:${OVIS_IMAGE_TAG:-main}

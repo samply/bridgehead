@@ -31,7 +31,7 @@ services:
       - "traefik.http.routers.ovis-traefik-forward-auth.rule=Host(`${HOST}`) && PathPrefix(`/oauth2-ovis`)"
       - "traefik.http.routers.ovis-traefik-forward-auth.tls=true"
       - "traefik.http.middlewares.traefik-forward-auth-ovis.forwardauth.address=http://ovis-traefik-forward-auth:4180"
-      - "traefik.http.middlewares.traefik-forward-auth-ovis.forwardauth.authResponseHeaders=Authorization"
+      - "traefik.http.middlewares.traefik-forward-auth-ovis.forwardauth.authResponseHeaders=Authorization,X-Auth-Request-Email,X-Auth-Request-User,X-Auth-Request-Preferred-Username"
     depends_on:
       forward_proxy:
         condition: service_healthy
@@ -55,8 +55,6 @@ services:
       timeout: 5s
       retries: 6
       start_period: 5s
-    profiles:
-      - ovisreimport
 
   ovis-backend-data-import:
     image: samply/ovis-backend-data-import:${OVIS_IMAGE_TAG:-main}
@@ -66,14 +64,14 @@ services:
         condition: service_healthy
     environment:
       FHIR_SERVER_URL: http://bridgehead-ccp-blaze:8080/fhir
-    profiles:
-      - ovisreimport
 
   ovis-backend-apollo:
     image: samply/ovis-backend-apollo:${OVIS_IMAGE_TAG:-main}
     container_name: bridgehead-ccp-ovis-backend
     environment:
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
+      OVIS_SUPERADMIN_EMAILS: ${OVIS_SUPERADMIN_EMAILS:-}
+      OVIS_AUTO_CREATE_USERS: ${OVIS_AUTO_CREATE_USERS:-false}
     depends_on:
       - ovis-backend-database-mongodb
       - ovis-backend-mongodb-data-preprocessing

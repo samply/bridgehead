@@ -74,7 +74,9 @@ log "INFO" "Enabling auto-updates for bridgehead@${PROJECT}.service ..."
 systemctl enable --now bridgehead-update@"${PROJECT}".timer
 
 STR="\n\n            systemctl start bridgehead@${PROJECT}.service\n\nor by rebooting your machine."
-if [ -e /etc/bridgehead/pki/${SITE_ID}.priv.pem ]; then
+if [ "${REQUIRES_BEAM:-true}" != "true" ]; then
+  STR="Success. This project does not require Samply.Beam enrollment. Start your bridgehead by running$STR"
+elif [ -e /etc/bridgehead/pki/${SITE_ID}.priv.pem ]; then
   STR="Success. Next, start your bridgehead by running$STR"
 else
   STR="Success. Next, enroll into the $PROJECT broker by creating a cryptographic certificate. To do so, run\n\n            /srv/docker/bridgehead/bridgehead enroll $PROJECT\n\nThen, you may start the bridgehead by running$STR"

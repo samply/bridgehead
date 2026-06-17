@@ -1,0 +1,308 @@
+services:
+  traefik:
+    container_name: bridgehead-ovis-traefik
+
+  forward_proxy:
+    container_name: bridgehead-ovis-forward-proxy
+
+  landing:
+    container_name: bridgehead-ovis-landingpage
+    environment:
+      PROJECT: minimal
+
+  ovis-frontend:
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-frontend:${OVIS_IMAGE_TAG:-latest}
+    container_name: bridgehead-ovis-frontend
+    environment:
+      HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
+      HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
+      NO_PROXY: ${OVIS_NO_PROXY:-}
+      http_proxy: ${OVIS_HTTP_PROXY:-}
+      https_proxy: ${OVIS_HTTPS_PROXY:-}
+      no_proxy: ${OVIS_NO_PROXY:-}
+      PUBLIC_IMPORT_MODE: ${OVIS_IMPORT_MODE:-demo}
+      PUBLIC_LDAP_ENABLED: ${PUBLIC_LDAP_ENABLED:-false}
+      PUBLIC_LOGIN_ENABLED: ${PUBLIC_LOGIN_ENABLED:-false}
+      OVIS_PUBLIC_BASE_PATH: ${OVIS_PUBLIC_BASE_PATH:-/ovis}
+      PUBLIC_SYSTEM_START_LANGUAGE: ${PUBLIC_SYSTEM_START_LANGUAGE:-en}
+      PUBLIC_NAV_PATIENT_COHORT_ENABLED: ${PUBLIC_NAV_PATIENT_COHORT_ENABLED:-true}
+      PUBLIC_NAV_PATIENT_SINGLE_ENABLED: ${PUBLIC_NAV_PATIENT_SINGLE_ENABLED:-true}
+      PUBLIC_NAV_DIAGNOSIS_ENABLED: ${PUBLIC_NAV_DIAGNOSIS_ENABLED:-true}
+      PUBLIC_NAV_TNM_ENABLED: ${PUBLIC_NAV_TNM_ENABLED:-true}
+      PUBLIC_NAV_THERAPY_GENERAL_ENABLED: ${PUBLIC_NAV_THERAPY_GENERAL_ENABLED:-true}
+      PUBLIC_NAV_THERAPY_OPERATION_ENABLED: ${PUBLIC_NAV_THERAPY_OPERATION_ENABLED:-true}
+      PUBLIC_NAV_THERAPY_SYSTEMIC_ENABLED: ${PUBLIC_NAV_THERAPY_SYSTEMIC_ENABLED:-true}
+      PUBLIC_NAV_THERAPY_RADIATION_ENABLED: ${PUBLIC_NAV_THERAPY_RADIATION_ENABLED:-true}
+      PUBLIC_NAV_PROGRESS_ENABLED: ${PUBLIC_NAV_PROGRESS_ENABLED:-true}
+      PUBLIC_NAV_TUMORBOARD_ENABLED: ${PUBLIC_NAV_TUMORBOARD_ENABLED:-true}
+      PUBLIC_NAV_CONSULTATION_ENABLED: ${PUBLIC_NAV_CONSULTATION_ENABLED:-true}
+      PUBLIC_NAV_STATUS_ENABLED: ${PUBLIC_NAV_STATUS_ENABLED:-true}
+      PUBLIC_NAV_SURVIVAL_ENABLED: ${PUBLIC_NAV_SURVIVAL_ENABLED:-true}
+      PUBLIC_NAV_SUPPLEMENTARY_ENABLED: ${PUBLIC_NAV_SUPPLEMENTARY_ENABLED:-true}
+      PUBLIC_NAV_MOLECULAR_ENABLED: ${PUBLIC_NAV_MOLECULAR_ENABLED:-true}
+      PUBLIC_NAV_BIO_MATERIAL_ENABLED: ${PUBLIC_NAV_BIO_MATERIAL_ENABLED:-true}
+      PUBLIC_NAV_STUDY_ENABLED: ${PUBLIC_NAV_STUDY_ENABLED:-false}
+      PUBLIC_NAV_USER_MANAGEMENT_ENABLED: ${PUBLIC_NAV_USER_MANAGEMENT_ENABLED:-true}
+      PUBLIC_SITE_SPECIFIC_TECHNICAL_ADMIN_NAME: ${PUBLIC_SITE_SPECIFIC_TECHNICAL_ADMIN_NAME:-Local Admin}
+      PUBLIC_SITE_SPECIFIC_TECHNICAL_ADMIN_EMAIL: ${PUBLIC_SITE_SPECIFIC_TECHNICAL_ADMIN_EMAIL:-}
+      PUBLIC_SITE_SPECIFIC_SHOW_USERAGREEMENT: ${PUBLIC_SITE_SPECIFIC_SHOW_USERAGREEMENT:-false}
+      PUBLIC_SITE_SPECIFIC_SHOW_IMPRINT: ${PUBLIC_SITE_SPECIFIC_SHOW_IMPRINT:-false}
+      OVIS_CATALOGUE_UPSTREAM_URL: ${OVIS_CATALOGUE_UPSTREAM_URL:-}
+      EXPRESS_AUTH_URL: http://express-auth:5000
+      EXPRESS_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME}
+      EXPRESS_AUTH_PASSWORD: ${EXPRESS_AUTH_PASSWORD}
+      GRAPHQL_UPSTREAM_URL: http://ovis-backend-apollo:4001/graphql
+      ORIGIN: ${OVIS_PUBLIC_ORIGIN}
+    volumes:
+      - ovis-catalogue-data:/app/dynamic-catalogue:ro
+      - ${OVIS_CATALOGUE_FILE:-../ovis/runtime/mongodb/ovis-catalogue.json}:/app/static/ovis-catalogue.json:ro
+      - ${OVIS_SITE_DOWNLOADS_DIR:-../ovis/runtime/downloads}/UserAgreement/ovis_userAgreement_en_template.pdf:/app/static/downloads/ovis_userAgreement_en_template.pdf:ro
+      - ${OVIS_SITE_DOWNLOADS_DIR:-../ovis/runtime/downloads}/UserAgreement/ovis_userAgreement_de_template.pdf:/app/static/downloads/ovis_userAgreement_de_template.pdf:ro
+      - ${OVIS_SITE_DOWNLOADS_DIR:-../ovis/runtime/downloads}/Authorization/ovis_authorization_en_template.pdf:/app/static/downloads/ovis_authorization_en_template.pdf:ro
+      - ${OVIS_SITE_DOWNLOADS_DIR:-../ovis/runtime/downloads}/Authorization/ovis_authorization_de_template.pdf:/app/static/downloads/ovis_authorization_de_template.pdf:ro
+    depends_on:
+      ovis-backend-apollo:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ovis-frontend.tls=true"
+      - "traefik.http.routers.ovis-frontend.rule=PathPrefix(`${OVIS_PUBLIC_BASE_PATH:-/ovis}`)"
+      - "traefik.http.routers.ovis-frontend.middlewares=ovis-slash-redirect,ovis-frontend-strip"
+      - "traefik.http.middlewares.ovis-slash-redirect.redirectregex.regex=^https?://([^/]+)${OVIS_PUBLIC_BASE_PATH:-/ovis}$$"
+      - "traefik.http.middlewares.ovis-slash-redirect.redirectregex.replacement=https://$${1}${OVIS_PUBLIC_BASE_PATH:-/ovis}/"
+      - "traefik.http.middlewares.ovis-slash-redirect.redirectregex.permanent=true"
+      - "traefik.http.middlewares.ovis-frontend-strip.stripprefix.prefixes=${OVIS_PUBLIC_BASE_PATH:-/ovis}"
+      - "traefik.http.services.ovis-frontend.loadbalancer.server.port=5173"
+
+  ovis-backend-apollo:
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-backend-apollo:${OVIS_IMAGE_TAG:-latest}
+    container_name: bridgehead-ovis-backend
+    environment:
+      APOLLO_PORT: ${APOLLO_PORT:-4001}
+      CREDOS_PORT: ${CREDOS_PORT:-4000}
+      HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
+      HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
+      NO_PROXY: ${OVIS_NO_PROXY:-}
+      http_proxy: ${OVIS_HTTP_PROXY:-}
+      https_proxy: ${OVIS_HTTPS_PROXY:-}
+      no_proxy: ${OVIS_NO_PROXY:-}
+      MONGO_VER: latest
+      CORS_ORIGIN: "*"
+      DB: ${DB:-onc_test}
+      ADDRESS: mongodb://ovis-backend-database-mongodb:27017
+    volumes:
+      - ${OVIS_OPS4_FILE:-../ovis/runtime/mongodb/ops4.mjs}:/ops-data/ops4.mjs:ro
+    depends_on:
+      ovis-backend-database-mongodb:
+        condition: service_started
+      ovis-backend-mongodb-data-preprocessing:
+        condition: service_healthy
+      ovis-backend-data-import:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "test -d /app/node_modules/mongodb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ovis-backend-database-mongodb:
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-backend-mongodb:${OVIS_IMAGE_TAG:-latest}
+    container_name: bridgehead-ovis-mongo
+    environment:
+      DB: ${DB:-onc_test}
+      OVIS_ROOT_USERNAME: ${OVIS_ROOT_USERNAME:-ovis-root}
+    volumes:
+      - ${OVIS_MONGO_INIT_FILE:-../ovis/runtime/mongodb/initdb.js}:/docker-entrypoint-initdb.d/init.js:ro
+      - ovis-mongo-db:/data/db
+      - ovis-mongo-conf:/data/configdb
+
+  ovis-backend-mongodb-data-preprocessing:
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-backend-preprocessor:${OVIS_IMAGE_TAG:-latest}
+    container_name: bridgehead-ovis-preprocessing
+    environment:
+      APOLLO_PORT: ${APOLLO_PORT:-4001}
+      CREDOS_PORT: ${CREDOS_PORT:-4000}
+      HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
+      HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
+      NO_PROXY: ${OVIS_NO_PROXY:-}
+      http_proxy: ${OVIS_HTTP_PROXY:-}
+      https_proxy: ${OVIS_HTTPS_PROXY:-}
+      no_proxy: ${OVIS_NO_PROXY:-}
+      MONGO_VER: latest
+      CORS_ORIGIN: "*"
+      DB: ${DB:-onc_test}
+      ADDRESS: mongodb://ovis-backend-database-mongodb:27017
+      CATALOGUE_PATH: /app/generated/ovis-catalogue.json
+      PREPROCESSOR_NODE_HEAP_MB: ${PREPROCESSOR_NODE_HEAP_MB:-32768}
+      OVIS_PREPROC_DECEASED_KEYWORDS: ${OVIS_PREPROC_DECEASED_KEYWORDS:-}
+      OVIS_PREPROC_REZIDIV_PREFIXES: ${OVIS_PREPROC_REZIDIV_PREFIXES:-}
+      OVIS_PREPROC_REZIDIV_CANONICAL: ${OVIS_PREPROC_REZIDIV_CANONICAL:-}
+      OVIS_PREPROC_REZIDIV_LYMPH_STATES: ${OVIS_PREPROC_REZIDIV_LYMPH_STATES:-}
+      OVIS_PREPROC_PROGRESS_LABELS: ${OVIS_PREPROC_PROGRESS_LABELS:-}
+      OVIS_PREPROC_COMPLETE_REMISSION_LABELS: ${OVIS_PREPROC_COMPLETE_REMISSION_LABELS:-}
+      OVIS_PREPROC_RCLASS_SUCCESS: ${OVIS_PREPROC_RCLASS_SUCCESS:-}
+      OVIS_PREPROC_LOCAL_RSTATE_SUCCESS: ${OVIS_PREPROC_LOCAL_RSTATE_SUCCESS:-}
+      OVIS_PREPROC_METASTASIS_PREFIXES: ${OVIS_PREPROC_METASTASIS_PREFIXES:-}
+      OVIS_PREPROC_METASTASIS_SPREAD_VALUES: ${OVIS_PREPROC_METASTASIS_SPREAD_VALUES:-}
+      OVIS_PREPROC_METASTASIS_STRAT_SYNCHRON: ${OVIS_PREPROC_METASTASIS_STRAT_SYNCHRON:-}
+      OVIS_PREPROC_METASTASIS_STRAT_NONE: ${OVIS_PREPROC_METASTASIS_STRAT_NONE:-}
+      OVIS_PREPROC_NULL_STUDY_PHASES: ${OVIS_PREPROC_NULL_STUDY_PHASES:-}
+      OVIS_PREPROC_PREV_THERAPY_SURGERY: ${OVIS_PREPROC_PREV_THERAPY_SURGERY:-}
+      OVIS_PREPROC_PREV_THERAPY_SYSTEMIC: ${OVIS_PREPROC_PREV_THERAPY_SYSTEMIC:-}
+      OVIS_PREPROC_PREV_THERAPY_RADIATION: ${OVIS_PREPROC_PREV_THERAPY_RADIATION:-}
+      OVIS_PREPROC_PREV_CONSULTATION_NUTRITION: ${OVIS_PREPROC_PREV_CONSULTATION_NUTRITION:-}
+      OVIS_PREPROC_PREV_CONSULTATION_SOCIAL: ${OVIS_PREPROC_PREV_CONSULTATION_SOCIAL:-}
+      OVIS_PREPROC_PREV_CONSULTATION_PSYCHO: ${OVIS_PREPROC_PREV_CONSULTATION_PSYCHO:-}
+      OVIS_PREPROC_PREV_CONSULTATION_GENETIC: ${OVIS_PREPROC_PREV_CONSULTATION_GENETIC:-}
+      OVIS_PREPROC_TUMORBOARD_PATTERN_PRAE: ${OVIS_PREPROC_TUMORBOARD_PATTERN_PRAE:-}
+      OVIS_PREPROC_TUMORBOARD_PATTERN_POST: ${OVIS_PREPROC_TUMORBOARD_PATTERN_POST:-}
+      OVIS_PREPROC_TUMORBOARD_PATTERN_MTB: ${OVIS_PREPROC_TUMORBOARD_PATTERN_MTB:-}
+      OVIS_PREPROC_ECOG_PREFIX: ${OVIS_PREPROC_ECOG_PREFIX:-}
+      OVIS_PREPROC_DISTRESS_TYPE: ${OVIS_PREPROC_DISTRESS_TYPE:-}
+      OVIS_PREPROC_DISTRESS_POSITIVE_VALUES: ${OVIS_PREPROC_DISTRESS_POSITIVE_VALUES:-}
+    depends_on:
+      ovis-backend-database-mongodb:
+        condition: service_started
+    volumes:
+      - ovis-catalogue-data:/app/generated
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:9000/health', res => process.exit(res.statusCode===200?0:1)).on('error', () => process.exit(1));\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    command: ["node", "./Preprocessing/catalogue-service.mjs"]
+
+  ovis-backend-data-import:
+    image: ${OVIS_DATA_IMPORT_IMAGE:-${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-backend-data-import-${OVIS_IMPORT_MODE:-demo}:${OVIS_IMAGE_TAG:-latest}}
+    container_name: bridgehead-ovis-import
+    env_file:
+      - path: ${OVIS_DATA_IMPORT_ENV_FILE:-/etc/bridgehead/ovis.conf}
+        required: false
+    environment:
+      HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
+      HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
+      NO_PROXY: ${OVIS_NO_PROXY:-}
+      http_proxy: ${OVIS_HTTP_PROXY:-}
+      https_proxy: ${OVIS_HTTPS_PROXY:-}
+      no_proxy: ${OVIS_NO_PROXY:-}
+      FHIR_SERVER_URL: ${FHIR_SERVER_URL:-}
+      FHIR_USERNAME: ${FHIR_USERNAME:-}
+      FHIR_PASSWORD: ${FHIR_PASSWORD:-}
+      ICD10_FILTER: ${ICD10_FILTER:-}
+      CREDOS_EXPORT_DIR: /input/CREDOSExportFiles
+      CREDOS_IMPORTER_NODE_HEAP_MB: ${CREDOS_IMPORTER_NODE_HEAP_MB:-8192}
+    volumes:
+      - ${OVIS_CREDOS_EXPORT_DIR:-../ovis/runtime/input/CREDOSExportFiles}:/input/CREDOSExportFiles:ro
+    depends_on:
+      ovis-backend-mongodb-data-preprocessing:
+        condition: service_healthy
+
+  postgres:
+    image: ghcr.io/baosystems/postgis:13-3.5
+    container_name: bridgehead-ovis-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-keycloak}
+      POSTGRES_USER: ${POSTGRES_USER:-ovis_keycloak}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ovis-postgres-data:/var/lib/postgresql/data
+
+  keycloak:
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-keycloak:${OVIS_IMAGE_TAG:-latest}
+    container_name: bridgehead-ovis-keycloak
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_DATABASE: ${POSTGRES_DB:-keycloak}
+      DB_USER: ${POSTGRES_USER:-ovis_keycloak}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-ovis-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_HOSTNAME: ${OVIS_KEYCLOAK_HOSTNAME}
+      APP_DOMAIN: ${HOST}
+      KEYCLOAK_PORT: ${KEYCLOAK_PORT:-8252}
+      NGINX_PROXY_MODE: "true"
+      NGINX_SSL_ENABLED: "true"
+      NGINX_HTTP_PORT: "80"
+      NGINX_HTTPS_PORT: "443"
+      PUBLIC_LDAP_ENABLED: ${PUBLIC_LDAP_ENABLED:-false}
+      LDAP_CERTIFICATE_NAME: ${LDAP_CERTIFICATE_NAME:-}
+      LDAP_CONNECTION_URL: ${LDAP_CONNECTION_URL:-}
+      LDAP_BIND_DN: ${LDAP_BIND_DN:-}
+      LDAP_BIND_CREDENTIAL: ${LDAP_BIND_CREDENTIAL:-}
+      LDAP_USERS_DN: ${LDAP_USERS_DN:-}
+      LDAP_EDIT_MODE: ${LDAP_EDIT_MODE:-READ_ONLY}
+      LDAP_VENDOR: ${LDAP_VENDOR:-}
+      LDAP_USERNAME_ATTRIBUTE: ${LDAP_USERNAME_ATTRIBUTE:-}
+      LDAP_RDN_ATTRIBUTE: ${LDAP_RDN_ATTRIBUTE:-}
+      LDAP_UUID_ATTRIBUTE: ${LDAP_UUID_ATTRIBUTE:-}
+      LDAP_USER_OBJECT_CLASSES: ${LDAP_USER_OBJECT_CLASSES:-}
+      LDAP_USER_FILTER: ${LDAP_USER_FILTER:-}
+      LDAP_SEARCH_SCOPE: ${LDAP_SEARCH_SCOPE:-}
+      LDAP_READ_TIMEOUT: ${LDAP_READ_TIMEOUT:-}
+      LDAP_PAGINATION: ${LDAP_PAGINATION:-}
+      LDAP_REFERRAL: ${LDAP_REFERRAL:-}
+      LDAP_EMAIL_ATTRIBUTE: ${LDAP_EMAIL_ATTRIBUTE:-}
+      LDAP_FIRST_NAME_ATTRIBUTE: ${LDAP_FIRST_NAME_ATTRIBUTE:-}
+      LDAP_LAST_NAME_ATTRIBUTE: ${LDAP_LAST_NAME_ATTRIBUTE:-}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-ovis_client}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_ADMIN_CLIENT_ID: ${KEYCLOAK_ADMIN_CLIENT_ID:-admin-cli}
+      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+      OVIS_ROOT_USERNAME: ${OVIS_ROOT_USERNAME:-ovis-root}
+      OVIS_ROOT_PASSWORD: ${OVIS_ROOT_PASSWORD}
+      KEYCLOAK_HTTP_RELATIVE_PATH: ${KEYCLOAK_HTTP_RELATIVE_PATH:-/ovis/keycloak}
+    volumes:
+      - ${OVIS_SITE_CERTS_DIR:-../ovis/runtime/certs}:/etc/keycloak/certs:ro
+      - ${OVIS_SITE_KEYCLOAK_REALM_FILE:-../ovis/runtime/keycloak/ovis-realm.json}:/realm-base/ovis-realm.json:ro
+      - ${OVIS_KEYCLOAK_ENTRYPOINT_FILE:-../ovis/runtime/keycloak/keycloak-entrypoint.sh}:/bridgehead-keycloak-entrypoint.sh:ro
+    entrypoint: ["/bridgehead-keycloak-entrypoint.sh"]
+    depends_on:
+      - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ovis-keycloak.tls=true"
+      - "traefik.http.routers.ovis-keycloak.rule=PathPrefix(`${KEYCLOAK_HTTP_RELATIVE_PATH:-/ovis/keycloak}`)"
+      - "traefik.http.services.ovis-keycloak.loadbalancer.server.port=8080"
+
+  express-auth:
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-express-auth:${OVIS_IMAGE_TAG:-latest}
+    container_name: bridgehead-ovis-express-auth
+    environment:
+      PORT: "5000"
+      HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
+      HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
+      NO_PROXY: ${OVIS_NO_PROXY:-}
+      http_proxy: ${OVIS_HTTP_PROXY:-}
+      https_proxy: ${OVIS_HTTPS_PROXY:-}
+      no_proxy: ${OVIS_NO_PROXY:-}
+      BASIC_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME}
+      BASIC_AUTH_PASSWORD: ${EXPRESS_AUTH_PASSWORD}
+      KEYCLOAK_URL: http://keycloak:8080${KEYCLOAK_HTTP_RELATIVE_PATH:-/ovis/keycloak}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM:-ovis}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-ovis_client}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_ADMIN_CLIENT_ID: ${KEYCLOAK_ADMIN_CLIENT_ID:-admin-cli}
+      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+      APP_DOMAIN: ${HOST}
+      FRONTEND_PORT: "443"
+      NGINX_PROXY_MODE: "true"
+      NGINX_SSL_ENABLED: "true"
+      NGINX_HTTP_PORT: "80"
+      NGINX_HTTPS_PORT: "443"
+    depends_on:
+      - keycloak
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ovis-express.tls=true"
+      - "traefik.http.routers.ovis-express.rule=PathPrefix(`${OVIS_PUBLIC_BASE_PATH:-/ovis}/express`)"
+      - "traefik.http.routers.ovis-express.middlewares=ovis-express-strip"
+      - "traefik.http.middlewares.ovis-express-strip.stripprefix.prefixes=${OVIS_PUBLIC_BASE_PATH:-/ovis}/express"
+      - "traefik.http.services.ovis-express.loadbalancer.server.port=5000"
+
+volumes:
+  ovis-catalogue-data:
+  ovis-mongo-db:
+  ovis-mongo-conf:
+  ovis-postgres-data:

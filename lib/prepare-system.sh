@@ -76,9 +76,12 @@ case "$PROJECT" in
 	minimal)
 		site_configuration_repository_middle="git.verbis.dkfz.de/minimal-bridgehead-configs/"
 		;;
+	ovis)
+		site_configuration_repository_middle="git.verbis.dkfz.de/ovis-sites/"
+		;;
 	*)
 		log ERROR "Internal error, this should not happen."
-        exit 1
+		exit 1
 		;;
 esac
 
@@ -115,4 +118,3 @@ chown -R bridgehead:docker /tmp/bridgehead /var/cache/bridgehead
 chmod -R g+wr /var/cache/bridgehead /tmp/bridgehead
 
 log INFO "System preparation is completed and configuration is present."
-

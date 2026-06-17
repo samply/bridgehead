@@ -94,6 +94,10 @@ if [ "${PROJECT}" != "minimal" ]; then
   fi
 fi
 checkPrivKey() {
+  if [ "${REQUIRES_BEAM:-true}" != "true" ]; then
+    log INFO "Skipping private key check - $PROJECT does not require Samply.Beam enrollment."
+    return 0
+  fi
   if [ -e "${CONFIG_DIR}pki/${SITE_ID}.priv.pem" ]; then
     log INFO "Success - private key found."
   else

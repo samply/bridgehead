@@ -53,6 +53,9 @@ case "$PROJECT" in
 	minimal)
 		#nothing extra to do
 		;;
+	ovis)
+		#nothing extra to do
+		;;
 	*)
 		printUsage
 		exit 1
@@ -179,6 +182,10 @@ case "$ACTION" in
 		;;
 	enroll)
 		loadVars
+		if [ "${REQUIRES_BEAM:-true}" != "true" ]; then
+			log "ERROR" "$PROJECT does not require Samply.Beam enrollment."
+			exit 1
+		fi
 		do_enroll $PROXY_ID
 		;;
 	preRun | preUpdate)

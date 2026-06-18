@@ -49,7 +49,7 @@
             "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
         },
         {
-            "id": "Charite",
+            "id": "Charité",
             "name": "Berlin",
             "virtualhost": "charite.dnpm.de",
             "beamconnect": "dnpm-connect.berlin-test.broker.ccp-it.dktk.dkfz.de"

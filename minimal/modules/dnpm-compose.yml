@@ -41,7 +41,6 @@ services:
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
       - /etc/bridgehead/dnpm/local_targets.json:/conf/connect_targets.json:ro
-      - /srv/docker/bridgehead/minimal/modules/dnpm-central-targets.json:/conf/central_targets.json:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dnpm-connect.rule=PathPrefix(`/dnpm-connect`)"

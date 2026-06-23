@@ -12,6 +12,7 @@ services:
       BEAM_PROXY_URL: http://beam-proxy-eric:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
       OBFUSCATE_BBMRI_ERIC_WAY: "true"
+      CQL_FLAVOUR: "${CQL_FLAVOUR}"
     depends_on:
       - "beam-proxy-eric"
       - "blaze"

@@ -473,113 +473,6 @@
   "webAuthnPolicyPasswordlessExtraOrigins": [],
   "users": [
     {
-      "id": "e8bcb1a5-ef97-4f8a-b7f6-91716295e34b",
-      "username": "admin",
-      "firstName": "Admin",
-      "lastName": "OVis",
-      "email": "admin@example.com",
-      "emailVerified": true,
-      "attributes": {
-        "ovisFilter": [
-          "123456"
-        ]
-      },
-      "createdTimestamp": 1739977469055,
-      "enabled": true,
-      "totp": false,
-      "credentials": [
-        {
-          "id": "355db3ac-c1ce-4ae9-90e2-e063d8ebbedc",
-          "type": "password",
-          "userLabel": "My password",
-          "createdDate": 1740061491164,
-          "secretData": "{\"value\":\"bNHo0wVKIXAANsoaJbfQ/ni4x+snFGIxZdyRoSKEobqRKlgyzteor7CG22FbwR/wdLBcIBaHTElhn5ALyMt55Q==\",\"salt\":\"WYsOyGvMA2Yo3E3UpjvZRg==\",\"additionalParameters\":{}}",
-          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
-        }
-      ],
-      "disableableCredentialTypes": [],
-      "requiredActions": [
-        "UPDATE_PASSWORD"
-      ],
-      "realmRoles": [
-        "default-roles-ovis"
-      ],
-      "notBefore": 0,
-      "groups": []
-    },
-    {
-      "id": "b3c13194-ed16-47a8-9121-e3d8caf7b14e",
-      "username": "adrian@cpp.com",
-      "firstName": "adrian",
-      "lastName": "estevez",
-      "email": "adrian@cpp.com",
-      "emailVerified": true,
-      "attributes": {
-        "ovisFilter": [
-          "Tryout 1",
-          "Tryout 2"
-        ],
-        "ovis-filter": [
-          "Cann see everything",
-          "Can see nothing"
-        ],
-        "OvisFilter": [
-          "Tryout 1",
-          "Tryout 2"
-        ]
-      },
-      "createdTimestamp": 1740040115974,
-      "enabled": true,
-      "totp": false,
-      "credentials": [
-        {
-          "id": "97b1d279-9fb0-432d-97ec-e02a1954d1bc",
-          "type": "password",
-          "userLabel": "My password",
-          "createdDate": 1740040127370,
-          "secretData": "{\"value\":\"HwOlkNzmqc7hCXZ/TUT6NZSzVAMW5cNuDHPcZxJdv78z2mnSzlLzKdma/YeKYGqjZuRngVsv+RAaFnW7G81Ngg==\",\"salt\":\"QhXXEYrjvaTL6vz03YVy0g==\",\"additionalParameters\":{}}",
-          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
-        }
-      ],
-      "disableableCredentialTypes": [],
-      "requiredActions": [],
-      "notBefore": 1740062663,
-      "groups": []
-    },
-    {
-      "id": "3bd29204-6808-47d6-a55c-b81567b6fa8c",
-      "username": "sample-user",
-      "firstName": "Sample",
-      "lastName": "User",
-      "email": "sample.user@example.org",
-      "emailVerified": true,
-      "attributes": {
-        "ovisFilter": [
-          "No Filter"
-        ]
-      },
-      "createdTimestamp": 1740063654488,
-      "enabled": true,
-      "totp": false,
-      "credentials": [
-        {
-          "id": "9a21a7a0-b1c5-4f67-884e-2e31c27c1de6",
-          "type": "password",
-          "userLabel": "My password",
-          "createdDate": 1740063673764,
-          "secretData": "{\"value\":\"rloNNFWyrOW7S6EqVr/jKlgLPxKRAhqb5ZGKhScwfDZSKBn5i5oc3+AvrMsVqaO0J5sXwr/y9cSHyWyFvmLIAg==\",\"salt\":\"tHObeTx8s8K75/mz43tJGQ==\",\"additionalParameters\":{}}",
-          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
-        }
-      ],
-      "disableableCredentialTypes": [],
-      "requiredActions": [],
-      "realmRoles": [
-        "default-roles-ovis"
-      ],
-      "notBefore": 0,
-      "groups": []
-    },
-    {
       "id": "b71688ad-6b74-4bcb-9915-faeb77e64490",
       "username": "service-account-admin-cli",
       "emailVerified": false,
@@ -628,39 +521,6 @@
       "groups": []
     },
     {
-      "id": "9a963b15-712d-48a3-b6da-f132655ccac3",
-      "username": "test@mail.com",
-      "firstName": "Test",
-      "lastName": "mail",
-      "email": "test@mail.com",
-      "emailVerified": true,
-      "attributes": {
-        "ovisFilter": [
-          "NOT today",
-          "NOT oncreatedate"
-        ]
-      },
-      "createdTimestamp": 1740075966847,
-      "enabled": true,
-      "totp": false,
-      "credentials": [
-        {
-          "id": "6bb954aa-4de8-4a30-8122-98ff84cdd069",
-          "type": "password",
-          "createdDate": 1740078813982,
-          "secretData": "{\"value\":\"OMku3LkzxI/bmkHCGKtAZLQu6zOVXAKRCK8ZKiwvPtitvhNMKO4ZxAS32pA5AwUPLBTq32rnZgWUQTsBf8ncVA==\",\"salt\":\"mUjPNv0sgfl9OVPUp1zrBg==\",\"additionalParameters\":{}}",
-          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
-        }
-      ],
-      "disableableCredentialTypes": [],
-      "requiredActions": [],
-      "realmRoles": [
-        "default-roles-ovis"
-      ],
-      "notBefore": 0,
-      "groups": []
-    },
-    {
       "id": "a23cf887-ff49-4344-b8df-d530a9ee9071",
       "username": "ovis-root",
       "firstName": "OVIS",
@@ -675,13 +535,6 @@
       "createdTimestamp": 1753786576000,
       "enabled": true,
       "totp": false,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "test",
-          "temporary": false
-        }
-      ],
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [

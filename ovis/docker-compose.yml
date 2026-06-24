@@ -11,7 +11,7 @@ services:
       PROJECT: minimal
 
   ovis-frontend:
-    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-frontend:${OVIS_IMAGE_TAG:-latest}
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-frontend:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-frontend
     environment:
       HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
@@ -41,12 +41,30 @@ services:
       PUBLIC_NAV_SUPPLEMENTARY_ENABLED: ${PUBLIC_NAV_SUPPLEMENTARY_ENABLED:-true}
       PUBLIC_NAV_MOLECULAR_ENABLED: ${PUBLIC_NAV_MOLECULAR_ENABLED:-true}
       PUBLIC_NAV_BIO_MATERIAL_ENABLED: ${PUBLIC_NAV_BIO_MATERIAL_ENABLED:-true}
-      PUBLIC_NAV_STUDY_ENABLED: ${PUBLIC_NAV_STUDY_ENABLED:-false}
+      PUBLIC_NAV_STUDY_ENABLED: ${PUBLIC_NAV_STUDY_ENABLED:-true}
       PUBLIC_NAV_USER_MANAGEMENT_ENABLED: ${PUBLIC_NAV_USER_MANAGEMENT_ENABLED:-true}
+      PUBLIC_QUICKTOOLS_GENDER_BUTTONS: "${PUBLIC_QUICKTOOLS_GENDER_BUTTONS:-M|m;W|w;Other|other}"
+      PUBLIC_QUICKTOOLS_GENDER_OTHER_EXCLUSIONS: "${PUBLIC_QUICKTOOLS_GENDER_OTHER_EXCLUSIONS:-m;w}"
+      PUBLIC_QUICKTOOLS_CERT_CASES_POS: "${PUBLIC_QUICKTOOLS_CERT_CASES_POS:-primary=Primary Case|Ja,recurrence=Recurrence Case|true,center=Center Case|Ja}"
+      PUBLIC_QUICKTOOLS_CERT_CASES_NEG: "${PUBLIC_QUICKTOOLS_CERT_CASES_NEG:-primary=Primary Case|Nein,recurrence=Recurrence Case|false,center=Center Case|Nein}"
+      PUBLIC_QUICKTOOLS_CERT_INTERNAL_LABEL: "${PUBLIC_QUICKTOOLS_CERT_INTERNAL_LABEL:-Meine Einrichtung|Meine Einrichtung}"
       PUBLIC_SITE_SPECIFIC_TECHNICAL_ADMIN_NAME: ${PUBLIC_SITE_SPECIFIC_TECHNICAL_ADMIN_NAME:-Local Admin}
       PUBLIC_SITE_SPECIFIC_TECHNICAL_ADMIN_EMAIL: ${PUBLIC_SITE_SPECIFIC_TECHNICAL_ADMIN_EMAIL:-}
       PUBLIC_SITE_SPECIFIC_SHOW_USERAGREEMENT: ${PUBLIC_SITE_SPECIFIC_SHOW_USERAGREEMENT:-false}
       PUBLIC_SITE_SPECIFIC_SHOW_IMPRINT: ${PUBLIC_SITE_SPECIFIC_SHOW_IMPRINT:-false}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_WEBHOST_ORGANIZATION: ${PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_WEBHOST_ORGANIZATION:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_WEBHOST_PERSON: ${PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_WEBHOST_PERSON:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_WEBHOST_ADDRESS_STREET: ${PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_WEBHOST_ADDRESS_STREET:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_WEBHOST_ADDRESS_AREA: ${PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_WEBHOST_ADDRESS_AREA:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_HOSPITAL_PASSUS: ${PUBLIC_SITE_SPECIFIC_IMPRINT_HOSPITAL_PASSUS:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_HOSPITAL_DIRECTOR: ${PUBLIC_SITE_SPECIFIC_IMPRINT_RESPONSIBLE_HOSPITAL_DIRECTOR:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_HOSPITAL_NAME: ${PUBLIC_SITE_SPECIFIC_IMPRINT_HOSPITAL_NAME:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_ADDRESS_STREET: ${PUBLIC_SITE_SPECIFIC_IMPRINT_ADDRESS_STREET:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_ADDRESS_AREA: ${PUBLIC_SITE_SPECIFIC_IMPRINT_ADDRESS_AREA:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_NAME: ${PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_NAME:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_STREET: ${PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_STREET:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_AREA: ${PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_AREA:-}
+      PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_EMAIL: ${PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_EMAIL:-}
       OVIS_CATALOGUE_UPSTREAM_URL: ${OVIS_CATALOGUE_UPSTREAM_URL:-}
       EXPRESS_AUTH_URL: http://express-auth:5000
       EXPRESS_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME}
@@ -75,7 +93,7 @@ services:
       - "traefik.http.services.ovis-frontend.loadbalancer.server.port=5173"
 
   ovis-backend-apollo:
-    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-backend-apollo:${OVIS_IMAGE_TAG:-latest}
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-backend-apollo:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-backend
     environment:
       APOLLO_PORT: ${APOLLO_PORT:-4001}
@@ -106,7 +124,7 @@ services:
       retries: 5
 
   ovis-backend-database-mongodb:
-    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-backend-mongodb:${OVIS_IMAGE_TAG:-latest}
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-backend-mongodb:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-mongo
     environment:
       DB: ${DB:-onc_test}
@@ -117,7 +135,7 @@ services:
       - ovis-mongo-conf:/data/configdb
 
   ovis-backend-mongodb-data-preprocessing:
-    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-backend-preprocessor:${OVIS_IMAGE_TAG:-latest}
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-backend-preprocessor:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-preprocessing
     environment:
       APOLLO_PORT: ${APOLLO_PORT:-4001}
@@ -174,7 +192,7 @@ services:
     command: ["node", "./Preprocessing/catalogue-service.mjs"]
 
   ovis-backend-data-import:
-    image: ${OVIS_DATA_IMPORT_IMAGE:-${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-backend-data-import-${OVIS_IMPORT_MODE:-demo}:${OVIS_IMAGE_TAG:-latest}}
+    image: ${OVIS_DATA_IMPORT_IMAGE:-${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-backend-data-import-${OVIS_IMPORT_MODE:-demo}:${OVIS_IMAGE_TAG:-latest}}
     container_name: bridgehead-ovis-import
     env_file:
       - path: ${OVIS_DATA_IMPORT_ENV_FILE:-/etc/bridgehead/ovis.conf}
@@ -209,7 +227,7 @@ services:
       - ovis-postgres-data:/var/lib/postgresql/data
 
   keycloak:
-    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-keycloak:${OVIS_IMAGE_TAG:-latest}
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-keycloak:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-keycloak
     environment:
       DB_VENDOR: postgres
@@ -267,7 +285,7 @@ services:
       - "traefik.http.services.ovis-keycloak.loadbalancer.server.port=8080"
 
   express-auth:
-    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-thewindmom}/ovis-express-auth:${OVIS_IMAGE_TAG:-latest}
+    image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-express-auth:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-express-auth
     environment:
       PORT: "5000"
@@ -286,11 +304,11 @@ services:
       KEYCLOAK_ADMIN_CLIENT_ID: ${KEYCLOAK_ADMIN_CLIENT_ID:-admin-cli}
       KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
       APP_DOMAIN: ${HOST}
-      FRONTEND_PORT: "443"
+      FRONTEND_PORT: ${OVIS_FRONTEND_PORT:-443}
       NGINX_PROXY_MODE: "true"
       NGINX_SSL_ENABLED: "true"
-      NGINX_HTTP_PORT: "80"
-      NGINX_HTTPS_PORT: "443"
+      NGINX_HTTP_PORT: ${OVIS_HTTP_PORT:-80}
+      NGINX_HTTPS_PORT: ${OVIS_HTTPS_PORT:-443}
     depends_on:
       - keycloak
     labels:
@@ -299,6 +317,10 @@ services:
       - "traefik.http.routers.ovis-express.rule=PathPrefix(`${OVIS_PUBLIC_BASE_PATH:-/ovis}/express`)"
       - "traefik.http.routers.ovis-express.middlewares=ovis-express-strip"
       - "traefik.http.middlewares.ovis-express-strip.stripprefix.prefixes=${OVIS_PUBLIC_BASE_PATH:-/ovis}/express"
+      - "traefik.http.routers.ovis-express-compat.tls=true"
+      - "traefik.http.routers.ovis-express-compat.rule=PathPrefix(`/express`)"
+      - "traefik.http.routers.ovis-express-compat.middlewares=ovis-express-compat-strip"
+      - "traefik.http.middlewares.ovis-express-compat-strip.stripprefix.prefixes=/express"
       - "traefik.http.services.ovis-express.loadbalancer.server.port=5000"
 
 volumes:

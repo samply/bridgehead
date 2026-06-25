@@ -5,11 +5,6 @@ services:
   forward_proxy:
     container_name: bridgehead-ovis-forward-proxy
 
-  landing:
-    container_name: bridgehead-ovis-landingpage
-    environment:
-      PROJECT: minimal
-
   ovis-frontend:
     image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-frontend:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-frontend
@@ -83,8 +78,14 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.ovis-frontend-root.tls=true"
+      - "traefik.http.routers.ovis-frontend-root.rule=Host(`${HOST}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.ovis-frontend-root.priority=20"
+      - "traefik.http.routers.ovis-frontend-root.service=ovis-frontend"
       - "traefik.http.routers.ovis-frontend.tls=true"
       - "traefik.http.routers.ovis-frontend.rule=PathPrefix(`${OVIS_PUBLIC_BASE_PATH:-/ovis}`)"
+      - "traefik.http.routers.ovis-frontend.priority=30"
+      - "traefik.http.routers.ovis-frontend.service=ovis-frontend"
       - "traefik.http.routers.ovis-frontend.middlewares=ovis-slash-redirect,ovis-frontend-strip"
       - "traefik.http.middlewares.ovis-slash-redirect.redirectregex.regex=^https?://([^/]+)${OVIS_PUBLIC_BASE_PATH:-/ovis}$$"
       - "traefik.http.middlewares.ovis-slash-redirect.redirectregex.replacement=https://$${1}${OVIS_PUBLIC_BASE_PATH:-/ovis}/"
@@ -282,6 +283,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ovis-keycloak.tls=true"
       - "traefik.http.routers.ovis-keycloak.rule=PathPrefix(`${KEYCLOAK_HTTP_RELATIVE_PATH:-/ovis/keycloak}`)"
+      - "traefik.http.routers.ovis-keycloak.priority=50"
       - "traefik.http.services.ovis-keycloak.loadbalancer.server.port=8080"
 
   express-auth:
@@ -315,10 +317,12 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ovis-express.tls=true"
       - "traefik.http.routers.ovis-express.rule=PathPrefix(`${OVIS_PUBLIC_BASE_PATH:-/ovis}/express`)"
+      - "traefik.http.routers.ovis-express.priority=50"
       - "traefik.http.routers.ovis-express.middlewares=ovis-express-strip"
       - "traefik.http.middlewares.ovis-express-strip.stripprefix.prefixes=${OVIS_PUBLIC_BASE_PATH:-/ovis}/express"
       - "traefik.http.routers.ovis-express-compat.tls=true"
       - "traefik.http.routers.ovis-express-compat.rule=PathPrefix(`/express`)"
+      - "traefik.http.routers.ovis-express-compat.priority=50"
       - "traefik.http.routers.ovis-express-compat.middlewares=ovis-express-compat-strip"
       - "traefik.http.middlewares.ovis-express-compat-strip.stripprefix.prefixes=/express"
       - "traefik.http.services.ovis-express.loadbalancer.server.port=5000"

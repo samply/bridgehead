@@ -235,10 +235,6 @@ services:
       KEYCLOAK_HOSTNAME: ${OVIS_KEYCLOAK_HOSTNAME:-${HOST:-localhost}}
       APP_DOMAIN: ${HOST:-localhost}
       KEYCLOAK_PORT: ${KEYCLOAK_PORT:-8252}
-      NGINX_PROXY_MODE: "true"
-      NGINX_SSL_ENABLED: "true"
-      NGINX_HTTP_PORT: "80"
-      NGINX_HTTPS_PORT: "443"
       PUBLIC_LDAP_ENABLED: ${PUBLIC_LDAP_ENABLED:-false}
       LDAP_CERTIFICATE_NAME: ${LDAP_CERTIFICATE_NAME:-}
       LDAP_CONNECTION_URL: ${LDAP_CONNECTION_URL:-}
@@ -301,10 +297,37 @@ services:
       KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET:-ovis-keycloak-admin-client-secret}
       APP_DOMAIN: ${HOST:-localhost}
       FRONTEND_PORT: ${OVIS_FRONTEND_PORT:-443}
-      NGINX_PROXY_MODE: "true"
-      NGINX_SSL_ENABLED: "true"
-      NGINX_HTTP_PORT: ${OVIS_HTTP_PORT:-80}
-      NGINX_HTTPS_PORT: ${OVIS_HTTPS_PORT:-443}
+      CORS_ALLOWED_ORIGINS: ${OVIS_EXPRESS_AUTH_ALLOWED_ORIGINS:-https://${HOST:-localhost},https://${HOST:-localhost}:${OVIS_HTTPS_PORT:-443}}
+    command:
+      - sh
+      - -c
+      - |
+        node - <<'NODE'
+        const fs = require('fs');
+        const sourcePath = 'src/index.js';
+        const marker = "const frontendPort = process.env.FRONTEND_PORT || '5173';";
+        const source = fs.readFileSync(sourcePath, 'utf8');
+        if (!source.includes(marker) && !source.includes('CORS_ALLOWED_ORIGINS')) {
+          console.error(`Cannot configure express-auth CORS: expected marker not found in $${sourcePath}`);
+          process.exit(1);
+        }
+        if (!source.includes('CORS_ALLOWED_ORIGINS')) {
+          fs.writeFileSync(
+            sourcePath,
+            source.replace(
+              marker,
+              `$${marker}
+
+        const configuredOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
+          .split(',')
+          .map((origin) => origin.trim())
+          .filter(Boolean);
+        configuredOrigins.forEach((origin) => origins.add(origin));`
+            )
+          );
+        }
+        NODE
+        npm start
     depends_on:
       - keycloak
     labels:

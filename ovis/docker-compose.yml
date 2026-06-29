@@ -1,10 +1,4 @@
 services:
-  traefik:
-    container_name: bridgehead-ovis-traefik
-
-  forward_proxy:
-    container_name: bridgehead-ovis-forward-proxy
-
   ovis-frontend:
     image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-frontend:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-frontend
@@ -62,10 +56,10 @@ services:
       PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_EMAIL: ${PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_EMAIL:-}
       OVIS_CATALOGUE_UPSTREAM_URL: ${OVIS_CATALOGUE_UPSTREAM_URL:-}
       EXPRESS_AUTH_URL: http://express-auth:5000
-      EXPRESS_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME}
-      EXPRESS_AUTH_PASSWORD: ${EXPRESS_AUTH_PASSWORD}
+      EXPRESS_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME:-admin}
+      EXPRESS_AUTH_PASSWORD: ${EXPRESS_AUTH_PASSWORD:-admin}
       GRAPHQL_UPSTREAM_URL: http://ovis-backend-apollo:4001/graphql
-      ORIGIN: ${OVIS_PUBLIC_ORIGIN}
+      ORIGIN: ${OVIS_PUBLIC_ORIGIN:-https://${HOST:-localhost}}
     volumes:
       - ovis-catalogue-data:/app/dynamic-catalogue:ro
       - ${OVIS_CATALOGUE_FILE:-../ovis/runtime/mongodb/ovis-catalogue.json}:/app/static/ovis-catalogue.json:ro
@@ -79,7 +73,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ovis-frontend-root.tls=true"
-      - "traefik.http.routers.ovis-frontend-root.rule=Host(`${HOST}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.ovis-frontend-root.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/`)"
       - "traefik.http.routers.ovis-frontend-root.priority=20"
       - "traefik.http.routers.ovis-frontend-root.service=ovis-frontend"
       - "traefik.http.routers.ovis-frontend.tls=true"
@@ -223,7 +217,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-keycloak}
       POSTGRES_USER: ${POSTGRES_USER:-ovis_keycloak}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ovis-postgres-password}
     volumes:
       - ovis-postgres-data:/var/lib/postgresql/data
 
@@ -235,11 +229,11 @@ services:
       DB_ADDR: postgres
       DB_DATABASE: ${POSTGRES_DB:-keycloak}
       DB_USER: ${POSTGRES_USER:-ovis_keycloak}
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-ovis-postgres-password}
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-ovis-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KEYCLOAK_HOSTNAME: ${OVIS_KEYCLOAK_HOSTNAME}
-      APP_DOMAIN: ${HOST}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-ovis-admin-password}
+      KEYCLOAK_HOSTNAME: ${OVIS_KEYCLOAK_HOSTNAME:-${HOST:-localhost}}
+      APP_DOMAIN: ${HOST:-localhost}
       KEYCLOAK_PORT: ${KEYCLOAK_PORT:-8252}
       NGINX_PROXY_MODE: "true"
       NGINX_SSL_ENABLED: "true"
@@ -266,11 +260,11 @@ services:
       LDAP_FIRST_NAME_ATTRIBUTE: ${LDAP_FIRST_NAME_ATTRIBUTE:-}
       LDAP_LAST_NAME_ATTRIBUTE: ${LDAP_LAST_NAME_ATTRIBUTE:-}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-ovis_client}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-ovis-keycloak-client-secret}
       KEYCLOAK_ADMIN_CLIENT_ID: ${KEYCLOAK_ADMIN_CLIENT_ID:-admin-cli}
-      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET:-ovis-keycloak-admin-client-secret}
       OVIS_ROOT_USERNAME: ${OVIS_ROOT_USERNAME:-ovis-root}
-      OVIS_ROOT_PASSWORD: ${OVIS_ROOT_PASSWORD}
+      OVIS_ROOT_PASSWORD: ${OVIS_ROOT_PASSWORD:-ovis-root-password}
       KEYCLOAK_HTTP_RELATIVE_PATH: ${KEYCLOAK_HTTP_RELATIVE_PATH:-/ovis/keycloak}
     volumes:
       - ${OVIS_SITE_CERTS_DIR:-../ovis/runtime/certs}:/etc/keycloak/certs:ro
@@ -297,15 +291,15 @@ services:
       http_proxy: ${OVIS_HTTP_PROXY:-}
       https_proxy: ${OVIS_HTTPS_PROXY:-}
       no_proxy: ${OVIS_NO_PROXY:-}
-      BASIC_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME}
-      BASIC_AUTH_PASSWORD: ${EXPRESS_AUTH_PASSWORD}
+      BASIC_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME:-admin}
+      BASIC_AUTH_PASSWORD: ${EXPRESS_AUTH_PASSWORD:-admin}
       KEYCLOAK_URL: http://keycloak:8080${KEYCLOAK_HTTP_RELATIVE_PATH:-/ovis/keycloak}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM:-ovis}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-ovis_client}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-ovis-keycloak-client-secret}
       KEYCLOAK_ADMIN_CLIENT_ID: ${KEYCLOAK_ADMIN_CLIENT_ID:-admin-cli}
-      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
-      APP_DOMAIN: ${HOST}
+      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET:-ovis-keycloak-admin-client-secret}
+      APP_DOMAIN: ${HOST:-localhost}
       FRONTEND_PORT: ${OVIS_FRONTEND_PORT:-443}
       NGINX_PROXY_MODE: "true"
       NGINX_SSL_ENABLED: "true"

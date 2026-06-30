@@ -98,7 +98,7 @@ if [ $git_updated = "true" ] || [ $docker_updated = "true" ]; then
   RES="Updates detected, now restarting bridgehead:\n$CHANGES"
   log "INFO" "$RES"
   hc_send log "$RES"
-  sudo /bin/systemctl restart bridgehead@*.service
+  sudo /bin/systemctl restart bridgehead@${PROJECT}.service
 else
   RES="Nothing updated, nothing to restart."
   log "INFO" "$RES"

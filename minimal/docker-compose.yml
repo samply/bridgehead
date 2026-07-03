@@ -47,6 +47,7 @@ services:
       test: ["CMD", "sleep", "1"]
 
   landing:
+    profiles: [deactivated]
     container_name: bridgehead-landingpage
     image: docker.verbis.dkfz.de/cache/samply/bridgehead-landingpage:main
     labels:

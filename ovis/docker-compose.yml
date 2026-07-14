@@ -55,10 +55,6 @@ services:
       PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_AREA: ${PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_AREA:-}
       PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_EMAIL: ${PUBLIC_SITE_SPECIFIC_IMPRINT_DATA_PROTECTION_OFFICER_EMAIL:-}
       OVIS_CATALOGUE_UPSTREAM_URL: ${OVIS_CATALOGUE_UPSTREAM_URL:-}
-      EXPRESS_AUTH_URL: http://express-auth:5000
-      EXPRESS_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME:-admin}
-      EXPRESS_AUTH_PASSWORD: ${EXPRESS_AUTH_PASSWORD:-admin}
-      GRAPHQL_UPSTREAM_URL: http://ovis-backend-apollo:4001/graphql
       ORIGIN: ${OVIS_PUBLIC_ORIGIN:-https://${HOST:-localhost}}
     volumes:
       - ovis-catalogue-data:/app/dynamic-catalogue:ro
@@ -91,17 +87,14 @@ services:
     image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-backend-apollo:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-backend
     environment:
-      APOLLO_PORT: ${APOLLO_PORT:-4001}
-      CREDOS_PORT: ${CREDOS_PORT:-4000}
       HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
       HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
       NO_PROXY: ${OVIS_NO_PROXY:-}
       http_proxy: ${OVIS_HTTP_PROXY:-}
       https_proxy: ${OVIS_HTTPS_PROXY:-}
       no_proxy: ${OVIS_NO_PROXY:-}
-      MONGO_VER: latest
       CORS_ORIGIN: "*"
-      DB: ${DB:-onc_test}
+      DB: onc_test
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
     volumes:
       - ${OVIS_OPS4_FILE:-../ovis/runtime/mongodb/ops4.mjs}:/ops-data/ops4.mjs:ro
@@ -122,7 +115,6 @@ services:
     image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-backend-mongodb:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-mongo
     environment:
-      DB: ${DB:-onc_test}
       OVIS_ROOT_USERNAME: ${OVIS_ROOT_USERNAME:-ovis-root}
     volumes:
       - ${OVIS_MONGO_INIT_FILE:-../ovis/runtime/mongodb/initdb.js}:/docker-entrypoint-initdb.d/init.js:ro
@@ -133,17 +125,14 @@ services:
     image: ${OVIS_GENERAL_IMAGE_NAMESPACE:-ovisadmin}/ovis-backend-preprocessor:${OVIS_IMAGE_TAG:-latest}
     container_name: bridgehead-ovis-preprocessing
     environment:
-      APOLLO_PORT: ${APOLLO_PORT:-4001}
-      CREDOS_PORT: ${CREDOS_PORT:-4000}
       HTTP_PROXY: ${OVIS_HTTP_PROXY:-}
       HTTPS_PROXY: ${OVIS_HTTPS_PROXY:-}
       NO_PROXY: ${OVIS_NO_PROXY:-}
       http_proxy: ${OVIS_HTTP_PROXY:-}
       https_proxy: ${OVIS_HTTPS_PROXY:-}
       no_proxy: ${OVIS_NO_PROXY:-}
-      MONGO_VER: latest
       CORS_ORIGIN: "*"
-      DB: ${DB:-onc_test}
+      DB: onc_test
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
       CATALOGUE_PATH: /app/generated/ovis-catalogue.json
       PREPROCESSOR_NODE_HEAP_MB: ${PREPROCESSOR_NODE_HEAP_MB:-32768}
@@ -287,8 +276,8 @@ services:
       http_proxy: ${OVIS_HTTP_PROXY:-}
       https_proxy: ${OVIS_HTTPS_PROXY:-}
       no_proxy: ${OVIS_NO_PROXY:-}
-      BASIC_AUTH_USERNAME: ${EXPRESS_AUTH_USERNAME:-admin}
-      BASIC_AUTH_PASSWORD: ${EXPRESS_AUTH_PASSWORD:-admin}
+      BASIC_AUTH_USERNAME: admin
+      BASIC_AUTH_PASSWORD: admin
       KEYCLOAK_URL: http://keycloak:8080${KEYCLOAK_HTTP_RELATIVE_PATH:-/ovis/keycloak}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM:-ovis}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-ovis_client}

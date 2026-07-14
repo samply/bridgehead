@@ -10,8 +10,6 @@ BROKER_URL_FOR_PREREQ=${OVIS_PREREQ_URL:-https://github.com}
 : ${OVIS_IMPORT_MODE:=demo}
 : ${OVIS_GENERAL_IMAGE_NAMESPACE:=ovisadmin}
 : ${OVIS_IMAGE_TAG:=latest}
-: ${EXPRESS_AUTH_USERNAME:=admin}
-: ${EXPRESS_AUTH_PASSWORD:=admin}
 : ${PUBLIC_LOGIN_ENABLED:=false}
 : ${PUBLIC_LDAP_ENABLED:=false}
 : ${PUBLIC_SYSTEM_START_LANGUAGE:=en}
@@ -38,9 +36,6 @@ if [ "${ENABLE_OVIS}" = "true" ]; then
   if [ ! -f "$OVIS_CREDENTIALS_FILE" ]; then
     umask 077
     {
-      printf ': ${DB:=onc_test}\n'
-      printf ': ${EXPRESS_AUTH_USERNAME:=admin}\n'
-      printf ': ${EXPRESS_AUTH_PASSWORD:=admin}\n'
       printf ': ${KEYCLOAK_ADMIN:=ovis-admin}\n'
       printf ': ${KEYCLOAK_ADMIN_PASSWORD:=%s}\n' "$(ovis_random_secret)"
       printf ': ${KEYCLOAK_REALM:=ovis}\n'

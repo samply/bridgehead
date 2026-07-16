@@ -7,6 +7,7 @@ services:
       HOST: "0.0.0.0"
       BIND_ADDR: "0.0.0.0:3000"
       PUBLIC_ENVIRONMENT: ${PUBLIC_ENVIRONMENT}
+      PUBLIC_SPOT_URL: https://${HOST}/prod
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.itcc.rule=Host(`${HOST}`) && PathPrefix(`/`)"

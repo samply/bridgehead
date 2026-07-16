@@ -1,7 +1,6 @@
 PRIVATEKEYFILENAME=/etc/bridgehead/pki/${SITE_ID}.priv.pem
 BROKER_URL_FOR_PREREQ=${OVIS_PREREQ_URL:-https://github.com}
 
-: ${ENABLE_OVIS:=true}
 : ${REQUIRES_BEAM:=false}
 : ${OVIS_PUBLIC_BASE_PATH:=/ovis}
 : ${OVIS_PUBLIC_ORIGIN:=https://${HOST}}
@@ -15,45 +14,39 @@ BROKER_URL_FOR_PREREQ=${OVIS_PREREQ_URL:-https://github.com}
 : ${PUBLIC_SYSTEM_START_LANGUAGE:=en}
 : ${PUBLIC_NAV_STUDY_ENABLED:=true}
 : ${PUBLIC_NAV_USER_MANAGEMENT_ENABLED:=true}
-: ${OVIS_SITE_CONFIG_DIR:=/etc/bridgehead/ovis}
 : ${OVIS_RUNTIME_DIR:=$(pwd)/ovis/runtime}
-: ${OVIS_SITE_DOWNLOADS_DIR:=${OVIS_RUNTIME_DIR}/downloads}
 : ${OVIS_SITE_CERTS_DIR:=${OVIS_RUNTIME_DIR}/certs}
 : ${OVIS_SITE_KEYCLOAK_REALM_FILE:=${OVIS_RUNTIME_DIR}/keycloak/ovis-realm.json}
-: ${OVIS_CATALOGUE_FILE:=${OVIS_RUNTIME_DIR}/mongodb/ovis-catalogue.json}
-: ${OVIS_MONGO_INIT_FILE:=${OVIS_RUNTIME_DIR}/mongodb/initdb.js}
 : ${OVIS_OPS4_FILE:=${OVIS_RUNTIME_DIR}/mongodb/ops4.mjs}
 : ${OVIS_CREDOS_EXPORT_DIR:=${OVIS_RUNTIME_DIR}/input/CREDOSExportFiles}
 
-if [ "${ENABLE_OVIS}" = "true" ]; then
-  mkdir -p /var/cache/bridgehead/ovis || fail_and_report 1 "Failed to create /var/cache/bridgehead/ovis"
-  OVIS_CREDENTIALS_FILE=${OVIS_CREDENTIALS_FILE:-/var/cache/bridgehead/ovis/credentials.env}
+mkdir -p /var/cache/bridgehead/ovis || fail_and_report 1 "Failed to create /var/cache/bridgehead/ovis"
+OVIS_CREDENTIALS_FILE=${OVIS_CREDENTIALS_FILE:-/var/cache/bridgehead/ovis/credentials.env}
 
-  ovis_random_secret() {
-    openssl rand -hex 24
-  }
+ovis_random_secret() {
+  openssl rand -hex 24
+}
 
-  if [ ! -f "$OVIS_CREDENTIALS_FILE" ]; then
-    umask 077
-    {
-      printf ': ${KEYCLOAK_ADMIN:=ovis-admin}\n'
-      printf ': ${KEYCLOAK_ADMIN_PASSWORD:=%s}\n' "$(ovis_random_secret)"
-      printf ': ${KEYCLOAK_REALM:=ovis}\n'
-      printf ': ${KEYCLOAK_CLIENT_ID:=ovis_client}\n'
-      printf ': ${KEYCLOAK_CLIENT_SECRET:=%s}\n' "$(ovis_random_secret)"
-      printf ': ${KEYCLOAK_ADMIN_CLIENT_ID:=admin-cli}\n'
-      printf ': ${KEYCLOAK_ADMIN_CLIENT_SECRET:=%s}\n' "$(ovis_random_secret)"
-      printf ': ${OVIS_ROOT_USERNAME:=ovis-root}\n'
-      printf ': ${OVIS_ROOT_PASSWORD:=%s}\n' "$(ovis_random_secret)"
-      printf ': ${POSTGRES_DB:=keycloak}\n'
-      printf ': ${POSTGRES_USER:=ovis_keycloak}\n'
-      printf ': ${POSTGRES_PASSWORD:=%s}\n' "$(ovis_random_secret)"
-    } > "$OVIS_CREDENTIALS_FILE"
-  fi
-  if [ "$(id -u)" -eq 0 ] && id bridgehead >/dev/null 2>&1; then
-    chown bridgehead /var/cache/bridgehead/ovis "$OVIS_CREDENTIALS_FILE"
-  fi
-  chmod 700 /var/cache/bridgehead/ovis
-  chmod 600 "$OVIS_CREDENTIALS_FILE"
-  source "$OVIS_CREDENTIALS_FILE"
+if [ ! -f "$OVIS_CREDENTIALS_FILE" ]; then
+  umask 077
+  {
+    printf ': ${KEYCLOAK_ADMIN:=ovis-admin}\n'
+    printf ': ${KEYCLOAK_ADMIN_PASSWORD:=%s}\n' "$(ovis_random_secret)"
+    printf ': ${KEYCLOAK_REALM:=ovis}\n'
+    printf ': ${KEYCLOAK_CLIENT_ID:=ovis_client}\n'
+    printf ': ${KEYCLOAK_CLIENT_SECRET:=%s}\n' "$(ovis_random_secret)"
+    printf ': ${KEYCLOAK_ADMIN_CLIENT_ID:=admin-cli}\n'
+    printf ': ${KEYCLOAK_ADMIN_CLIENT_SECRET:=%s}\n' "$(ovis_random_secret)"
+    printf ': ${OVIS_ROOT_USERNAME:=ovis-root}\n'
+    printf ': ${OVIS_ROOT_PASSWORD:=%s}\n' "$(ovis_random_secret)"
+    printf ': ${POSTGRES_DB:=keycloak}\n'
+    printf ': ${POSTGRES_USER:=ovis_keycloak}\n'
+    printf ': ${POSTGRES_PASSWORD:=%s}\n' "$(ovis_random_secret)"
+  } > "$OVIS_CREDENTIALS_FILE"
 fi
+if [ "$(id -u)" -eq 0 ] && id bridgehead >/dev/null 2>&1; then
+  chown bridgehead /var/cache/bridgehead/ovis "$OVIS_CREDENTIALS_FILE"
+fi
+chmod 700 /var/cache/bridgehead/ovis
+chmod 600 "$OVIS_CREDENTIALS_FILE"
+source "$OVIS_CREDENTIALS_FILE"

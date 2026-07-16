@@ -58,11 +58,6 @@ services:
       ORIGIN: ${OVIS_PUBLIC_ORIGIN:-https://${HOST:-localhost}}
     volumes:
       - ovis-catalogue-data:/app/dynamic-catalogue:ro
-      - ${OVIS_CATALOGUE_FILE:-../ovis/runtime/mongodb/ovis-catalogue.json}:/app/static/ovis-catalogue.json:ro
-      - ${OVIS_SITE_DOWNLOADS_DIR:-../ovis/runtime/downloads}/UserAgreement/ovis_userAgreement_en_template.pdf:/app/static/downloads/ovis_userAgreement_en_template.pdf:ro
-      - ${OVIS_SITE_DOWNLOADS_DIR:-../ovis/runtime/downloads}/UserAgreement/ovis_userAgreement_de_template.pdf:/app/static/downloads/ovis_userAgreement_de_template.pdf:ro
-      - ${OVIS_SITE_DOWNLOADS_DIR:-../ovis/runtime/downloads}/Authorization/ovis_authorization_en_template.pdf:/app/static/downloads/ovis_authorization_en_template.pdf:ro
-      - ${OVIS_SITE_DOWNLOADS_DIR:-../ovis/runtime/downloads}/Authorization/ovis_authorization_de_template.pdf:/app/static/downloads/ovis_authorization_de_template.pdf:ro
     depends_on:
       ovis-backend-apollo:
         condition: service_healthy
@@ -93,7 +88,6 @@ services:
       http_proxy: ${OVIS_HTTP_PROXY:-}
       https_proxy: ${OVIS_HTTPS_PROXY:-}
       no_proxy: ${OVIS_NO_PROXY:-}
-      CORS_ORIGIN: "*"
       DB: onc_test
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
     volumes:
@@ -117,7 +111,6 @@ services:
     environment:
       OVIS_ROOT_USERNAME: ${OVIS_ROOT_USERNAME:-ovis-root}
     volumes:
-      - ${OVIS_MONGO_INIT_FILE:-../ovis/runtime/mongodb/initdb.js}:/docker-entrypoint-initdb.d/init.js:ro
       - ovis-mongo-db:/data/db
       - ovis-mongo-conf:/data/configdb
 
@@ -131,7 +124,6 @@ services:
       http_proxy: ${OVIS_HTTP_PROXY:-}
       https_proxy: ${OVIS_HTTPS_PROXY:-}
       no_proxy: ${OVIS_NO_PROXY:-}
-      CORS_ORIGIN: "*"
       DB: onc_test
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
       CATALOGUE_PATH: /app/generated/ovis-catalogue.json

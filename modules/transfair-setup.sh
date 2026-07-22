@@ -27,7 +27,7 @@ function transfairSetup() {
         else
 		    log INFO "TransFAIR configured without ttp"
 	    fi
-        TRANSFAIR_NO_PROXIES="transfair-input-blaze,blaze,transfair-requests-blaze"
+        TRANSFAIR_NO_PROXIES="transfair-input-blaze,blaze,transfair-request-blaze"
         if [ -n "${TRANSFAIR_NO_PROXY}" ]; then
             TRANSFAIR_NO_PROXIES+=",${TRANSFAIR_NO_PROXY}"
         fi

@@ -1,0 +1,48 @@
+version: "3.7"
+
+configs:
+  umm-beam-connect-central-targets:
+    content: |
+      {
+        "sites": []
+      }
+  umm-beam-connect-local-targets:
+    content: |
+      [
+        {
+          "external": "umm-transfair",
+          "internal": "transfair:8080",
+          "allowed": ["transfair-connect.dkfz.${BROKER_ID}"]
+        },
+        {
+          "external": "umm-blaze",
+          "internal": "blaze:8080",
+          "allowed": ["transfair-connect.dkfz.${BROKER_ID}"]
+        }
+      ]
+
+services:
+  umm-beam-connect:
+    image: docker.verbis.dkfz.de/cache/samply/beam-connect:${BEAM_TAG}
+    container_name: bridgehead-umm-beam-connect
+    environment:
+      PROXY_URL: http://beam-proxy:8081
+      APP_ID: transfair-connect.${PROXY_ID}
+      PROXY_APIKEY: ${UMM_TRANSFAIR_BEAM_SECRET}
+      DISCOVERY_URL: ./conf/central-targets.json
+      LOCAL_TARGETS_FILE: ./conf/local-targets.json
+      RUST_LOG: ${RUST_LOG:-info}
+      NO_PROXY: beam-proxy,transfair,blaze
+    configs:
+      - source: umm-beam-connect-central-targets
+        target: /conf/central-targets.json
+      - source: umm-beam-connect-local-targets
+        target: /conf/local-targets.json
+    depends_on:
+      - beam-proxy
+      - transfair
+      - blaze
+
+  beam-proxy:
+    environment:
+      APP_transfair-connect_KEY: ${UMM_TRANSFAIR_BEAM_SECRET}

@@ -71,7 +71,6 @@ services:
     environment:
       ADDRESS: mongodb://ovis-backend-database-mongodb:27017
       OVIS_SUPERADMIN_EMAILS: ${OVIS_SUPERADMIN_EMAILS:-}
-      OVIS_AUTO_CREATE_USERS: ${OVIS_AUTO_CREATE_USERS:-false}
     depends_on:
       - ovis-backend-database-mongodb
       - ovis-backend-mongodb-data-preprocessing
@@ -87,9 +86,6 @@ services:
     image: samply/ovis-frontend:${OVIS_IMAGE_TAG:-main}
     container_name: bridgehead-ccp-ovis-frontend
     environment:
-      OVIS_PUBLIC_BASE_PATH: /ccp-ovis
-      PUBLIC_LOGIN_ENABLED: "false"
-      PUBLIC_IMPORT_MODE: ccp
       ORIGIN: https://${HOST}
     depends_on:
       ovis-backend-apollo:

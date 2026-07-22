@@ -1,5 +1,6 @@
 # This sets beam broker config depending on ENVIRONMENT
 source dhki/modules/dhki-setup.sh
+source dhki/modules/dkfz-setup.sh
 
 # BROKER_ID is exported by previous script
 BROKER_URL=https://${BROKER_ID}
@@ -28,5 +29,6 @@ do
 done
 
 transfairSetup
+dkfzSetup
 scoutSetup
 beamFileSetup

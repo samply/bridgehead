@@ -1,0 +1,76 @@
+version: "3.7"
+
+configs:
+  dkfz-beam-connect-central-targets:
+    content: |
+      {
+        "sites": [
+          {
+            "id": "UMM-TRANSFAIR",
+            "name": "UMM TransFAIR",
+            "virtualhost": "umm-transfair",
+            "beamconnect": "transfair.umm.${BROKER_ID}"
+          },
+          {
+            "id": "UMM-BLAZE",
+            "name": "UMM MDAT Blaze",
+            "virtualhost": "umm-blaze",
+            "beamconnect": "blaze.umm.${BROKER_ID}"
+          }
+        ]
+      }
+  dkfz-beam-connect-local-targets:
+    content: |
+      []
+
+services:
+  dkfz-beam-connect:
+    image: docker.verbis.dkfz.de/cache/samply/beam-connect:${BEAM_TAG}
+    container_name: bridgehead-dkfz-beam-connect
+    environment:
+      PROXY_URL: http://beam-proxy:8081
+      APP_ID: transfair-connect.${PROXY_ID}
+      PROXY_APIKEY: ${DKFZ_TRANSFAIR_BEAM_SECRET}
+      DISCOVERY_URL: ./conf/central-targets.json
+      LOCAL_TARGETS_FILE: ./conf/local-targets.json
+      RUST_LOG: ${RUST_LOG:-info}
+      NO_PROXY: beam-proxy
+    configs:
+      - source: dkfz-beam-connect-central-targets
+        target: /conf/central-targets.json
+      - source: dkfz-beam-connect-local-targets
+        target: /conf/local-targets.json
+    depends_on:
+      - beam-proxy
+
+  dkfz-transfair:
+    image: docker.verbis.dkfz.de/cache/samply/transfair:${TRANSFAIR_TAG:-latest}
+    container_name: bridgehead-dkfz-transfair
+    command: ["dhki-dkfz"]
+    environment:
+      DATABASE_URL: sqlite:///transfair/dhki.db?mode=rwc
+      BEAM_CONNECT_URL: http://dkfz-beam-connect:8062
+      BEAM_CONNECT_APP_ID: transfair-connect.${PROXY_ID}
+      BEAM_CONNECT_API_KEY: ${DKFZ_TRANSFAIR_BEAM_SECRET}
+      DKFZ_ID_SYSTEM: ${DKFZ_ID_SYSTEM}
+      REMOTE_TRANSFAIR_URL: http://umm-transfair/
+      REMOTE_FHIR_SERVER_URL: http://umm-blaze/
+      REMOTE_EXCHANGE_ID_SYSTEM: ${DKFZ_REMOTE_EXCHANGE_ID_SYSTEM:-SESSION_ID}
+      DESTINATION_FHIR_SERVER_URL: http://blaze:8080
+      RUST_LOG: ${RUST_LOG:-info}
+    volumes:
+      - /var/cache/bridgehead/${PROJECT}/dkfz-transfair:/transfair
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dkfz-transfair.rule=PathPrefix(`/transfair`)"
+      - "traefik.http.middlewares.dkfz-transfair-strip.stripprefix.prefixes=/transfair"
+      - "traefik.http.services.dkfz-transfair.loadbalancer.server.port=8080"
+      - "traefik.http.routers.dkfz-transfair.middlewares=dkfz-transfair-strip,auth"
+      - "traefik.http.routers.dkfz-transfair.tls=true"
+    depends_on:
+      - blaze
+      - dkfz-beam-connect
+
+  beam-proxy:
+    environment:
+      APP_transfair-connect_KEY: ${DKFZ_TRANSFAIR_BEAM_SECRET}

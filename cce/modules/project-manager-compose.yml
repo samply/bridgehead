@@ -1,0 +1,163 @@
+version: "3.9"
+
+services:
+
+  beam-proxy:
+    environment:
+      APP_project-manager_KEY: ${BEAM_SECRET_PROJECT_MANAGER}
+
+  project-manager-api:
+    container_name: project-manager-api
+    image: docker.verbis.dkfz.de/ccp/cce-project-manager:latest
+    environment:
+      ROOT_LOG_LEVEL: "${PM_ROOT_LOG_LEVEL:-INFO}" # Default to INFO if not set
+      LOG_LEVEL: "${PM_LOG_LEVEL:-INFO}" # Use LOG_LEVEL, or ROOT_LOG_LEVEL if LOG_LEVEL is not set
+      BEAM_API_KEY: "${BEAM_SECRET_PROJECT_MANAGER}"
+      BEAM_PROJECT_MANAGER_ID: "project-manager.${PROXY_ID}"
+      BEAM_URL: "http://beam-proxy:8081"
+      FRONTEND_BASEURL: "https://${HOST}/requester"
+      BACKEND_BASEURL: "https://${HOST}/requester-api"
+      PROJECT_MANAGER_DB_URL: "jdbc:postgresql://project-manager-api-db:5432/project_manager"
+      PROJECT_MANAGER_DB_USER: "project_manager"
+      PROJECT_MANAGER_DB_PASSWORD: "${PROJECT_MANAGER_DB_PASSWORD}"
+      ENABLE_CODER: "false"
+      ENABLE_EMAILS: "true"
+      ENABLE_EXPORTER: "${ENABLE_EXPORTER:-false}"
+      ENABLE_TOKEN_MANAGER: "false"
+      ENABLE_APP_REGISTER: "false"
+      SERVER_SERVLET_CONTEXT_PATH: "/project-manager-api"
+      # https://docs.spring.io/spring-boot/docs/2.7.15/reference/html/howto.html#howto.webserver.configure-access-logs
+      # The follwing variable allows to redirect to OIDC server using https instead of http
+      SERVER_FORWARD_HEADERS_STRATEGY: "framework"
+      HTTP_PROXY_URL: "http://forward_proxy:3128"
+      HTTP_PROXY_NOPROXY: "beam-proxy,token-manager,beam-register"
+      SPRING_MAIL_TEST_HOST: "test-smtp-server"
+      SPRING_MAIL_TEST_PORT: "1025"
+      TEST_EMAIL_DOMAINS: "test.dkfz.de"
+      DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64: "${PROJECT_MANAGER_DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64}"
+      OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
+      OIDC_CLIENT_SECRET: "${OIDC_PUBLIC}"
+      OIDC_URL: "${OIDC_URL}"
+
+      # Ignore these variables. Remove after disable module in project manager doesn't require disabled module variables
+      APP_REGISTER_BASE_URL: "http://beam-register:3000"
+      APP_REGISTER_API_KEY: "XXX"
+      CODER_MEMBER_ID: "XXX"
+      CODER_ORGANISATION_ID: "XXX"
+      CODER_SESSION_TOKEN: "XXX"
+      CODER_BEAM_ID_SUFFIX: "XXX"
+      TOKEN_MANAGER_URL: "http://token-manager:3030" # Ignore me for the moment. Later remove me.
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.project-manager-api.rule=PathPrefix(`/requester-api`)"
+      - "traefik.http.services.project-manager-api.loadbalancer.server.port=8097"
+      - "traefik.http.routers.project-manager-api.tls=true"
+    volumes:
+      - project-manager-api:/app/documents
+    depends_on:
+      project-manager-api-db:
+        condition: service_healthy
+    networks:
+      - traefik
+      - default
+
+  project-manager-api-db:
+    container_name: project-manager-api-db
+    image: postgres:${POSTGRES_VERSION}
+    environment:
+      POSTGRES_USER: "project_manager"
+      POSTGRES_PASSWORD: "${PROJECT_MANAGER_DB_PASSWORD}"
+      POSTGRES_DB: "project_manager"
+      PGDATA: "/var/lib/postgresql/data/pgdata"  # Prevent corruption during abrupt shutdowns
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"  # Better sorting
+    command: >
+      postgres -c max_connections=200
+               -c shared_buffers=1GB
+               -c work_mem=64MB
+               -c effective_cache_size=2GB
+               -c random_page_cost=1.1
+               -c log_min_duration_statement=500
+               -c idle_in_transaction_session_timeout=60000
+    volumes:
+      - project-manager-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U project_manager"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: "2GB"
+        reservations:
+          cpus: "1"
+          memory: "512MB"
+    restart: unless-stopped
+    networks:
+      - traefik
+
+
+  project-manager-ui:
+    container_name: project-manager-ui
+    image: samply/project-manager-ui:develop
+    environment:
+      STANDALONE_SINGLE_SPA: "true"
+      VUE_APP_OIDC_URL: "${OIDC_URL}"
+      VUE_APP_OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
+      VUE_APP_PROJECT_MANAGER_BACKEND_URL: "https://${HOST}/requester-api"
+      VUE_APP_FRONTEND_NAME: "<b>CCE BioDataHub</b> Requester"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.project-manager-ui.rule=PathPrefix(`/requester`)"
+      - "traefik.http.services.project-manager-ui.loadbalancer.server.port=80"
+      - "traefik.http.routers.project-manager-ui.tls=true"
+      - "traefik.http.middlewares.project-manager-ui-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.project-manager-ui.middlewares=project-manager-ui-headers"
+    networks:
+      - traefik
+
+  test-smtp-server:
+    container_name: test-smtp-server
+    image: axllent/mailpit:${MAILPIT_VERSION}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.test-smtp-server.rule=PathPrefix(`/smtp`)"
+      - "traefik.http.services.test-smtp-server.loadbalancer.server.port=8025"
+      - "traefik.http.routers.test-smtp-server.tls=true"
+      - "traefik.http.routers.test-smtp-server.middlewares=auth-test-smtp-server"
+      - "traefik.http.middlewares.auth-test-smtp-server.basicauth.users=${TEST_SMTP_AUTH}"
+    environment:
+      MP_WEBROOT: "/smtp" # https://mailpit.axllent.org/docs/configuration/runtime-options/
+    networks:
+      - traefik
+
+  # GUI for administrating project-manager-api database
+  sql-gui:
+    container_name: sql-gui
+    image: dbeaver/cloudbeaver:${DBEAVER_VERSION}
+    environment: # https://dbeaver.com/docs/cloudbeaver/Server-configuration/
+      CLOUDBEAVER_ROOT_URI: "/sql"
+      CB_ADMIN_NAME: "${DBEAVER_USER}"
+      CB_ADMIN_PASSWORD: "${DBEAVER_PASSWORD}"
+      CB_SERVER_URL: "https://${HOST}"
+      CB_SERVER_NAME: "Project Manager API Database"
+    volumes:
+      - cloudbeaver-data:/opt/cloudbeaver/workspace
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dbeaver.rule=PathPrefix(`/sql`)"
+      - "traefik.http.services.dbeaver.loadbalancer.server.port=8978"
+      - "traefik.http.routers.dbeaver.tls=true"
+      - "traefik.http.routers.dbeaver.middlewares=auth-dbeaver"
+      - "traefik.http.middlewares.auth-dbeaver.basicauth.users=${SQL_GUI_AUTH}"
+    networks:
+      - traefik
+
+volumes:
+  project-manager-db:
+  project-manager-api:
+  cloudbeaver-data:

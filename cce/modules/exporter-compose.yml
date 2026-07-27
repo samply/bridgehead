@@ -16,7 +16,7 @@ services:
       HTTP_RELATIVE_PATH: "/cce-exporter"
       SITE: "${SITE_ID}"
       HTTP_SERVLET_REQUEST_SCHEME: "https"
-      OPAL_PASSWORD: "${EXPORTER_OPAL_PASSWORD}"
+      OPAL_PASSWORD: "XXX" # Opal not configured
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.exporter_cce.rule=PathPrefix(`/cce-exporter`)"
@@ -85,3 +85,7 @@ services:
       - "traefik.http.routers.reporter_cce_api.tls=true"
       - "traefik.http.routers.reporter_cce_api.priority=25"
 
+  focus:
+    environment:
+      EXPORTER_URL: "http://exporter:8092"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"

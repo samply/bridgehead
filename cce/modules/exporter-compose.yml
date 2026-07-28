@@ -38,6 +38,9 @@ services:
 
     volumes:
       - "/var/cache/bridgehead/cce/exporter-files:/app/exporter-files/output"
+    depends_on:
+      exporter-db:
+        condition: service_healthy
 
   exporter-db:
     image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
@@ -49,6 +52,12 @@ services:
     volumes:
       # Consider removing this volume once we find a solution to save Lens-queries to be executed in the explorer.
       - "/var/cache/bridgehead/cce/exporter-db:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U exporter -d exporter"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
   reporter:
     image: docker.verbis.dkfz.de/ccp/dktk-reporter:latest

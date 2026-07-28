@@ -79,10 +79,11 @@ services:
     volumes:
       - "/var/cache/bridgehead/cce/project-manager-db:/var/lib/postgresql/data"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U project_manager"]
+      test: ["CMD-SHELL", "pg_isready -U project_manager -d project_manager"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 20
+      start_period: 10s
     deploy:
       resources:
         limits:

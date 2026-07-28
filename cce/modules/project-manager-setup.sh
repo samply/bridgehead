@@ -16,5 +16,4 @@ if [ "$ENABLE_PROJECT_MANAGER" == true ]; then
   SQL_GUI_AUTH="$(echo \"This is a salt string to generate one consistent basic authentication password for the project manager database GUI. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
   TEST_SMTP_AUTH="$(echo \"This is a salt string to generate one consistent basic authentication password for the project manager test SMTP server. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
 
-  add_public_oidc_redirect_url "/requester/*"
 fi

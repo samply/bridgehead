@@ -54,13 +54,10 @@ services:
       - "traefik.http.services.project-manager-api.loadbalancer.server.port=8097"
       - "traefik.http.routers.project-manager-api.tls=true"
     volumes:
-      - project-manager-api:/app/documents
+      - /var/cache/bridgehead/cce/project-manager-api:/app/documents
     depends_on:
       project-manager-api-db:
         condition: service_healthy
-    networks:
-      - traefik
-      - default
 
   project-manager-api-db:
     container_name: project-manager-api-db
@@ -80,7 +77,7 @@ services:
                -c log_min_duration_statement=500
                -c idle_in_transaction_session_timeout=60000
     volumes:
-      - project-manager-db:/var/lib/postgresql/data
+      - /var/cache/bridgehead/cce/project-manager-db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
@@ -97,8 +94,6 @@ services:
           cpus: "1"
           memory: "512MB"
     restart: unless-stopped
-    networks:
-      - traefik
 
 
   project-manager-ui:
@@ -117,8 +112,7 @@ services:
       - "traefik.http.routers.project-manager-ui.tls=true"
       - "traefik.http.middlewares.project-manager-ui-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.project-manager-ui.middlewares=project-manager-ui-headers"
-    networks:
-      - traefik
+
 
   test-smtp-server:
     container_name: test-smtp-server
@@ -132,8 +126,7 @@ services:
       - "traefik.http.middlewares.auth-test-smtp-server.basicauth.users=${TEST_SMTP_AUTH}"
     environment:
       MP_WEBROOT: "/smtp" # https://mailpit.axllent.org/docs/configuration/runtime-options/
-    networks:
-      - traefik
+
 
   # GUI for administrating project-manager-api database
   sql-gui:
@@ -146,7 +139,7 @@ services:
       CB_SERVER_URL: "https://${HOST}"
       CB_SERVER_NAME: "Project Manager API Database"
     volumes:
-      - cloudbeaver-data:/opt/cloudbeaver/workspace
+      - /var/cache/bridgehead/cce/cloudbeaver-data:/opt/cloudbeaver/workspace
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dbeaver.rule=PathPrefix(`/sql`)"
@@ -154,10 +147,4 @@ services:
       - "traefik.http.routers.dbeaver.tls=true"
       - "traefik.http.routers.dbeaver.middlewares=auth-dbeaver"
       - "traefik.http.middlewares.auth-dbeaver.basicauth.users=${SQL_GUI_AUTH}"
-    networks:
-      - traefik
 
-volumes:
-  project-manager-db:
-  project-manager-api:
-  cloudbeaver-data:

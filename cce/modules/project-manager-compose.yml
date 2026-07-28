@@ -25,7 +25,7 @@ services:
       ENABLE_EXPORTER: "${ENABLE_EXPORTER:-false}"
       ENABLE_TOKEN_MANAGER: "false"
       ENABLE_APP_REGISTER: "false"
-      SERVER_SERVLET_CONTEXT_PATH: "/project-manager-api"
+      SERVER_SERVLET_CONTEXT_PATH: "/requester-api"
       # https://docs.spring.io/spring-boot/docs/2.7.15/reference/html/howto.html#howto.webserver.configure-access-logs
       # The follwing variable allows to redirect to OIDC server using https instead of http
       SERVER_FORWARD_HEADERS_STRATEGY: "framework"
@@ -110,8 +110,9 @@ services:
       - "traefik.http.routers.project-manager-ui.rule=PathPrefix(`/requester`)"
       - "traefik.http.services.project-manager-ui.loadbalancer.server.port=80"
       - "traefik.http.routers.project-manager-ui.tls=true"
+      - "traefik.http.middlewares.project-manager-ui-strip.stripprefix.prefixes=/requester"
       - "traefik.http.middlewares.project-manager-ui-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.project-manager-ui.middlewares=project-manager-ui-headers"
+      - "traefik.http.routers.project-manager-ui.middlewares=project-manager-ui-strip,project-manager-ui-headers"
 
 
   test-smtp-server:

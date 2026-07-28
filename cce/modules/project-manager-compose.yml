@@ -35,9 +35,9 @@ services:
       SPRING_MAIL_TEST_PORT: "1025"
       TEST_EMAIL_DOMAINS: "test.dkfz.de"
       DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64: "${PROJECT_MANAGER_DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64}"
-      OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
-      OIDC_CLIENT_SECRET: "${OIDC_PUBLIC}"
-      OIDC_URL: "${OIDC_URL}"
+      OIDC_URL: "${PM_OIDC_URL}"
+      OIDC_CLIENT_ID: "${PM_OIDC_PRIVATE_CLIENT_ID}"
+      OIDC_CLIENT_SECRET: "${PM_OIDC_PRIVATE_SECRET}"
 
       # Ignore these variables. Remove after disable module in project manager doesn't require disabled module variables
       APP_REGISTER_BASE_URL: "http://beam-register:3000"
@@ -106,8 +106,8 @@ services:
     image: samply/project-manager-ui:develop
     environment:
       STANDALONE_SINGLE_SPA: "true"
-      VUE_APP_OIDC_URL: "${OIDC_URL}"
-      VUE_APP_OIDC_CLIENT_ID: "${OIDC_PUBLIC_CLIENT_ID}"
+      VUE_APP_OIDC_URL: "${PM_OIDC_URL}"
+      VUE_APP_OIDC_CLIENT_ID: "${PM_OIDC_PUBLIC_CLIENT_ID}"
       VUE_APP_PROJECT_MANAGER_BACKEND_URL: "https://${HOST}/requester-api"
       VUE_APP_FRONTEND_NAME: "<b>CCE BioDataHub</b> Requester"
     labels:

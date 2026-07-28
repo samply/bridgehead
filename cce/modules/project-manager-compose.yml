@@ -54,7 +54,7 @@ services:
       - "traefik.http.services.project-manager-api.loadbalancer.server.port=8097"
       - "traefik.http.routers.project-manager-api.tls=true"
     volumes:
-      - /var/cache/bridgehead/cce/project-manager-api:/app/documents
+      - "/var/cache/bridgehead/cce/project-manager-api:/app/documents"
     depends_on:
       project-manager-api-db:
         condition: service_healthy
@@ -77,9 +77,7 @@ services:
                -c log_min_duration_statement=500
                -c idle_in_transaction_session_timeout=60000
     volumes:
-      - /var/cache/bridgehead/cce/project-manager-db:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - "/var/cache/bridgehead/cce/project-manager-db:/var/lib/postgresql/data"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U project_manager"]
       interval: 5s
@@ -139,7 +137,7 @@ services:
       CB_SERVER_URL: "https://${HOST}"
       CB_SERVER_NAME: "Project Manager API Database"
     volumes:
-      - /var/cache/bridgehead/cce/cloudbeaver-data:/opt/cloudbeaver/workspace
+      - "/var/cache/bridgehead/cce/cloudbeaver-data:/opt/cloudbeaver/workspace"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dbeaver.rule=PathPrefix(`/sql`)"

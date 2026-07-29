@@ -2,14 +2,61 @@ version: "3.7"
 services:
   lens:
     container_name: lens_federated-search
-    image: samply/cce-explorer:main
+    #image: samply/cce-explorer:main
+    image: ghcr.io/samply/cce-explorer:feature-project-manager
     environment:
       PUBLIC_SPOT_URL: https://${HOST}/prod
+      PUBLIC_ENVIRONMENT: "test"
+      PUBLIC_OAUTH2_AUTH_URL: ${OAUTH2_AUTH_URL}
     labels:
       - "traefik.http.services.lens.loadbalancer.server.port=3000"
       - "traefik.enable=true"
       - "traefik.http.routers.lens.rule=Host(`${HOST}`)"
       - "traefik.http.routers.lens.tls=true"
+      - "traefik.http.routers.lens.middlewares=lens-oauth"
+
+  lens-oauth2-proxy:
+    container_name: lens_oauth2-proxy
+    image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:latest
+    environment:
+      http_proxy: http://forward_proxy:3128
+      https_proxy: http://forward_proxy:3128
+      OAUTH2_PROXY_PROVIDER: oidc
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
+      # Use the same issuer as Project Manager so Lens can forward the token to its API.
+      OAUTH2_PROXY_OIDC_ISSUER_URL: ${PM_OIDC_URL}
+      OAUTH2_PROXY_CLIENT_ID: ${PM_OIDC_PRIVATE_CLIENT_ID}
+      OAUTH2_PROXY_CLIENT_SECRET: ${PM_OIDC_PRIVATE_SECRET}
+      OAUTH2_PROXY_COOKIE_SECRET: ${LENS_AUTH_COOKIE_SECRET}
+      OAUTH2_PROXY_COOKIE_NAME: _BRIDGEHEAD_oauth2_lens
+      OAUTH2_PROXY_COOKIE_REFRESH: 4m
+      OAUTH2_PROXY_COOKIE_EXPIRE: 24h
+      OAUTH2_PROXY_COOKIE_SECURE: "true"
+      OAUTH2_PROXY_COOKIE_SAMESITE: lax
+      OAUTH2_PROXY_HTTP_ADDRESS: :4180
+      OAUTH2_PROXY_REVERSE_PROXY: "true"
+      OAUTH2_PROXY_REDIRECT_URL: https://${HOST}/oauth2/callback
+      OAUTH2_PROXY_WHITELIST_DOMAINS: ${HOST}
+      OAUTH2_PROXY_UPSTREAMS: static://202
+      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+      OAUTH2_PROXY_SCOPE: openid profile email
+      OAUTH2_PROXY_SET_AUTHORIZATION_HEADER: "true"
+      OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
+      OAUTH2_PROXY_ALLOWED_GROUPS: ${OIDC_LENS_GROUP}
+      OAUTH2_PROXY_OIDC_GROUPS_CLAIM: ${OIDC_GROUP_CLAIM}
+      OAUTH2_PROXY_PROXY_PREFIX: /oauth2
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.lens-oauth2-proxy.loadbalancer.server.port=4180"
+      - "traefik.http.routers.lens-oauth2.rule=Host(`${HOST}`) && PathPrefix(`/oauth2/`)"
+      - "traefik.http.routers.lens-oauth2.tls=true"
+      - "traefik.http.routers.lens-oauth2.priority=100"
+      - "traefik.http.routers.lens-oauth2.service=lens-oauth2-proxy"
+      - "traefik.http.middlewares.lens-oauth.forwardauth.address=http://lens-oauth2-proxy:4180"
+      - "traefik.http.middlewares.lens-oauth.forwardauth.authResponseHeaders=Authorization,X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups"
+    depends_on:
+      forward_proxy:
+        condition: service_healthy
 
   spot:
     image: samply/rustyspot:latest
@@ -38,9 +85,8 @@ services:
       - "traefik.http.routers.spot.rule=Host(`${HOST}`) && PathPrefix(`/prod`)"
       - "traefik.http.middlewares.stripprefix_spot.stripprefix.prefixes=/prod"
       - "traefik.http.routers.spot.tls=true"
-      - "traefik.http.routers.spot.middlewares=corsheaders2,stripprefix_spot,auth"
+      - "traefik.http.routers.spot.middlewares=corsheaders2,lens-oauth,stripprefix_spot"
 
   beam-proxy:
     environment:
       APP_spot_KEY: ${FOCUS_BEAM_SECRET_SHORT}
-      

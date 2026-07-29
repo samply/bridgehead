@@ -20,11 +20,6 @@ services:
       PROJECT_MANAGER_DB_URL: "jdbc:postgresql://project-manager-api-db:5432/project_manager"
       PROJECT_MANAGER_DB_USER: "project_manager"
       PROJECT_MANAGER_DB_PASSWORD: "${PROJECT_MANAGER_DB_PASSWORD}"
-      ENABLE_CODER: "false"
-      ENABLE_EMAILS: "true"
-      ENABLE_EXPORTER: "${ENABLE_EXPORTER:-false}"
-      ENABLE_TOKEN_MANAGER: "false"
-      ENABLE_APP_REGISTER: "false"
       SERVER_SERVLET_CONTEXT_PATH: "/requester-api"
       # https://docs.spring.io/spring-boot/docs/2.7.15/reference/html/howto.html#howto.webserver.configure-access-logs
       # The follwing variable allows to redirect to OIDC server using https instead of http
@@ -38,15 +33,6 @@ services:
       OIDC_URL: "${PM_OIDC_URL}"
       OIDC_CLIENT_ID: "${PM_OIDC_PRIVATE_CLIENT_ID}"
       OIDC_CLIENT_SECRET: "${PM_OIDC_PRIVATE_SECRET}"
-
-      # Ignore these variables. Remove after disable module in project manager doesn't require disabled module variables
-      APP_REGISTER_BASE_URL: "http://beam-register:3000"
-      APP_REGISTER_API_KEY: "XXX"
-      CODER_MEMBER_ID: "XXX"
-      CODER_ORGANISATION_ID: "XXX"
-      CODER_SESSION_TOKEN: "XXX"
-      CODER_BEAM_ID_SUFFIX: "XXX"
-      TOKEN_MANAGER_URL: "http://token-manager:3030" # Ignore me for the moment. Later remove me.
 
     labels:
       - "traefik.enable=true"

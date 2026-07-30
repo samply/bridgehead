@@ -2,8 +2,7 @@ version: "3.7"
 services:
   lens:
     container_name: lens_federated-search
-    #image: samply/cce-explorer:main
-    image: ghcr.io/samply/cce-explorer:feature-project-manager
+    image: samply/cce-explorer:main
     environment:
       PUBLIC_SPOT_URL: https://${HOST}/prod
       PUBLIC_ENVIRONMENT: "test"

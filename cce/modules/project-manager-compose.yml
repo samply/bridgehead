@@ -15,6 +15,7 @@ services:
       BEAM_API_KEY: "${BEAM_SECRET_PROJECT_MANAGER}"
       BEAM_PROJECT_MANAGER_ID: "project-manager.${PROXY_ID}"
       BEAM_URL: "http://beam-proxy:8081"
+      BROKER_ID: "${BROKER_ID}"
       FRONTEND_BASEURL: "https://${HOST}/request"
       BACKEND_BASEURL: "https://${HOST}/requester-api"
       PROJECT_MANAGER_DB_URL: "jdbc:postgresql://project-manager-api-db:5432/project_manager"
@@ -28,7 +29,6 @@ services:
       HTTP_PROXY_NOPROXY: "beam-proxy,token-manager,beam-register"
       SPRING_MAIL_TEST_HOST: "test-smtp-server"
       SPRING_MAIL_TEST_PORT: "1025"
-      TEST_EMAIL_DOMAINS: "test.dkfz.de"
       DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64: "${PROJECT_MANAGER_DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64}"
       OIDC_URL: "${PM_OIDC_URL}"
       OIDC_CLIENT_ID: "${PM_OIDC_PRIVATE_CLIENT_ID}"
@@ -134,4 +134,3 @@ services:
       - "traefik.http.routers.dbeaver.tls=true"
       - "traefik.http.routers.dbeaver.middlewares=auth-dbeaver"
       - "traefik.http.middlewares.auth-dbeaver.basicauth.users=${SQL_GUI_AUTH}"
-

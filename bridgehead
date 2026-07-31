@@ -169,13 +169,21 @@ case "$ACTION" in
 	uninstall)
 		exec ./lib/uninstall-bridgehead.sh $PROJECT
 		;;
-	adduser)
+	setuser)
 		loadVars
-		log "INFO" "Adding encrypted credentials in /etc/bridgehead/$PROJECT.local.conf"
-    		read -p "Please choose the component (LDM_AUTH|NNGM_AUTH|EXPORTER_USER) you want to add a user to : " COMPONENT
-    		read -p "Please enter a username: " USER
-    		read -s -p "Please enter a password (will not be echoed): "$'\n' PASSWORD
-    		add_basic_auth_user $USER $PASSWORD $COMPONENT $PROJECT
+		log "INFO" "Setting encrypted credentials in /etc/bridgehead/$PROJECT.local.conf"
+		read -p "Please choose the component ($(echo $BASIC_AUTH_VARIABLES | tr ' ' '|')) you want to set the credentials for : " COMPONENT
+		case " $BASIC_AUTH_VARIABLES " in
+			*" $COMPONENT "*)
+				;;
+			*)
+				log "ERROR" "\"$COMPONENT\" is not a basic auth component. Choose one of: $BASIC_AUTH_VARIABLES"
+				exit 1
+				;;
+		esac
+		read -p "Please enter a username: " USER
+		read -s -p "Please enter a password (will not be echoed): "$'\n' PASSWORD
+		set_basic_auth_user "$USER" "$PASSWORD" "$COMPONENT" "$PROJECT"
 		;;
 	enroll)
 		loadVars

@@ -359,7 +359,7 @@ https://<Name of your server>/bbmri-localdatamanagement/fhir
 ```
 The name of your server will generally be the full name of the VM that the Bridgehead runs on. You can alternatively supply an IP address.
 
-The FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/<project>.local.conf`.
+The FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/<project>.local.conf`. Exactly one set of credentials is supported, so `bridgehead setuser <project>` replaces the previous ones.
 
 Note that if you don't have a DNS certificate for the Bridgehead, you will need to allow an insecure connection. E.g. with curl, use the `-k` flag.
 

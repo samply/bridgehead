@@ -26,7 +26,7 @@ services:
       # The follwing variable allows to redirect to OIDC server using https instead of http
       SERVER_FORWARD_HEADERS_STRATEGY: "framework"
       HTTP_PROXY_URL: "http://forward_proxy:3128"
-      HTTP_PROXY_NOPROXY: "beam-proxy,token-manager,beam-register"
+      HTTP_PROXY_NOPROXY: "beam-proxy"
       SPRING_MAIL_TEST_HOST: "test-smtp-server"
       SPRING_MAIL_TEST_PORT: "1025"
       DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64: "${PROJECT_MANAGER_DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64}"

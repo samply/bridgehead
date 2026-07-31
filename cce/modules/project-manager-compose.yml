@@ -33,6 +33,7 @@ services:
       OIDC_URL: "${PM_OIDC_PRIVATE_URL}"
       OIDC_CLIENT_ID: "${PM_OIDC_PRIVATE_CLIENT_ID}"
       OIDC_CLIENT_SECRET: "${PM_OIDC_PRIVATE_SECRET}"
+      EXPLORER_URL: "https://${HOST}"
 
     labels:
       - "traefik.enable=true"

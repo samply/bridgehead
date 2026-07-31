@@ -44,6 +44,8 @@ services:
     depends_on:
       project-manager-api-db:
         condition: service_healthy
+      forward_proxy:
+        condition: service_healthy
 
   project-manager-api-db:
     container_name: project-manager-api-db

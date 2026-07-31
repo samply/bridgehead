@@ -16,7 +16,8 @@ if [ "$ENABLE_PROJECT_MANAGER" == true ]; then
   SQL_GUI_AUTH="$(echo \"This is a salt string to generate one consistent basic authentication password for the project manager database GUI. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
   TEST_SMTP_AUTH="$(echo \"This is a salt string to generate one consistent basic authentication password for the project manager test SMTP server. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"
 
-  PM_OIDC_URL="https://sso.verbis.dkfz.de/application/o/cce-project-manager-api/"
+  PM_OIDC_PRIVATE_URL="https://sso.verbis.dkfz.de/application/o/cce-project-manager-api/"
+  PM_OIDC_PUBLIC_URL="https://sso.verbis.dkfz.de/application/o/cce-project-manager-ui/"
   PM_OIDC_PUBLIC_CLIENT_ID="cce-project-manager-ui"
   PM_OIDC_PRIVATE_CLIENT_ID="cce-project-manager-api"
   PM_OIDC_PRIVATE_SECRET="$(echo \"This is a salt string to generate the private secret for the project manager oidc public client. It is not required to be secret.\" | sha1sum | openssl pkeyutl -sign -inkey /etc/bridgehead/pki/${SITE_ID}.priv.pem | base64 | head -c 30)"

@@ -30,7 +30,7 @@ services:
       SPRING_MAIL_TEST_HOST: "test-smtp-server"
       SPRING_MAIL_TEST_PORT: "1025"
       DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64: "${PROJECT_MANAGER_DB_ENCRYPTION_PRIVATE_KEY_IN_BASE64}"
-      OIDC_URL: "${PM_OIDC_URL}"
+      OIDC_URL: "${PM_OIDC_PRIVATE_URL}"
       OIDC_CLIENT_ID: "${PM_OIDC_PRIVATE_CLIENT_ID}"
       OIDC_CLIENT_SECRET: "${PM_OIDC_PRIVATE_SECRET}"
 
@@ -86,7 +86,7 @@ services:
     image: samply/project-manager-ui:develop
     environment:
       STANDALONE_SINGLE_SPA: "true"
-      VUE_APP_OIDC_URL: "${PM_OIDC_URL}"
+      VUE_APP_OIDC_URL: "${PM_OIDC_PUBLIC_URL}"
       VUE_APP_OIDC_CLIENT_ID: "${PM_OIDC_PUBLIC_CLIENT_ID}"
       VUE_APP_BACKEND_URL: "https://${HOST}/requester-api"
       VUE_APP_FRONTEND_URL: "https://${HOST}/request"

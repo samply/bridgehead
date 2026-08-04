@@ -359,13 +359,19 @@ https://<Name of your server>/bbmri-localdatamanagement/fhir
 ```
 The name of your server will generally be the full name of the VM that the Bridgehead runs on. You can alternatively supply an IP address.
 
-The FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/<project>.local.conf`.
+For more information on how to use the FHIR API, please refer to the [Hapi FHIR tutorial](https://github.com/hapifhir/fhir-tutorial/blob/master/CRUD%20operations/lesson.md).
+
+The Bridgehead's FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/<project>.local.conf`.
 
 Note that if you don't have a DNS certificate for the Bridgehead, you will need to allow an insecure connection. E.g. with curl, use the `-k` flag.
 
-The storage space on your hard drive will depend on the number of FHIR resources that you intend to generate. This will be the sum of the number of patients/subjects, the number of samples, the number of conditions/diseases and the number of observations. As a general rule of thumb, you can assume that each resource will consume about 2 kilobytes of disk space.
+As an alternative to curl, you can also use the tool [blazectl](https://github.com/samply/blazectl) for uploading data to the FHIR store.
+
+The storage space needed on your hard drive will depend on the number of FHIR resources that you intend to generate. This will be the sum of the number of patients/subjects, the number of samples, the number of conditions/diseases and the number of observations. As a general rule of thumb, you can assume that each resource will consume about 2 kilobytes of disk space.
 
 For more information on Blaze performance, please refer to [import performance](https://github.com/samply/blaze/blob/master/docs/performance/import.md).
+
+If you can make your data available in tabular form (e.g. as an Excel file), then you can use the ["a small fire"](https://github.com/bbdataeng/a-small-fire) tool to convert your data into the FHIR format needed for upload to the FHIR store.
 
 ### Clearing data
 

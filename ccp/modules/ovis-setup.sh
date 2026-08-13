@@ -6,4 +6,7 @@ if [ "$ENABLE_OVIS" == true ]; then
   add_private_oidc_redirect_url "/oauth2-ovis/callback"
   add_private_oidc_redirect_url "/ccp-ovis*"
   OVIS_AUTH_COOKIE_SECRET="$(generate_simple_password 'ovisCookieSecret' | head -c 16)"
+  if [ -z "$OVIS_SUPERADMIN_EMAILS" ]; then
+    log WARN "OVIS is enabled but OVIS_SUPERADMIN_EMAILS is not set -- nobody will be able to administrate OVIS."
+  fi
 fi

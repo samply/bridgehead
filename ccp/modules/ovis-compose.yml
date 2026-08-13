@@ -51,7 +51,7 @@ services:
     depends_on:
       - ovis-backend-database-mongodb
     healthcheck:
-      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:9000/health', res => process.exit(res.statusCode===200?0:1)).on('error', () => process.exit(1));\""]
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/health"]
       interval: 10s
       timeout: 5s
       retries: 6
@@ -77,7 +77,7 @@ services:
       - ovis-backend-mongodb-data-preprocessing
       - ovis-backend-data-import
     healthcheck:
-      test: ["CMD-SHELL", "test -d /app/node_modules/mongodb"]
+      test: ["CMD", "curl", "-fsS", "-X", "POST", "-H", "content-type: application/json", "-d", "{\"query\":\"{__typename}\"}", "http://localhost:4001/graphql"]
       interval: 10s
       timeout: 5s
       retries: 5

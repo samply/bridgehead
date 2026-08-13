@@ -41,7 +41,7 @@ services:
     image: docker.verbis.dkfz.de/cache/samply/ovis-backend-mongodb:${OVIS_TAG}
     container_name: bridgehead-ccp-ovis-mongo
     volumes:
-      - ovis-mongodb-data:/data/db
+      - /var/cache/bridgehead/ccp/ovis-mongodb:/data/db
 
   ovis-backend-mongodb-data-preprocessing:
     image: docker.verbis.dkfz.de/cache/samply/ovis-backend-preprocessor:${OVIS_TAG}
@@ -100,6 +100,3 @@ services:
       - "traefik.http.routers.ovis-frontend-ccp.rule=PathPrefix(`/ccp-ovis`)"
       - "traefik.http.routers.ovis-frontend-ccp.middlewares=traefik-forward-auth-ovis,ovis-frontend-ccp-slash-redirect"
       - "traefik.http.services.ovis-frontend-ccp.loadbalancer.server.port=5173"
-
-volumes:
-  ovis-mongodb-data:

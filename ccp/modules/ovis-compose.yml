@@ -1,5 +1,6 @@
 services:
   ovis-traefik-forward-auth:
+    container_name: bridgehead-ccp-ovis-forward-auth
     image: docker.verbis.dkfz.de/cache/oauth2-proxy/oauth2-proxy:latest
     environment:
       - http_proxy=http://forward_proxy:3128

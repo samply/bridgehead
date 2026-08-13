@@ -457,6 +457,20 @@ If these variables are not set, the Data Quality Agent will still run and genera
 Reports are accessible at `https://<your-host>/bbmri-data-quality-agent` (default credentials are admin:admin, please change it after first login!!).
 
 [Official documentation](https://fdqf.bbmri-eric.eu/user/deployment.html)
+
+### OVis (CCP only)
+
+OVis visualizes your tumor documentation data at `https://<your-host>/ccp-ovis`. Set in your `ccp.conf`:
+
+```bash
+ENABLE_OVIS=true
+OVIS_SUPERADMIN_EMAILS=admin@your-site.de
+```
+
+Users authenticate centrally with their CCP account (membership in your site's CCP group required), while their permissions are defined inside OVis -- so no duplicate user accounts are needed. The addresses in `OVIS_SUPERADMIN_EMAILS` become super admins and can grant roles to everyone else.
+
+Data is imported on first start into `/var/cache/bridgehead/ccp/ovis-mongodb`. Deleting that directory also resets all OVis permissions.
+
 ## Things you should know
 
 ### Auto-Updates

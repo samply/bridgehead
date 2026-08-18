@@ -64,7 +64,29 @@ if [ "$GIT_REMOTE_OK" = true ]; then
   log INFO "Git remote connection successful."
 fi
 
-if [ "$OWNERSHIP_OK" = true ] && [ "$GIT_OK" = true ] && [ "$GIT_REMOTE_OK" = true ]; then
+# Basic auth credentials
+log INFO "Checking basic auth credentials..."
+AUTH_OK=true
+LDM_AUTH_USERS=0
+while IFS= read -r ENTRY; do
+  if is_valid_basic_auth_entry "$ENTRY"; then
+    LDM_AUTH_USERS=$((LDM_AUTH_USERS + 1))
+  else
+    log ERROR "LDM_AUTH contains the invalid entry \"$ENTRY\". Traefik rejects the whole list, leaving the local data management unreachable."
+    AUTH_OK=false
+  fi
+done < <([ -n "${LDM_AUTH:-}" ] && printf '%s\n' "$LDM_AUTH" | tr ',' '\n')
+if [ "$LDM_AUTH_USERS" -ne 1 ]; then
+  log ERROR "LDM_AUTH holds $LDM_AUTH_USERS sets of valid credentials, but exactly one is expected."
+  AUTH_OK=false
+fi
+if [ "$AUTH_OK" = true ]; then
+  log INFO "Basic auth credentials are valid."
+else
+  log INFO "Hint: Run 'bridgehead setuser $PROJECT' to replace LDM_AUTH with a single set of credentials."
+fi
+
+if [ "$OWNERSHIP_OK" = true ] && [ "$GIT_OK" = true ] && [ "$GIT_REMOTE_OK" = true ] && [ "$AUTH_OK" = true ]; then
   log INFO "All checks passed."
   exit 0
 else

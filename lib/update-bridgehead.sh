@@ -140,9 +140,14 @@ fi
 if [ ! -z "$LDM_PASSWORD" ]; then
   FILE="/etc/bridgehead/$PROJECT.local.conf"
   log "INFO" "Migrating LDM_PASSWORD to encrypted credentials in $FILE"
-  add_basic_auth_user $PROJECT $LDM_PASSWORD "LDM_AUTH" $PROJECT
-  add_basic_auth_user $PROJECT $LDM_PASSWORD "NNGM_AUTH" $PROJECT
-  sed -i "/LDM_PASSWORD/{d;}" $FILE
+  if set_basic_auth_user "$PROJECT" "$LDM_PASSWORD" "LDM_AUTH" "$PROJECT"; then
+    if [ ! -z "$NNGM_CTS_APIKEY" ]; then
+      set_basic_auth_user "$PROJECT" "$LDM_PASSWORD" "NNGM_AUTH" "$PROJECT"
+    fi
+    sed -i "/LDM_PASSWORD/{d;}" $FILE
+  else
+    log "ERROR" "Migration failed, keeping LDM_PASSWORD in $FILE for the next attempt."
+  fi
 fi
 
 exit 0

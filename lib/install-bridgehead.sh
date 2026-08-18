@@ -29,29 +29,29 @@ EOF
 
 # TODO: Determine whether this should be located in setup-bridgehead (triggered through bridgehead install) or in update bridgehead (triggered every hour)
 if [ -z "$LDM_AUTH" ]; then
-  log "INFO" "Now generating basic auth for the local data management (see adduser in bridgehead for more information). "
+  log "INFO" "Now generating basic auth for the local data management (see setuser in bridgehead for more information). "
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
-  add_basic_auth_user $PROJECT $generated_passwd "LDM_AUTH" $PROJECT
+  set_basic_auth_user "$PROJECT" "$generated_passwd" "LDM_AUTH" "$PROJECT"
 fi
 
 if [ ! -z "$NNGM_CTS_APIKEY" ] && [ -z "$NNGM_AUTH" ]; then
-  log "INFO" "Now generating basic auth for nNGM upload API (see adduser in bridgehead for more information). "
+  log "INFO" "Now generating basic auth for nNGM upload API (see setuser in bridgehead for more information). "
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
-  add_basic_auth_user "nngm" $generated_passwd "NNGM_AUTH" $PROJECT
+  set_basic_auth_user "nngm" "$generated_passwd" "NNGM_AUTH" "$PROJECT"
 fi
 
 if [ -z "$TRANSFAIR_AUTH" ]; then
   if [[ -n "$TTP_URL" || -n "$EXCHANGE_ID_SYSTEM" ]]; then
-    log "INFO" "Now generating basic auth user for transfair API (see adduser in bridgehead for more information). "
+    log "INFO" "Now generating basic auth user for transfair API (see setuser in bridgehead for more information). "
     generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
-    add_basic_auth_user "transfair" $generated_passwd "TRANSFAIR_AUTH" $PROJECT
+    set_basic_auth_user "transfair" "$generated_passwd" "TRANSFAIR_AUTH" "$PROJECT"
   fi
 fi
 
 if [ "$ENABLE_EXPORTER" == "true" ] && [ -z "$EXPORTER_USER" ]; then
-  log "INFO" "Now generating basic auth for the exporter and reporter (see adduser in bridgehead for more information)."
+  log "INFO" "Now generating basic auth for the exporter and reporter (see setuser in bridgehead for more information)."
   generated_passwd="$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 32)"
-  add_basic_auth_user $PROJECT $generated_passwd "EXPORTER_USER" $PROJECT
+  set_basic_auth_user "$PROJECT" "$generated_passwd" "EXPORTER_USER" "$PROJECT"
 fi
 
 log "INFO" "Registering system units for bridgehead and bridgehead-update"

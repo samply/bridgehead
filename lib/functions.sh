@@ -53,7 +53,7 @@ checkOwner(){
 }
 
 printUsage() {
-	echo "Usage: bridgehead start|stop|logs|docker-logs|is-running|update|check|install|uninstall|adduser|enroll PROJECTNAME"
+	echo "Usage: bridgehead start|stop|logs|docker-logs|is-running|update|check|install|uninstall|setuser|enroll PROJECTNAME"
 	echo "PROJECTNAME should be one of ccp|bbmri|cce|itcc|kr|dhki|nngm"
 }
 
@@ -247,21 +247,55 @@ function do_enroll {
 	do_enroll_inner $@
 }
 
-add_basic_auth_user() {
-   USER="${1}"
-   PASSWORD="${2}"
-   NAME="${3}"
-   PROJECT="${4}"
-   FILE="/etc/bridgehead/${PROJECT}.local.conf"
-   ENCRY_CREDENTIALS="$(docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb $USER $PASSWORD  | tr -d '\n' | tr -d '\r')"
-   if [ -f $FILE ] && grep -R -q "$NAME=" $FILE # if a specific basic auth user already exists:
-   then
-     sed -i "/$NAME/ s|='|='$ENCRY_CREDENTIALS,|" $FILE
-   else
-     echo -e "\n## Basic Authentication Credentials for:\n$NAME='$ENCRY_CREDENTIALS'" >> $FILE;
-   fi
- 	log DEBUG "Saving clear text credentials in $FILE. If wanted, delete them manually."
-   sed -i "/^$NAME/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
+BASIC_AUTH_VARIABLES="LDM_AUTH NNGM_AUTH TRANSFAIR_AUTH EXPORTER_USER"
+
+# One entry of Traefik's basicauth.users list: "user:hash", with the username
+# restricted to characters that cannot collide with either separator.
+is_valid_basic_auth_entry() {
+	local entry="$1"
+	local user="${entry%%:*}"
+	local hash="${entry#*:}"
+	[ "$user" != "$entry" ] || return 1
+	[ -n "$hash" ] || return 1
+	[ "$hash" = "${hash#*:}" ] || return 1
+	[[ "$user" =~ ^[A-Za-z0-9._-]+$ ]]
+}
+
+# Stores one set of basic auth credentials in $NAME, replacing any existing ones.
+set_basic_auth_user() {
+	local USER="${1}"
+	local PASSWORD="${2}"
+	local NAME="${3}"
+	local PROJECT="${4}"
+	local FILE="/etc/bridgehead/${PROJECT}.local.conf"
+	local ENCRY_CREDENTIALS
+	if [ -z "$USER" ] || [ -z "$PASSWORD" ]; then
+		log ERROR "Both a username and a password are required. $FILE is unchanged."
+		return 1
+	fi
+	if ! ENCRY_CREDENTIALS="$(docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb "$USER" "$PASSWORD")"; then
+		log ERROR "Unable to run htpasswd, so no credentials were generated. $FILE is unchanged."
+		return 1
+	fi
+	ENCRY_CREDENTIALS="$(printf '%s' "$ENCRY_CREDENTIALS" | tr -d '\n' | tr -d '\r')"
+	if ! is_valid_basic_auth_entry "$ENCRY_CREDENTIALS"; then
+		log ERROR "htpasswd returned no usable credentials for \"$USER\". $FILE is unchanged."
+		return 1
+	fi
+	if [ -f $FILE ] && grep -q "^$NAME=" $FILE # if this basic auth variable already exists:
+	then
+		sed -i "/^$NAME=/{:a;N;s/\n# User: [^\n]*//;s/\n# Password: [^\n]*//;ta}" $FILE
+		sed -i "0,/^$NAME=/!{/^$NAME=/d}" $FILE
+		sed -i "/^$NAME=/ s|=.*|='$ENCRY_CREDENTIALS'|" $FILE
+	else
+		echo -e "\n## Basic Authentication Credentials for:\n$NAME='$ENCRY_CREDENTIALS'" >> $FILE;
+	fi
+	log DEBUG "Saving clear text credentials in $FILE. If wanted, delete them manually."
+	sed -i "/^$NAME=/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
+	if [ "$(grep -c "^$NAME=" $FILE)" -ne 1 ] || [ "$(sed -n "s|^$NAME='\(.*\)'$|\1|p" $FILE)" != "$ENCRY_CREDENTIALS" ]; then
+		log ERROR "$NAME in $FILE does not hold exactly one set of credentials. Please correct it manually."
+		return 1
+	fi
 }
 
 OIDC_PUBLIC_REDIRECT_URLS=${OIDC_PUBLIC_REDIRECT_URLS:-""}

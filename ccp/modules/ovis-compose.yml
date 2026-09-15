@@ -93,7 +93,7 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.middlewares.ovis-frontend-ccp-slash-redirect.redirectregex.regex=^https?://([^/]+)/ccp-ovis$"
+      - "traefik.http.middlewares.ovis-frontend-ccp-slash-redirect.redirectregex.regex=^https?://([^/]+)/ccp-ovis$$"
       - "traefik.http.middlewares.ovis-frontend-ccp-slash-redirect.redirectregex.replacement=https://$${1}/ccp-ovis/"
       - "traefik.http.middlewares.ovis-frontend-ccp-slash-redirect.redirectregex.permanent=true"
       - "traefik.http.routers.ovis-frontend-ccp.tls=true"

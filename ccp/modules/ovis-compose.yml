@@ -66,6 +66,10 @@ services:
     environment:
       FHIR_SERVER_URL: http://bridgehead-ccp-blaze:8080/fhir
 
+  ovis-backend-cox:
+    image: samply/ovis-backend-cox:${OVIS_TAG}
+    container_name: bridgehead-ccp-ovis-cox
+
   ovis-backend-apollo:
     image: docker.verbis.dkfz.de/cache/samply/ovis-backend-apollo:${OVIS_TAG}
     container_name: bridgehead-ccp-ovis-backend
@@ -76,6 +80,7 @@ services:
       - ovis-backend-database-mongodb
       - ovis-backend-mongodb-data-preprocessing
       - ovis-backend-data-import
+      - ovis-backend-cox
     healthcheck:
       test: ["CMD", "curl", "-fsS", "-X", "POST", "-H", "content-type: application/json", "-d", "{\"query\":\"{__typename}\"}", "http://localhost:4001/graphql"]
       interval: 10s

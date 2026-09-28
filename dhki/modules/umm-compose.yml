@@ -16,7 +16,7 @@ configs:
         },
         {
           "external": "umm-blaze",
-          "internal": "blaze:8080",
+          "internal": "transfair-input-blaze:8080",
           "allowed": ["transfair-connect.dkfz.${BROKER_ID}"]
         }
       ]
@@ -32,7 +32,7 @@ services:
       DISCOVERY_URL: ./conf/central-targets.json
       LOCAL_TARGETS_FILE: ./conf/local-targets.json
       RUST_LOG: ${RUST_LOG:-info}
-      NO_PROXY: beam-proxy,transfair,blaze
+      NO_PROXY: beam-proxy,transfair,transfair-input-blaze
     configs:
       - source: umm-beam-connect-central-targets
         target: /conf/central-targets.json
@@ -41,7 +41,7 @@ services:
     depends_on:
       - beam-proxy
       - transfair
-      - blaze
+      - transfair-input-blaze
 
   beam-proxy:
     environment:

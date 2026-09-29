@@ -7,6 +7,7 @@ services:
       # NOTE: Those 3 variables need only to be passed if their set, otherwise transfair will complain about empty url values
       - TTP_URL
       - TTP_ML_API_KEY
+      - TTP_ML_CONSENT_TEMPLATE
       - TTP_GW_SOURCE
       - TTP_GW_EPIX_DOMAIN
       - TTP_GW_GPAS_DOMAIN

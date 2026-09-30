@@ -8,6 +8,7 @@ services:
       - TTP_URL
       - TTP_ML_API_KEY
       - TTP_ML_CONSENT_TEMPLATE
+      - TTP_ML_ID_MAPPING
       - TTP_GW_SOURCE
       - TTP_GW_EPIX_DOMAIN
       - TTP_GW_GPAS_DOMAIN

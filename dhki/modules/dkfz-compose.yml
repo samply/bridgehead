@@ -57,6 +57,9 @@ services:
       REMOTE_FHIR_SERVER_URL: http://umm-blaze/
       REMOTE_EXCHANGE_ID_SYSTEM: ${DKFZ_REMOTE_EXCHANGE_ID_SYSTEM:-SESSION_ID}
       DESTINATION_FHIR_SERVER_URL: http://blaze:8080
+      TTP_URL: ${DKFZ_TTP_URL}
+      TTP_ML_API_KEY: ${DKFZ_TTP_ML_API_KEY}
+      PROJECT_ID_SYSTEM: ${DKFZ_PROJECT_ID_SYSTEM:-dhkiComId}
       RUST_LOG: ${RUST_LOG:-info}
     volumes:
       - /var/cache/bridgehead/${PROJECT}/dkfz-transfair:/transfair

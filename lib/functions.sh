@@ -350,6 +350,10 @@ function secret_sync_gitlab_instance() {
 # The git credential helper reads the token from the file during git pull.
 function secret_sync_fetch_gitlab_token() {
     local gitlab=$1 proxy_id=$2 broker_url=$3 broker_id=$4 privkey_file=$5 root_crt_file=$6
+    if [ ! -f "$privkey_file" ] || [ ! -f "$root_crt_file" ]; then
+        log "WARN" "Not running Secret Sync because $privkey_file or $root_crt_file is missing"
+        return 1
+    fi
     local trusted_ca_args=()
     if [ -d /etc/bridgehead/trusted-ca-certs ]; then
         trusted_ca_args=(-v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs)

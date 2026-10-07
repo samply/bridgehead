@@ -413,6 +413,64 @@ function secret_sync_gitlab_token() {
     git -C /srv/docker/bridgehead config --unset credential.helper
 }
 
+function bootstrap_site_configuration() {
+    local site=$1 enrollment_code=$2 repository_url=$3
+    local SITE_ID=$site BROKER_ID="" BROKER_URL="" PROXY_ID="" PRIVATEKEYFILENAME=""
+    local HTTPS_PROXY_FULL_URL=${HTTPS_PROXY_FULL_URL:-${https_proxy:-${HTTPS_PROXY:-}}}
+    eval "$(grep -E '^(BROKER_ID|BROKER_URL|PROXY_ID|PRIVATEKEYFILENAME)=' "$PROJECT/vars")"
+    if [ -z "$BROKER_ID" ]; then
+        log "ERROR" "Project $PROJECT has no Samply.Beam broker to enroll with."
+        return 1
+    fi
+    local gitlab
+    if ! gitlab=$(secret_sync_gitlab_instance "$repository_url"); then
+        log "ERROR" "Secret Sync does not support the GitLab server of $repository_url."
+        return 1
+    fi
+
+    local enroll_dir
+    enroll_dir=$(mktemp -d /run/bridgehead-enrollment.XXXXXX)
+    local key_file="$enroll_dir/$SITE_ID.priv.pem"
+    log "INFO" "Enrolling Beam Proxy Id $PROXY_ID"
+    if ! docker run --rm -v "$enroll_dir:/pki" docker.verbis.dkfz.de/cache/samply/beam-enroll:latest --output-file "/pki/$SITE_ID.priv.pem" --proxy-id "$PROXY_ID" > "$enroll_dir/enroll.out"; then
+        log "ERROR" "Unable to generate the private key for $PROXY_ID."
+        rm -rf "$enroll_dir"
+        return 1
+    fi
+    local csr
+    csr=$(sed -n '/BEGIN CERTIFICATE REQUEST/,/END CERTIFICATE REQUEST/p' "$enroll_dir/enroll.out")
+    local response
+    response=$(curl -sS --data-urlencode "csr=$csr" --data-urlencode "token=$enrollment_code" "$BROKER_URL/csr" 2>&1)
+    if [[ "$response" != *"Successfully registered CSR"* ]]; then
+        log "ERROR" "$BROKER_URL did not accept the certificate request with your one-time enrollment code: $(echo "$response" | sed -e 's/<[^>]*>//g' | tr -s '[:space:]' ' ' | head -c 300)"
+        rm -rf "$enroll_dir"
+        return 1
+    fi
+
+    local answer
+    until retry 3 secret_sync_fetch_gitlab_token "$gitlab" "$PROXY_ID" "$BROKER_URL" "$BROKER_ID" "$key_file" "/srv/docker/bridgehead/$PROJECT/root.crt.pem" \
+        && git -c credential.helper=/srv/docker/bridgehead/lib/gitlab-token-helper.sh clone "$repository_url" /etc/bridgehead; do
+        log "ERROR" "Unable to download $repository_url."
+        read -r -p "Fix the cause and retry? If you don't, you will need a new one-time enrollment code. [Y/n] " answer || answer=n
+        if [[ "$answer" == [Nn]* ]]; then
+            rm -rf "$enroll_dir"
+            return 1
+        fi
+    done
+    local configured_site_id
+    configured_site_id=$(grep -m1 -E '^SITE_ID=' "/etc/bridgehead/$PROJECT.conf" | cut -d= -f2- | tr -d "\"'")
+    if [ "$configured_site_id" != "$SITE_ID" ]; then
+        log "ERROR" "Your configuration repository is for site '$configured_site_id', but you entered '$SITE_ID'. Ask for a one-time enrollment code for '$configured_site_id' and run the installation again."
+        rm -rf /etc/bridgehead "$enroll_dir"
+        return 1
+    fi
+    git -C /etc/bridgehead config credential.helper /srv/docker/bridgehead/lib/gitlab-token-helper.sh
+    mkdir -p "$(dirname "$PRIVATEKEYFILENAME")"
+    mv "$key_file" "$PRIVATEKEYFILENAME"
+    chmod 600 "$PRIVATEKEYFILENAME"
+    rm -rf "$enroll_dir"
+}
+
 capitalize_first_letter() {
     input="$1"
     capitalized="$(tr '[:lower:]' '[:upper:]' <<< ${input:0:1})${input:1}"

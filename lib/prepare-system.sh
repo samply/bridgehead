@@ -92,16 +92,42 @@ if [ -d /etc/bridgehead ]; then
     fi
 elif [[ "$DEV_MODE" == "NODEV" ]]; then
     log "INFO" "Now cloning your site configuration repository for you."
-    if [ -z "$site" ]; then
-        read -p "Please enter your site: " site
+    if [ -z "$access_token" ] && [ -z "$enrollment_code" ]; then
+        echo "Way A: You received a one-time enrollment code."
+        echo "Way B: You received a repository URL including access credentials."
+        read -p "Please choose your way of installation [A/B]: " way
+        case "$way" in
+            [Aa])
+                read -p "Please enter your one-time enrollment code: " enrollment_code
+                ;;
+            [Bb])
+                read -p "Please enter your repository URL: " site_configuration_repository_url
+                ;;
+            *)
+                log "ERROR" "Please choose A or B."
+                exit 1
+                ;;
+        esac
     fi
-    if [ -z "$access_token" ]; then
-        read -s -p "Please enter the bridgehead's access token for your site configuration repository (will not be echoed): " access_token
+    if [ -z "$site_configuration_repository_url" ]; then
+        if [ -z "$site" ]; then
+            read -p "Please enter your site: " site
+        fi
+        site=$(echo $site | tr '[:upper:]' '[:lower:]')
     fi
-    site_configuration_repository_url="https://bytoken:${access_token}@${site_configuration_repository_middle}$(echo $site | tr '[:upper:]' '[:lower:]').git"
-    git clone $site_configuration_repository_url /etc/bridgehead
-    if [ $? -gt 0 ]; then
-        log "ERROR" "Unable to clone your configuration repository. Please obtain correct access data and try again."
+    if [ -z "$access_token" ] && [ -n "$enrollment_code" ]; then
+        if ! bootstrap_site_configuration "$site" "$enrollment_code" "https://${site_configuration_repository_middle}${site}.git"; then
+            log "ERROR" "Unable to set up your configuration repository with your one-time enrollment code (Way A)."
+            exit 1
+        fi
+    else
+        if [ -n "$access_token" ]; then
+            site_configuration_repository_url="https://bytoken:${access_token}@${site_configuration_repository_middle}${site}.git"
+        fi
+        git clone $site_configuration_repository_url /etc/bridgehead
+        if [ $? -gt 0 ]; then
+            log "ERROR" "Unable to clone your configuration repository. Please obtain correct access data and try again."
+        fi
     fi
 elif [[ "$DEV_MODE" == "DEV" ]]; then
     log "INFO" "Now cloning your developer configuration repository for you."

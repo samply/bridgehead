@@ -31,6 +31,5 @@ done
 
 ummSetup
 transfairSetup
-scoutSetupscoutSetup
-beamFileSetup
+scoutSetup
 dkfzSetup

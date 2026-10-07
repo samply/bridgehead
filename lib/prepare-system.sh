@@ -101,7 +101,7 @@ elif [[ "$DEV_MODE" == "NODEV" ]]; then
                 read -p "Please enter your one-time enrollment code: " enrollment_code
                 ;;
             [Bb])
-                read -p "Please enter your repository URL: " site_configuration_repository_url
+                read_masked "Please enter your repository URL: " site_configuration_repository_url
                 ;;
             *)
                 log "ERROR" "Please choose A or B."

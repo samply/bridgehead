@@ -359,6 +359,7 @@ function secret_sync_fetch_gitlab_token() {
         trusted_ca_args=(-v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs)
     fi
     mkdir -p /var/cache/bridgehead/secrets
+    chmod 700 /var/cache/bridgehead/secrets
     log "INFO" "Running Secret Sync for the GitLab token (gitlab=$gitlab)"
     docker pull docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest # make sure we have the latest image
     docker run --rm \
@@ -443,8 +444,9 @@ function bootstrap_site_configuration() {
     fi
     local csr
     csr=$(sed -n '/BEGIN CERTIFICATE REQUEST/,/END CERTIFICATE REQUEST/p' "$enroll_dir/enroll.out")
+    printf '%s' "$enrollment_code" > "$enroll_dir/enrollment-code"
     local response
-    response=$(curl -sS --data-urlencode "csr=$csr" --data-urlencode "token=$enrollment_code" "$BROKER_URL/csr" 2>&1)
+    response=$(curl -sS --data-urlencode "csr=$csr" --data-urlencode "token@$enroll_dir/enrollment-code" "$BROKER_URL/csr" 2>&1)
     if [[ "$response" != *"Successfully registered CSR"* ]]; then
         log "ERROR" "$BROKER_URL did not accept the certificate request with your one-time enrollment code: $(echo "$response" | sed -e 's/<[^>]*>//g' | tr -s '[:space:]' ' ' | head -c 300)"
         rm -rf "$enroll_dir"
@@ -473,6 +475,25 @@ function bootstrap_site_configuration() {
     mv "$key_file" "$PRIVATEKEYFILENAME"
     chmod 600 "$PRIVATEKEYFILENAME"
     rm -rf "$enroll_dir"
+}
+
+function read_masked() {
+    local prompt=$1 char value=""
+    local -n read_masked_result=$2
+    printf '%s' "$prompt"
+    while IFS= read -r -s -n1 char && [ -n "$char" ]; do
+        if [[ "$char" == $'\x7f' || "$char" == $'\b' ]]; then
+            if [ -n "$value" ]; then
+                value=${value%?}
+                printf '\b \b'
+            fi
+        else
+            value+=$char
+            printf '*'
+        fi
+    done
+    echo
+    read_masked_result=$value
 }
 
 capitalize_first_letter() {

@@ -75,6 +75,8 @@ else
     "      If they are already upstreamed use git stash and git pull to update the repo"
 fi
 
+secret_sync_gitlab_token &> /dev/null
+
 for DIR in /etc/bridgehead "$(pwd)"; do
   if [ -d "$DIR/.git" ]; then
     if git "${GIT_PROXY_ARGS[@]}" -C "$DIR" fetch --dry-run >/dev/null 2>&1; then

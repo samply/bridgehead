@@ -337,7 +337,7 @@ function sync_secrets() {
 }
 
 function secret_sync_gitlab_token() {
-    if [[ "$PROJECT" != "ccp" && "$PROJECT" != "bbmri" ]]; then
+    if [[ "$PROJECT" != "ccp" && "$PROJECT" != "bbmri" && "$PROJECT" != "cce" ]]; then
         log "INFO" "Not running Secret Sync for project minimal"
         return
     fi

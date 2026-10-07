@@ -153,6 +153,10 @@ case "$ACTION" in
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
 	check)
+		# Ignore the caller's environment, e.g. proxy variables, like bridgehead@.service does
+		if [ -z "$INVOCATION_ID" ] && [ "$(id -u)" -eq 0 ]; then
+			exec systemd-run --wait --pipe --quiet --collect -p User=bridgehead -p WorkingDirectory="$BASE" "$BASE/bridgehead" check $PROJECT
+		fi
 		loadVars &> /dev/null
 		exec ./lib/check-bridgehead.sh $PROJECT
 		;;

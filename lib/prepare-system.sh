@@ -135,7 +135,7 @@ elif [[ "$DEV_MODE" == "DEV" ]]; then
     git clone "$url" /etc/bridgehead
 fi
 
-chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead
+fixPermissions
 mkdir -p /tmp/bridgehead /var/cache/bridgehead
 chown -R bridgehead:docker /tmp/bridgehead /var/cache/bridgehead
 chmod -R g+wr /var/cache/bridgehead /tmp/bridgehead

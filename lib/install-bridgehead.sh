@@ -63,6 +63,16 @@ cp -v \
 
 systemctl daemon-reload
 
+fixPermissions
+
+log "INFO" "Checking your bridgehead ..."
+CHECK_RESULT=0
+/srv/docker/bridgehead/bridgehead check "${PROJECT}" || CHECK_RESULT=$?
+if [ $CHECK_RESULT -ge 2 ]; then
+  log "ERROR" "Some checks failed. Fix them and run the installation again."
+  exit 1
+fi
+
 log INFO "Trying to update your bridgehead ..."
 
 systemctl start bridgehead-update@"${PROJECT}".service

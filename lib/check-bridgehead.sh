@@ -1,74 +1,93 @@
 #!/bin/bash
 source lib/functions.sh
 
-log INFO "Running Bridgehead checks..."
-
-# Directory ownership
-log INFO "Checking directory ownership..."
-OWNERSHIP_OK=true
-if ! checkOwner /srv/docker/bridgehead bridgehead &> /dev/null; then
-  log ERROR "Wrong ownership for /srv/docker/bridgehead."
-  log INFO "Hint: Run 'sudo chown -R bridgehead /srv/docker/bridgehead'."
-  OWNERSHIP_OK=false
-fi
-if ! checkOwner /etc/bridgehead bridgehead &> /dev/null; then
-  log ERROR "Wrong ownership for /etc/bridgehead."
-  log INFO "Hint: Run 'sudo chown -R bridgehead /etc/bridgehead'."
-  OWNERSHIP_OK=false
-fi
-
-if [ "$OWNERSHIP_OK" = true ]; then
-  log INFO "Directory ownership is correct."
-fi
-
-# Git repository status
-log INFO "Checking Git repository status..."
-GIT_OK=true
-if [ -d "/etc/bridgehead/.git" ]; then
-  if [ -n "$(git -C "/etc/bridgehead" status --porcelain)" ]; then
-    log ERROR "The config repo at /etc/bridgehead is modified.\n$(git -C /etc/bridgehead status -s)"
-    log INFO "Hint: Review your changes with git diff if they are already upstreamed use git stash and git pull to update the repo"
-    GIT_OK=false
-  fi
-fi
-if [ -n "$(git -C "$(pwd)" status --porcelain)" ]; then
-  log ERROR "$(pwd) is modified. \n$(git -C "$(pwd)" status -s)"
-  log INFO "Hint: If these are site specific changes to docker compose files consider moving them to $PROJECT/docker-compose.override.yml which is ignored by git."
-  log INFO "      If they are already upstreamed use git stash and git pull to update the repo"
-  GIT_OK=false
-fi
-
-if [ "$GIT_OK" = true ]; then
-  log INFO "Git repositories are clean."
-fi
-
-# Git remote connection
-log INFO "Checking Git remote connection..."
-GIT_REMOTE_OK=true
-if [ -d "/etc/bridgehead/.git" ]; then
-  if ! git -C "/etc/bridgehead" fetch --dry-run >/dev/null 2>&1; then
-    log ERROR "Cannot connect to the Git remote for /etc/bridgehead."
-    log INFO "Hint: Check your network connection and Git remote configuration for /etc/bridgehead."
-    GIT_REMOTE_OK=false
-  fi
-fi
-if [ -d "$(pwd)/.git" ]; then
-  if ! git -C "$(pwd)" fetch --dry-run >/dev/null 2>&1; then
-    log ERROR "Cannot connect to the Git remote for $(pwd)."
-    log INFO "Hint: Check your network connection and Git remote configuration for $(pwd)."
-    GIT_REMOTE_OK=false
-  fi
-fi
-
-if [ "$GIT_REMOTE_OK" = true ]; then
-  log INFO "Git remote connection successful."
-fi
-
-if [ "$OWNERSHIP_OK" = true ] && [ "$GIT_OK" = true ] && [ "$GIT_REMOTE_OK" = true ]; then
-  log INFO "All checks passed."
-  exit 0
+if [ -t 1 ]; then
+  GREEN=$(printf '\033[32m')
+  YELLOW=$(printf '\033[33m')
+  RED=$(printf '\033[31m')
+  RESET=$(printf '\033[0m')
 else
-  log ERROR "Some checks failed. Please review the hints and fix the issues."
-  log ERROR "Without fixing these issues bridgehead updates may not work correctly."
-  exit 1
+  GREEN=""
+  YELLOW=""
+  RED=""
+  RESET=""
 fi
+
+WORST=0
+
+report() {
+  local status=$1 message=$2 color level label
+  shift 2
+  case "$status" in
+    OK) color=$GREEN; level=0; label=" OK " ;;
+    WARN) color=$YELLOW; level=1; label="WARN" ;;
+    *) color=$RED; level=2; label="CRIT" ;;
+  esac
+  printf '[%s%s%s] %s\n' "$color" "$label" "$RESET" "$message"
+  local hint
+  for hint in "$@"; do
+    printf '%s\n' "$hint" | sed 's/^/       /'
+  done
+  if [ $level -gt $WORST ]; then
+    WORST=$level
+  fi
+}
+
+GIT_PROXY_ARGS=()
+if [ -n "$HTTPS_PROXY_FULL_URL" ]; then
+  GIT_PROXY_ARGS=(-c http.proxy=$HTTPS_PROXY_FULL_URL -c https.proxy=$HTTPS_PROXY_FULL_URL)
+fi
+
+echo "Running Bridgehead checks for project $PROJECT ..."
+
+if [ -n "$BROKER_URL_FOR_PREREQ" ]; then
+  if https_proxy=$HTTPS_PROXY_FULL_URL curl -m 10 -sS -o /dev/null "$BROKER_URL_FOR_PREREQ" 2>/dev/null; then
+    report OK "Network connection to $BROKER_URL_FOR_PREREQ"
+  else
+    report CRIT "Cannot connect to $BROKER_URL_FOR_PREREQ with the configured proxy \"$HTTPS_PROXY_URL\"" \
+      "Hint: If your server needs a proxy, HTTPS_PROXY_URL (and, if required, HTTPS_PROXY_USERNAME and HTTPS_PROXY_PASSWORD) must be set in /etc/bridgehead/$PROJECT.conf. Please ask ${SUPPORT_EMAIL:-the support team of your project} to add it to your site configuration."
+  fi
+fi
+
+for DIR in /srv/docker/bridgehead /etc/bridgehead; do
+  if checkOwner $DIR bridgehead &> /dev/null; then
+    report OK "Ownership of $DIR"
+  else
+    report CRIT "Wrong ownership for $DIR" "Hint: Run 'sudo chown -R bridgehead $DIR'."
+  fi
+done
+
+if [ -d "/etc/bridgehead/.git" ]; then
+  if [ -z "$(git -C "/etc/bridgehead" status --porcelain)" ]; then
+    report OK "The config repo at /etc/bridgehead is clean"
+  else
+    report WARN "The config repo at /etc/bridgehead is modified:" \
+      "$(git -C /etc/bridgehead status -s)" \
+      "Hint: Review your changes with git diff if they are already upstreamed use git stash and git pull to update the repo"
+  fi
+fi
+if [ -z "$(git -C "$(pwd)" status --porcelain)" ]; then
+  report OK "$(pwd) is clean"
+else
+  report WARN "$(pwd) is modified:" \
+    "$(git -C "$(pwd)" status -s)" \
+    "Hint: If these are site specific changes to docker compose files consider moving them to $PROJECT/docker-compose.override.yml which is ignored by git." \
+    "      If they are already upstreamed use git stash and git pull to update the repo"
+fi
+
+for DIR in /etc/bridgehead "$(pwd)"; do
+  if [ -d "$DIR/.git" ]; then
+    if git "${GIT_PROXY_ARGS[@]}" -C "$DIR" fetch --dry-run >/dev/null 2>&1; then
+      report OK "Git remote connection for $DIR"
+    else
+      report CRIT "Cannot connect to the Git remote for $DIR" "Hint: Check your network connection and Git remote configuration for $DIR."
+    fi
+  fi
+done
+
+case $WORST in
+  0) echo "All checks passed." ;;
+  1) echo "Some checks reported warnings. Please review the hints." ;;
+  *) echo "Some checks failed. Please review the hints and fix the issues. Without fixing these issues bridgehead updates may not work correctly." ;;
+esac
+exit $WORST

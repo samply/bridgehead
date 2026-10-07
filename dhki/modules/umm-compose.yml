@@ -12,12 +12,12 @@ configs:
         {
           "external": "umm-transfair",
           "internal": "transfair:8080",
-          "allowed": ["transfair-connect.dkfz.${BROKER_ID}"]
+          "allowed": ["transfair-connect.${REMOTE_TRANSFAIR_SITE_ID:-dkfz}.${BROKER_ID}"]
         },
         {
           "external": "umm-blaze",
           "internal": "transfair-input-blaze:8080",
-          "allowed": ["transfair-connect.dkfz.${BROKER_ID}"]
+          "allowed": ["transfair-connect.${REMOTE_TRANSFAIR_SITE_ID:-dkfz}.${BROKER_ID}"]
         }
       ]
 

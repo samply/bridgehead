@@ -9,13 +9,13 @@ configs:
             "id": "UMM-TRANSFAIR",
             "name": "UMM TransFAIR",
             "virtualhost": "umm-transfair",
-            "beamconnect": "transfair-connect.umm.${BROKER_ID}"
+            "beamconnect": "transfair-connect.${REMOTE_TRANSFAIR_SITE_ID:-umm}.${BROKER_ID}"
           },
           {
             "id": "UMM-BLAZE",
             "name": "UMM MDAT Blaze",
             "virtualhost": "umm-blaze",
-            "beamconnect": "transfair-connect.umm.${BROKER_ID}"
+            "beamconnect": "transfair-connect.${REMOTE_TRANSFAIR_SITE_ID:-umm}.${BROKER_ID}"
           }
         ]
       }

@@ -60,9 +60,9 @@ case "$PROJECT" in
 		;;
 	itcc)
 		site_configuration_repository_middle="git.verbis.dkfz.de/itcc-sites/"
-        	;;
+		;;
 	dhki)
-        	site_configuration_repository_middle="git.verbis.dkfz.de/dhki/"
+		site_configuration_repository_middle="git.verbis.dkfz.de/dhki/"
 		;;
 	kr)
 		site_configuration_repository_middle="git.verbis.dkfz.de/krebsregister-sites/"
@@ -78,7 +78,7 @@ case "$PROJECT" in
 		;;
 	*)
 		log ERROR "Internal error, this should not happen."
-        exit 1
+		exit 1
 		;;
 esac
 

@@ -90,8 +90,7 @@ if [ -d /etc/bridgehead ]; then
 elif [[ "$DEV_MODE" == "NODEV" ]]; then
     log "INFO" "Now cloning your site configuration repository for you."
     if [ -z "$access_token" ] && [ -z "$enrollment_code" ]; then
-        # Way A needs /csr and GitLab tokens from Secret Sync on the project's broker;
-        # bbmri would also enroll with the wrong broker
+        # Way A is enabled per project; its broker needs /csr and GitLab tokens from Secret Sync
         way=B
         if [ "$PROJECT" == "cce" ]; then
             echo "Way A: You received a one-time enrollment code."

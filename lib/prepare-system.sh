@@ -90,13 +90,9 @@ if [ -d /etc/bridgehead ]; then
 elif [[ "$DEV_MODE" == "NODEV" ]]; then
     log "INFO" "Now cloning your site configuration repository for you."
     if [ -z "$access_token" ] && [ -z "$enrollment_code" ]; then
-        # Way A is enabled per project; its broker needs /csr and GitLab tokens from Secret Sync
-        way=B
-        if [ "$PROJECT" == "cce" ]; then
-            echo "Way A: You received a one-time enrollment code."
-            echo "Way B: You received a repository URL including access credentials."
-            read -p "Please choose your way of installation [A/B]: " way
-        fi
+        echo "Way A: You received a one-time enrollment code."
+        echo "Way B: You received a repository URL including access credentials."
+        read -p "Please choose your way of installation [A/B]: " way
         case "$way" in
             [Aa])
                 read -p "Please enter your one-time enrollment code: " enrollment_code

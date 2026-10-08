@@ -130,25 +130,29 @@ Mention:
 - site name (According to conventions listed above)
 - operator name and email
 
-We will set the repository up for you. We will then send you:
+We will set the repository up for you. We will then send you either:
 
-- A Repository Short Name (RSN). Beware: this is distinct from your site name.
-- Repository URL containing the acces token eg. https://BH_Dummy:dummy_token@git.verbis.dkfz.de/<project>-bridgehead-configs/dummy.git
+- Way A: a one-time enrollment code, or
+- Way B: a repository URL including access credentials.
 
 During the installation, your Bridgehead will download your site's configuration from GitLab and you can review the details provided to us by email.
 
 
 ### Base Installation
 
-First, download your site specific configuration repository:
+Clone the bridgehead repository and run the installation script:
 ```shell
-sudo mkdir -p /etc/bridgehead/
-sudo git clone <REPO_URL_FROM_EMAIL> /etc/bridgehead/
+sudo mkdir -p /srv/docker/
+sudo git clone -b main https://github.com/samply/bridgehead.git /srv/docker/bridgehead
+cd /srv/docker/bridgehead
+sudo ./bridgehead install <PROJECT>
 ```
+
+When asked, choose Way A or Way B. For Way A, enter your one-time enrollment code and your site name; for Way B, enter your repository URL. The installation downloads your site configuration to `/etc/bridgehead`. If your server needs an HTTP proxy to reach the internet, pass it to the script, e.g. `sudo https_proxy=http://proxy.example.org:3128 ./bridgehead install <PROJECT>`.
 
 Review the site configuration:
 ```shell
-sudo cat /etc/bridgehead/bbmri.conf
+sudo cat /etc/bridgehead/<PROJECT>.conf
 ```
 
 Pay special attention to:
@@ -159,20 +163,9 @@ Pay special attention to:
 - OPERATOR_LAST_NAME
 - OPERATOR_EMAIL
 
-Clone the bridgehead repository:
-```shell
-sudo mkdir -p /srv/docker/
-sudo git clone -b main https://github.com/samply/bridgehead.git /srv/docker/bridgehead
-```
-
-Then, run the installation script:
-
-```shell
-cd /srv/docker/bridgehead
-sudo ./bridgehead install <PROJECT>
-```
-
 ### Register with Samply.Beam
+
+If you installed with Way A, this has already been done for you; skip to the next step.
 
 Many Bridgehead services rely on the secure, performant and flexible messaging middleware called [Samply.Beam](https://github.com/samply/beam). You will need to register ("enroll") with Samply.Beam by creating a cryptographic key pair for your bridgehead:
 
@@ -359,13 +352,19 @@ https://<Name of your server>/bbmri-localdatamanagement/fhir
 ```
 The name of your server will generally be the full name of the VM that the Bridgehead runs on. You can alternatively supply an IP address.
 
-The FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/<project>.local.conf`.
+For more information on how to use the FHIR API, please refer to the [Hapi FHIR tutorial](https://github.com/hapifhir/fhir-tutorial/blob/master/CRUD%20operations/lesson.md).
+
+The Bridgehead's FHIR API uses basic auth. You can find the credentials in `/etc/bridgehead/<project>.local.conf`.
 
 Note that if you don't have a DNS certificate for the Bridgehead, you will need to allow an insecure connection. E.g. with curl, use the `-k` flag.
 
-The storage space on your hard drive will depend on the number of FHIR resources that you intend to generate. This will be the sum of the number of patients/subjects, the number of samples, the number of conditions/diseases and the number of observations. As a general rule of thumb, you can assume that each resource will consume about 2 kilobytes of disk space.
+As an alternative to curl, you can also use the tool [blazectl](https://github.com/samply/blazectl) for uploading data to the FHIR store.
+
+The storage space needed on your hard drive will depend on the number of FHIR resources that you intend to generate. This will be the sum of the number of patients/subjects, the number of samples, the number of conditions/diseases and the number of observations. As a general rule of thumb, you can assume that each resource will consume about 2 kilobytes of disk space.
 
 For more information on Blaze performance, please refer to [import performance](https://github.com/samply/blaze/blob/master/docs/performance/import.md).
+
+If you can make your data available in tabular form (e.g. as an Excel file), then you can use the ["a small fire"](https://github.com/bbdataeng/a-small-fire) tool to convert your data into the FHIR format needed for upload to the FHIR store.
 
 ### Clearing data
 
@@ -451,6 +450,20 @@ If these variables are not set, the Data Quality Agent will still run and genera
 Reports are accessible at `https://<your-host>/bbmri-data-quality-agent` (default credentials are admin:admin, please change it after first login!!).
 
 [Official documentation](https://fdqf.bbmri-eric.eu/user/deployment.html)
+
+### OVis (CCP only)
+
+OVis visualizes your tumor documentation data at `https://<your-host>/ccp-ovis`. Set in your `ccp.conf`:
+
+```bash
+ENABLE_OVIS=true
+OVIS_SUPERADMIN_EMAILS=admin@your-site.de
+```
+
+Users authenticate centrally with their CCP account (membership in your site's CCP group required), while their permissions are defined inside OVis -- so no duplicate user accounts are needed. The addresses in `OVIS_SUPERADMIN_EMAILS` become super admins and can grant roles to everyone else.
+
+Data is imported on first start into `/var/cache/bridgehead/ccp/ovis-mongodb`. Deleting that directory also resets all OVis permissions.
+
 ## Things you should know
 
 ### Auto-Updates

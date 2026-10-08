@@ -21,7 +21,6 @@ Cmnd_Alias BRIDGEHEAD${PROJECT^^} = \\
     /bin/systemctl start bridgehead@${PROJECT}.service, \\
     /bin/systemctl stop bridgehead@${PROJECT}.service, \\
     /bin/systemctl restart bridgehead@${PROJECT}.service, \\
-    /bin/systemctl restart bridgehead@*.service, \\
     /bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead, \\
     /usr/bin/chown -R bridgehead /etc/bridgehead /srv/docker/bridgehead
 
@@ -63,6 +62,16 @@ cp -v \
     /etc/systemd/system/
 
 systemctl daemon-reload
+
+fixPermissions
+
+log "INFO" "Checking your bridgehead ..."
+CHECK_RESULT=0
+/srv/docker/bridgehead/bridgehead check "${PROJECT}" || CHECK_RESULT=$?
+if [ $CHECK_RESULT -ge 2 ]; then
+  log "ERROR" "Some checks failed. Fix them and run the installation again."
+  exit 1
+fi
 
 log INFO "Trying to update your bridgehead ..."
 

@@ -130,25 +130,29 @@ Mention:
 - site name (According to conventions listed above)
 - operator name and email
 
-We will set the repository up for you. We will then send you:
+We will set the repository up for you. We will then send you either:
 
-- A Repository Short Name (RSN). Beware: this is distinct from your site name.
-- Repository URL containing the acces token eg. https://BH_Dummy:dummy_token@git.verbis.dkfz.de/<project>-bridgehead-configs/dummy.git
+- Way A: a one-time enrollment code, or
+- Way B: a repository URL including access credentials.
 
 During the installation, your Bridgehead will download your site's configuration from GitLab and you can review the details provided to us by email.
 
 
 ### Base Installation
 
-First, download your site specific configuration repository:
+Clone the bridgehead repository and run the installation script:
 ```shell
-sudo mkdir -p /etc/bridgehead/
-sudo git clone <REPO_URL_FROM_EMAIL> /etc/bridgehead/
+sudo mkdir -p /srv/docker/
+sudo git clone -b main https://github.com/samply/bridgehead.git /srv/docker/bridgehead
+cd /srv/docker/bridgehead
+sudo ./bridgehead install <PROJECT>
 ```
+
+When asked, choose Way A or Way B. For Way A, enter your one-time enrollment code and your site name; for Way B, enter your repository URL. The installation downloads your site configuration to `/etc/bridgehead`. If your server needs an HTTP proxy to reach the internet, pass it to the script, e.g. `sudo https_proxy=http://proxy.example.org:3128 ./bridgehead install <PROJECT>`.
 
 Review the site configuration:
 ```shell
-sudo cat /etc/bridgehead/bbmri.conf
+sudo cat /etc/bridgehead/<PROJECT>.conf
 ```
 
 Pay special attention to:
@@ -159,20 +163,9 @@ Pay special attention to:
 - OPERATOR_LAST_NAME
 - OPERATOR_EMAIL
 
-Clone the bridgehead repository:
-```shell
-sudo mkdir -p /srv/docker/
-sudo git clone -b main https://github.com/samply/bridgehead.git /srv/docker/bridgehead
-```
-
-Then, run the installation script:
-
-```shell
-cd /srv/docker/bridgehead
-sudo ./bridgehead install <PROJECT>
-```
-
 ### Register with Samply.Beam
+
+If you installed with Way A, this has already been done for you; skip to the next step.
 
 Many Bridgehead services rely on the secure, performant and flexible messaging middleware called [Samply.Beam](https://github.com/samply/beam). You will need to register ("enroll") with Samply.Beam by creating a cryptographic key pair for your bridgehead:
 

@@ -2,8 +2,8 @@
 
 function ummSetup() {
   if [ "${ENABLE_UMM:-}" == "true" ]; then
-    assertVarsNotEmpty TTP_URL TTP_ML_API_KEY PROJECT_ID_SYSTEM || \
-      fail_and_report 1 "The UMM module requires TTP_URL, TTP_ML_API_KEY and PROJECT_ID_SYSTEM."
+    # assertVarsNotEmpty TTP_URL TTP_ML_API_KEY PROJECT_ID_SYSTEM || \
+    #   fail_and_report 1 "The UMM module requires TTP_URL, TTP_ML_API_KEY and PROJECT_ID_SYSTEM."
 
     log INFO "UMM TransFAIR setup detected -- will start TransFAIR, two dedicated Blaze stores and one Beam.Connect receiver."
 

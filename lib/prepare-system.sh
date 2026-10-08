@@ -67,9 +67,6 @@ case "$PROJECT" in
 	kr)
 		site_configuration_repository_middle="git.verbis.dkfz.de/krebsregister-sites/"
 		;;
-	dhki)
-		site_configuration_repository_middle="git.verbis.dkfz.de/dhki/"
-		;;
 	nngm)
 		site_configuration_repository_middle="git.verbis.dkfz.de/nngm/"
 		;;
@@ -93,9 +90,14 @@ if [ -d /etc/bridgehead ]; then
 elif [[ "$DEV_MODE" == "NODEV" ]]; then
     log "INFO" "Now cloning your site configuration repository for you."
     if [ -z "$access_token" ] && [ -z "$enrollment_code" ]; then
-        echo "Way A: You received a one-time enrollment code."
-        echo "Way B: You received a repository URL including access credentials."
-        read -p "Please choose your way of installation [A/B]: " way
+        # Way A needs /csr and GitLab tokens from Secret Sync on the project's broker;
+        # bbmri would also enroll with the wrong broker
+        way=B
+        if [ "$PROJECT" == "cce" ]; then
+            echo "Way A: You received a one-time enrollment code."
+            echo "Way B: You received a repository URL including access credentials."
+            read -p "Please choose your way of installation [A/B]: " way
+        fi
         case "$way" in
             [Aa])
                 read -p "Please enter your one-time enrollment code: " enrollment_code

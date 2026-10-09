@@ -8,7 +8,10 @@ Restart=always
 RestartSec=30
 ExecStartPre=-/srv/docker/bridgehead/bridgehead preRun %i
 ExecStart=/srv/docker/bridgehead/bridgehead start %i
-ExecStop=/srv/docker/bridgehead/bridgehead stop %i
+SuccessExitStatus=130
+TimeoutStopSec=120
+# Clean up containers after stop
+ExecStopPost=-/srv/docker/bridgehead/bridgehead stop %i
 ExecStopPost=-/srv/docker/bridgehead/bridgehead postRun %i
 
 [Install]

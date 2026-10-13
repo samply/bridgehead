@@ -57,7 +57,7 @@ services:
       - "forward_proxy"
     volumes:
       - /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro
-      - /srv/docker/bridgehead/cce/root.crt.pem:/conf/root.crt.pem:ro
+      - ${ROOT_CRT_FILE}:/conf/root.crt.pem:ro
 
 
 volumes:

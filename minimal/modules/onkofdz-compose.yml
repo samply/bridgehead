@@ -32,7 +32,7 @@ services:
     depends_on:
       - secureepilinker
   mainzelliste:
-    image: medicalinformatics/mainzelliste:secureepilinker-alpha
+    image: docker.verbis.dkfz.de/onkofdz/mainzelliste:smpc
     container_name: bridgehead-onkofdz-mainzelliste
     environment:
       ML_API_KEY: ${LOCAL_SEL_API_KEY}

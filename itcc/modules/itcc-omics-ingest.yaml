@@ -11,6 +11,7 @@ services:
       BOX_ROOT: /var/lib/itcc-maf-box
       DWH_SOCKET_ID: ${DWH_SOCKET_ID}
       DWH_TASK_ID: ${DWH_TASK_ID}
+      KEEP_LOCAL_IDS: ${OMICS_KEEP_LOCAL_IDS:-false}
       SITE_ID: ${SITE_ID}
       ML_API_KEY: ${GENERATE_API_KEY}
       ML_URL: http://bridgehead-patientlist:8080

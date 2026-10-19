@@ -1,0 +1,11 @@
+# Basic auth: a user from LDM_AUTH. EXPORTER_API_KEY: environment of bridgehead-itcc-exporter.
+# Both calls answer with a responseUrl to download the result.
+
+# Full Excel Export
+curl --location --request POST 'https://${HOST}/itcc-exporter/request?query=Patient&query-format=FHIR_SEARCH&template-id=itcc&output-format=EXCEL' \
+--user '${USER}:${PASSWORD}' \
+--header 'x-api-key: ${EXPORTER_API_KEY}'
+
+# QB
+curl --location --request POST 'https://${HOST}/itcc-reporter/generate?template-id=itcc-qb' \
+--user '${USER}:${PASSWORD}'

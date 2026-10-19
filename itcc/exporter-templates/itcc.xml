@@ -1,0 +1,41 @@
+<converter id="itcc" excel-filename="Export-${SITE}-${TIMESTAMP}.xlsx" source-id="blaze-store">
+
+  <container id="Patient" csv-filename="Patient-${SITE}-${TIMESTAMP}.csv" excel-sheet="Patient">
+    <attribute default-name="Patient-ID" val-fhir-path="Patient.id.value" anonym="Pat" op="EXTRACT_RELATIVE_ID"/>
+    <attribute default-name="PatientIdentifier" val-fhir-path="Patient.identifier.value.value"/>
+    <attribute default-name="Gender" val-fhir-path="Patient.gender.value"/>
+    <attribute default-name="VitalStatus" val-fhir-path="Observation.where(code.coding.code = '75186-7').value.coding.code.value" join-fhir-path="/Observation.where(code.coding.code = '75186-7').subject.reference.value"/>
+    <attribute default-name="DeathDetail" val-fhir-path="Observation.where(code.coding.code = '75186-7').component.where(code.coding.code = 'death-detail').value.coding.code.value" join-fhir-path="/Observation.where(code.coding.code = '75186-7').subject.reference.value"/>
+    <attribute default-name="AgeAtVitalStatus" val-fhir-path="Observation.where(code.coding.code = '75186-7').component.where(code.coding.code = 'age-at-status').value.value.value" join-fhir-path="/Observation.where(code.coding.code = '75186-7').subject.reference.value"/>
+  </container>
+
+  <container id="Condition" csv-filename="Condition-${SITE}-${TIMESTAMP}.csv" excel-sheet="Condition">
+    <attribute default-name="Condition-ID" val-fhir-path="Condition.id.value" anonym="Con" op="EXTRACT_RELATIVE_ID"/>
+    <attribute default-name="Patient-ID" val-fhir-path="Condition.subject.reference.value" anonym="Pat"/>
+    <attribute default-name="PrimaryCondition-ID" val-fhir-path="Condition.extension('http://hl7.org/fhir/StructureDefinition/condition-related').value.reference.value" anonym="Con"/>
+    <attribute default-name="ConditionType" val-fhir-path="Condition.category.coding.code.value"/>
+    <attribute default-name="Diagnosis" val-fhir-path="Condition.code.coding.where(system = 'https://www.itcc-consortium.org/fhir/CodeSystem/itcc-core-clinical-diagnosis-cs').code.value"/>
+    <attribute default-name="DiagnosisWHO" val-fhir-path="Condition.code.coding.where(system = 'https://www.itcc-consortium.org/fhir/CodeSystem/itcc-core-clinical-diagnosis-who-cs').code.value"/>
+    <attribute default-name="AgeAtOnset" val-fhir-path="Condition.onset.value.value"/>
+    <attribute default-name="AgeAtOnsetPrecision" val-fhir-path="Condition.onset.extension('https://www.itcc-consortium.org/fhir/StructureDefinition/itcc-core-age-precision-ext').value.value"/>
+    <attribute default-name="HadEvent" val-fhir-path="Condition.extension('https://www.itcc-consortium.org/fhir/StructureDefinition/itcc-core-had-event-ext').value.value"/>
+    <attribute default-name="DiseaseExtent" val-fhir-path="Observation.where(code.coding.code = 'disease-extent').value.coding.code.value" join-fhir-path="Condition.stage.assessment.reference.value"/>
+    <attribute default-name="DiseaseExtentDetail" val-fhir-path="Observation.where(code.coding.code = 'disease-extent').component.value.coding.code.value" join-fhir-path="Condition.stage.assessment.reference.value"/>
+  </container>
+
+  <container id="Sample" csv-filename="Sample-${SITE}-${TIMESTAMP}.csv" excel-sheet="Sample">
+    <attribute default-name="Sample-ID" val-fhir-path="Specimen.id.value" anonym="Sam" op="EXTRACT_RELATIVE_ID"/>
+    <attribute default-name="Patient-ID" val-fhir-path="Specimen.subject.reference.value" anonym="Pat"/>
+    <attribute default-name="Condition-ID" val-fhir-path="Specimen.extension('https://www.itcc-consortium.org/fhir/StructureDefinition/itcc-core-specimen-condition-ext').value.reference.value" anonym="Con"/>
+    <attribute default-name="SampleIdentifier" val-fhir-path="Specimen.identifier.value.value"/>
+    <attribute default-name="SampleType" val-fhir-path="Specimen.type.coding.where(system = 'https://www.itcc-consortium.org/fhir/CodeSystem/itcc-core-specimen-type-cs').code.value"/>
+    <attribute default-name="SampleTypeSNOMED" val-fhir-path="Specimen.type.coding.where(system = 'http://snomed.info/sct').code.value"/>
+    <attribute default-name="AgeAtSampling" val-fhir-path="Specimen.extension('https://www.itcc-consortium.org/fhir/StructureDefinition/itcc-core-specimen-age-ext').value.value.value"/>
+    <attribute default-name="TumorContext" val-fhir-path="Specimen.extension('https://www.itcc-consortium.org/fhir/StructureDefinition/itcc-core-specimen-tumor-context-ext').value.value"/>
+  </container>
+
+  <fhir-rev-include>Observation:patient</fhir-rev-include>
+  <fhir-rev-include>Condition:patient</fhir-rev-include>
+  <fhir-rev-include>Specimen:patient</fhir-rev-include>
+
+</converter>

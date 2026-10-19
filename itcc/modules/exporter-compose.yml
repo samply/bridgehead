@@ -1,0 +1,58 @@
+services:
+  exporter:
+    image: docker.verbis.dkfz.de/ccp/dktk-exporter:latest
+    container_name: bridgehead-itcc-exporter
+    environment:
+      JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
+      LOG_LEVEL: "INFO"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}" # Set in exporter-setup.sh
+      CROSS_ORIGINS: "https://${HOST}"
+      EXPORTER_DB_USER: "exporter"
+      EXPORTER_DB_PASSWORD: "${EXPORTER_DB_PASSWORD}" # Set in exporter-setup.sh
+      EXPORTER_DB_URL: "jdbc:postgresql://exporter-db:5432/exporter"
+      HTTP_RELATIVE_PATH: "/itcc-exporter"
+      SITE: "${SITE_ID}"
+      HTTP_SERVLET_REQUEST_SCHEME: "https"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.exporter_itcc.rule=Host(`${HOST}`) && PathPrefix(`/itcc-exporter`)"
+      - "traefik.http.services.exporter_itcc.loadbalancer.server.port=8092"
+      - "traefik.http.routers.exporter_itcc.tls=true"
+      - "traefik.http.middlewares.exporter_itcc_strip.stripprefix.prefixes=/itcc-exporter"
+      - "traefik.http.routers.exporter_itcc.middlewares=exporter_itcc_strip,auth"
+    volumes:
+      - "/var/cache/bridgehead/itcc/exporter-files:/app/exporter-files/output"
+      - "/srv/docker/bridgehead/itcc/exporter-templates:/app/templates:ro"
+
+  exporter-db:
+    image: docker.verbis.dkfz.de/cache/postgres:${POSTGRES_TAG}
+    container_name: bridgehead-itcc-exporter-db
+    environment:
+      POSTGRES_USER: "exporter"
+      POSTGRES_PASSWORD: "${EXPORTER_DB_PASSWORD}" # Set in exporter-setup.sh
+      POSTGRES_DB: "exporter"
+    volumes:
+      - "/var/cache/bridgehead/itcc/exporter-db:/var/lib/postgresql/data"
+
+  reporter:
+    image: docker.verbis.dkfz.de/ccp/dktk-reporter:latest
+    container_name: bridgehead-itcc-reporter
+    environment:
+      JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
+      LOG_LEVEL: "INFO"
+      CROSS_ORIGINS: "https://${HOST}"
+      HTTP_RELATIVE_PATH: "/itcc-reporter"
+      SITE: "${SITE_ID}"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}" # Set in exporter-setup.sh
+      EXPORTER_URL: "http://exporter:8092"
+      HTTP_SERVLET_REQUEST_SCHEME: "https"
+    volumes:
+      - "/var/cache/bridgehead/itcc/reporter-files:/app/reports"
+      - "/srv/docker/bridgehead/itcc/reporter-templates:/app/templates:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.reporter_itcc.rule=Host(`${HOST}`) && PathPrefix(`/itcc-reporter`)"
+      - "traefik.http.services.reporter_itcc.loadbalancer.server.port=8095"
+      - "traefik.http.routers.reporter_itcc.tls=true"
+      - "traefik.http.middlewares.reporter_itcc_strip.stripprefix.prefixes=/itcc-reporter"
+      - "traefik.http.routers.reporter_itcc.middlewares=reporter_itcc_strip,auth"

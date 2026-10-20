@@ -1,0 +1,87 @@
+# Without OIDC: the apps are public in the dashboard and all routes are behind the auth middleware
+services:
+
+  teiler-orchestrator:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:latest
+    container_name: bridgehead-teiler-orchestrator
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_orchestrator_itcc.rule=Host(`${HOST}`) && PathPrefix(`/itcc-teiler`)"
+      - "traefik.http.services.teiler_orchestrator_itcc.loadbalancer.server.port=9000"
+      - "traefik.http.routers.teiler_orchestrator_itcc.tls=true"
+      - "traefik.http.middlewares.teiler_orchestrator_itcc_strip.stripprefix.prefixes=/itcc-teiler"
+      - "traefik.http.routers.teiler_orchestrator_itcc.middlewares=teiler_orchestrator_itcc_strip,auth"
+    environment:
+      TEILER_BACKEND_URL: "/itcc-teiler-backend"
+      TEILER_DASHBOARD_URL: "/itcc-teiler-dashboard"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
+      HTTP_RELATIVE_PATH: "/itcc-teiler"
+
+  teiler-dashboard:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    container_name: bridgehead-teiler-dashboard
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_dashboard_itcc.rule=Host(`${HOST}`) && PathPrefix(`/itcc-teiler-dashboard`)"
+      - "traefik.http.services.teiler_dashboard_itcc.loadbalancer.server.port=80"
+      - "traefik.http.routers.teiler_dashboard_itcc.tls=true"
+      - "traefik.http.middlewares.teiler_dashboard_itcc_strip.stripprefix.prefixes=/itcc-teiler-dashboard"
+      - "traefik.http.routers.teiler_dashboard_itcc.middlewares=teiler_dashboard_itcc_strip,auth"
+    environment:
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_BACKEND_URL: "/itcc-teiler-backend"
+      TEILER_DASHBOARD_URL: "/itcc-teiler-dashboard"
+      TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
+      TEILER_ADMIN_EMAIL: "${OPERATOR_EMAIL}"
+      TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
+      TEILER_PROJECT: "ITCC"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
+      TEILER_ORCHESTRATOR_URL: "/itcc-teiler"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/itcc-teiler"
+      REPORTER_DEFAULT_TEMPLATE_ID: "itcc-qb"
+      EXPORTER_DEFAULT_TEMPLATE_ID: "itcc"
+
+  teiler-backend:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-backend:develop
+    container_name: bridgehead-teiler-backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teiler_backend_itcc.rule=Host(`${HOST}`) && PathPrefix(`/itcc-teiler-backend`)"
+      - "traefik.http.services.teiler_backend_itcc.loadbalancer.server.port=8085"
+      - "traefik.http.routers.teiler_backend_itcc.tls=true"
+      - "traefik.http.middlewares.teiler_backend_itcc_strip.stripprefix.prefixes=/itcc-teiler-backend"
+      - "traefik.http.routers.teiler_backend_itcc.middlewares=teiler_backend_itcc_strip,auth"
+    environment:
+      LOG_LEVEL: "INFO"
+      APPLICATION_PORT: "8085"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/itcc-teiler"
+      TEILER_ORCHESTRATOR_URL: "/itcc-teiler"
+      TEILER_DASHBOARD_DE_URL: "/itcc-teiler-dashboard/de"
+      TEILER_DASHBOARD_EN_URL: "/itcc-teiler-dashboard/en"
+      TEILER_DASHBOARD_STYLING: "/itcc-teiler-backend/assets/styling.json"
+      TEILER_BACKEND_ASSETS_DIRECTORY: "/app/assets"
+      HTTP_PROXY: "http://forward_proxy:3128"
+      TEILER_APP1_NAME: "quality-report"
+      TEILER_APP1_ROLES: "TEILER_PUBLIC"
+      TEILER_APP1_BACKENDURL: "/itcc-reporter"
+      TEILER_APP1_BACKENDCHECKURL: "http://reporter:8095/info"
+      TEILER_APP2_NAME: "exporter"
+      TEILER_APP2_ROLES: "TEILER_PUBLIC"
+      TEILER_APP2_BACKENDURL: "/itcc-exporter"
+      TEILER_APP2_BACKENDCHECKURL: "http://exporter:8092/info"
+      TEILER_APP3_NAME: "execution"
+      TEILER_APP3_ROLES: "TEILER_PUBLIC"
+      TEILER_APP3_INMENU: "false"
+      TEILER_APP3_BACKENDURL: "/itcc-exporter"
+      TEILER_APP3_BACKENDCHECKURL: "http://exporter:8092/info"
+      # The dashboard lists apps only if local and central apps exist
+      TEILER_APP4_NAME: "federated-search"
+      TEILER_APP4_TITLE: "ITCC Explorer"
+      TEILER_APP4_SOURCEURL: "https://${HOST}/"
+      TEILER_APP4_ROLES: "TEILER_PUBLIC"
+      TEILER_APP4_ICONCLASS: "bi bi-search"
+      TEILER_APP4_ISEXTERNALLINK: "true"
+      TEILER_APP4_ISLOCAL: "false"
+    volumes:
+      - "/srv/docker/bridgehead/itcc/teiler-assets:/app/assets:ro"

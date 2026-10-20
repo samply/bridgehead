@@ -1,6 +1,6 @@
 services:
   exporter:
-    image: docker.verbis.dkfz.de/ccp/dktk-exporter:latest
+    image: docker.verbis.dkfz.de/ccp/itcc-exporter:latest
     container_name: bridgehead-itcc-exporter
     environment:
       JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"
@@ -35,7 +35,7 @@ services:
       - "/var/cache/bridgehead/itcc/exporter-db:/var/lib/postgresql/data"
 
   reporter:
-    image: docker.verbis.dkfz.de/ccp/dktk-reporter:latest
+    image: docker.verbis.dkfz.de/ccp/itcc-reporter:latest
     container_name: bridgehead-itcc-reporter
     environment:
       JAVA_OPTS: "-Xms1G -Xmx8G -XX:+UseG1GC"

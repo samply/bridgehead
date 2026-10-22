@@ -336,21 +336,57 @@ function sync_secrets() {
     set +a # Export variables in the regular way
 }
 
+# Map a GitLab URL to the prefix recognized by Secret Sync
+function secret_sync_gitlab_instance() {
+    case "$1" in
+        *git.verbis.dkfz.de*) echo verbis;;
+        *gitlab.bbmri-eric.eu*) echo bbmri;;
+        *) return 1;;
+    esac
+}
+
+# Use Secret Sync to validate the GitLab token in /var/cache/bridgehead/secrets/gitlab-token.
+# If it is missing or expired, Secret Sync will create a new token and write it to the file.
+# The git credential helper reads the token from the file during git pull.
+function secret_sync_fetch_gitlab_token() {
+    local gitlab=$1 proxy_id=$2 broker_url=$3 broker_id=$4 privkey_file=$5 root_crt_file=$6
+    if [ ! -f "$privkey_file" ] || [ ! -f "$root_crt_file" ]; then
+        log "WARN" "Not running Secret Sync because $privkey_file or $root_crt_file is missing"
+        return 1
+    fi
+    local trusted_ca_args=()
+    if [ -d /etc/bridgehead/trusted-ca-certs ]; then
+        trusted_ca_args=(-v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs)
+    fi
+    mkdir -p /var/cache/bridgehead/secrets
+    chmod 700 /var/cache/bridgehead/secrets
+    log "INFO" "Running Secret Sync for the GitLab token (gitlab=$gitlab)"
+    docker pull docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest # make sure we have the latest image
+    docker run --rm \
+        -v $privkey_file:/run/secrets/privkey.pem:ro \
+        -v $root_crt_file:/run/secrets/root.crt.pem:ro \
+        "${trusted_ca_args[@]}" \
+        -v /var/cache/bridgehead/secrets:/secret-sync/ \
+        -e CACHE_PATH=/secret-sync/gitlab-token \
+        -e NO_PROXY=localhost,127.0.0.1 \
+        -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
+        -e PROXY_ID=$proxy_id \
+        -e BROKER_URL=$broker_url \
+        -e GITLAB_PROJECT_ACCESS_TOKEN_PROVIDER=secret-sync-central.central-secret-sync.$broker_id \
+        -e SECRET_DEFINITIONS=GitLabProjectAccessToken:BRIDGEHEAD_CONFIG_REPO_TOKEN:$gitlab \
+        docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
+}
+
 function secret_sync_gitlab_token() {
-    if [[ "$PROJECT" != "ccp" && "$PROJECT" != "bbmri" ]]; then
-        log "INFO" "Not running Secret Sync for project minimal"
+    if [[ "$PROJECT" != "ccp" && "$PROJECT" != "bbmri" && "$PROJECT" != "cce" ]] && [ -z "$(git -C /etc/bridgehead config credential.helper)" ]; then
+        log "INFO" "Not running Secret Sync for project $PROJECT"
         return
     fi
-    # Map the origin of the git repository /etc/bridgehead to the prefix recognized by Secret Sync
     local gitlab
-    case "$(git -C /etc/bridgehead remote get-url origin)" in
-        *git.verbis.dkfz.de*) gitlab=verbis;;
-        *gitlab.bbmri-eric.eu*) gitlab=bbmri;;
-        *)
-            log "WARN" "Not running Secret Sync because the git repository /etc/bridgehead has unknown origin"
-            return
-            ;;
-    esac
+    if ! gitlab=$(secret_sync_gitlab_instance "$(git -C /etc/bridgehead remote get-url origin)"); then
+        log "WARN" "Not running Secret Sync because the git repository /etc/bridgehead has unknown origin"
+        return
+    fi
 
     if [ "$PROJECT" == "bbmri" ]; then
         # If the project is BBMRI, use the BBMRI-ERIC broker and not the GBN broker
@@ -365,30 +401,7 @@ function secret_sync_gitlab_token() {
         root_crt_file="/srv/docker/bridgehead/$PROJECT/root.crt.pem"
     fi
 
-    # Create a temporary directory for Secret Sync that is valid per boot
-    secret_sync_tempdir="/tmp/bridgehead/secret-sync.boot-$(cat /proc/sys/kernel/random/boot_id)"
-    mkdir -p $secret_sync_tempdir
-
-    # Use Secret Sync to validate the GitLab token in $secret_sync_tempdir/cache.
-    # If it is missing or expired, Secret Sync will create a new token and write it to the file.
-    # The git credential helper reads the token from the file during git pull.
-    log "INFO" "Running Secret Sync for the GitLab token (gitlab=$gitlab)"
-    docker pull docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest # make sure we have the latest image
-    docker run --rm \
-        -v $PRIVATEKEYFILENAME:/run/secrets/privkey.pem:ro \
-        -v $root_crt_file:/run/secrets/root.crt.pem:ro \
-        -v /etc/bridgehead/trusted-ca-certs:/conf/trusted-ca-certs:ro \
-        -v $secret_sync_tempdir:/secret-sync/ \
-        -e CACHE_PATH=/secret-sync/gitlab-token \
-        -e TLS_CA_CERTIFICATES_DIR=/conf/trusted-ca-certs \
-        -e NO_PROXY=localhost,127.0.0.1 \
-        -e ALL_PROXY=$HTTPS_PROXY_FULL_URL \
-        -e PROXY_ID=$proxy_id \
-        -e BROKER_URL=$broker_url \
-        -e GITLAB_PROJECT_ACCESS_TOKEN_PROVIDER=secret-sync-central.central-secret-sync.$broker_id \
-        -e SECRET_DEFINITIONS=GitLabProjectAccessToken:BRIDGEHEAD_CONFIG_REPO_TOKEN:$gitlab \
-        docker.verbis.dkfz.de/cache/samply/secret-sync-local:latest
-    if [ $? -eq 0 ]; then
+    if secret_sync_fetch_gitlab_token "$gitlab" "$proxy_id" "$broker_url" "$broker_id" "$PRIVATEKEYFILENAME" "$root_crt_file"; then
         log "INFO" "Secret Sync was successful"
         # In the past we used to hardcode tokens into the repository URL. We have to remove those now for the git credential helper to become effective.
         CLEAN_REPO="$(git -C /etc/bridgehead remote get-url origin | sed -E 's|https://[^@]+@|https://|')"
@@ -397,14 +410,90 @@ function secret_sync_gitlab_token() {
         git -C /etc/bridgehead config credential.helper /srv/docker/bridgehead/lib/gitlab-token-helper.sh
     else
         log "WARN" "Secret Sync failed"
-        # Remove the git credential helper
-        git -C /etc/bridgehead config --unset credential.helper
     fi
 
     # In the past the git credential helper was also set for /srv/docker/bridgehead but never used.
     # Let's remove it to avoid confusion. This line can be removed at some point the future when we
     # believe that it was removed on all/most production servers.
     git -C /srv/docker/bridgehead config --unset credential.helper
+}
+
+function bootstrap_site_configuration() {
+    local site=$1 enrollment_code=$2 repository_url=$3
+    local SITE_ID=$site BROKER_ID="" BROKER_URL="" PROXY_ID="" PRIVATEKEYFILENAME=""
+    local HTTPS_PROXY_FULL_URL=${HTTPS_PROXY_FULL_URL:-${https_proxy:-${HTTPS_PROXY:-}}}
+    eval "$(grep -E '^(BROKER_ID|BROKER_URL|PROXY_ID|PRIVATEKEYFILENAME)=' "$PROJECT/vars")"
+    if [ -z "$BROKER_ID" ]; then
+        log "ERROR" "Project $PROJECT has no Samply.Beam broker to enroll with."
+        return 1
+    fi
+    local gitlab
+    if ! gitlab=$(secret_sync_gitlab_instance "$repository_url"); then
+        log "ERROR" "Secret Sync does not support the GitLab server of $repository_url."
+        return 1
+    fi
+
+    local enroll_dir
+    enroll_dir=$(mktemp -d /run/bridgehead-enrollment.XXXXXX)
+    local key_file="$enroll_dir/$SITE_ID.priv.pem"
+    log "INFO" "Enrolling Beam Proxy Id $PROXY_ID"
+    if ! docker run --rm -v "$enroll_dir:/pki" docker.verbis.dkfz.de/cache/samply/beam-enroll:latest --output-file "/pki/$SITE_ID.priv.pem" --proxy-id "$PROXY_ID" > "$enroll_dir/enroll.out"; then
+        log "ERROR" "Unable to generate the private key for $PROXY_ID."
+        rm -rf "$enroll_dir"
+        return 1
+    fi
+    local csr
+    csr=$(sed -n '/BEGIN CERTIFICATE REQUEST/,/END CERTIFICATE REQUEST/p' "$enroll_dir/enroll.out")
+    printf '%s' "$enrollment_code" > "$enroll_dir/enrollment-code"
+    local response
+    response=$(curl -sS --data-urlencode "csr=$csr" --data-urlencode "token@$enroll_dir/enrollment-code" "$BROKER_URL/csr" 2>&1)
+    if [[ "$response" != *"Successfully registered CSR"* ]]; then
+        log "ERROR" "$BROKER_URL did not accept the certificate request with your one-time enrollment code: $(echo "$response" | sed -e 's/<[^>]*>//g' | tr -s '[:space:]' ' ' | head -c 300)"
+        rm -rf "$enroll_dir"
+        return 1
+    fi
+
+    local answer
+    until retry 3 secret_sync_fetch_gitlab_token "$gitlab" "$PROXY_ID" "$BROKER_URL" "$BROKER_ID" "$key_file" "/srv/docker/bridgehead/$PROJECT/root.crt.pem" \
+        && git -c credential.helper=/srv/docker/bridgehead/lib/gitlab-token-helper.sh clone "$repository_url" /etc/bridgehead; do
+        log "ERROR" "Unable to download $repository_url."
+        read -r -p "Fix the cause and retry? If you don't, you will need a new one-time enrollment code. [Y/n] " answer || answer=n
+        if [[ "$answer" == [Nn]* ]]; then
+            rm -rf "$enroll_dir"
+            return 1
+        fi
+    done
+    local configured_site_id
+    configured_site_id=$(grep -m1 -E '^SITE_ID=' "/etc/bridgehead/$PROJECT.conf" | cut -d= -f2- | tr -d "\"'")
+    if [ "$configured_site_id" != "$SITE_ID" ]; then
+        log "ERROR" "Your configuration repository is for site '$configured_site_id', but you entered '$SITE_ID'. Ask for a one-time enrollment code for '$configured_site_id' and run the installation again."
+        rm -rf /etc/bridgehead "$enroll_dir"
+        return 1
+    fi
+    git -C /etc/bridgehead config credential.helper /srv/docker/bridgehead/lib/gitlab-token-helper.sh
+    mkdir -p "$(dirname "$PRIVATEKEYFILENAME")"
+    mv "$key_file" "$PRIVATEKEYFILENAME"
+    chmod 600 "$PRIVATEKEYFILENAME"
+    rm -rf "$enroll_dir"
+}
+
+function read_masked() {
+    local prompt=$1 char value=""
+    local -n read_masked_result=$2
+    printf '%s' "$prompt"
+    while IFS= read -r -s -n1 char && [ -n "$char" ]; do
+        if [[ "$char" == $'\x7f' || "$char" == $'\b' ]]; then
+            if [ -n "$value" ]; then
+                value=${value%?}
+                printf '\b \b'
+            fi
+        else
+            value+=$char
+            printf '*'
+        fi
+    done
+    echo
+    read_masked_result=$value
 }
 
 capitalize_first_letter() {

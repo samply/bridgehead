@@ -1,22 +1,37 @@
 services:
   omics-endpoint:
-    image: samply/itcc-omics-ingest:main
+    image: samply/itcc-omics-ingest:develop
     environment:
       API_KEY: ${GENERATE_API_KEY}
+      API_PORT: "6080"
       BEAM_APP_ID_LONG: omics-endpoint.${PROXY_ID}
       BEAM_SECRET: ${FOCUS_BEAM_SECRET_SHORT}
+      BEAM_URL: http://beam-proxy:8081
+      BLAZE_URL: http://bridgehead-itcc-blaze:8080/fhir/
+      BOX_ROOT: /var/lib/itcc-maf-box
       DWH_SOCKET_ID: ${DWH_SOCKET_ID}
       DWH_TASK_ID: ${DWH_TASK_ID}
-      PARTNER_ID: ${SITE_ID}
+      SITE_ID: ${SITE_ID}
       ML_API_KEY: ${GENERATE_API_KEY}
+      ML_URL: http://bridgehead-patientlist:8080
+      UI_PORT: "3000"
+    volumes:
+      - "omics-maf-box:/var/lib/itcc-maf-box"
     labels:
       - "traefik.http.routers.omics.rule=Host(`${HOST}`) &&
         PathPrefix(`/api/upload`)"
       - "traefik.enable=true"
       - "traefik.http.services.omics.loadbalancer.server.port=6080"
+      - "traefik.http.routers.omics.service=omics"
       - "traefik.http.routers.omics.tls=true"
       - "traefik.http.middlewares.omics-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.omics.middlewares=omics-stripprefix"
+      - "traefik.http.routers.itcc-uploader.rule=Host(`${HOST}`) && PathPrefix(`/itcc-uploader`)"
+      - "traefik.http.routers.itcc-uploader.service=itcc-uploader"
+      - "traefik.http.routers.itcc-uploader.tls=true"
+      - "traefik.http.services.itcc-uploader.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.itcc-uploader-stripprefix.stripprefix.prefixes=/itcc-uploader"
+      - "traefik.http.routers.itcc-uploader.middlewares=auth,itcc-uploader-stripprefix"
 
   patientlist-db:
     image: postgres:${POSTGRES_TAG}
@@ -60,6 +75,7 @@ services:
         target: /etc/resources/keys/symmetric_key.json
 
 volumes:
+  omics-maf-box:
   patientlist-db-data:
 secrets:
   mainzelliste.docker.conf:

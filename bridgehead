@@ -153,7 +153,13 @@ case "$ACTION" in
 		exec ./lib/update-bridgehead.sh $PROJECT
 		;;
 	check)
+		# Ignore the caller's environment, e.g. proxy variables, like bridgehead@.service does
+		if [ "$(id -u)" -eq 0 ]; then
+			exec systemd-run --wait --pipe --quiet --collect -p User=bridgehead -p WorkingDirectory="$BASE" "$BASE/bridgehead" check $PROJECT
+		fi
+		trap 'log "ERROR" "Unable to load the configuration of $PROJECT"; exit 3' EXIT
 		loadVars &> /dev/null
+		trap - EXIT
 		exec ./lib/check-bridgehead.sh $PROJECT
 		;;
 	install)

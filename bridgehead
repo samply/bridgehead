@@ -127,12 +127,17 @@ case "$ACTION" in
 		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE up --abort-on-container-exit
 		;;
 	stop)
+		# INVOCATION_ID is set by Systemd, so manual commands and Systemd's orchestration does not interfer
+		if [ -z "${INVOCATION_ID:-}" ] && systemctl is-active --quiet "bridgehead@$PROJECT"; then
+			log ERROR "bridgehead@$PROJECT is managed by systemd. Stop it with: sudo systemctl stop bridgehead@$PROJECT"
+			exit 1
+		fi
 		loadVars
 		# Kill stale secret-sync instances if present
 		docker kill $(docker ps -q --filter ancestor=docker.verbis.dkfz.de/cache/samply/secret-sync-local) 2>/dev/null || true
 		# HACK: This is temporarily to properly shut down false bridgehead instances (bridgehead-ccp instead ccp)
-		$COMPOSE -p bridgehead-$PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
-		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down
+		$COMPOSE -p bridgehead-$PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down --remove-orphans
+		exec $COMPOSE -p $PROJECT -f ./minimal/docker-compose.yml -f ./$PROJECT/docker-compose.yml $OVERRIDE down --remove-orphans
 		;;
 	is-running)
 		bk_is_running

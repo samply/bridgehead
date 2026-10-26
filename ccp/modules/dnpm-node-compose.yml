@@ -17,18 +17,16 @@ services:
   dnpm-authup:
     image: authup/authup:latest
     container_name: bridgehead-dnpm-authup
-    volumes:
-      - /var/cache/bridgehead/dnpm/authup:/usr/src/app/writable
     depends_on:
       dnpm-mysql:
         condition: service_healthy
-    command: server/core start
+    command: start
     environment:
       - PUBLIC_URL=https://${HOST}/auth/
-      - AUTHORIZE_REDIRECT_URL=https://${HOST}
-      - ROBOT_ADMIN_ENABLED=true
-      - ROBOT_ADMIN_SECRET=${DNPM_AUTHUP_SECRET}
-      - ROBOT_ADMIN_SECRET_RESET=true
+      - TRUSTED_ORIGINS=https://${HOST}
+      - CLIENT_SYSTEM_ENABLED=true
+      - CLIENT_SYSTEM_SECRET=${DNPM_AUTHUP_SECRET}
+      - CLIENT_SYSTEM_SECRET_RESET=true
       - DB_TYPE=mysql
       - DB_HOST=dnpm-mysql
       - DB_USERNAME=root
@@ -50,6 +48,7 @@ services:
       - NUXT_PUBLIC_API_URL=https://${HOST}/api/
       - NUXT_AUTHUP_URL=http://dnpm-authup:3000/
       - NUXT_PUBLIC_AUTHUP_URL=https://${HOST}/auth/
+      - NUXT_PUBLIC_ACCOUNT_URL=https://${HOST}/auth/console/account
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dnpm-frontend.rule=PathPrefix(`/`)"
@@ -65,7 +64,7 @@ services:
       - MTB_RANDOM_DATA=${DNPM_SYNTH_NUM:--1}
       - HATEOAS_HOST=https://${HOST}
       - CONNECTOR_TYPE=broker
-      - AUTHUP_URL=robot://system:${DNPM_AUTHUP_SECRET}@http://dnpm-authup:3000
+      - AUTHUP_URL=client://system:${DNPM_AUTHUP_SECRET}@http://dnpm-authup:3000
       - TZ=Europe/Berlin
     volumes:
       - /etc/bridgehead/dnpm/config:/dnpm_config

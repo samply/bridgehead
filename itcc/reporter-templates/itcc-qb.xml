@@ -1,0 +1,128 @@
+<!-- Sheet scripts under ../grails-app/views/ccp come from the dktk-reporter image -->
+<report id="itcc-qb" filename="quality-report-{SITE}-{TIMESTAMP}.xlsx">
+    <exporter query="Patient" query-format="FHIR_SEARCH" template-id="itcc" output-format="CSV"/>
+    <init-script>
+        <script framework="groovy" file-path="itcc/init-context.gsp"/>
+    </init-script>
+
+    <sheet name="filtered elements">
+        <column name="FHIR element"/>
+        <column name="data element"/>
+        <column name="data element FHIR"/>
+        <column name="value FHIR"/>
+        <column name="data type"/>
+        <column name="validation">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-filtered-elements-mismatch.gsp"/>
+            </value-format-script>
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-filtered-elements-notvalidated.gsp"/>
+            </value-format-script>
+        </column>
+        <column name="number of patients">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-integer-cell.gsp"/>
+            </value-format-script>
+        </column>
+        <column name="% of patients with entry for this element"/>
+        <column name="% of patients - total"/>
+        <values-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/filtered-elements.gsp"/>
+        </values-script>
+        <format-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/format-empty.gsp"/>
+        </format-script>
+        <format-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/format-sort.gsp"/>
+        </format-script>
+    </sheet>
+
+    <sheet name="all elements">
+        <column name="FHIR element"/>
+        <column name="data element"/>
+        <column name="data element FHIR"/>
+        <column name="value FHIR"/>
+        <column name="data type"/>
+        <column name="validation">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-filtered-elements-mismatch.gsp"/>
+            </value-format-script>
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-filtered-elements-notvalidated.gsp"/>
+            </value-format-script>
+        </column>
+        <column name="number of patients">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-integer-cell.gsp"/>
+            </value-format-script>
+        </column>
+        <column name="% of patients with entry for this element"/>
+        <column name="% of patients - total"/>
+        <values-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/all-elements.gsp"/>
+        </values-script>
+        <format-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/format-empty.gsp"/>
+        </format-script>
+    </sheet>
+
+    <sheet name="patient local ids">
+        <values-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/patient-ids.gsp"/>
+        </values-script>
+        <format-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/format-patient-ids-header.gsp"/>
+        </format-script>
+        <format-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/format-patient-ids-second-line.gsp"/>
+        </format-script>
+    </sheet>
+
+    <sheet name="data element stats">
+        <column name="FHIR element"/>
+        <column name="data element"/>
+        <column name="data element FHIR"/>
+        <column name="number of patients with entry for this element">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-integer-cell.gsp"/>
+            </value-format-script>
+        </column>
+        <column name="% of patients - total"/>
+        <column name="number of patients with match only">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-integer-cell.gsp"/>
+            </value-format-script>
+        </column>
+        <column name="% of patients with entry for this element"/>
+        <column name="% of patients - total"/>
+        <column name="number of patients with any mismatch">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-integer-cell.gsp"/>
+            </value-format-script>
+        </column>
+        <column name="% of patients with entry for this element"/>
+        <column name="% of patients - total"/>
+        <column name="obligation"/>
+        <column name="a) present [ja/nein]">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-data-elements-stats-janein.gsp"/>
+            </value-format-script>
+        </column>
+        <column name="b) mismatch &lt; 10% [ja/nein]">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-data-elements-stats-janein.gsp"/>
+            </value-format-script>
+        </column>
+        <column name="a,b ist 'ja' [ja/nein]">
+            <value-format-script>
+                <script framework="groovy" file-path="../grails-app/views/ccp/column-format-data-elements-stats-janein.gsp"/>
+            </value-format-script>
+        </column>
+        <values-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/data-elements-stats.gsp"/>
+        </values-script>
+        <format-script>
+            <script framework="groovy" file-path="../grails-app/views/ccp/format-sort.gsp"/>
+        </format-script>
+    </sheet>
+</report>

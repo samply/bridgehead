@@ -7,7 +7,7 @@ case "$ENVIRONMENT" in
 		export BROKER_ID=broker.hector.dkfz.de
 		export DHKI_ROOT_CERT=dhki
 		;;
-	"development")
+	"test")
 		export BROKER_ID=broker.dev.hector.dkfz.de
 		export DHKI_ROOT_CERT=dhki.dev
 		;;

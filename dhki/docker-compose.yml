@@ -30,7 +30,7 @@ services:
       BLAZE_URL: "http://bridgehead-dhki-blaze:8080/fhir/"
       BEAM_PROXY_URL: http://beam-proxy:8081
       RETRY_COUNT: ${FOCUS_RETRY_COUNT}
-      EPSILON: 0.28
+      OBFUSCATE: "no"
       QUERIES_TO_CACHE: '/queries_to_cache.conf'
     volumes:
       - /srv/docker/bridgehead/dhki/queries_to_cache.conf:/queries_to_cache.conf:ro

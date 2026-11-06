@@ -46,6 +46,8 @@ services:
       BLAZE_URL: http://bridgehead-itcc-blaze:8080
       PUBLIC_BLAZE_URL: https://${HOST}/itcc-localdatamanagement
       VALIDATOR_PORT: "8091"
+      # Daily, because every run reads the whole store; the UI's Refresh button re-validates on demand
+      VALIDATOR_REFRESH_SECS: "86400"
     depends_on:
       - "blaze"
     labels:

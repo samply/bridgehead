@@ -1,4 +1,4 @@
-# ITCC Overview, built from the Teiler. Without OIDC: the apps are public in the dashboard and all routes are behind the auth middleware
+# Without OIDC, so all routes are behind the auth middleware
 services:
 
   overview-orchestrator:

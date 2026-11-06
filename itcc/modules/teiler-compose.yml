@@ -1,0 +1,113 @@
+# ITCC Overview, built from the Teiler. Without OIDC: the apps are public in the dashboard and all routes are behind the auth middleware
+services:
+
+  overview-orchestrator:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-orchestrator:latest
+    container_name: bridgehead-overview-orchestrator
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.overview_orchestrator_itcc.rule=Host(`${HOST}`) && PathPrefix(`/itcc-overview`)"
+      - "traefik.http.services.overview_orchestrator_itcc.loadbalancer.server.port=9000"
+      - "traefik.http.routers.overview_orchestrator_itcc.tls=true"
+      - "traefik.http.middlewares.overview_orchestrator_itcc_strip.stripprefix.prefixes=/itcc-overview"
+      - "traefik.http.routers.overview_orchestrator_itcc.middlewares=overview_orchestrator_itcc_strip,auth"
+    environment:
+      TEILER_BACKEND_URL: "/itcc-overview-backend"
+      TEILER_DASHBOARD_URL: "/itcc-overview-dashboard"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE_LOWER_CASE}"
+      HTTP_RELATIVE_PATH: "/itcc-overview"
+
+  overview-dashboard:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-dashboard:develop
+    container_name: bridgehead-overview-dashboard
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.overview_dashboard_itcc.rule=Host(`${HOST}`) && PathPrefix(`/itcc-overview-dashboard`)"
+      - "traefik.http.services.overview_dashboard_itcc.loadbalancer.server.port=80"
+      - "traefik.http.routers.overview_dashboard_itcc.tls=true"
+      - "traefik.http.middlewares.overview_dashboard_itcc_strip.stripprefix.prefixes=/itcc-overview-dashboard"
+      - "traefik.http.routers.overview_dashboard_itcc.middlewares=overview_dashboard_itcc_strip,auth"
+    environment:
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_BACKEND_URL: "/itcc-overview-backend"
+      TEILER_DASHBOARD_URL: "/itcc-overview-dashboard"
+      TEILER_ADMIN_NAME: "${OPERATOR_FIRST_NAME} ${OPERATOR_LAST_NAME}"
+      TEILER_ADMIN_EMAIL: "${OPERATOR_EMAIL}"
+      TEILER_ADMIN_PHONE: "${OPERATOR_PHONE}"
+      TEILER_PROJECT: "ITCC"
+      EXPORTER_API_KEY: "${EXPORTER_API_KEY}"
+      TEILER_ORCHESTRATOR_URL: "/itcc-overview"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/itcc-overview"
+      REPORTER_DEFAULT_TEMPLATE_ID: "itcc-qb"
+      EXPORTER_DEFAULT_TEMPLATE_ID: "itcc"
+
+  overview-backend:
+    image: docker.verbis.dkfz.de/cache/samply/teiler-backend:develop
+    container_name: bridgehead-overview-backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.overview_backend_itcc.rule=Host(`${HOST}`) && PathPrefix(`/itcc-overview-backend`)"
+      - "traefik.http.services.overview_backend_itcc.loadbalancer.server.port=8085"
+      - "traefik.http.routers.overview_backend_itcc.tls=true"
+      - "traefik.http.middlewares.overview_backend_itcc_strip.stripprefix.prefixes=/itcc-overview-backend"
+      - "traefik.http.routers.overview_backend_itcc.middlewares=overview_backend_itcc_strip,auth"
+    environment:
+      LOG_LEVEL: "INFO"
+      APPLICATION_PORT: "8085"
+      DEFAULT_LANGUAGE: "${TEILER_DEFAULT_LANGUAGE}"
+      TEILER_ORCHESTRATOR_HTTP_RELATIVE_PATH: "/itcc-overview"
+      TEILER_ORCHESTRATOR_URL: "/itcc-overview"
+      TEILER_DASHBOARD_DE_URL: "/itcc-overview-dashboard/de"
+      TEILER_DASHBOARD_EN_URL: "/itcc-overview-dashboard/en"
+      TEILER_DASHBOARD_STYLING: "/itcc-overview-backend/assets/styling.json"
+      TEILER_DASHBOARD_LOGO_TEXT: "ITCC Overview"
+      TEILER_BACKEND_ASSETS_DIRECTORY: "/app/assets"
+      HTTP_PROXY: "http://forward_proxy:3128"
+      TEILER_APP1_NAME: "quality-report"
+      TEILER_APP1_ROLES: "TEILER_PUBLIC"
+      TEILER_APP1_BACKENDURL: "/itcc-reporter"
+      TEILER_APP1_BACKENDCHECKURL: "http://reporter:8095/info"
+      TEILER_APP2_NAME: "exporter"
+      TEILER_APP2_ROLES: "TEILER_PUBLIC"
+      TEILER_APP2_BACKENDURL: "/itcc-exporter"
+      TEILER_APP2_BACKENDCHECKURL: "http://exporter:8092/info"
+      TEILER_APP3_NAME: "execution"
+      TEILER_APP3_ROLES: "TEILER_PUBLIC"
+      TEILER_APP3_INMENU: "false"
+      TEILER_APP3_BACKENDURL: "/itcc-exporter"
+      TEILER_APP3_BACKENDCHECKURL: "http://exporter:8092/info"
+      TEILER_APP4_NAME: "validator"
+      TEILER_APP4_TITLE: "Validator"
+      TEILER_APP4_DESCRIPTION: "Checks the local data against the ITCC data model"
+      TEILER_APP4_SOURCEURL: "https://${HOST}/itcc-validator/"
+      TEILER_APP4_SOURCECHECKURL: "http://blaze-validator:8091/"
+      TEILER_APP4_ROLES: "TEILER_PUBLIC"
+      TEILER_APP4_ICONCLASS: "bi bi-check2-square"
+      TEILER_APP4_ISEXTERNALLINK: "true"
+      # The validator belongs to the omics ingest
+      TEILER_APP4_ISACTIVATED: "${ENABLE_OMICS:-false}"
+      TEILER_APP5_NAME: "local-explorer"
+      TEILER_APP5_TITLE: "Local Explorer"
+      TEILER_APP5_SOURCEURL: "https://${HOST}/"
+      TEILER_APP5_SOURCECHECKURL: "http://itcc-explorer:3000/"
+      TEILER_APP5_ROLES: "TEILER_PUBLIC"
+      TEILER_APP5_ICONCLASS: "bi bi-search"
+      TEILER_APP5_ISEXTERNALLINK: "true"
+      TEILER_APP5_ISACTIVATED: "${ENABLE_LENS:-false}"
+      TEILER_APP6_NAME: "central-explorer"
+      TEILER_APP6_TITLE: "Central Explorer"
+      TEILER_APP6_SOURCEURL: "https://portal.pedcanportal.eu/"
+      TEILER_APP6_ROLES: "TEILER_PUBLIC"
+      TEILER_APP6_ICONCLASS: "bi bi-globe"
+      TEILER_APP6_ISEXTERNALLINK: "true"
+      TEILER_APP6_ISLOCAL: "false"
+      TEILER_APP7_NAME: "data-warehouse"
+      TEILER_APP7_TITLE: "Central Data Warehouse"
+      TEILER_APP7_DESCRIPTION: "Reachable from the DKFZ intranet only"
+      TEILER_APP7_SOURCEURL: "https://garage-itcc.sci-cloud.dkfz.de/auth/login"
+      TEILER_APP7_ROLES: "TEILER_PUBLIC"
+      TEILER_APP7_ICONCLASS: "bi bi-database"
+      TEILER_APP7_ISEXTERNALLINK: "true"
+      TEILER_APP7_ISLOCAL: "false"
+    volumes:
+      - "/srv/docker/bridgehead/itcc/teiler-assets:/app/assets:ro"

@@ -33,6 +33,26 @@ services:
       - "traefik.http.middlewares.itcc-uploader-stripprefix.stripprefix.prefixes=/itcc-uploader"
       - "traefik.http.routers.itcc-uploader.middlewares=auth,itcc-uploader-stripprefix"
 
+  blaze-validator:
+    image: docker.verbis.dkfz.de/cache/samply/itcc-blaze-validator:develop
+    environment:
+      # Without /fhir, the validator appends it
+      BLAZE_URL: http://bridgehead-itcc-blaze:8080
+      PUBLIC_BLAZE_URL: https://${HOST}/itcc-localdatamanagement
+      VALIDATOR_PORT: "8091"
+      # Daily, every run reads the whole store
+      VALIDATOR_REFRESH_SECS: "86400"
+    depends_on:
+      - "blaze"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.itcc-validator.rule=Host(`${HOST}`) && PathPrefix(`/itcc-validator`)"
+      - "traefik.http.routers.itcc-validator.service=itcc-validator"
+      - "traefik.http.routers.itcc-validator.tls=true"
+      - "traefik.http.services.itcc-validator.loadbalancer.server.port=8091"
+      - "traefik.http.middlewares.itcc-validator-stripprefix.stripprefix.prefixes=/itcc-validator"
+      - "traefik.http.routers.itcc-validator.middlewares=auth,itcc-validator-stripprefix"
+
   patientlist-db:
     image: postgres:${POSTGRES_TAG}
     container_name: bridgehead-patientlist-db

@@ -68,6 +68,7 @@ services:
       ML_DB_TYPE: postgresql
       ML_LOG_LEVEL: INFO
       ML_ALLOWEDREMOTEADDRESSES: "0.0.0.0/0"
+      RELAXED_QUERY_CHARS: ""
 
     secrets:
       - mainzelliste.docker.conf

@@ -112,7 +112,7 @@
             "id": "UKF",
             "name": "Frankfurt",
             "virtualhost": "ukf.dnpm.de",
-            "beamconnect": "dnpm-connect.frankfurt.broker.ccp-it.dktk.dkfz.de"
+            "beamconnect": "dnpm-connect.dnpm-bridge.broker.ccp-it.dktk.dkfz.de"
         },
         {
             "id": "UMG",

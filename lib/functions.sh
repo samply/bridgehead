@@ -254,14 +254,18 @@ add_basic_auth_user() {
    PROJECT="${4}"
    FILE="/etc/bridgehead/${PROJECT}.local.conf"
    ENCRY_CREDENTIALS="$(docker run --rm docker.verbis.dkfz.de/cache/httpd:alpine htpasswd -nb $USER $PASSWORD  | tr -d '\n' | tr -d '\r')"
+   if [ -z "$ENCRY_CREDENTIALS" ]; then
+     log ERROR "Unable to create the credentials for $NAME, $FILE is unchanged."
+     return 1
+   fi
    if [ -f $FILE ] && grep -R -q "$NAME=" $FILE # if a specific basic auth user already exists:
    then
-     sed -i "/$NAME/ s|='|='$ENCRY_CREDENTIALS,|" $FILE
+     sed -i --follow-symlinks "/$NAME/ s|='|='$ENCRY_CREDENTIALS,|" $FILE
    else
      echo -e "\n## Basic Authentication Credentials for:\n$NAME='$ENCRY_CREDENTIALS'" >> $FILE;
    fi
  	log DEBUG "Saving clear text credentials in $FILE. If wanted, delete them manually."
-   sed -i "/^$NAME/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
+   sed -i --follow-symlinks "/^$NAME/ s|$|\n# User: $USER\n# Password: $PASSWORD|" $FILE
 }
 
 OIDC_PUBLIC_REDIRECT_URLS=${OIDC_PUBLIC_REDIRECT_URLS:-""}

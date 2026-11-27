@@ -142,7 +142,7 @@ if [ ! -z "$LDM_PASSWORD" ]; then
   log "INFO" "Migrating LDM_PASSWORD to encrypted credentials in $FILE"
   add_basic_auth_user $PROJECT $LDM_PASSWORD "LDM_AUTH" $PROJECT
   add_basic_auth_user $PROJECT $LDM_PASSWORD "NNGM_AUTH" $PROJECT
-  sed -i "/LDM_PASSWORD/{d;}" $FILE
+  sed -i --follow-symlinks "/LDM_PASSWORD/{d;}" $FILE
 fi
 
 exit 0

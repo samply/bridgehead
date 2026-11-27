@@ -57,9 +57,7 @@ for DIR in /srv/docker/bridgehead /etc/bridgehead; do
   fi
 done
 
-if [[ "$LDM_AUTH" =~ ^[^:,]+:[^:,]+(,[^:,]+:[^:,]+)*$ ]]; then
-  report OK "LDM_AUTH holds valid basic auth users"
-else
+if [[ ! "$LDM_AUTH" =~ ^[^:,]+:[^:,]+(,[^:,]+:[^:,]+)*$ ]]; then
   report CRIT "LDM_AUTH is empty or not a comma-separated list of user:hash entries" \
     "Hint: Remove the LDM_AUTH line from /etc/bridgehead/$PROJECT.local.conf and run '/srv/docker/bridgehead/bridgehead adduser $PROJECT' for the component LDM_AUTH."
 fi
